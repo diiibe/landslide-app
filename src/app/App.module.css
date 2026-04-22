@@ -1,0 +1,29 @@
+.shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--c-bg-linen);
+}
+
+.body {
+  flex: 1;
+  display: flex;
+  position: relative;
+  min-height: 0;
+  background: var(--c-bg-linen);
+}
+
+.body[data-drawer="closed"] :global(.drawer) {
+  width: 0;
+  padding: 0;
+  opacity: 0;
+  border: 0;
+  overflow: hidden;
+}
+
+.map {
+  flex: 1;
+  position: relative;
+  min-width: 0;
+  background: #EDE7D6;
+}
