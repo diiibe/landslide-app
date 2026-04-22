@@ -1,0 +1,22 @@
+* { box-sizing: border-box; }
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font-stack);
+  color: var(--c-text);
+  background: var(--c-bg-linen);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+button {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+input { font-family: inherit; }

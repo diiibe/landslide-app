@@ -1,0 +1,48 @@
+:root {
+  /* surfaces */
+  --c-bg-linen: #F5EEDD;
+  --c-surface: #FDFAF0;
+  --c-border: #E0D7BF;
+  --c-border-soft: #E8E2D5;
+  --c-text: #23261F;
+  --c-text-soft: #7A7A6E;
+  --c-text-muted: #5E5E54;
+
+  /* ramp (susceptibility) */
+  --c-ramp-0: #E8F0D8;
+  --c-ramp-1: #8BB26B;
+  --c-ramp-2: #D9A441;
+  --c-ramp-3: #D25524;
+  --c-ramp-4: #7A1F10;
+
+  /* accents per drawer group */
+  --c-view: #3E5E8A;     --c-view-stripe: #7A99BE;   --c-view-bg: #F6F9FC;   --c-view-row: #E1E9F3;
+  --c-forest: #2F5D3A;   --c-forest-stripe: #2F5D3A; --c-forest-bg: #F6FAF2; --c-forest-row: #D9E4CF;
+  --c-russet: #7A1F10;   --c-russet-bg: #F7ECE5;     --c-russet-bg-alt: #FAF4EE; --c-russet-row: #E8D0C6;
+  --c-terracotta: #B14615; --c-terracotta-stripe: #D25524; --c-terracotta-bg: #FBF1E9;
+  --c-ochre: #8A6A1E;    --c-ochre-stripe: #D9A441;   --c-ochre-bg: #FCF7E8;   --c-ochre-row: #E8DDB8;
+  --c-sage: #8AA67B;     --c-sage-bg: #F3F7EE;
+  --c-slate: #3E5E72;    --c-slate-stripe: #6B8EA3;   --c-slate-bg: #F1F5F8;   --c-slate-row: #D5DEE5;
+
+  /* easing */
+  --e-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --e-expo:  cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* geometry */
+  --topbar-h: 44px;
+  --drawer-w: 216px;
+  --handle-w: 18px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  /* type */
+  --font-stack: system-ui, -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
