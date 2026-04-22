@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from pipelines.loader import load_cells_gpkg
+from pipelines.loader import attach_probabilities, drop_na_and_reproject, load_cells_gpkg
 
 GPKG = os.path.expanduser(
     "~/Coding/ml-landslide-mapping-audit/docs/audit_results/phase_j2/phase_j2_zones_fvg_map.gpkg"
@@ -17,3 +17,29 @@ def test_load_cells_gpkg_returns_676416_rows_in_32632():
     assert len(gdf) == 676416
     assert gdf.crs.to_epsg() == 32633  # actual source CRS of phase_j2 gpkg
     assert "geometry" in gdf.columns
+
+
+def test_attach_probabilities_joins_on_cell_id():
+    import geopandas as gpd
+    from shapely.geometry import Point
+
+    cells = gpd.GeoDataFrame(
+        {"cell_id": [0, 1, 2]},
+        geometry=[Point(0, 0), Point(1, 0), Point(2, 0)],
+        crs="EPSG:32632",
+    )
+    probs = pd.DataFrame(
+        {
+            "cell_id": [0, 1, 2],
+            "y_proba_calibrated": [0.1, 0.5, 0.9],
+            "macro_zone": ["A", "B", "A"],
+            "sub_zone": ["A0", "B1", "A2"],
+            "y_true": [0, 1, 1],
+        }
+    )
+    out = attach_probabilities(cells, probs)
+    assert list(out["p"]) == [0.1, 0.5, 0.9]
+    assert list(out["macro_zone"]) == ["A", "B", "A"]
+    assert list(out["sub_zone"]) == ["A0", "B1", "A2"]
+    assert list(out["y_true"]) == [0, 1, 1]
+    assert out.crs.to_epsg() == 32632
