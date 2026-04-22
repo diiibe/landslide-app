@@ -1,0 +1,20 @@
+{
+  "model": "j3",
+  "auc_pooled": 0.805,
+  "pr_auc": 0.369,
+  "ece": 0.000,
+  "brier": 0.0798,
+  "cells_trained": 676416,
+  "cv_folds": 378,
+  "calibration": [
+    { "p_pred": 0.05, "observed": 0.04 },
+    { "p_pred": 0.15, "observed": 0.10 },
+    { "p_pred": 0.25, "observed": 0.23 },
+    { "p_pred": 0.35, "observed": 0.39 },
+    { "p_pred": 0.45, "observed": 0.50 },
+    { "p_pred": 0.55, "observed": 0.62 },
+    { "p_pred": 0.65, "observed": 0.74 },
+    { "p_pred": 0.75, "observed": 0.84 },
+    { "p_pred": 0.85, "observed": 0.93 }
+  ]
+}

@@ -1,0 +1,7 @@
+[
+  { "zone": "Alpine_Snow",      "n": 37208,  "n_pos": 3158,  "prevalence": 0.085, "auc": 0.760, "ece": 0.012, "mean_p": 0.10 },
+  { "zone": "Forested_Hills",   "n": 177081, "n_pos": 9385,  "prevalence": 0.053, "auc": 0.761, "ece": 0.014, "mean_p": 0.09 },
+  { "zone": "Rocky_Bare",       "n": 9964,   "n_pos": 2806,  "prevalence": 0.282, "auc": 0.794, "ece": 0.050, "mean_p": 0.30 },
+  { "zone": "Steep_Mountain",   "n": 91008,  "n_pos": 15087, "prevalence": 0.166, "auc": 0.730, "ece": 0.021, "mean_p": 0.20 },
+  { "zone": "Transitional_Dry", "n": 24353,  "n_pos": 5586,  "prevalence": 0.229, "auc": 0.794, "ece": 0.034, "mean_p": 0.25 }
+]

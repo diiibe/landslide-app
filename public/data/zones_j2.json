@@ -1,0 +1,7 @@
+[
+  { "zone": "Alpine",    "n": 10130,  "n_pos": 2816,  "prevalence": 0.278, "auc": 0.795, "ece": 0.034, "mean_p": 0.16 },
+  { "zone": "Carso",     "n": 25314,  "n_pos": 5586,  "prevalence": 0.221, "auc": 0.790, "ece": 0.027, "mean_p": 0.22 },
+  { "zone": "Plain",     "n": 37639,  "n_pos": 3159,  "prevalence": 0.084, "auc": 0.756, "ece": 0.016, "mean_p": 0.05 },
+  { "zone": "Hills",     "n": 179038, "n_pos": 9385,  "prevalence": 0.052, "auc": 0.734, "ece": 0.005, "mean_p": 0.09 },
+  { "zone": "Prealpine", "n": 91768,  "n_pos": 15087, "prevalence": 0.164, "auc": 0.677, "ece": 0.025, "mean_p": 0.31 }
+]
