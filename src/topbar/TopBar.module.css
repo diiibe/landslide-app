@@ -1,0 +1,17 @@
+.bar {
+  height: var(--topbar-h);
+  background: var(--c-surface);
+  border-bottom: 1px solid var(--c-border);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 14px;
+  flex-shrink: 0;
+}
+.brand {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--c-text);
+  white-space: nowrap;
+}
+.spacer { margin-left: auto; display: flex; gap: 4px; }
