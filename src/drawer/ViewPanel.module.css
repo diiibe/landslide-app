@@ -1,0 +1,8 @@
+.view {
+  --accent: var(--c-view);
+  --accent-tint: rgba(62, 94, 138, .08);
+  --row-color: var(--c-view-row);
+  --val-color: var(--c-view);
+  border-left-color: var(--c-view-stripe) !important;
+  background: var(--c-view-bg);
+}
