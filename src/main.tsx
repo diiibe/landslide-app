@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import "mapbox-gl/dist/mapbox-gl.css";
 import "./styles/tokens.css";
 import "./styles/globals.css";
 import App from "./app/App";
