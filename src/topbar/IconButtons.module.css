@@ -1,0 +1,28 @@
+.btn {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  color: var(--c-text-soft);
+  cursor: pointer;
+  padding: 0;
+  position: relative;
+  transition: background .15s var(--e-quart), border-color .15s var(--e-quart), color .15s var(--e-quart), transform .18s var(--e-expo);
+}
+.btn svg { width: 16px; height: 16px; display: block; }
+.btn:hover { background: var(--c-bg-linen); border-color: var(--c-border); color: var(--c-text); transform: translateY(-1px); }
+.btn:active { transform: translateY(0) scale(.94); }
+.badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--c-russet);
+  box-shadow: 0 0 0 2px var(--c-surface);
+}
