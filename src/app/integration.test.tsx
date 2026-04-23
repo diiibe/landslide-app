@@ -6,7 +6,7 @@ import { useAppStore } from "./store";
 beforeEach(() => {
   useAppStore.getState().reset();
   // Stub fetch for public/data/*.json so tests don't need a server.
-  vi.spyOn(global, "fetch").mockImplementation(async (input: RequestInfo | URL) => {
+  vi.spyOn(globalThis, "fetch").mockImplementation(async (input: RequestInfo | URL) => {
     const url = typeof input === "string" ? input : input.toString();
     if (url.includes("model_")) {
       return new Response(
