@@ -6,7 +6,10 @@ export const IFFI_LINE = "iffi-line";
 
 export function addIffi(m: MLMap, visible: boolean): void {
   if (!m.getSource(IFFI_SOURCE)) {
-    m.addSource(IFFI_SOURCE, { type: "vector", url: "pmtiles:///tiles/iffi.pmtiles" });
+    m.addSource(IFFI_SOURCE, {
+      type: "vector",
+      url: `pmtiles://${import.meta.env.BASE_URL}tiles/iffi.pmtiles`,
+    });
   }
   if (!m.getLayer(IFFI_FILL)) {
     m.addLayer({

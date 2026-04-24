@@ -16,7 +16,7 @@ export function addSusceptibility(
 
   m.addSource(SUSCEPT_SOURCE, {
     type: "vector",
-    url: `pmtiles:///tiles/${model}.pmtiles`,
+    url: `pmtiles://${import.meta.env.BASE_URL}tiles/${model}.pmtiles`,
   });
 
   const zoneFilter: unknown =
