@@ -7,6 +7,7 @@ import { MapView } from "@/map/MapView";
 import { ZonesPill } from "@/map-overlays/ZonesPill";
 import { LayersPanel } from "@/map-overlays/LayersPanel";
 import { Legend } from "@/map-overlays/Legend";
+import { ThresholdControl } from "@/map-overlays/ThresholdControl";
 import { Drawer } from "@/drawer/Drawer";
 import { Group } from "@/drawer/Group";
 import { ViewPanel } from "@/drawer/ViewPanel";
@@ -24,6 +25,7 @@ export default function App() {
         <div className={styles.map}>
           <MapView />
           <ZonesPill />
+          <ThresholdControl />
           <LayersPanel />
           <Legend />
         </div>

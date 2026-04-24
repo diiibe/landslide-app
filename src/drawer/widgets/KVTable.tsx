@@ -3,7 +3,7 @@ import styles from "./widgets.module.css";
 export interface KVRow {
   label: string;
   value: string;
-  unit?: string;
+  unit?: string | undefined;
 }
 
 interface Props {

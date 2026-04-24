@@ -1,73 +1,83 @@
 import { Section } from "./widgets/Section";
 import { KVTable } from "./widgets/KVTable";
+import { useMapStats } from "@/map/useMapStats";
 import styles from "./MonitoringPanel.module.css";
 
-const SAMPLE = {
-  inView: {
-    cells_visible: 283_000,
-    cells_total: 676_416,
-    coverage_pct: 41.9,
-    area_km2: 3_876,
-    zones_active: 2,
-    zones_total: 5,
-  },
-  matches: {
-    polygons_in_view: 284,
-    iffi_cells: 9_412,
-    captured: 6_306,
-    hit_rate_pct: 67.0,
-    precision: 0.271,
-  },
-  types: [
-    { tipo: "Scivolamento", count: 127, cls: "sci" },
-    { tipo: "Crollo", count: 68, cls: "cro" },
-    { tipo: "Colata rapida", count: 54, cls: "col" },
-    { tipo: "Complesso", count: 35, cls: "cmp" },
-  ] as const,
+const TYPE_CLASS: Record<string, string> = {
+  Scivolamento: "sci",
+  Crollo: "cro",
+  "Colata rapida": "col",
+  Complesso: "cmp",
 };
 
 function fmtK(n: number): string {
-  return `${Math.round(n / 1000)}`;
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(0)}k`;
+  return String(n);
 }
 
 export function MonitoringPanel() {
+  const stats = useMapStats();
+
+  if (!stats) {
+    return (
+      <>
+        <Section className={styles.inview}>
+          <div style={{ padding: 6, color: "var(--c-text-soft)", fontSize: 11 }}>
+            Pan or zoom the map to compute live statistics…
+          </div>
+        </Section>
+      </>
+    );
+  }
+
   return (
     <>
       <Section className={styles.inview}>
         <KVTable
           rows={[
-            { label: "Cells", value: `${fmtK(SAMPLE.inView.cells_visible)}k / ${fmtK(SAMPLE.inView.cells_total)}k` },
-            { label: "Coverage", value: SAMPLE.inView.coverage_pct.toFixed(1), unit: "%" },
-            { label: "Area", value: SAMPLE.inView.area_km2.toLocaleString("en"), unit: "km²" },
-            { label: "Zones", value: `${SAMPLE.inView.zones_active} / ${SAMPLE.inView.zones_total}` },
+            { label: "Cells", value: `${fmtK(stats.cells_visible)} / ${fmtK(stats.cells_total)}` },
+            {
+              label: "Coverage",
+              value: ((stats.cells_visible / stats.cells_total) * 100).toFixed(1),
+              unit: "%",
+            },
+            { label: "Area", value: stats.area_km2.toLocaleString("en", { maximumFractionDigits: 0 }), unit: "km²" },
+            { label: "Zones", value: `${stats.zones_active} / ${stats.zones_total}` },
           ]}
         />
       </Section>
       <Section className={styles.match}>
         <KVTable
           rows={[
-            { label: "Polygons in view", value: String(SAMPLE.matches.polygons_in_view) },
-            { label: "IFFI cells", value: SAMPLE.matches.iffi_cells.toLocaleString("en") },
-            { label: "Captured ≥ 0.50", value: SAMPLE.matches.captured.toLocaleString("en") },
-            { label: "Hit rate", value: SAMPLE.matches.hit_rate_pct.toFixed(1), unit: "%" },
-            { label: "Precision", value: SAMPLE.matches.precision.toFixed(3) },
+            { label: "Polygons in view", value: String(stats.iffi_polygons_in_view) },
+            { label: "IFFI cells", value: stats.iffi_cells.toLocaleString("en") },
+            { label: "Captured", value: stats.captured_above_threshold.toLocaleString("en") },
+            { label: "Hit rate", value: (stats.hit_rate * 100).toFixed(1), unit: "%" },
+            { label: "Precision", value: stats.precision.toFixed(3) },
           ]}
         />
       </Section>
       <Section className={styles.types}>
-        <table>
-          <tbody>
-            {SAMPLE.types.map((t) => (
-              <tr key={t.tipo} className={t.cls}>
-                <td>
-                  <i />
-                  {t.tipo}
-                </td>
-                <td>{t.count}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {stats.iffi_by_type.length === 0 ? (
+          <div style={{ padding: 4, color: "var(--c-text-soft)", fontSize: 11 }}>
+            No IFFI polygons in view.
+          </div>
+        ) : (
+          <table>
+            <tbody>
+              {stats.iffi_by_type.slice(0, 6).map((t) => (
+                <tr key={t.tipo} className={TYPE_CLASS[t.tipo] ?? "cmp"}>
+                  <td>
+                    <i />
+                    {t.tipo}
+                  </td>
+                  <td>{t.count}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </Section>
     </>
   );

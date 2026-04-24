@@ -2,46 +2,6 @@ import { useEffect, useRef } from "react";
 import maplibregl, { type RequestParameters, type ResourceType } from "maplibre-gl";
 import { useAppStore } from "@/app/store";
 import { BASEMAP_STYLE, FVG_BOUNDS, FVG_CENTER } from "./style";
-
-const TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string | undefined;
-
-/**
- * Mapbox styles reference internal `mapbox://...` URLs for sources, sprites,
- * glyphs and tiles. MapLibre GL JS does not understand the proprietary
- * `mapbox://` protocol, so we translate every such URL to the public
- * Mapbox API equivalent with the user's token.
- *
- * URL families translated:
- *   mapbox://sprites/mapbox/<style>          → /styles/v1/mapbox/<style>/sprite
- *   mapbox://fonts/mapbox/<...>              → /fonts/v1/mapbox/<...>
- *   mapbox://<tileset(s) csv>                → /v4/<tileset(s)>.json (TileJSON)
- *   mapbox://tiles/<tileset>/{z}/{x}/{y}…    → /v4/<tileset>/{z}/{x}/{y}…
- */
-function rewriteMapboxUrl(url: string, resourceType: ResourceType | undefined): RequestParameters {
-  if (!url.startsWith("mapbox://") || !TOKEN) return { url };
-  const tail = url.slice("mapbox://".length);
-  const sep = (u: string) => (u.includes("?") ? "&" : "?") + `access_token=${TOKEN}`;
-  let target: string;
-  if (tail.startsWith("sprites/")) {
-    // mapbox://sprites/mapbox/outdoors-v12  →  /styles/v1/mapbox/outdoors-v12/sprite
-    // Optional .json/.png/@2x suffixes preserved at the end.
-    const m = tail.match(/^sprites\/([^?]+?)(@\dx)?(\.\w+)?(\?.*)?$/);
-    if (!m) return { url };
-    const [, path, ratio = "", ext = "", query = ""] = m;
-    target = `https://api.mapbox.com/styles/v1/${path}/sprite${ratio}${ext}${query}`;
-  } else if (tail.startsWith("fonts/")) {
-    target = `https://api.mapbox.com/${tail}`;
-  } else if (resourceType === "Source" || /^[a-z0-9._-]+(\.[a-z0-9._-]+)*(,[a-z0-9._-]+)*(\?|$)/i.test(tail)) {
-    // Comma-separated tileset list → TileJSON descriptor.
-    const [path, query = ""] = tail.split("?", 2);
-    target = `https://api.mapbox.com/v4/${path}.json?secure${query ? "&" + query : ""}`;
-  } else if (tail.startsWith("tiles/")) {
-    target = `https://api.mapbox.com/v4/${tail.slice("tiles/".length)}`;
-  } else {
-    target = `https://api.mapbox.com/v4/${tail}`;
-  }
-  return { url: target + sep(target) };
-}
 import { installPmtilesProtocol } from "./pmtiles-protocol";
 import {
   addSusceptibility,
@@ -52,7 +12,55 @@ import {
 import { addIffi, setIffiVisible } from "./layers/iffi";
 import { addZoneBoundaries, setZoneBoundariesVisible } from "./layers/zones";
 import { registerPopups } from "./popups";
+import { setMap } from "./instance";
 import styles from "./MapView.module.css";
+
+const TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string | undefined;
+
+/**
+ * Mapbox styles reference internal `mapbox://...` URLs. MapLibre doesn't
+ * understand them — translate every such URL to the public Mapbox API form
+ * with the user's token. Covers sprites, fonts, source TileJSON descriptors
+ * and raw tile templates.
+ */
+function rewriteMapboxUrl(url: string, resourceType: ResourceType | undefined): RequestParameters {
+  if (!url.startsWith("mapbox://") || !TOKEN) return { url };
+  const tail = url.slice("mapbox://".length);
+  const sep = (u: string) => (u.includes("?") ? "&" : "?") + `access_token=${TOKEN}`;
+  let target: string;
+  if (tail.startsWith("sprites/")) {
+    const m = tail.match(/^sprites\/([^?]+?)(@\dx)?(\.\w+)?(\?.*)?$/);
+    if (!m) return { url };
+    const [, path, ratio = "", ext = "", query = ""] = m;
+    target = `https://api.mapbox.com/styles/v1/${path}/sprite${ratio}${ext}${query}`;
+  } else if (tail.startsWith("fonts/")) {
+    target = `https://api.mapbox.com/${tail}`;
+  } else if (
+    resourceType === "Source" ||
+    /^[a-z0-9._-]+(\.[a-z0-9._-]+)*(,[a-z0-9._-]+)*(\?|$)/i.test(tail)
+  ) {
+    const [path, query = ""] = tail.split("?", 2);
+    target = `https://api.mapbox.com/v4/${path}.json?secure${query ? "&" + query : ""}`;
+  } else if (tail.startsWith("tiles/")) {
+    target = `https://api.mapbox.com/v4/${tail.slice("tiles/".length)}`;
+  } else {
+    target = `https://api.mapbox.com/v4/${tail}`;
+  }
+  return { url: target + sep(target) };
+}
+
+/** Tear down and rebuild every data layer in one shot. Called on initial style
+ * load AND after every basemap switch — `setStyle()` wipes custom layers, so
+ * we re-add them as a unit when the new style is ready. Also called on model
+ * change so the susceptibility source picks up the new pmtiles URL. */
+function setupDataLayers(m: maplibregl.Map): void {
+  const s = useAppStore.getState();
+  addSusceptibility(m, s.model, s.threshold, s.selectedZones);
+  addIffi(m, s.layers.iffi);
+  addZoneBoundaries(m);
+  setZoneBoundariesVisible(m, s.layers.zoneBoundaries);
+  setSusceptibilityVisible(m, s.layers.susceptibility);
+}
 
 export function MapView() {
   const ref = useRef<HTMLDivElement>(null);
@@ -67,7 +75,7 @@ export function MapView() {
   const iffiOn = useAppStore((s) => s.layers.iffi);
   const zoneBoundariesOn = useAppStore((s) => s.layers.zoneBoundaries);
 
-  // Init map once
+  // Init map once + permanent style.load handler that re-adds data layers
   useEffect(() => {
     if (!ref.current || mapRef.current) return;
     installPmtilesProtocol();
@@ -80,14 +88,23 @@ export function MapView() {
         [FVG_BOUNDS[0][0] - 0.5, FVG_BOUNDS[0][1] - 0.5],
         [FVG_BOUNDS[1][0] + 0.5, FVG_BOUNDS[1][1] + 0.5],
       ],
-      // Mapbox styles include `name` and other props MapLibre 5 rejects;
-      // we skip validation since we trust the Mapbox style URL.
       validateStyle: false,
       transformRequest: rewriteMapboxUrl,
     });
     m.addControl(new maplibregl.NavigationControl({ showCompass: false }), "bottom-right");
+    // Permanent listener: every time a style finishes loading (initial or after
+    // setStyle from a basemap switch), re-add our data layers + popups.
+    m.on("style.load", () => {
+      setupDataLayers(m);
+      if (!popupsRegistered.current) {
+        registerPopups(m);
+        popupsRegistered.current = true;
+      }
+    });
     mapRef.current = m;
+    setMap(m);
     return () => {
+      setMap(null);
       m.remove();
       mapRef.current = null;
       popupsRegistered.current = false;
@@ -95,31 +112,20 @@ export function MapView() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Basemap switch
+  // Basemap switch — fires style.load which re-runs setupDataLayers
   useEffect(() => {
     const m = mapRef.current;
     if (!m) return;
     m.setStyle(BASEMAP_STYLE[basemap]);
   }, [basemap]);
 
-  // Add / re-add data layers after style loaded (runs on model + basemap change)
+  // Model switch: re-add data layers (different pmtiles URL for susceptibility)
   useEffect(() => {
     const m = mapRef.current;
-    if (!m) return;
-    const apply = () => {
-      addSusceptibility(m, model, threshold, selectedZones);
-      addIffi(m, iffiOn);
-      addZoneBoundaries(m);
-      setZoneBoundariesVisible(m, zoneBoundariesOn);
-      if (!popupsRegistered.current) {
-        registerPopups(m);
-        popupsRegistered.current = true;
-      }
-    };
-    if (m.isStyleLoaded()) apply();
-    else m.once("style.load", apply);
+    if (!m || !m.isStyleLoaded()) return;
+    setupDataLayers(m);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [model, basemap]);
+  }, [model]);
 
   useEffect(() => {
     if (mapRef.current) updateSusceptibilityThreshold(mapRef.current, threshold);

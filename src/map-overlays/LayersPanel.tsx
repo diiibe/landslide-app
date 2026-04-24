@@ -16,7 +16,9 @@ export function LayersPanel() {
   const layers = useAppStore((s) => s.layers);
   const toggleLayer = useAppStore((s) => s.toggleLayer);
   const model = useAppStore((s) => s.model);
-  const otherModel = model === "j2" ? "J.3" : "J.2";
+  const setModel = useAppStore((s) => s.setModel);
+  const otherModel = model === "j2" ? "j3" : "j2";
+  const otherLabel = otherModel === "j2" ? "J.2" : "J.3";
 
   return (
     <div className={styles.panel} data-open={open}>
@@ -57,11 +59,14 @@ export function LayersPanel() {
               <span className={styles.itemState}>{layers.susceptibility ? "on" : "off"}</span>
             </label>
             <label className={styles.item}>
-              <input type="checkbox" disabled checked={false} readOnly />
-              <span className={styles.itemName} style={{ opacity: 0.55 }}>
-                Susceptibility ({otherModel}) · switch via tabs
-              </span>
-              <span className={styles.itemState}>—</span>
+              <input
+                type="checkbox"
+                checked={false}
+                onChange={() => setModel(otherModel)}
+                aria-label={`Switch to ${otherLabel}`}
+              />
+              <span className={styles.itemName}>Susceptibility ({otherLabel})</span>
+              <span className={styles.itemState}>switch</span>
             </label>
             <label className={styles.item}>
               <input type="checkbox" checked={layers.iffi} onChange={() => toggleLayer("iffi")} />

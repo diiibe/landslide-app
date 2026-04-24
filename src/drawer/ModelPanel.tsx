@@ -12,7 +12,7 @@ function useModelStats(): ModelStats | null {
   useEffect(() => {
     let cancelled = false;
     setData(null);
-    fetch(`/data/model_${model}.json`)
+    fetch(`${import.meta.env.BASE_URL}data/model_${model}.json`)
       .then((r) => r.json())
       .then((d) => {
         if (!cancelled) setData(d as ModelStats);

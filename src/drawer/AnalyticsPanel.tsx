@@ -5,6 +5,7 @@ import { Section } from "./widgets/Section";
 import { KVTable } from "./widgets/KVTable";
 import { Histogram } from "./widgets/Histogram";
 import { ZoneBars } from "./widgets/ZoneBars";
+import { useMapStats } from "@/map/useMapStats";
 import styles from "./AnalyticsPanel.module.css";
 
 const THRESHOLDS: { t: Threshold; use: string }[] = [
@@ -13,15 +14,6 @@ const THRESHOLDS: { t: Threshold; use: string }[] = [
   { t: 0.7, use: "priority" },
   { t: 0.85, use: "high conf." },
 ];
-
-const PCT_BY_T: Record<Threshold, string> = {
-  0.3: "31.0",
-  0.5: "8.3",
-  0.7: "2.1",
-  0.85: "0.4",
-};
-
-const SAMPLE_HIST = [92, 64, 46, 30, 22, 18, 14, 11, 9, 7];
 
 function colorForMeanP(p: number): string {
   if (p < 0.1) return "#D9E4CF";
@@ -36,7 +28,7 @@ function useZoneStats(): ZoneStat[] {
   const model = useAppStore((s) => s.model);
   const [data, setData] = useState<ZoneStat[]>([]);
   useEffect(() => {
-    fetch(`/data/zones_${model}.json`)
+    fetch(`${import.meta.env.BASE_URL}data/zones_${model}.json`)
       .then((r) => r.json())
       .then((d) => setData(d as ZoneStat[]))
       .catch(() => setData([]));
@@ -47,15 +39,30 @@ function useZoneStats(): ZoneStat[] {
 export function AnalyticsPanel() {
   const threshold = useAppStore((s) => s.threshold);
   const setThreshold = useAppStore((s) => s.setThreshold);
-  const zones = useZoneStats();
+  const zoneStats = useZoneStats();
+  const live = useMapStats();
 
-  const rows = [...zones]
-    .sort((a, b) => b.mean_p - a.mean_p)
-    .map<{ zone: Zone; mean_p: number; color: string }>((z) => ({
-      zone: z.zone,
-      mean_p: z.mean_p,
-      color: colorForMeanP(z.mean_p),
-    }));
+  // Per-threshold percentage from current viewport (live), or "—" if no data.
+  const pctAt = (t: number): string => {
+    if (!live) return "—";
+    let n = 0;
+    // Re-derive from histogram (10 bins). For threshold t, count cells with
+    // p >= t by summing bins where the lower-bound matches.
+    for (let i = 0; i < live.histogram.length; i++) {
+      const lo = i / 10;
+      if (lo + 0.05 >= t) n += live.histogram[i] ?? 0;
+    }
+    if (live.cells_visible === 0) return "—";
+    return ((n / live.cells_visible) * 100).toFixed(1);
+  };
+
+  // Per-zone bars: prefer live (viewport-local mean) if available, fallback to global stats JSON.
+  const zoneBarRows: { zone: Zone; mean_p: number; color: string }[] = (() => {
+    const source = live && live.mean_by_zone.length > 0 ? live.mean_by_zone : zoneStats.map((z) => ({ zone: z.zone, mean_p: z.mean_p }));
+    return [...source]
+      .sort((a, b) => b.mean_p - a.mean_p)
+      .map((z) => ({ zone: z.zone, mean_p: z.mean_p, color: colorForMeanP(z.mean_p) }));
+  })();
 
   return (
     <>
@@ -72,8 +79,8 @@ export function AnalyticsPanel() {
                   ≥ {t.toFixed(2)} <span className={styles.use}>{use}</span>
                 </td>
                 <td>
-                  {PCT_BY_T[t]}
-                  <span style={{ marginLeft: 1 }}>%</span>
+                  {pctAt(t)}
+                  {pctAt(t) !== "—" && <span style={{ marginLeft: 1 }}>%</span>}
                 </td>
               </tr>
             ))}
@@ -83,18 +90,28 @@ export function AnalyticsPanel() {
       <Section title="Probability" className={styles.prob}>
         <KVTable
           rows={[
-            { label: "Mean", value: "0.18" },
-            { label: "Median", value: "0.11" },
-            { label: "p99", value: "0.86" },
-            { label: "Above 0.50", value: "8.3", unit: "%" },
+            { label: "Mean", value: live ? live.prob.mean.toFixed(2) : "—" },
+            { label: "Median", value: live ? live.prob.median.toFixed(2) : "—" },
+            { label: "p99", value: live ? live.prob.p99.toFixed(2) : "—" },
+            {
+              label: `Above ${threshold.toFixed(2)}`,
+              value: live ? live.prob.above_threshold_pct.toFixed(1) : "—",
+              unit: live ? "%" : undefined,
+            },
           ]}
         />
         <div style={{ marginTop: 10 }}>
-          <Histogram bins={SAMPLE_HIST} />
+          <Histogram bins={live ? live.histogram : new Array(10).fill(0)} />
         </div>
       </Section>
       <Section title="Mean probability by zone" className={styles.byzone}>
-        <ZoneBars rows={rows} />
+        {zoneBarRows.length === 0 ? (
+          <div style={{ padding: 4, color: "var(--c-text-soft)", fontSize: 11 }}>
+            No data in view.
+          </div>
+        ) : (
+          <ZoneBars rows={zoneBarRows} />
+        )}
       </Section>
     </>
   );
