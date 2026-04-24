@@ -5,6 +5,10 @@ const subs = new Set<() => void>();
 
 export function setMap(m: MLMap | null): void {
   _map = m;
+  // Expose for debugging from the browser console.
+  if (typeof window !== "undefined") {
+    (window as unknown as { __mlmap: MLMap | null }).__mlmap = m;
+  }
   subs.forEach((fn) => fn());
 }
 
