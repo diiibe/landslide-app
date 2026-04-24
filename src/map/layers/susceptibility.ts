@@ -1,4 +1,4 @@
-import type { Map as MBMap } from "mapbox-gl";
+import type { Map as MLMap } from "maplibre-gl";
 import type { ModelId, Zone } from "@/app/types";
 import { rampPaint } from "../style";
 
@@ -6,7 +6,7 @@ export const SUSCEPT_SOURCE = "cells";
 export const SUSCEPT_LAYER = "susceptibility";
 
 export function addSusceptibility(
-  m: MBMap,
+  m: MLMap,
   model: ModelId,
   threshold: number,
   selectedZones: Zone[],
@@ -42,7 +42,7 @@ export function addSusceptibility(
   });
 }
 
-export function updateSusceptibilityThreshold(m: MBMap, threshold: number): void {
+export function updateSusceptibilityThreshold(m: MLMap, threshold: number): void {
   if (!m.getLayer(SUSCEPT_LAYER)) return;
   m.setPaintProperty(SUSCEPT_LAYER, "fill-opacity", [
     "case",
@@ -51,7 +51,7 @@ export function updateSusceptibilityThreshold(m: MBMap, threshold: number): void
   ]);
 }
 
-export function updateSusceptibilityZones(m: MBMap, selectedZones: Zone[]): void {
+export function updateSusceptibilityZones(m: MLMap, selectedZones: Zone[]): void {
   if (!m.getLayer(SUSCEPT_LAYER)) return;
   const filter =
     selectedZones.length === 0
@@ -60,7 +60,7 @@ export function updateSusceptibilityZones(m: MBMap, selectedZones: Zone[]): void
   m.setFilter(SUSCEPT_LAYER, filter as never);
 }
 
-export function setSusceptibilityVisible(m: MBMap, v: boolean): void {
+export function setSusceptibilityVisible(m: MLMap, v: boolean): void {
   if (m.getLayer(SUSCEPT_LAYER)) {
     m.setLayoutProperty(SUSCEPT_LAYER, "visibility", v ? "visible" : "none");
   }

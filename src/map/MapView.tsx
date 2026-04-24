@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import mapboxgl from "mapbox-gl";
+import maplibregl from "maplibre-gl";
 import { useAppStore } from "@/app/store";
 import { BASEMAP_STYLE, FVG_BOUNDS, FVG_CENTER } from "./style";
 import { installPmtilesProtocol } from "./pmtiles-protocol";
@@ -14,11 +14,9 @@ import { addZoneBoundaries, setZoneBoundariesVisible } from "./layers/zones";
 import { registerPopups } from "./popups";
 import styles from "./MapView.module.css";
 
-const TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string | undefined;
-
 export function MapView() {
   const ref = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<mapboxgl.Map | null>(null);
+  const mapRef = useRef<maplibregl.Map | null>(null);
   const popupsRegistered = useRef(false);
 
   const basemap = useAppStore((s) => s.basemap);
@@ -29,16 +27,11 @@ export function MapView() {
   const iffiOn = useAppStore((s) => s.layers.iffi);
   const zoneBoundariesOn = useAppStore((s) => s.layers.zoneBoundaries);
 
-  // Init map
+  // Init map once
   useEffect(() => {
     if (!ref.current || mapRef.current) return;
-    if (!TOKEN) {
-      console.warn("VITE_MAPBOX_TOKEN missing; map will fail to load");
-      return;
-    }
     installPmtilesProtocol();
-    mapboxgl.accessToken = TOKEN;
-    const m = new mapboxgl.Map({
+    const m = new maplibregl.Map({
       container: ref.current,
       style: BASEMAP_STYLE[basemap],
       center: FVG_CENTER,
@@ -48,7 +41,7 @@ export function MapView() {
         [FVG_BOUNDS[1][0] + 0.5, FVG_BOUNDS[1][1] + 0.5],
       ],
     });
-    m.addControl(new mapboxgl.NavigationControl({ showCompass: false }), "bottom-right");
+    m.addControl(new maplibregl.NavigationControl({ showCompass: false }), "bottom-right");
     mapRef.current = m;
     return () => {
       m.remove();
@@ -65,7 +58,7 @@ export function MapView() {
     m.setStyle(BASEMAP_STYLE[basemap]);
   }, [basemap]);
 
-  // Add layers (re-runs on model or basemap change)
+  // Add / re-add data layers after style loaded (runs on model + basemap change)
   useEffect(() => {
     const m = mapRef.current;
     if (!m) return;
@@ -84,7 +77,6 @@ export function MapView() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [model, basemap]);
 
-  // Threshold + zones updates without re-adding the layer
   useEffect(() => {
     if (mapRef.current) updateSusceptibilityThreshold(mapRef.current, threshold);
   }, [threshold]);
@@ -93,7 +85,6 @@ export function MapView() {
     if (mapRef.current) updateSusceptibilityZones(mapRef.current, selectedZones);
   }, [selectedZones]);
 
-  // Visibility toggles
   useEffect(() => {
     if (mapRef.current) setSusceptibilityVisible(mapRef.current, susceptOn);
   }, [susceptOn]);

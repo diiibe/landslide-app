@@ -1,10 +1,10 @@
-import type { Map as MBMap } from "mapbox-gl";
+import type { Map as MLMap } from "maplibre-gl";
 
 export const IFFI_SOURCE = "iffi";
 export const IFFI_FILL = "iffi-fill";
 export const IFFI_LINE = "iffi-line";
 
-export function addIffi(m: MBMap, visible: boolean): void {
+export function addIffi(m: MLMap, visible: boolean): void {
   if (!m.getSource(IFFI_SOURCE)) {
     m.addSource(IFFI_SOURCE, { type: "vector", url: "pmtiles:///tiles/iffi.pmtiles" });
   }
@@ -29,7 +29,7 @@ export function addIffi(m: MBMap, visible: boolean): void {
   setIffiVisible(m, visible);
 }
 
-export function setIffiVisible(m: MBMap, visible: boolean): void {
+export function setIffiVisible(m: MLMap, visible: boolean): void {
   const v = visible ? "visible" : "none";
   for (const id of [IFFI_FILL, IFFI_LINE]) {
     if (m.getLayer(id)) m.setLayoutProperty(id, "visibility", v);

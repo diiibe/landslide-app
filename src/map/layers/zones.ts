@@ -1,9 +1,9 @@
-import type { Map as MBMap } from "mapbox-gl";
+import type { Map as MLMap } from "maplibre-gl";
 import { SUSCEPT_SOURCE } from "./susceptibility";
 
 export const ZONE_LINE = "zone-boundaries";
 
-export function addZoneBoundaries(m: MBMap): void {
+export function addZoneBoundaries(m: MLMap): void {
   if (m.getLayer(ZONE_LINE)) return;
   m.addLayer({
     id: ZONE_LINE,
@@ -17,7 +17,7 @@ export function addZoneBoundaries(m: MBMap): void {
   });
 }
 
-export function setZoneBoundariesVisible(m: MBMap, v: boolean): void {
+export function setZoneBoundariesVisible(m: MLMap, v: boolean): void {
   if (m.getLayer(ZONE_LINE)) {
     m.setLayoutProperty(ZONE_LINE, "visibility", v ? "visible" : "none");
   }

@@ -1,9 +1,11 @@
-import mapboxgl, { type Map as MBMap, type MapMouseEvent } from "mapbox-gl";
+import maplibregl, { type Map as MLMap, type MapMouseEvent, type MapGeoJSONFeature } from "maplibre-gl";
 import { SUSCEPT_LAYER } from "./layers/susceptibility";
 import { IFFI_FILL } from "./layers/iffi";
 
-export function registerPopups(m: MBMap): () => void {
-  const onCell = (e: MapMouseEvent & { features?: mapboxgl.MapboxGeoJSONFeature[] }) => {
+type LayerMouseEvent = MapMouseEvent & { features?: MapGeoJSONFeature[] };
+
+export function registerPopups(m: MLMap): () => void {
+  const onCell = (e: LayerMouseEvent) => {
     const f = e.features?.[0];
     if (!f) return;
     const p = f.properties as {
@@ -13,7 +15,7 @@ export function registerPopups(m: MBMap): () => void {
       sub_zone: string;
       iffi_hit: boolean;
     };
-    new mapboxgl.Popup({ closeButton: false, offset: 8, className: "cell-popup" })
+    new maplibregl.Popup({ closeButton: false, offset: 8, className: "cell-popup" })
       .setLngLat(e.lngLat)
       .setHTML(
         `<div style="font-family:var(--font-stack);font-size:12px;color:#23261F">
@@ -25,7 +27,7 @@ export function registerPopups(m: MBMap): () => void {
       )
       .addTo(m);
   };
-  const onIffi = (e: MapMouseEvent & { features?: mapboxgl.MapboxGeoJSONFeature[] }) => {
+  const onIffi = (e: LayerMouseEvent) => {
     const f = e.features?.[0];
     if (!f) return;
     const p = f.properties as {
@@ -34,7 +36,7 @@ export function registerPopups(m: MBMap): () => void {
       comune: string;
       provincia: string;
     };
-    new mapboxgl.Popup({ closeButton: false, offset: 8 })
+    new maplibregl.Popup({ closeButton: false, offset: 8 })
       .setLngLat(e.lngLat)
       .setHTML(
         `<div style="font-family:var(--font-stack);font-size:12px;color:#23261F">

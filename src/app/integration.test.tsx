@@ -1,5 +1,11 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, beforeEach, vi } from "vitest";
+
+// Stub the MapView — jsdom has no WebGL, and we're only testing the chrome here.
+vi.mock("@/map/MapView", () => ({
+  MapView: () => <div data-testid="map-stub" />,
+}));
+
 import App from "./App";
 import { useAppStore } from "./store";
 
