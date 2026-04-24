@@ -1,5 +1,6 @@
 export type ModelId = "j2" | "j3";
-export type Basemap = "outdoors" | "light" | "satellite";
+export type Basemap = "outdoors" | "light" | "satellite" | "dark";
+export type Theme = "light" | "dark";
 
 export type Threshold = 0.3 | 0.5 | 0.7 | 0.85;
 

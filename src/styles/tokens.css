@@ -1,5 +1,5 @@
 :root {
-  /* surfaces */
+  /* ───── light theme (default) ───── */
   --c-bg-linen: #F5EEDD;
   --c-surface: #FDFAF0;
   --c-border: #E0D7BF;
@@ -8,14 +8,14 @@
   --c-text-soft: #7A7A6E;
   --c-text-muted: #5E5E54;
 
-  /* ramp (susceptibility) */
+  /* ramp (susceptibility) — invariant across themes */
   --c-ramp-0: #E8F0D8;
   --c-ramp-1: #8BB26B;
   --c-ramp-2: #D9A441;
   --c-ramp-3: #D25524;
   --c-ramp-4: #7A1F10;
 
-  /* accents per drawer group */
+  /* accents per drawer group — light theme values */
   --c-view: #3E5E8A;     --c-view-stripe: #7A99BE;   --c-view-bg: #F6F9FC;   --c-view-row: #E1E9F3;
   --c-forest: #2F5D3A;   --c-forest-stripe: #2F5D3A; --c-forest-bg: #F6FAF2; --c-forest-row: #D9E4CF;
   --c-russet: #7A1F10;   --c-russet-bg: #F7ECE5;     --c-russet-bg-alt: #FAF4EE; --c-russet-row: #E8D0C6;
@@ -24,13 +24,16 @@
   --c-sage: #8AA67B;     --c-sage-bg: #F3F7EE;
   --c-slate: #3E5E72;    --c-slate-stripe: #6B8EA3;   --c-slate-bg: #F1F5F8;   --c-slate-row: #D5DEE5;
 
+  --c-group-head-bg: #F1EADB;
+  --c-group-head-border: #DCD2B9;
+
   /* easing */
   --e-quart: cubic-bezier(0.25, 1, 0.5, 1);
   --e-expo:  cubic-bezier(0.16, 1, 0.3, 1);
 
   /* geometry */
   --topbar-h: 44px;
-  --drawer-w: 216px;
+  --drawer-w: 280px;
   --handle-w: 18px;
   --radius-sm: 4px;
   --radius-md: 6px;
@@ -38,6 +41,36 @@
 
   /* type */
   --font-stack: system-ui, -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  color-scheme: light;
+}
+
+/* ───── dark theme overrides ─────
+ * Activated by `data-theme="dark"` on the <html> element. Naturalistic dark:
+ * warm near-black surfaces, accents lifted for AAA contrast, ramp invariant
+ * (the heatmap reads correctly on either basemap).
+ */
+[data-theme="dark"] {
+  --c-bg-linen: #1A1814;
+  --c-surface: #25221C;
+  --c-border: #3A352A;
+  --c-border-soft: #322E25;
+  --c-text: #ECE4D2;
+  --c-text-soft: #9C988B;
+  --c-text-muted: #7E7B6E;
+
+  --c-view: #9DBADD;     --c-view-stripe: #6F8FB8;   --c-view-bg: #1A1F27;   --c-view-row: #2C353F;
+  --c-forest: #7FB58A;   --c-forest-stripe: #5A8866; --c-forest-bg: #182019; --c-forest-row: #2D3A2F;
+  --c-russet: #E07A66;   --c-russet-bg: #271713;     --c-russet-bg-alt: #2A1C18; --c-russet-row: #3F2520;
+  --c-terracotta: #E08B6E; --c-terracotta-stripe: #C26B45; --c-terracotta-bg: #271810;
+  --c-ochre: #E2B95C;    --c-ochre-stripe: #C09137;   --c-ochre-bg: #251F12;   --c-ochre-row: #3A2F1A;
+  --c-sage: #A8BD9A;     --c-sage-bg: #1A1F18;
+  --c-slate: #91ABBE;    --c-slate-stripe: #6E8DA0;   --c-slate-bg: #161D24;   --c-slate-row: #2A343C;
+
+  --c-group-head-bg: #1F1B14;
+  --c-group-head-border: #2F2A1F;
+
+  color-scheme: dark;
 }
 
 @media (prefers-reduced-motion: reduce) {

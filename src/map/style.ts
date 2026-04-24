@@ -11,6 +11,7 @@ export const BASEMAP_STYLE: Record<Basemap, string> = {
   outdoors: `https://api.mapbox.com/styles/v1/mapbox/outdoors-v12?access_token=${TOKEN}`,
   light: `https://api.mapbox.com/styles/v1/mapbox/light-v11?access_token=${TOKEN}`,
   satellite: `https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12?access_token=${TOKEN}`,
+  dark: `https://api.mapbox.com/styles/v1/mapbox/dark-v11?access_token=${TOKEN}`,
 };
 
 export const FVG_BOUNDS: [[number, number], [number, number]] = [

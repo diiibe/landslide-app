@@ -6,6 +6,7 @@ const BASEMAPS: { id: Basemap; label: string }[] = [
   { id: "outdoors", label: "Outdoors" },
   { id: "light", label: "Light" },
   { id: "satellite", label: "Satellite" },
+  { id: "dark", label: "Dark" },
 ];
 
 const MODELS: { id: ModelId; label: string }[] = [
