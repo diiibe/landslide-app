@@ -38,20 +38,21 @@ beforeEach(() => {
 });
 
 describe("App integration", () => {
-  it("renders topbar, map placeholder and drawer groups", () => {
+  it("renders brand, map stub and drawer groups", () => {
     render(<App />);
     expect(screen.getByText("FVG Landslide")).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: /J\.2/ })).toBeInTheDocument();
-    // group headers (UPPERCASE in DOM, case-insensitive match)
+    expect(screen.getByTestId("map-stub")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /^view/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /^monitoring/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /^analytics/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /^model/i })).toBeInTheDocument();
   });
 
-  it("switches model when clicking J.3", () => {
+  it("switches model via the LayersPanel J.3 button", () => {
     render(<App />);
-    fireEvent.click(screen.getByRole("tab", { name: /J\.3/ }));
+    // Two J.3 buttons exist: the one in LayersPanel and… well, only one now.
+    const j3 = screen.getAllByRole("button", { name: /^J\.3$/ })[0]!;
+    fireEvent.click(j3);
     expect(useAppStore.getState().model).toBe("j3");
   });
 

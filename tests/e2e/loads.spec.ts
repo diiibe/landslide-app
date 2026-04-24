@@ -3,17 +3,15 @@ import { test, expect } from "@playwright/test";
 test("app loads and shows drawer groups", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByText("FVG Landslide")).toBeVisible();
-  await expect(page.getByRole("tab", { name: /J\.2/ })).toHaveAttribute("aria-selected", "true");
   await expect(page.getByRole("button", { name: /^view/i })).toBeVisible();
   await expect(page.getByRole("button", { name: /^monitoring/i })).toBeVisible();
   await expect(page.getByRole("button", { name: /^analytics/i })).toBeVisible();
   await expect(page.getByRole("button", { name: /^model/i })).toBeVisible();
 });
 
-test("clicking J.3 switches tab", async ({ page }) => {
+test("J.3 button in LayersPanel exists", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("tab", { name: /J\.3/ }).click();
-  await expect(page.getByRole("tab", { name: /J\.3/ })).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByRole("button", { name: /^J\.3$/ }).first()).toBeVisible();
 });
 
 test("collapsing drawer flips data attribute", async ({ page }) => {

@@ -6,23 +6,19 @@ import { installPmtilesProtocol } from "./pmtiles-protocol";
 import {
   addSusceptibility,
   setSusceptibilityVisible,
+  SUSCEPT_LAYER,
+  SUSCEPT_SOURCE,
   updateSusceptibilityThreshold,
   updateSusceptibilityZones,
 } from "./layers/susceptibility";
 import { addIffi, setIffiVisible } from "./layers/iffi";
-import { addZoneBoundaries, setZoneBoundariesVisible } from "./layers/zones";
+import { addZoneBoundaries, setZoneBoundariesVisible, ZONE_LINE } from "./layers/zones";
 import { registerPopups } from "./popups";
 import { setMap } from "./instance";
 import styles from "./MapView.module.css";
 
 const TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string | undefined;
 
-/**
- * Mapbox styles reference internal `mapbox://...` URLs. MapLibre doesn't
- * understand them — translate every such URL to the public Mapbox API form
- * with the user's token. Covers sprites, fonts, source TileJSON descriptors
- * and raw tile templates.
- */
 function rewriteMapboxUrl(url: string, resourceType: ResourceType | undefined): RequestParameters {
   if (!url.startsWith("mapbox://") || !TOKEN) return { url };
   const tail = url.slice("mapbox://".length);
@@ -49,12 +45,22 @@ function rewriteMapboxUrl(url: string, resourceType: ResourceType | undefined): 
   return { url: target + sep(target) };
 }
 
-/** Tear down and rebuild every data layer in one shot. Called on initial style
- * load AND after every basemap switch — `setStyle()` wipes custom layers, so
- * we re-add them as a unit when the new style is ready. Also called on model
- * change so the susceptibility source picks up the new pmtiles URL. */
+/**
+ * Tear down and rebuild data layers atomically. Order matters:
+ * 1. Remove dependent layers first (`zone-boundaries` references the cells
+ *    source — if we remove the source first, MapLibre throws.)
+ * 2. Remove susceptibility layer.
+ * 3. Remove the cells source.
+ * 4. Re-add source + susceptibility + zone-boundaries (in that dep order).
+ * 5. Re-add IFFI (independent — only added once if missing).
+ */
 function setupDataLayers(m: maplibregl.Map): void {
   const s = useAppStore.getState();
+  // 1. teardown dependents
+  if (m.getLayer(ZONE_LINE)) m.removeLayer(ZONE_LINE);
+  if (m.getLayer(SUSCEPT_LAYER)) m.removeLayer(SUSCEPT_LAYER);
+  if (m.getSource(SUSCEPT_SOURCE)) m.removeSource(SUSCEPT_SOURCE);
+  // 2. rebuild
   addSusceptibility(m, s.model, s.threshold, s.selectedZones);
   addIffi(m, s.layers.iffi);
   addZoneBoundaries(m);
@@ -75,7 +81,6 @@ export function MapView() {
   const iffiOn = useAppStore((s) => s.layers.iffi);
   const zoneBoundariesOn = useAppStore((s) => s.layers.zoneBoundaries);
 
-  // Init map once + permanent style.load handler that re-adds data layers
   useEffect(() => {
     if (!ref.current || mapRef.current) return;
     installPmtilesProtocol();
@@ -92,8 +97,6 @@ export function MapView() {
       transformRequest: rewriteMapboxUrl,
     });
     m.addControl(new maplibregl.NavigationControl({ showCompass: false }), "bottom-right");
-    // Permanent listener: every time a style finishes loading (initial or after
-    // setStyle from a basemap switch), re-add our data layers + popups.
     m.on("style.load", () => {
       setupDataLayers(m);
       if (!popupsRegistered.current) {
@@ -112,14 +115,12 @@ export function MapView() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Basemap switch — fires style.load which re-runs setupDataLayers
   useEffect(() => {
     const m = mapRef.current;
     if (!m) return;
     m.setStyle(BASEMAP_STYLE[basemap]);
   }, [basemap]);
 
-  // Model switch: re-add data layers (different pmtiles URL for susceptibility)
   useEffect(() => {
     const m = mapRef.current;
     if (!m || !m.isStyleLoaded()) return;
@@ -147,7 +148,6 @@ export function MapView() {
     if (mapRef.current) setZoneBoundariesVisible(mapRef.current, zoneBoundariesOn);
   }, [zoneBoundariesOn]);
 
-  // Fly-to triggered by SearchLocality custom event
   useEffect(() => {
     const onFly = (e: Event) => {
       const d = (e as CustomEvent<{ lng: number; lat: number }>).detail;

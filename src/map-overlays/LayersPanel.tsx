@@ -1,11 +1,16 @@
 import { useAppStore } from "@/app/store";
-import type { Basemap } from "@/app/types";
+import type { Basemap, ModelId } from "@/app/types";
 import styles from "./LayersPanel.module.css";
 
 const BASEMAPS: { id: Basemap; label: string }[] = [
   { id: "outdoors", label: "Outdoors" },
   { id: "light", label: "Light" },
   { id: "satellite", label: "Satellite" },
+];
+
+const MODELS: { id: ModelId; label: string }[] = [
+  { id: "j2", label: "J.2" },
+  { id: "j3", label: "J.3" },
 ];
 
 export function LayersPanel() {
@@ -17,8 +22,6 @@ export function LayersPanel() {
   const toggleLayer = useAppStore((s) => s.toggleLayer);
   const model = useAppStore((s) => s.model);
   const setModel = useAppStore((s) => s.setModel);
-  const otherModel = model === "j2" ? "j3" : "j2";
-  const otherLabel = otherModel === "j2" ? "J.2" : "J.3";
 
   return (
     <div className={styles.panel} data-open={open}>
@@ -28,6 +31,23 @@ export function LayersPanel() {
       </button>
       <div className={styles.wrap}>
         <div className={styles.body}>
+          <div className={styles.g}>
+            <div className={styles.gTtl}>Model</div>
+            <div className={styles.bmRow}>
+              {MODELS.map((m) => (
+                <button
+                  key={m.id}
+                  type="button"
+                  className={styles.bm}
+                  data-kind={m.id === "j2" ? "outdoors" : "satellite"}
+                  data-active={model === m.id}
+                  onClick={() => setModel(m.id)}
+                >
+                  {m.label}
+                </button>
+              ))}
+            </div>
+          </div>
           <div className={styles.g}>
             <div className={styles.gTtl}>Basemap</div>
             <div className={styles.bmRow}>
@@ -53,20 +73,8 @@ export function LayersPanel() {
                 checked={layers.susceptibility}
                 onChange={() => toggleLayer("susceptibility")}
               />
-              <span className={styles.itemName}>
-                Susceptibility ({model === "j2" ? "J.2" : "J.3"})
-              </span>
+              <span className={styles.itemName}>Susceptibility ({model.toUpperCase()})</span>
               <span className={styles.itemState}>{layers.susceptibility ? "on" : "off"}</span>
-            </label>
-            <label className={styles.item}>
-              <input
-                type="checkbox"
-                checked={false}
-                onChange={() => setModel(otherModel)}
-                aria-label={`Switch to ${otherLabel}`}
-              />
-              <span className={styles.itemName}>Susceptibility ({otherLabel})</span>
-              <span className={styles.itemState}>switch</span>
             </label>
             <label className={styles.item}>
               <input type="checkbox" checked={layers.iffi} onChange={() => toggleLayer("iffi")} />
