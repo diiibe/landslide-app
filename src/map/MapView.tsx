@@ -40,6 +40,9 @@ export function MapView() {
         [FVG_BOUNDS[0][0] - 0.5, FVG_BOUNDS[0][1] - 0.5],
         [FVG_BOUNDS[1][0] + 0.5, FVG_BOUNDS[1][1] + 0.5],
       ],
+      // Mapbox styles include `name` and other props MapLibre 5 rejects;
+      // we skip validation since we trust the Mapbox style URL.
+      validateStyle: false,
     });
     m.addControl(new maplibregl.NavigationControl({ showCompass: false }), "bottom-right");
     mapRef.current = m;
