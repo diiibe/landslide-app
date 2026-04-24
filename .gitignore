@@ -37,7 +37,8 @@ dist/
 node_modules/
 npm-debug.log*
 public/tiles/*.mbtiles
-public/tiles/*.pmtiles
+public/tiles/*.geojson
+# Note: *.pmtiles ARE committed — production data served by the app
 venv/
 vite.config.d.ts
 vite.config.js
