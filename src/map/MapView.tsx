@@ -13,8 +13,14 @@ import {
 } from "./layers/susceptibility";
 import { addIffi, setIffiVisible } from "./layers/iffi";
 import { addZoneBoundaries, setZoneBoundariesVisible, ZONE_LINE } from "./layers/zones";
-import { addSmoothHeatmap, HEAT_LAYER, HEAT_SOURCE, setSmoothHeatmapVisible } from "./layers/smoothHeatmap";
-import { addRoads, ROADS_LAYER, ROADS_SOURCE, setRoadsVisible } from "./layers/roads";
+import {
+  addSmoothHeatmap,
+  HEAT_LAYER,
+  HEAT_SOURCE,
+  setSmoothHeatmapVisible,
+  updateSmoothHeatmapThreshold,
+} from "./layers/smoothHeatmap";
+import { addRoads, ROADS_HALO, ROADS_LAYER, ROADS_SOURCE, setRoadsVisible } from "./layers/roads";
 import { addDtmHillshade, DEM_SOURCE, DTM_LAYER, setDtmHillshadeVisible } from "./layers/dtmHillshade";
 import { registerPopups } from "./popups";
 import { setMap } from "./instance";
@@ -67,14 +73,14 @@ function setupDataLayers(m: maplibregl.Map): void {
   if (m.getLayer(HEAT_LAYER)) m.removeLayer(HEAT_LAYER);
   if (m.getSource(HEAT_SOURCE)) m.removeSource(HEAT_SOURCE);
   if (m.getLayer(ROADS_LAYER)) m.removeLayer(ROADS_LAYER);
-  if (m.getLayer(ROADS_LAYER + "-halo")) m.removeLayer(ROADS_LAYER + "-halo");
+  if (m.getLayer(ROADS_HALO)) m.removeLayer(ROADS_HALO);
   if (m.getSource(ROADS_SOURCE)) m.removeSource(ROADS_SOURCE);
   if (m.getLayer(DTM_LAYER)) m.removeLayer(DTM_LAYER);
   if (m.getSource(DEM_SOURCE)) m.removeSource(DEM_SOURCE);
   // 2. rebuild — order from "background" to "foreground"
   addDtmHillshade(m, s.layers.dtm, dark);                          // bottom: terrain shading
   addSusceptibility(m, s.model, s.threshold, s.selectedZones);     // colored cells
-  addSmoothHeatmap(m, s.model, s.layers.smoothHeatmap);            // KDE glow
+  addSmoothHeatmap(m, s.model, s.threshold, s.layers.smoothHeatmap); // KDE glow
   addIffi(m, s.layers.iffi);                                       // ground truth polygons
   addZoneBoundaries(m);                                            // zone outlines
   setZoneBoundariesVisible(m, s.layers.zoneBoundaries);
@@ -147,7 +153,10 @@ export function MapView() {
   }, [model]);
 
   useEffect(() => {
-    if (mapRef.current) updateSusceptibilityThreshold(mapRef.current, threshold);
+    const m = mapRef.current;
+    if (!m) return;
+    updateSusceptibilityThreshold(m, threshold);
+    updateSmoothHeatmapThreshold(m, threshold);
   }, [threshold]);
 
   useEffect(() => {

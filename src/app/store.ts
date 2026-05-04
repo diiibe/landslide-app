@@ -6,10 +6,11 @@ export type GroupId = "view" | "monitoring" | "analytics" | "model";
 const THEME_KEY = "fvg:theme";
 
 function initialTheme(): Theme {
-  if (typeof window === "undefined") return "light";
+  if (typeof window === "undefined") return "dark";
   const stored = window.localStorage.getItem(THEME_KEY);
   if (stored === "dark" || stored === "light") return stored;
-  return window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  // Dark by default — the operative palette was tuned for it.
+  return "dark";
 }
 
 function applyTheme(t: Theme): void {
@@ -72,7 +73,7 @@ const initial: Omit<
     susceptibility: true,
     smoothHeatmap: false,
     iffi: true,
-    zoneBoundaries: true,
+    zoneBoundaries: false,
     roads: false,
     dtm: false,
     contours: false,
