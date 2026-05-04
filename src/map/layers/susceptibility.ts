@@ -6,16 +6,16 @@ export const SUSCEPT_SOURCE = "cells";
 export const SUSCEPT_LAYER = "susceptibility";
 
 /**
- * Opacity model: cells below threshold render at 0.30 (faint), above threshold
- * at 0.85 (full). This way the user always sees the susceptibility distribution
- * across FVG and the threshold acts as visual emphasis, not as a hard filter
- * that hides everything below.
+ * Opacity model: only cells with `p >= threshold` are painted (0.85 alpha).
+ * Cells below threshold are fully transparent — the basemap shows through
+ * untouched. The complementary "Study area (DTM)" layer is what the user
+ * toggles when they want to see the analysis extent regardless of p.
  */
 function opacityForThreshold(threshold: number): unknown {
   return [
     "case",
     [">=", ["get", "p"], threshold], 0.85,
-    0.30,
+    0.0,
   ];
 }
 

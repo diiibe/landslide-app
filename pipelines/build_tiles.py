@@ -53,19 +53,32 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     return p.parse_args(argv)
 
 
-def build_cells(which: str, src_dir: Path, out_dir: Path) -> Path:
+def build_cells(which: str, src_dir: Path, out_dir: Path) -> tuple[Path, Path]:
+    """Generate two artefacts per model:
+    * `<which>.geojson` — polygon cells with p, zone, sub_zone, iffi_hit
+    * `centroids_<which>.geojson` — same data but Point geometry at each
+      centroid, used by the MapLibre `heatmap` layer.
+    """
     gpkg_rel, parquet_rel = PHASES[which]
     audit = src_dir / "docs" / "audit_results"
     cells = load_cells_gpkg(audit / gpkg_rel)
     probs = pd.read_parquet(audit / parquet_rel)
     cells = attach_probabilities(cells, probs)
     cells = drop_na_and_reproject(cells)
-    # Load IFFI in WGS84 for the hit flag.
     iffi = gpd.read_file(src_dir / IFFI_PATH).to_crs("EPSG:4326")
     cells = compute_iffi_hit(cells, iffi)
+
     geojson = out_dir / f"{which}.geojson"
     export_geojson(cells, geojson)
-    return geojson
+
+    # Centroids — Point geometry per cell, same attributes minus iffi_hit
+    # (heatmap layer uses `p` only). Compute centroid in a projected CRS
+    # (EPSG:3857) to silence the geographic-CRS warning, then reproject back.
+    centroids = cells.copy()
+    centroids["geometry"] = centroids.geometry.to_crs("EPSG:3857").centroid.to_crs("EPSG:4326")
+    centroids_path = out_dir / f"centroids_{which}.geojson"
+    export_geojson(centroids, centroids_path)
+    return geojson, centroids_path
 
 
 def build_iffi(src_dir: Path, out_dir: Path) -> Path:
@@ -113,11 +126,16 @@ def main(argv: list[str] | None = None) -> None:
         geojson = build_iffi(src_dir, out_dir)
         pmtiles = out_dir / "iffi.pmtiles"
         run_tippecanoe(geojson, pmtiles, ns.min_zoom, ns.max_zoom, "iffi")
+        print(f"Wrote {pmtiles}")
     else:
-        geojson = build_cells(ns.which, src_dir, out_dir)
+        geojson, centroids_geojson = build_cells(ns.which, src_dir, out_dir)
         pmtiles = out_dir / f"{ns.which}.pmtiles"
         run_tippecanoe(geojson, pmtiles, ns.min_zoom, ns.max_zoom, "cells")
-    print(f"Wrote {pmtiles}")
+        print(f"Wrote {pmtiles}")
+        # Centroids: heatmap reads at moderate zoom; tile small.
+        centroids_pmtiles = out_dir / f"centroids_{ns.which}.pmtiles"
+        run_tippecanoe(centroids_geojson, centroids_pmtiles, ns.min_zoom, ns.max_zoom, "centroids")
+        print(f"Wrote {centroids_pmtiles}")
 
 
 if __name__ == "__main__":

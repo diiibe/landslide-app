@@ -13,6 +13,9 @@ import {
 } from "./layers/susceptibility";
 import { addIffi, setIffiVisible } from "./layers/iffi";
 import { addZoneBoundaries, setZoneBoundariesVisible, ZONE_LINE } from "./layers/zones";
+import { addSmoothHeatmap, HEAT_LAYER, HEAT_SOURCE, setSmoothHeatmapVisible } from "./layers/smoothHeatmap";
+import { addRoads, ROADS_LAYER, ROADS_SOURCE, setRoadsVisible } from "./layers/roads";
+import { addDtmHillshade, DEM_SOURCE, DTM_LAYER, setDtmHillshadeVisible } from "./layers/dtmHillshade";
 import { registerPopups } from "./popups";
 import { setMap } from "./instance";
 import styles from "./MapView.module.css";
@@ -56,16 +59,27 @@ function rewriteMapboxUrl(url: string, resourceType: ResourceType | undefined): 
  */
 function setupDataLayers(m: maplibregl.Map): void {
   const s = useAppStore.getState();
-  // 1. teardown dependents
+  const dark = s.theme === "dark";
+  // 1. teardown layers that hold sources we are about to swap
   if (m.getLayer(ZONE_LINE)) m.removeLayer(ZONE_LINE);
   if (m.getLayer(SUSCEPT_LAYER)) m.removeLayer(SUSCEPT_LAYER);
   if (m.getSource(SUSCEPT_SOURCE)) m.removeSource(SUSCEPT_SOURCE);
-  // 2. rebuild
-  addSusceptibility(m, s.model, s.threshold, s.selectedZones);
-  addIffi(m, s.layers.iffi);
-  addZoneBoundaries(m);
+  if (m.getLayer(HEAT_LAYER)) m.removeLayer(HEAT_LAYER);
+  if (m.getSource(HEAT_SOURCE)) m.removeSource(HEAT_SOURCE);
+  if (m.getLayer(ROADS_LAYER)) m.removeLayer(ROADS_LAYER);
+  if (m.getLayer(ROADS_LAYER + "-halo")) m.removeLayer(ROADS_LAYER + "-halo");
+  if (m.getSource(ROADS_SOURCE)) m.removeSource(ROADS_SOURCE);
+  if (m.getLayer(DTM_LAYER)) m.removeLayer(DTM_LAYER);
+  if (m.getSource(DEM_SOURCE)) m.removeSource(DEM_SOURCE);
+  // 2. rebuild — order from "background" to "foreground"
+  addDtmHillshade(m, s.layers.dtm, dark);                          // bottom: terrain shading
+  addSusceptibility(m, s.model, s.threshold, s.selectedZones);     // colored cells
+  addSmoothHeatmap(m, s.model, s.layers.smoothHeatmap);            // KDE glow
+  addIffi(m, s.layers.iffi);                                       // ground truth polygons
+  addZoneBoundaries(m);                                            // zone outlines
   setZoneBoundariesVisible(m, s.layers.zoneBoundaries);
   setSusceptibilityVisible(m, s.layers.susceptibility);
+  addRoads(m, s.layers.roads, dark);                               // top: road overlay
 }
 
 export function MapView() {
@@ -80,6 +94,10 @@ export function MapView() {
   const susceptOn = useAppStore((s) => s.layers.susceptibility);
   const iffiOn = useAppStore((s) => s.layers.iffi);
   const zoneBoundariesOn = useAppStore((s) => s.layers.zoneBoundaries);
+  const heatOn = useAppStore((s) => s.layers.smoothHeatmap);
+  const roadsOn = useAppStore((s) => s.layers.roads);
+  const dtmOn = useAppStore((s) => s.layers.dtm);
+  const theme = useAppStore((s) => s.theme);
 
   useEffect(() => {
     if (!ref.current || mapRef.current) return;
@@ -147,6 +165,26 @@ export function MapView() {
   useEffect(() => {
     if (mapRef.current) setZoneBoundariesVisible(mapRef.current, zoneBoundariesOn);
   }, [zoneBoundariesOn]);
+
+  useEffect(() => {
+    if (mapRef.current) setSmoothHeatmapVisible(mapRef.current, heatOn);
+  }, [heatOn]);
+
+  useEffect(() => {
+    if (mapRef.current) setRoadsVisible(mapRef.current, roadsOn);
+  }, [roadsOn]);
+
+  useEffect(() => {
+    if (mapRef.current) setDtmHillshadeVisible(mapRef.current, dtmOn);
+  }, [dtmOn]);
+
+  // Theme switch: re-tune road & hillshade colors that depend on dark/light.
+  useEffect(() => {
+    const m = mapRef.current;
+    if (!m || !m.isStyleLoaded()) return;
+    setupDataLayers(m);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [theme]);
 
   useEffect(() => {
     const onFly = (e: Event) => {

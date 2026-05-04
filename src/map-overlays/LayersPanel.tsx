@@ -74,8 +74,28 @@ export function LayersPanel() {
                 checked={layers.susceptibility}
                 onChange={() => toggleLayer("susceptibility")}
               />
-              <span className={styles.itemName}>Susceptibility ({model.toUpperCase()})</span>
+              <span className={styles.itemName}>
+                Susceptibility ({model.toUpperCase()}) · cells ≥ thr
+              </span>
               <span className={styles.itemState}>{layers.susceptibility ? "on" : "off"}</span>
+            </label>
+            <label className={styles.item}>
+              <input
+                type="checkbox"
+                checked={layers.smoothHeatmap}
+                onChange={() => toggleLayer("smoothHeatmap")}
+              />
+              <span className={styles.itemName}>Smooth heatmap (KDE)</span>
+              <span className={styles.itemState}>{layers.smoothHeatmap ? "on" : "off"}</span>
+            </label>
+            <label className={styles.item}>
+              <input
+                type="checkbox"
+                checked={layers.dtm}
+                onChange={() => toggleLayer("dtm")}
+              />
+              <span className={styles.itemName}>Study area · DTM hillshade</span>
+              <span className={styles.itemState}>{layers.dtm ? "on" : "off"}</span>
             </label>
             <label className={styles.item}>
               <input type="checkbox" checked={layers.iffi} onChange={() => toggleLayer("iffi")} />
@@ -90,6 +110,15 @@ export function LayersPanel() {
               />
               <span className={styles.itemName}>Zone boundaries</span>
               <span className={styles.itemState}>{layers.zoneBoundaries ? "on" : "off"}</span>
+            </label>
+            <label className={styles.item}>
+              <input
+                type="checkbox"
+                checked={layers.roads}
+                onChange={() => toggleLayer("roads")}
+              />
+              <span className={styles.itemName}>Roads</span>
+              <span className={styles.itemState}>{layers.roads ? "on" : "off"}</span>
             </label>
           </div>
         </div>

@@ -27,7 +27,15 @@ export interface AppState {
   basemap: Basemap;
   threshold: Threshold;
   selectedZones: Zone[];
-  layers: { susceptibility: boolean; iffi: boolean; zoneBoundaries: boolean; contours: boolean };
+  layers: {
+    susceptibility: boolean;
+    smoothHeatmap: boolean;
+    iffi: boolean;
+    zoneBoundaries: boolean;
+    roads: boolean;
+    dtm: boolean;
+    contours: boolean;
+  };
   theme: Theme;
   drawerOpen: boolean;
   legendOpen: boolean;
@@ -60,7 +68,15 @@ const initial: Omit<
   basemap: "outdoors",
   threshold: 0.5,
   selectedZones: [],
-  layers: { susceptibility: true, iffi: true, zoneBoundaries: true, contours: false },
+  layers: {
+    susceptibility: true,
+    smoothHeatmap: false,
+    iffi: true,
+    zoneBoundaries: true,
+    roads: false,
+    dtm: false,
+    contours: false,
+  },
   theme: initialTheme(),
   drawerOpen: true,
   legendOpen: true,
