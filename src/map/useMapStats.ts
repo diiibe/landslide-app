@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { MapGeoJSONFeature } from "maplibre-gl";
 import { useAppStore } from "@/app/store";
-import type { Zone } from "@/app/types";
+import { MODEL_ZONE_COUNT, type Zone } from "@/app/types";
 import { SUSCEPT_LAYER } from "./layers/susceptibility";
 import { IFFI_FILL } from "./layers/iffi";
 import { getMap, subscribeMap } from "./instance";
@@ -55,6 +55,10 @@ interface ComputeArgs {
   iffiFeatures: ReadonlyArray<Pick<MapGeoJSONFeature, "properties">>;
   threshold: number;
   selectedZones: Zone[];
+  /** Total zones available for the active model. Optional with a default
+   *  of 5 to keep existing tests stable; the hook always passes the
+   *  per-model count from `MODEL_ZONE_COUNT`. */
+  zonesTotal?: number;
 }
 
 /**
@@ -71,6 +75,7 @@ export function computeStats({
   iffiFeatures,
   threshold,
   selectedZones,
+  zonesTotal = 5,
 }: ComputeArgs): LiveStats | null {
   const total = cellFeatures.length;
   if (total === 0) return null;
@@ -150,8 +155,8 @@ export function computeStats({
     cells_visible: total,
     cells_total: CELLS_TOTAL,
     area_km2: total * CELL_AREA_KM2,
-    zones_active: selectedZones.length === 0 ? 5 : selectedZones.length,
-    zones_total: 5,
+    zones_active: selectedZones.length === 0 ? zonesTotal : selectedZones.length,
+    zones_total: zonesTotal,
     iffi_polygons_in_view: seen.size,
     iffi_cells: iffiCells,
     captured_above_threshold: captured,
@@ -198,7 +203,15 @@ export function useMapStats(): LiveStats | null {
       const iffiFeatures = map.getLayer(IFFI_FILL)
         ? map.queryRenderedFeatures({ layers: [IFFI_FILL] })
         : [];
-      setStats(computeStats({ cellFeatures, iffiFeatures, threshold, selectedZones }));
+      setStats(
+        computeStats({
+          cellFeatures,
+          iffiFeatures,
+          threshold,
+          selectedZones,
+          zonesTotal: MODEL_ZONE_COUNT[model],
+        }),
+      );
     };
 
     const debounced = () => {

@@ -1,4 +1,15 @@
 export type ModelId = "j2" | "j3";
+
+/**
+ * Zone count per model. Used by `useMapStats` to render `zones_active /
+ * zones_total` without hardcoding 5 at the call site (P3 nit). Both J.2
+ * and J.3 currently have 5 zones — when a J.4 with a different cardinality
+ * lands, only this constant changes.
+ */
+export const MODEL_ZONE_COUNT: Record<ModelId, number> = {
+  j2: 5,
+  j3: 5,
+};
 export type Basemap = "outdoors" | "light" | "satellite" | "dark";
 export type Theme = "light" | "dark";
 
