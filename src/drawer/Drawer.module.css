@@ -32,6 +32,23 @@
   flex-shrink: 0;
 }
 
+/* Backdrop — purely decorative scrim that closes the drawer on tap.
+   Hidden on desktop; only shown on mobile when drawer is open. */
+.backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 0.4);
+  z-index: 30; /* below drawer/handle (z-index 31) but above map content */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms var(--e-quart);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .backdrop { transition: none; }
+}
+
 /* ───── Mobile / tablet ─────
  * Make the handle an honest 44 px tap target floating on the right edge,
  * and let the drawer overlay the map (positioning is owned by App.module.css). */
@@ -63,5 +80,11 @@
     /* The actual sheet width is set in App.module.css via min(92vw, 360px). */
     width: min(92vw, 360px);
     max-width: 92vw;
+  }
+
+  .backdrop[data-drawer="open"] {
+    display: block;
+    opacity: 1;
+    pointer-events: auto;
   }
 }
