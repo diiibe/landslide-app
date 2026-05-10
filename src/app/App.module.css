@@ -2,6 +2,9 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
+  /* Use the dynamic viewport height when available so iOS Safari's URL bar
+   * doesn't steal vertical space and clip the bottom legend. */
+  height: 100dvh;
   background: var(--c-bg-linen);
 }
 
@@ -26,4 +29,39 @@
   position: relative;
   min-width: 0;
   background: #EDE7D6;
+}
+
+/* ───── Mobile / tablet layout ─────
+ * On viewports ≤ 768 px the right-hand drawer becomes a full-screen overlay
+ * sheet anchored to the right edge. The map gets the entire row when the
+ * drawer is closed; the chevron handle floats on the right edge of the map. */
+@media (max-width: 768px) {
+  .body {
+    /* Stack so the drawer can overlay without the flex row reserving space. */
+    position: relative;
+  }
+
+  /* Map fills the body even when the drawer is "open" — the drawer sits on
+   * top of the map as an overlay. */
+  .map {
+    width: 100%;
+    flex: 1 1 auto;
+  }
+
+  /* The drawer floats over the map as a full-height right-side sheet. */
+  .body :global(.drawer) {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(92vw, 360px);
+    z-index: 30;
+    box-shadow: -4px 0 16px rgba(0, 0, 0, .18);
+  }
+
+  /* Closed-state collapse rule from above still hides the drawer at width:0
+   * — the overlay shadow disappears with it. */
+  .body[data-drawer="closed"] :global(.drawer) {
+    box-shadow: none;
+  }
 }
