@@ -26,11 +26,18 @@ export function LayersPanel() {
 
   return (
     <div className={styles.panel} data-open={open}>
-      <button type="button" className={styles.head} aria-expanded={open} onClick={toggle}>
+      <button
+        type="button"
+        className={styles.head}
+        aria-expanded={open}
+        aria-controls="layers-panel-body"
+        aria-label={open ? "Collapse layers panel" : "Expand layers panel"}
+        onClick={toggle}
+      >
         <span className={styles.ttl}>Layers</span>
         <span className={styles.caret} aria-hidden="true">▾</span>
       </button>
-      <div className={styles.wrap}>
+      <div className={styles.wrap} id="layers-panel-body">
         <div className={styles.body}>
           <div className={styles.g}>
             <div className={styles.gTtl}>Model</div>
@@ -42,6 +49,8 @@ export function LayersPanel() {
                   className={styles.bm}
                   data-kind={m.id === "j2" ? "outdoors" : "satellite"}
                   data-active={model === m.id}
+                  aria-pressed={model === m.id}
+                  title={`Use model ${m.label}`}
                   onClick={() => setModel(m.id)}
                 >
                   {m.label}
@@ -59,6 +68,8 @@ export function LayersPanel() {
                   className={styles.bm}
                   data-kind={b.id}
                   data-active={basemap === b.id}
+                  aria-pressed={basemap === b.id}
+                  title={`Use ${b.label} basemap`}
                   onClick={() => setBasemap(b.id)}
                 >
                   {b.label}

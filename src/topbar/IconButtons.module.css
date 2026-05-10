@@ -1,6 +1,8 @@
+/* Theme toggle button. 44×44 minimum tap target on touch devices, tightened
+ * to 28×28 on hover-capable pointers (mouse/trackpad). */
 .btn {
-  width: 28px;
-  height: 28px;
+  min-width: 44px;
+  min-height: 44px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -13,16 +15,24 @@
   position: relative;
   transition: background .15s var(--e-quart), border-color .15s var(--e-quart), color .15s var(--e-quart), transform .18s var(--e-expo);
 }
-.btn svg { width: 16px; height: 16px; display: block; }
-.btn:hover { background: var(--c-bg-linen); border-color: var(--c-border); color: var(--c-text); transform: translateY(-1px); }
-.btn:active { transform: translateY(0) scale(.94); }
-.badge {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--c-russet);
-  box-shadow: 0 0 0 2px var(--c-surface);
+.btn svg { width: 18px; height: 18px; display: block; }
+
+/* Touch feedback (works on every pointer type). */
+.btn:active {
+  background: var(--c-bg-linen);
+  border-color: var(--c-border);
+  color: var(--c-text);
+  transform: translateY(0) scale(.94);
+}
+
+/* Hover-only affordances on devices that actually have hover. */
+@media (hover: hover) {
+  .btn { min-width: 28px; min-height: 28px; }
+  .btn svg { width: 16px; height: 16px; }
+  .btn:hover {
+    background: var(--c-bg-linen);
+    border-color: var(--c-border);
+    color: var(--c-text);
+    transform: translateY(-1px);
+  }
 }
