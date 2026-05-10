@@ -16,6 +16,8 @@ Pipeline:
 from __future__ import annotations
 
 import argparse
+import functools
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -95,9 +97,27 @@ def build_iffi(src_dir: Path, out_dir: Path) -> Path:
     return out
 
 
+def _check_tippecanoe_available() -> None:
+    """Raise a helpful error if `tippecanoe` is not on PATH.
+
+    Without this precheck, the subsequent `subprocess.run(..., check=True)`
+    would surface a cryptic `FileNotFoundError: [Errno 2] No such file or
+    directory: 'tippecanoe'`.
+    """
+    if shutil.which("tippecanoe") is None:
+        raise RuntimeError(
+            "`tippecanoe` was not found on PATH. Install it before building "
+            "tiles:\n"
+            "  - macOS:  brew install tippecanoe\n"
+            "  - Linux:  build from source "
+            "(https://github.com/felt/tippecanoe)"
+        )
+
+
 def run_tippecanoe(
     geojson: Path, pmtiles: Path, min_zoom: int, max_zoom: int, layer_name: str
 ) -> None:
+    _check_tippecanoe_available()
     cmd = [
         "tippecanoe",
         "-o",
@@ -111,6 +131,11 @@ def run_tippecanoe(
         str(max_zoom),
         "--drop-densest-as-needed",
         "--extend-zooms-if-still-dropping",
+        # Parallel reads from the input GeoJSON (P2.8). `-P` is the short
+        # form of `--read-parallel`; both are kept for clarity across
+        # tippecanoe versions.
+        "-P",
+        "--read-parallel",
         str(geojson),
     ]
     subprocess.run(cmd, check=True)
