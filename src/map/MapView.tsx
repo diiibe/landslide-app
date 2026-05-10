@@ -20,8 +20,8 @@ import {
   setSmoothHeatmapVisible,
   updateSmoothHeatmapThreshold,
 } from "./layers/smoothHeatmap";
-import { addRoads, ROADS_HALO, ROADS_LAYER, ROADS_SOURCE, setRoadsVisible } from "./layers/roads";
-import { addDtmHillshade, DEM_SOURCE, DTM_LAYER, setDtmHillshadeVisible } from "./layers/dtmHillshade";
+import { addRoads, ROADS_HALO, ROADS_LAYER, setRoadsVisible } from "./layers/roads";
+import { addDtmHillshade, DTM_LAYER, setDtmHillshadeVisible } from "./layers/dtmHillshade";
 import { registerPopups } from "./popups";
 import { setMap } from "./instance";
 import styles from "./MapView.module.css";
@@ -55,43 +55,74 @@ function rewriteMapboxUrl(url: string, resourceType: ResourceType | undefined): 
 }
 
 /**
- * Tear down and rebuild data layers atomically. Order matters:
- * 1. Remove dependent layers first (`zone-boundaries` references the cells
- *    source — if we remove the source first, MapLibre throws.)
- * 2. Remove susceptibility layer.
- * 3. Remove the cells source.
- * 4. Re-add source + susceptibility + zone-boundaries (in that dep order).
- * 5. Re-add IFFI (independent — only added once if missing).
+ * Static layers — DTM hillshade source + roads source/lines — that depend on
+ * theme but not model. Added once per `style.load`. Theme changes just
+ * recolor them via `applyThemeToLayers` (no source teardown).
  */
-function setupDataLayers(m: maplibregl.Map): void {
+function setupStaticLayers(m: maplibregl.Map): void {
   const s = useAppStore.getState();
   const dark = s.theme === "dark";
-  // 1. teardown layers that hold sources we are about to swap
+  addDtmHillshade(m, s.layers.dtm, dark);
+  addRoads(m, s.layers.roads, dark);
+}
+
+/**
+ * Recolor theme-dependent layers in place. Roads + DTM hillshade have a
+ * dark and a light variant; switching shouldn't tear down sources because
+ * MapLibre would re-fetch tiles and flash empty overlays (P1.2). Falls
+ * back to a full re-add if a layer is missing (e.g. theme effect fired
+ * before style.load completed).
+ */
+function applyThemeToLayers(m: maplibregl.Map): void {
+  const s = useAppStore.getState();
+  const dark = s.theme === "dark";
+  if (m.getLayer(ROADS_LAYER) && m.getLayer(ROADS_HALO)) {
+    const stroke = dark ? "#E2D2B6" : "#3A2F20";
+    const halo = dark ? "rgba(0,0,0,0.55)" : "rgba(255,255,255,0.7)";
+    m.setPaintProperty(ROADS_LAYER, "line-color", stroke);
+    m.setPaintProperty(ROADS_HALO, "line-color", halo);
+  } else {
+    addRoads(m, s.layers.roads, dark);
+  }
+  if (m.getLayer(DTM_LAYER)) {
+    m.setPaintProperty(DTM_LAYER, "hillshade-highlight-color", dark ? "#E2C996" : "#FFF6DD");
+    m.setPaintProperty(DTM_LAYER, "hillshade-shadow-color", dark ? "#0F0B05" : "#3F2914");
+    m.setPaintProperty(DTM_LAYER, "hillshade-accent-color", dark ? "#7A6342" : "#A28856");
+  } else {
+    addDtmHillshade(m, s.layers.dtm, dark);
+  }
+}
+
+/**
+ * Model-dependent layers: susceptibility, smooth heatmap, IFFI overlay,
+ * zone boundaries. Tearing down only these on a model switch keeps theme
+ * + roads + DTM tiles in cache and avoids the "everything flashes empty"
+ * artifact.
+ *
+ * Order matters: zone-boundaries shares the cells source with
+ * susceptibility, so it must be removed BEFORE the source; on add it must
+ * come AFTER the source exists.
+ */
+function setupModelLayers(m: maplibregl.Map): void {
+  const s = useAppStore.getState();
   if (m.getLayer(ZONE_LINE)) m.removeLayer(ZONE_LINE);
   if (m.getLayer(SUSCEPT_LAYER)) m.removeLayer(SUSCEPT_LAYER);
   if (m.getSource(SUSCEPT_SOURCE)) m.removeSource(SUSCEPT_SOURCE);
   if (m.getLayer(HEAT_LAYER)) m.removeLayer(HEAT_LAYER);
   if (m.getSource(HEAT_SOURCE)) m.removeSource(HEAT_SOURCE);
-  if (m.getLayer(ROADS_LAYER)) m.removeLayer(ROADS_LAYER);
-  if (m.getLayer(ROADS_HALO)) m.removeLayer(ROADS_HALO);
-  if (m.getSource(ROADS_SOURCE)) m.removeSource(ROADS_SOURCE);
-  if (m.getLayer(DTM_LAYER)) m.removeLayer(DTM_LAYER);
-  if (m.getSource(DEM_SOURCE)) m.removeSource(DEM_SOURCE);
-  // 2. rebuild — order from "background" to "foreground"
-  addDtmHillshade(m, s.layers.dtm, dark);                          // bottom: terrain shading
-  addSusceptibility(m, s.model, s.threshold, s.selectedZones);     // colored cells
-  addSmoothHeatmap(m, s.model, s.threshold, s.layers.smoothHeatmap); // KDE glow
-  addIffi(m, s.layers.iffi);                                       // ground truth polygons
-  addZoneBoundaries(m);                                            // zone outlines
+
+  addSusceptibility(m, s.model, s.threshold, s.selectedZones);
+  addSmoothHeatmap(m, s.model, s.threshold, s.layers.smoothHeatmap);
+  addIffi(m, s.layers.iffi);
+  addZoneBoundaries(m);
   setZoneBoundariesVisible(m, s.layers.zoneBoundaries);
   setSusceptibilityVisible(m, s.layers.susceptibility);
-  addRoads(m, s.layers.roads, dark);                               // top: road overlay
 }
 
 export function MapView() {
   const ref = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
-  const popupsRegistered = useRef(false);
+  const popupsUnsubRef = useRef<(() => void) | null>(null);
 
   const basemap = useAppStore((s) => s.basemap);
   const model = useAppStore((s) => s.model);
@@ -121,20 +152,26 @@ export function MapView() {
       transformRequest: rewriteMapboxUrl,
     });
     m.addControl(new maplibregl.NavigationControl({ showCompass: false }), "bottom-right");
+    // Single style.load handler. Every basemap switch re-emits style.load
+    // and re-creates layer ids, so we always re-register popups against
+    // the new layer instances. We tear down the previous popup
+    // subscription first (P1.1) — otherwise hover handlers from the old
+    // style would dangle on a defunct map state.
     m.on("style.load", () => {
-      setupDataLayers(m);
-      if (!popupsRegistered.current) {
-        registerPopups(m);
-        popupsRegistered.current = true;
-      }
+      setupStaticLayers(m);
+      applyThemeToLayers(m);
+      setupModelLayers(m);
+      popupsUnsubRef.current?.();
+      popupsUnsubRef.current = registerPopups(m);
     });
     mapRef.current = m;
     setMap(m);
     return () => {
       setMap(null);
+      popupsUnsubRef.current?.();
+      popupsUnsubRef.current = null;
       m.remove();
       mapRef.current = null;
-      popupsRegistered.current = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -148,7 +185,7 @@ export function MapView() {
   useEffect(() => {
     const m = mapRef.current;
     if (!m || !m.isStyleLoaded()) return;
-    setupDataLayers(m);
+    setupModelLayers(m);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [model]);
 
@@ -187,11 +224,13 @@ export function MapView() {
     if (mapRef.current) setDtmHillshadeVisible(mapRef.current, dtmOn);
   }, [dtmOn]);
 
-  // Theme switch: re-tune road & hillshade colors that depend on dark/light.
+  // Theme switch: only re-tune road & hillshade paint properties. No
+  // teardown — the old version called setupDataLayers which removed every
+  // source/layer, briefly flashing the map empty (P1.2).
   useEffect(() => {
     const m = mapRef.current;
     if (!m || !m.isStyleLoaded()) return;
-    setupDataLayers(m);
+    applyThemeToLayers(m);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [theme]);
 
