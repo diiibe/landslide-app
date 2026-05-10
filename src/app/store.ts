@@ -9,8 +9,41 @@ function initialTheme(): Theme {
   if (typeof window === "undefined") return "dark";
   const stored = window.localStorage.getItem(THEME_KEY);
   if (stored === "dark" || stored === "light") return stored;
-  // Dark by default — the operative palette was tuned for it.
+  // First visit: respect OS-level preference. Fallback to dark — the operative
+  // palette was tuned for it and is the safer default in a darker control room.
+  try {
+    if (
+      typeof window.matchMedia === "function" &&
+      !window.matchMedia("(prefers-color-scheme: dark)").matches &&
+      window.matchMedia("(prefers-color-scheme: light)").matches
+    ) {
+      return "light";
+    }
+  } catch {
+    /* matchMedia unavailable — fall through to dark default */
+  }
   return "dark";
+}
+
+/**
+ * Default drawer open-state. On narrow viewports (tablet/phone) the drawer
+ * becomes a full-screen overlay sheet — opening by default would hide the map
+ * on first paint. SSR-safe: returns `true` (the desktop default) when there's
+ * no `window`.
+ */
+function initialDrawerOpen(): boolean {
+  if (typeof window === "undefined") return true;
+  try {
+    if (
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(max-width: 768px)").matches
+    ) {
+      return false;
+    }
+  } catch {
+    /* matchMedia unavailable — fall through to desktop default */
+  }
+  return true;
 }
 
 function applyTheme(t: Theme): void {
@@ -79,7 +112,7 @@ const initial: Omit<
     contours: false,
   },
   theme: initialTheme(),
-  drawerOpen: true,
+  drawerOpen: initialDrawerOpen(),
   legendOpen: true,
   layersPanelOpen: true,
   groupOpen: { view: true, monitoring: true, analytics: true, model: true },
