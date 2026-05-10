@@ -1,9 +1,11 @@
 import { useMemo } from "react";
+import { rampColorAt } from "@/map/style";
 
-const RAMP = [
-  "#E8F0D8", "#8BB26B", "#B6BF93", "#D9A441", "#D9A441",
-  "#D25524", "#D25524", "#7A1F10", "#7A1F10", "#7A1F10",
-];
+// Single source of truth: sample the map's RAMP_STOPS at the midpoint of
+// each of the 10 histogram bins so the colors match the cells on the map.
+// The previous hardcoded list duplicated stops and drifted from the
+// real ramp (P3 nit).
+const RAMP = Array.from({ length: 10 }, (_, i) => rampColorAt((i + 0.5) / 10));
 
 interface Props {
   bins: number[];

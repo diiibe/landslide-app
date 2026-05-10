@@ -38,3 +38,39 @@ export function rampPaint(): unknown {
     ...RAMP_STOPS.flat(),
   ];
 }
+
+function lerpHex(a: string, b: string, t: number): string {
+  const ax = parseInt(a.slice(1), 16);
+  const bx = parseInt(b.slice(1), 16);
+  const ar = (ax >> 16) & 0xff;
+  const ag = (ax >> 8) & 0xff;
+  const ab = ax & 0xff;
+  const br = (bx >> 16) & 0xff;
+  const bg = (bx >> 8) & 0xff;
+  const bb = bx & 0xff;
+  const r = Math.round(ar + (br - ar) * t);
+  const g = Math.round(ag + (bg - ag) * t);
+  const bl = Math.round(ab + (bb - ab) * t);
+  return "#" + ((r << 16) | (g << 8) | bl).toString(16).padStart(6, "0").toUpperCase();
+}
+
+/**
+ * Linear interpolation across `RAMP_STOPS` for `p ∈ [0, 1]`. Single source
+ * of truth so the histogram bars in the analytics panel stay aligned with
+ * the map's heat ramp (P3 nit). Out-of-range inputs are clamped.
+ */
+export function rampColorAt(p: number): string {
+  const first = RAMP_STOPS[0]!;
+  const last = RAMP_STOPS[RAMP_STOPS.length - 1]!;
+  if (p <= first[0]) return first[1];
+  if (p >= last[0]) return last[1];
+  for (let i = 0; i < RAMP_STOPS.length - 1; i++) {
+    const lo = RAMP_STOPS[i]!;
+    const hi = RAMP_STOPS[i + 1]!;
+    if (p <= hi[0]) {
+      const t = (p - lo[0]) / (hi[0] - lo[0]);
+      return lerpHex(lo[1], hi[1], t);
+    }
+  }
+  return last[1];
+}
