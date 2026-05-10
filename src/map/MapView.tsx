@@ -114,8 +114,7 @@ function setupModelLayers(m: maplibregl.Map): void {
   addSusceptibility(m, s.model, s.threshold, s.selectedZones);
   addSmoothHeatmap(m, s.model, s.threshold, s.layers.smoothHeatmap);
   addIffi(m, s.layers.iffi);
-  addZoneBoundaries(m);
-  setZoneBoundariesVisible(m, s.layers.zoneBoundaries);
+  addZoneBoundaries(m, s.layers.zoneBoundaries);
   setSusceptibilityVisible(m, s.layers.susceptibility);
 }
 
