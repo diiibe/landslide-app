@@ -6,6 +6,7 @@
   border: 1px solid var(--c-border);
   border-radius: var(--radius-md);
   padding: 6px 10px;
+  min-height: 32px;
   display: flex;
   gap: 6px;
   align-items: center;
@@ -14,6 +15,23 @@
   cursor: pointer;
   transition: box-shadow .18s var(--e-quart), transform .18s var(--e-quart), border-color .18s var(--e-quart);
 }
-.pill:hover { box-shadow: 0 4px 10px rgba(35,38,31,.1); transform: translateY(-1px); }
+.pill:active { box-shadow: 0 4px 10px rgba(35,38,31,.1); transform: translateY(0); border-color: var(--c-forest); }
+@media (hover: hover) {
+  .pill:hover { box-shadow: 0 4px 10px rgba(35,38,31,.1); transform: translateY(-1px); }
+}
 .lbl { color: var(--c-text-soft); }
 .val { font-weight: 600; color: var(--c-forest); }
+
+/* ───── Mobile ───── */
+@media (max-width: 768px) {
+  .pill {
+    /* Honest 44 px touch target. */
+    min-height: 44px;
+    padding: 8px 12px;
+    /* Constrain so it doesn't run into the LayersPanel/Threshold below. */
+    max-width: calc(100vw - 24px);
+  }
+  /* The label `.val` can grow long ("Alpine · Hills · Plain · …"); allow it
+   * to wrap rather than pushing past the viewport edge. */
+  .val { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60vw; }
+}

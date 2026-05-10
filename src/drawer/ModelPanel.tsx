@@ -8,23 +8,25 @@ import styles from "./ModelPanel.module.css";
 
 function useModelStats(): ModelStats | null {
   const model = useAppStore((s) => s.model);
-  const [data, setData] = useState<ModelStats | null>(null);
+  const [state, setState] = useState<{ model: string; data: ModelStats | null }>({
+    model,
+    data: null,
+  });
   useEffect(() => {
     let cancelled = false;
-    setData(null);
     fetch(`${import.meta.env.BASE_URL}data/model_${model}.json`)
       .then((r) => r.json())
       .then((d) => {
-        if (!cancelled) setData(d as ModelStats);
+        if (!cancelled) setState({ model, data: d as ModelStats });
       })
       .catch(() => {
-        if (!cancelled) setData(null);
+        if (!cancelled) setState({ model, data: null });
       });
     return () => {
       cancelled = true;
     };
   }, [model]);
-  return data;
+  return state.model === model ? state.data : null;
 }
 
 export function ModelPanel() {

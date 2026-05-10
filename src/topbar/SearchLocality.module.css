@@ -3,14 +3,23 @@
   display: flex;
   align-items: center;
   height: 28px;
-  width: 240px;
+  /* Fluid: shrinks to fit narrow topbars (down to ~120 px), grows to a sane
+   * max so it doesn't dominate wider viewports. */
+  width: 100%;
+  min-width: 120px;
+  max-width: 240px;
   background: var(--c-bg-linen);
   border: 1px solid var(--c-border);
   border-radius: var(--radius-md);
   padding: 0 8px 0 30px;
   transition: border-color .18s var(--e-quart), background .18s var(--e-quart), box-shadow .18s var(--e-quart);
 }
-.wrap:hover { border-color: #C9D7BE; background: #FBF4E3; }
+
+/* On phones the kbd hint hogs precious horizontal real estate. */
+@media (max-width: 480px) {
+  .kbd { display: none; }
+}
+.wrap:hover { border-color: var(--c-search-hover-border); background: var(--c-search-hover-bg); }
 .wrap:focus-within {
   border-color: var(--c-forest);
   background: var(--c-surface);
@@ -38,12 +47,12 @@
   padding: 0;
   min-width: 0;
 }
-.input::placeholder { color: #8A8472; }
+.input::placeholder { color: var(--c-search-placeholder); }
 .kbd {
   font-size: 10px;
   font-weight: 600;
   letter-spacing: .04em;
-  color: #8A8472;
+  color: var(--c-search-placeholder);
   background: var(--c-surface);
   border: 1px solid var(--c-border);
   border-radius: 3px;

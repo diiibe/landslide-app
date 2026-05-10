@@ -11,6 +11,8 @@ body {
   background: var(--c-bg-linen);
   font-size: 13px;
   line-height: 1.5;
+  /* Prevent iOS double-tap zoom on interactive map controls. */
+  -webkit-text-size-adjust: 100%;
 }
 
 button {
@@ -20,3 +22,12 @@ button {
 }
 
 input { font-family: inherit; }
+
+/* Keyboard focus ring — visible on every focusable element across themes.
+ * Uses --c-focus which adapts per theme (forest green light, cyan-teal dark). */
+:focus { outline: none; }
+*:focus-visible {
+  outline: 2px solid var(--c-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}

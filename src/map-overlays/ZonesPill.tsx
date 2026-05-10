@@ -21,6 +21,12 @@ export function ZonesPill() {
     <button
       type="button"
       className={styles.pill}
+      aria-pressed={selected.length > 0}
+      aria-label={
+        selected.length === 0
+          ? `All ${all.length} zones active. Click to clear selection.`
+          : `${selected.length} zones selected. Click to reset to all.`
+      }
       onClick={() => {
         // Cycle: none → all → none. Full multi-select UI is a v1.1 feature.
         const next = selected.length === 0 ? [...all] : [];

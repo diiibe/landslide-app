@@ -8,12 +8,15 @@ interface Props {
 
 export function Drawer({ children }: Props) {
   const toggle = useAppStore((s) => s.toggleDrawer);
+  const open = useAppStore((s) => s.drawerOpen);
   return (
     <>
       <button
         type="button"
         className={styles.handle}
         aria-label="Toggle side panel"
+        aria-expanded={open}
+        aria-controls="drawer-panel"
         onClick={toggle}
       >
         <svg
@@ -27,7 +30,7 @@ export function Drawer({ children }: Props) {
           <polyline points="3,2 7,5 3,8" />
         </svg>
       </button>
-      <aside className={`${styles.drawer} drawer`}>{children}</aside>
+      <aside id="drawer-panel" className={`${styles.drawer} drawer`}>{children}</aside>
     </>
   );
 }

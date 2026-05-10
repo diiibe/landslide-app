@@ -1,8 +1,22 @@
+import { lazy, Suspense, type ComponentType } from "react";
 import styles from "./App.module.css";
 import { TopBar } from "@/topbar/TopBar";
 import { SearchLocality } from "@/topbar/SearchLocality";
 import { IconButtons } from "@/topbar/IconButtons";
-import { MapView } from "@/map/MapView";
+// MapView is lazy-loaded so maplibre-gl + pmtiles ship as a separate
+// vendor chunk (see vite.config.ts manualChunks). The chrome paints
+// instantly while the ~250 KB map bundle streams in.
+//
+// In test mode (vitest) we resolve the module eagerly via top-level await
+// so the integration test (which uses vi.mock to stub MapView) can render
+// the stub synchronously without dealing with Suspense fallbacks. The
+// production build dead-code-eliminates this branch because
+// `import.meta.env.MODE` is statically replaced by Vite.
+const MapView: ComponentType = import.meta.env.MODE === "test"
+  ? (await import("@/map/MapView")).MapView
+  : lazy(() =>
+      import("@/map/MapView").then((m) => ({ default: m.MapView })),
+    );
 import { ZonesPill } from "@/map-overlays/ZonesPill";
 import { LayersPanel } from "@/map-overlays/LayersPanel";
 import { Legend } from "@/map-overlays/Legend";
@@ -22,7 +36,9 @@ export default function App() {
       <TopBar tabs={null} search={<SearchLocality />} icons={<IconButtons />} />
       <div className={styles.body} data-drawer={drawerOpen ? "open" : "closed"}>
         <div className={styles.map}>
-          <MapView />
+          <Suspense fallback={<MapSkeleton />}>
+            <MapView />
+          </Suspense>
           <ZonesPill />
           <ThresholdControl />
           <LayersPanel />
@@ -36,5 +52,19 @@ export default function App() {
         </Drawer>
       </div>
     </div>
+  );
+}
+
+function MapSkeleton() {
+  return (
+    <div
+      aria-busy="true"
+      aria-label="Loading map"
+      style={{
+        position: "absolute",
+        inset: 0,
+        background: "var(--c-bg-paper, #f5efe2)",
+      }}
+    />
   );
 }
