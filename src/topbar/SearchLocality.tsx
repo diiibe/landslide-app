@@ -4,6 +4,19 @@ import styles from "./SearchLocality.module.css";
 
 const TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string | undefined;
 
+/**
+ * P3 nit: render `⌘K` on Apple platforms (Mac/iPhone/iPad) and `Ctrl K`
+ * elsewhere instead of unconditionally showing the Mac glyph.
+ * `navigator.platform` is deprecated but still the most reliable signal
+ * across browsers; userAgent is the fallback.
+ */
+function shortcutHint(): string {
+  if (typeof navigator === "undefined") return "⌘K";
+  const ua = (navigator.platform || navigator.userAgent || "").toLowerCase();
+  return /mac|iphone|ipad|ipod/.test(ua) ? "⌘K" : "Ctrl K";
+}
+const KBD_HINT = shortcutHint();
+
 interface GeocodeFeature {
   center: [number, number];
   place_name: string;
@@ -88,7 +101,7 @@ export function SearchLocality() {
         onChange={(e) => setSearch({ query: e.target.value, placeName: null })}
         onKeyDown={onKey}
       />
-      <span className={styles.kbd}>⌘K</span>
+      <span className={styles.kbd}>{KBD_HINT}</span>
     </div>
   );
 }
