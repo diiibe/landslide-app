@@ -19,7 +19,10 @@ export const FVG_BOUNDS: [[number, number], [number, number]] = [
   [13.95, 46.65],
 ];
 
-export const FVG_CENTER: [number, number] = [13.1, 46.15];
+/** Default view: Carnia / Friuli montano — the area where the susceptibility
+ *  signal is densest and the road risk overlay actually has something to show.
+ *  The full FVG bounds (FVG_BOUNDS) still constrain panning. */
+export const FVG_CENTER: [number, number] = [13.15, 46.35];
 
 /** 5-stop ramp mapped to MapLibre `interpolate` paint expression. */
 export const RAMP_STOPS: Array<[number, string]> = [

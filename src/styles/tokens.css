@@ -69,14 +69,14 @@
 /* ───── dark theme (default) — Palantir-inspired operative palette ─────
  *
  * Design intent: a control-room surface that recedes so the data reads.
- * Flat dark surfaces (no warm tinted backgrounds per section), one
- * operative cyan-teal accent, a small functional palette for status.
+ * Flat neutral-grey surfaces (no blue cast), one operative cyan-teal
+ * accent, a small functional palette for status.
  *
- * Surface stack:
- *   bg     → #0F1318 (deepest, behind everything)
- *   surface→ #161B22 (drawer, topbar, map cards)
- *   row    → #1F252D (alternating rows, hover bgs)
- *   border → #232932 (1 px hairlines, soft)
+ * Surface stack (neutral, no hue):
+ *   bg     → #0D0D0D (deepest, behind everything)
+ *   surface→ #161616 (drawer, topbar, map cards)
+ *   row    → #1F1F1F (alternating rows, hover bgs)
+ *   border → #2A2A2A (1 px hairlines, soft)
  *
  * Accent palette (status-driven, not decorative):
  *   accent  → cyan-teal #5EBFCC : primary indicator (active, selected, model)
@@ -90,26 +90,26 @@
  * value color.
  */
 [data-theme="dark"] {
-  --c-bg-linen: #0F1318;
-  --c-surface: #161B22;
-  --c-surface-2: #1F252D;
-  --c-border: #232932;
-  --c-border-soft: #1B2026;
-  --c-text: #E5EAF1;
-  --c-text-soft: #8E97A6;
-  --c-text-muted: #6E7886;
+  --c-bg-linen: #0D0D0D;
+  --c-surface: #161616;
+  --c-surface-2: #1F1F1F;
+  --c-border: #2A2A2A;
+  --c-border-soft: #1A1A1A;
+  --c-text: #E8E8E8;
+  --c-text-soft: #9A9A9A;
+  --c-text-muted: #707070;
 
   /* Drawer group accents — operative palette, all on flat surface */
-  --c-view: #7E94B0;        --c-view-stripe: #5A6E89;     --c-view-bg: #161B22;   --c-view-row: #1F252D;
-  --c-forest: #7BAF8A;      --c-forest-stripe: #4F8268;   --c-forest-bg: #161B22; --c-forest-row: #1F252D;
-  --c-russet: #D26A66;      --c-russet-bg: #161B22;       --c-russet-bg-alt: #161B22; --c-russet-row: #1F252D;
-  --c-terracotta: #E0B361;  --c-terracotta-stripe: #B0863F; --c-terracotta-bg: #161B22;
-  --c-ochre: #E0B361;       --c-ochre-stripe: #B0863F;    --c-ochre-bg: #161B22;  --c-ochre-row: #1F252D;
-  --c-sage: #7BAF8A;        --c-sage-bg: #161B22;
-  --c-slate: #5EBFCC;       --c-slate-stripe: #3F8C97;    --c-slate-bg: #161B22;  --c-slate-row: #1F252D;
+  --c-view: #7E94B0;        --c-view-stripe: #5A6E89;     --c-view-bg: #161616;   --c-view-row: #1F1F1F;
+  --c-forest: #7BAF8A;      --c-forest-stripe: #4F8268;   --c-forest-bg: #161616; --c-forest-row: #1F1F1F;
+  --c-russet: #D26A66;      --c-russet-bg: #161616;       --c-russet-bg-alt: #161616; --c-russet-row: #1F1F1F;
+  --c-terracotta: #E0B361;  --c-terracotta-stripe: #B0863F; --c-terracotta-bg: #161616;
+  --c-ochre: #E0B361;       --c-ochre-stripe: #B0863F;    --c-ochre-bg: #161616;  --c-ochre-row: #1F1F1F;
+  --c-sage: #7BAF8A;        --c-sage-bg: #161616;
+  --c-slate: #5EBFCC;       --c-slate-stripe: #3F8C97;    --c-slate-bg: #161616;  --c-slate-row: #1F1F1F;
 
-  --c-group-head-bg: #0F1318;
-  --c-group-head-border: #1F252D;
+  --c-group-head-bg: #0D0D0D;
+  --c-group-head-border: #1F1F1F;
 
   /* search / topbar tokens (dark) */
   --c-search-hover-border: #2D3A2F;

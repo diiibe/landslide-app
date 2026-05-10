@@ -60,3 +60,44 @@
   transition: opacity .18s var(--e-quart);
 }
 .wrap:focus-within .kbd { opacity: 0; }
+
+.menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 24px rgba(35, 38, 31, .12);
+  z-index: 50;
+  max-height: 280px;
+  overflow-y: auto;
+}
+.opt {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background .12s var(--e-quart);
+}
+.opt[data-active="true"] { background: var(--c-surface-2); }
+.optName {
+  font-size: 12px;
+  color: var(--c-text);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.optCtx {
+  font-size: 10px;
+  color: var(--c-text-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

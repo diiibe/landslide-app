@@ -20,7 +20,29 @@ import {
   setSmoothHeatmapVisible,
   updateSmoothHeatmapThreshold,
 } from "./layers/smoothHeatmap";
-import { addRoads, ROADS_HALO, ROADS_LAYER, setRoadsVisible } from "./layers/roads";
+import {
+  addRoads,
+  applyRoadSensitivity,
+  rebakeRoads,
+  setRoadsVisible,
+} from "./layers/roads";
+import {
+  addTrails,
+  applyTrailSensitivity,
+  rebakeTrails,
+  setTrailsVisible,
+} from "./layers/trails";
+import {
+  addComuni,
+  applyComuniModel,
+  setComuniVisible,
+} from "./layers/comuni";
+import {
+  addCriticalPoi,
+  applyPoiModel,
+  setCriticalVisible,
+  setHutsVisible,
+} from "./layers/criticalPoi";
 import { addDtmHillshade, DTM_LAYER, setDtmHillshadeVisible } from "./layers/dtmHillshade";
 import { registerPopups } from "./popups";
 import { setMap } from "./instance";
@@ -55,35 +77,36 @@ function rewriteMapboxUrl(url: string, resourceType: ResourceType | undefined): 
 }
 
 /**
- * Static layers — DTM hillshade source + roads source/lines — that depend on
- * theme but not model. Added once per `style.load`. Theme changes just
- * recolor them via `applyThemeToLayers` (no source teardown).
+ * Static layers — added once per `style.load` and not torn down by model
+ * switches. Roads/trails/comuni/POI sit here because their data is loaded
+ * lazily once per category and refreshed in place (rebakeRoads,
+ * applyComuniModel, etc.) when the active model changes.
+ *
+ * DTM is theme-dependent; the others depend on theme only via halo
+ * opacity (roads/trails). On theme change, applyThemeToLayers recolours
+ * DTM in place and re-creates roads/trails so their halo opacity follows
+ * the new mode.
  */
 function setupStaticLayers(m: maplibregl.Map): void {
   const s = useAppStore.getState();
   const dark = s.theme === "dark";
   addDtmHillshade(m, s.layers.dtm, dark);
+  addComuni(m, s.layers.comuni);
+  addTrails(m, s.layers.trails, dark);
   addRoads(m, s.layers.roads, dark);
+  addCriticalPoi(m, s.layers.poiCritical, s.layers.poiHuts);
 }
 
 /**
- * Recolor theme-dependent layers in place. Roads + DTM hillshade have a
- * dark and a light variant; switching shouldn't tear down sources because
- * MapLibre would re-fetch tiles and flash empty overlays (P1.2). Falls
- * back to a full re-add if a layer is missing (e.g. theme effect fired
- * before style.load completed).
+ * Recolour theme-dependent layers in place. DTM has dark/light variants
+ * that we update via setPaintProperty so MapLibre doesn't re-fetch tiles
+ * (P1.2). Roads and trails encode halo opacity in their layer paint at
+ * add time; we re-add them on theme change rather than poking individual
+ * properties, since the cached GeoJSON keeps the rebuild cheap.
  */
 function applyThemeToLayers(m: maplibregl.Map): void {
   const s = useAppStore.getState();
   const dark = s.theme === "dark";
-  if (m.getLayer(ROADS_LAYER) && m.getLayer(ROADS_HALO)) {
-    const stroke = dark ? "#E2D2B6" : "#3A2F20";
-    const halo = dark ? "rgba(0,0,0,0.55)" : "rgba(255,255,255,0.7)";
-    m.setPaintProperty(ROADS_LAYER, "line-color", stroke);
-    m.setPaintProperty(ROADS_HALO, "line-color", halo);
-  } else {
-    addRoads(m, s.layers.roads, dark);
-  }
   if (m.getLayer(DTM_LAYER)) {
     m.setPaintProperty(DTM_LAYER, "hillshade-highlight-color", dark ? "#E2C996" : "#FFF6DD");
     m.setPaintProperty(DTM_LAYER, "hillshade-shadow-color", dark ? "#0F0B05" : "#3F2914");
@@ -91,17 +114,22 @@ function applyThemeToLayers(m: maplibregl.Map): void {
   } else {
     addDtmHillshade(m, s.layers.dtm, dark);
   }
+  // Roads/trails carry theme-driven halo opacity baked into addLayer.
+  // Re-creating is cheap because the GeoJSON is cached in module scope.
+  addTrails(m, s.layers.trails, dark);
+  addRoads(m, s.layers.roads, dark);
+  addCriticalPoi(m, s.layers.poiCritical, s.layers.poiHuts);
 }
 
 /**
- * Model-dependent layers: susceptibility, smooth heatmap, IFFI overlay,
- * zone boundaries. Tearing down only these on a model switch keeps theme
- * + roads + DTM tiles in cache and avoids the "everything flashes empty"
- * artifact.
+ * Model-dependent layers: susceptibility cells, smooth heatmap, IFFI
+ * overlay, zone boundaries. Tearing down only these on a model switch
+ * keeps theme + roads/trails/comuni/POI tiles in cache and avoids the
+ * "everything flashes empty" artifact (P1.2).
  *
  * Order matters: zone-boundaries shares the cells source with
- * susceptibility, so it must be removed BEFORE the source; on add it must
- * come AFTER the source exists.
+ * susceptibility, so it must be removed BEFORE the source; on add it
+ * must come AFTER the source exists.
  */
 function setupModelLayers(m: maplibregl.Map): void {
   const s = useAppStore.getState();
@@ -132,6 +160,16 @@ export function MapView() {
   const zoneBoundariesOn = useAppStore((s) => s.layers.zoneBoundaries);
   const heatOn = useAppStore((s) => s.layers.smoothHeatmap);
   const roadsOn = useAppStore((s) => s.layers.roads);
+  const trailsOn = useAppStore((s) => s.layers.trails);
+  const comuniOn = useAppStore((s) => s.layers.comuni);
+  const poiCriticalOn = useAppStore((s) => s.layers.poiCritical);
+  const poiHutsOn = useAppStore((s) => s.layers.poiHuts);
+  const sensRoads = useAppStore((s) => s.riskParams.roads[s.model].sensitivity);
+  const sensTrails = useAppStore((s) => s.riskParams.trails[s.model].sensitivity);
+  const gammaRoads = useAppStore((s) => s.riskParams.roads[s.model].gamma);
+  const gammaTrails = useAppStore((s) => s.riskParams.trails[s.model].gamma);
+  const radiusRoads = useAppStore((s) => s.riskParams.roads[s.model].radius);
+  const radiusTrails = useAppStore((s) => s.riskParams.trails[s.model].radius);
   const dtmOn = useAppStore((s) => s.layers.dtm);
   const theme = useAppStore((s) => s.theme);
 
@@ -142,7 +180,7 @@ export function MapView() {
       container: ref.current,
       style: BASEMAP_STYLE[basemap],
       center: FVG_CENTER,
-      zoom: 8,
+      zoom: 10,
       maxBounds: [
         [FVG_BOUNDS[0][0] - 0.5, FVG_BOUNDS[0][1] - 0.5],
         [FVG_BOUNDS[1][0] + 0.5, FVG_BOUNDS[1][1] + 0.5],
@@ -181,10 +219,17 @@ export function MapView() {
     m.setStyle(BASEMAP_STYLE[basemap]);
   }, [basemap]);
 
+  // Model change: rebuild only the susceptibility/heatmap/IFFI/zone-boundaries
+  // stack, then refresh the in-place data on roads/trails/comuni/POI.
   useEffect(() => {
     const m = mapRef.current;
     if (!m || !m.isStyleLoaded()) return;
     setupModelLayers(m);
+    if (useAppStore.getState().layers.roads) rebakeRoads(m);
+    if (useAppStore.getState().layers.trails) rebakeTrails(m);
+    if (useAppStore.getState().layers.comuni) applyComuniModel(m);
+    const ls = useAppStore.getState().layers;
+    if (ls.poiCritical || ls.poiHuts) applyPoiModel(m);
   }, [model]);
 
   useEffect(() => {
@@ -219,12 +264,42 @@ export function MapView() {
   }, [roadsOn]);
 
   useEffect(() => {
+    if (mapRef.current) setTrailsVisible(mapRef.current, trailsOn);
+  }, [trailsOn]);
+
+  useEffect(() => {
+    if (mapRef.current) setComuniVisible(mapRef.current, comuniOn);
+  }, [comuniOn]);
+  useEffect(() => {
+    if (mapRef.current) setCriticalVisible(mapRef.current, poiCriticalOn);
+  }, [poiCriticalOn]);
+  useEffect(() => {
+    if (mapRef.current) setHutsVisible(mapRef.current, poiHutsOn);
+  }, [poiHutsOn]);
+
+  // Sensitivity (paint-only) vs gamma/radius (re-bake). Each network is
+  // wired independently so changing trails params doesn't touch roads.
+  useEffect(() => {
+    if (mapRef.current && roadsOn) applyRoadSensitivity(mapRef.current);
+  }, [sensRoads, roadsOn]);
+  useEffect(() => {
+    if (mapRef.current && trailsOn) applyTrailSensitivity(mapRef.current);
+  }, [sensTrails, trailsOn]);
+  useEffect(() => {
+    if (mapRef.current && roadsOn) rebakeRoads(mapRef.current);
+  }, [gammaRoads, radiusRoads, roadsOn]);
+  useEffect(() => {
+    if (mapRef.current && trailsOn) rebakeTrails(mapRef.current);
+  }, [gammaTrails, radiusTrails, trailsOn]);
+
+  useEffect(() => {
     if (mapRef.current) setDtmHillshadeVisible(mapRef.current, dtmOn);
   }, [dtmOn]);
 
-  // Theme switch: only re-tune road & hillshade paint properties. No
-  // teardown — the old version called setupDataLayers which removed every
-  // source/layer, briefly flashing the map empty (P1.2).
+  // Theme switch: in-place DTM recolour + re-create roads/trails/POI so
+  // their theme-dependent halo opacity follows the new mode. No teardown
+  // of model-driven layers — the old version called setupDataLayers which
+  // removed every source/layer, briefly flashing the map empty (P1.2).
   useEffect(() => {
     const m = mapRef.current;
     if (!m || !m.isStyleLoaded()) return;

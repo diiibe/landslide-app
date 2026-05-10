@@ -1,4 +1,15 @@
-import { useAppStore } from "@/app/store";
+import {
+  GAMMA_MAX,
+  GAMMA_MIN,
+  paramsEqual,
+  RADIUS_MAX,
+  RADIUS_MIN,
+  SENS_MAX,
+  SENS_MIN,
+  useAppStore,
+  type LayerNetwork,
+  type RiskParams,
+} from "@/app/store";
 import type { Basemap, ModelId } from "@/app/types";
 import styles from "./LayersPanel.module.css";
 
@@ -23,6 +34,10 @@ export function LayersPanel() {
   const toggleLayer = useAppStore((s) => s.toggleLayer);
   const model = useAppStore((s) => s.model);
   const setModel = useAppStore((s) => s.setModel);
+  const riskParams = useAppStore((s) => s.riskParams);
+  const riskParamsDefaults = useAppStore((s) => s.riskParamsDefaults);
+  const setRiskParam = useAppStore((s) => s.setRiskParam);
+  const lockRiskParams = useAppStore((s) => s.lockRiskParams);
 
   return (
     <div className={styles.panel} data-open={open}>
@@ -131,9 +146,168 @@ export function LayersPanel() {
               <span className={styles.itemName}>Roads</span>
               <span className={styles.itemState}>{layers.roads ? "on" : "off"}</span>
             </label>
+            <label className={styles.item}>
+              <input
+                type="checkbox"
+                checked={layers.trails}
+                onChange={() => toggleLayer("trails")}
+              />
+              <span className={styles.itemName}>Trails (sentieri)</span>
+              <span className={styles.itemState}>{layers.trails ? "on" : "off"}</span>
+            </label>
+            <label className={styles.item}>
+              <input
+                type="checkbox"
+                checked={layers.comuni}
+                onChange={() => toggleLayer("comuni")}
+              />
+              <span className={styles.itemName}>Comune choropleth</span>
+              <span className={styles.itemState}>{layers.comuni ? "on" : "off"}</span>
+            </label>
+            <label className={styles.item}>
+              <input
+                type="checkbox"
+                checked={layers.poiCritical}
+                onChange={() => toggleLayer("poiCritical")}
+              />
+              <span className={styles.itemName}>Critical structures</span>
+              <span className={styles.itemState}>{layers.poiCritical ? "on" : "off"}</span>
+            </label>
+            <label className={styles.item}>
+              <input
+                type="checkbox"
+                checked={layers.poiHuts}
+                onChange={() => toggleLayer("poiHuts")}
+              />
+              <span className={styles.itemName}>Alpine huts</span>
+              <span className={styles.itemState}>{layers.poiHuts ? "on" : "off"}</span>
+            </label>
+            {layers.roads && (
+              <RiskParamsControl
+                network="roads"
+                model={model}
+                params={riskParams.roads[model]}
+                defaults={riskParamsDefaults.roads[model]}
+                onChange={(k, v) => setRiskParam("roads", model, k, v)}
+                onLock={() => lockRiskParams("roads", model)}
+              />
+            )}
+            {layers.trails && (
+              <RiskParamsControl
+                network="trails"
+                model={model}
+                params={riskParams.trails[model]}
+                defaults={riskParamsDefaults.trails[model]}
+                onChange={(k, v) => setRiskParam("trails", model, k, v)}
+                onLock={() => lockRiskParams("trails", model)}
+              />
+            )}
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+interface RiskParamsControlProps {
+  network: LayerNetwork;
+  model: ModelId;
+  params: RiskParams;
+  defaults: RiskParams;
+  onChange: (key: keyof RiskParams, v: number) => void;
+  onLock: () => void;
+}
+
+function RiskParamsControl(props: RiskParamsControlProps) {
+  const { network, model, params, defaults, onChange, onLock } = props;
+  const dirty = !paramsEqual(params, defaults);
+  const label = network === "roads" ? "Roads" : "Trails";
+  return (
+    <div className={styles.paramsBlock}>
+      <div className={styles.paramsHead}>
+        <span>
+          {label} risk · {model.toUpperCase()}
+        </span>
+        <button
+          type="button"
+          className={styles.lockBtn}
+          data-active={!dirty}
+          onClick={onLock}
+          title={dirty
+            ? `Save current params as default for ${label.toLowerCase()} on ${model.toUpperCase()}`
+            : "Current values match the saved default"}
+          aria-label="Lock as default"
+        >
+          {dirty ? "🔓" : "🔒"}
+        </button>
+      </div>
+      <ParamSlider
+        id={`sens-${network}`}
+        title="Sensitivity"
+        suffix="×"
+        decimals={2}
+        min={SENS_MIN}
+        max={SENS_MAX}
+        step={0.05}
+        value={params.sensitivity}
+        onChange={(v) => onChange("sensitivity", v)}
+      />
+      <ParamSlider
+        id={`gamma-${network}`}
+        title="Gamma"
+        suffix=""
+        decimals={2}
+        min={GAMMA_MIN}
+        max={GAMMA_MAX}
+        step={0.05}
+        value={params.gamma}
+        onChange={(v) => onChange("gamma", v)}
+      />
+      <ParamSlider
+        id={`radius-${network}`}
+        title="Radius"
+        suffix=" cells"
+        decimals={0}
+        min={RADIUS_MIN}
+        max={RADIUS_MAX}
+        step={1}
+        value={params.radius}
+        onChange={(v) => onChange("radius", v)}
+      />
+    </div>
+  );
+}
+
+interface ParamSliderProps {
+  id: string;
+  title: string;
+  suffix: string;
+  decimals: number;
+  min: number;
+  max: number;
+  step: number;
+  value: number;
+  onChange: (v: number) => void;
+}
+
+function ParamSlider(props: ParamSliderProps) {
+  const { id, title, suffix, decimals, min, max, step, value, onChange } = props;
+  return (
+    <div className={styles.paramRow}>
+      <label htmlFor={id}>{title}</label>
+      <span className={styles.val}>
+        {value.toFixed(decimals)}
+        {suffix}
+      </span>
+      <input
+        id={id}
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+      />
     </div>
   );
 }
