@@ -14,7 +14,10 @@
   color: var(--c-text);
   transition: box-shadow .18s var(--e-quart);
 }
-.wrap:hover { box-shadow: 0 4px 10px rgba(35,38,31,.1); }
+.wrap:active { box-shadow: 0 4px 10px rgba(35,38,31,.1); }
+@media (hover: hover) {
+  .wrap:hover { box-shadow: 0 4px 10px rgba(35,38,31,.1); }
+}
 .head {
   display: flex;
   align-items: center;
@@ -73,7 +76,38 @@
   cursor: pointer;
   padding: 0 2px;
   border-radius: 2px;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  color: inherit;
   transition: color .15s var(--e-quart), background .15s var(--e-quart);
 }
-.tick:hover { color: var(--c-text); background: var(--c-bg-linen); }
+.tick:active { color: var(--c-text); background: var(--c-bg-linen); }
+@media (hover: hover) {
+  .tick:hover { color: var(--c-text); background: var(--c-bg-linen); }
+}
 .tick.active { color: var(--c-terracotta); }
+
+/* ───── Mobile / tablet ───── */
+@media (max-width: 768px) {
+  .wrap {
+    /* Sit just under the ZonesPill (top:12 + 44 + 8 gap ≈ 64). */
+    top: 64px;
+    width: min(calc(100vw - 24px), 240px);
+    padding: 10px 12px 8px;
+  }
+  /* Slider thumb must be big enough to grab with a finger. */
+  .slider { height: 6px; }
+  .slider::-webkit-slider-thumb { width: 22px; height: 22px; }
+  .slider::-moz-range-thumb { width: 22px; height: 22px; }
+  /* Each tick = 44 px tap target. */
+  .ticks { font-size: 11px; gap: 4px; }
+  .tick {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 6px;
+  }
+}

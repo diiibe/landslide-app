@@ -14,4 +14,15 @@
   color: var(--c-text);
   white-space: nowrap;
 }
-.spacer { margin-left: auto; display: flex; gap: 4px; }
+.spacer { margin-left: auto; display: flex; gap: 4px; align-items: center; }
+
+/* ───── Mobile ───── */
+@media (max-width: 768px) {
+  .bar { padding: 0 10px; gap: 8px; }
+}
+@media (max-width: 480px) {
+  /* The brand "FVG Landslide" is the longest fixed-width element; on 360 px
+   * phones the search input would otherwise overflow. */
+  .brand { font-size: 13px; }
+  .bar { padding: 0 8px; gap: 6px; }
+}

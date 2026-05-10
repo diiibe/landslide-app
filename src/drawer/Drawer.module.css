@@ -12,7 +12,10 @@
   color: var(--c-text-soft);
   transition: background .18s var(--e-quart), color .18s var(--e-quart);
 }
-.handle:hover { background: var(--c-bg-linen); color: var(--c-forest); }
+.handle:active { background: var(--c-bg-linen); color: var(--c-forest); }
+@media (hover: hover) {
+  .handle:hover { background: var(--c-bg-linen); color: var(--c-forest); }
+}
 .handle svg { width: 10px; height: 10px; transition: transform .32s var(--e-expo); }
 :global(.body[data-drawer="closed"]) .handle svg { transform: rotate(180deg); }
 :global(.body[data-drawer="closed"]) .handle {
@@ -27,4 +30,38 @@
   overflow-y: auto;
   transition: width .4s var(--e-expo), opacity .28s var(--e-quart);
   flex-shrink: 0;
+}
+
+/* ───── Mobile / tablet ─────
+ * Make the handle an honest 44 px tap target floating on the right edge,
+ * and let the drawer overlay the map (positioning is owned by App.module.css). */
+@media (max-width: 768px) {
+  .handle {
+    width: 44px;
+    min-height: 44px;
+    height: 44px;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 31;
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-md);
+    background: var(--c-surface);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .15);
+  }
+  .handle svg { width: 14px; height: 14px; }
+
+  /* When the drawer is closed the handle still needs to float on the map,
+   * not pinned to a vanished left/right border. */
+  :global(.body[data-drawer="closed"]) .handle {
+    border: 1px solid var(--c-border);
+    border-left: 1px solid var(--c-border);
+    border-right: 1px solid var(--c-border);
+  }
+
+  .drawer {
+    /* The actual sheet width is set in App.module.css via min(92vw, 360px). */
+    width: min(92vw, 360px);
+    max-width: 92vw;
+  }
 }

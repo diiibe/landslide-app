@@ -42,11 +42,21 @@
 }
 .head::before { left: 16px; }
 .head::after  { right: 40px; }
-.head:hover {
+.head:active {
+  background: var(--c-group-head-border);
   background: color-mix(in srgb, var(--c-group-head-bg) 80%, var(--c-text) 20%);
   letter-spacing: .28em;
 }
-.head:hover::before, .head:hover::after { opacity: 1; width: 18px; }
+.head:active::before, .head:active::after { opacity: 1; width: 18px; }
+@media (hover: hover) {
+  .head:hover {
+    /* Fallback for Safari < 16.4 / older browsers without color-mix(). */
+    background: var(--c-group-head-border);
+    background: color-mix(in srgb, var(--c-group-head-bg) 80%, var(--c-text) 20%);
+    letter-spacing: .28em;
+  }
+  .head:hover::before, .head:hover::after { opacity: 1; width: 18px; }
+}
 .caret {
   position: absolute;
   right: 14px;
@@ -63,4 +73,17 @@
   height: 14px;
 }
 .group[data-open="false"] .caret { transform: translateY(-50%) rotate(-90deg); }
-.head:hover .caret { color: var(--c-forest); }
+.head:active .caret { color: var(--c-forest); }
+@media (hover: hover) {
+  .head:hover .caret { color: var(--c-forest); }
+}
+
+/* ───── Mobile / tablet ─────
+ * The drawer is now an overlay sheet — bigger, denser tap targets are okay. */
+@media (max-width: 768px) {
+  .head {
+    min-height: 48px;
+    padding: 14px 40px;
+    font-size: 12px;
+  }
+}

@@ -46,6 +46,7 @@ export function ThresholdControl() {
             type="button"
             className={`${styles.tick} ${threshold === t ? styles.active : ""}`}
             onClick={() => setThreshold(t)}
+            aria-pressed={threshold === t}
             title={
               t === 0.3 ? "screening" :
               t === 0.5 ? "operational" :

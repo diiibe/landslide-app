@@ -9,7 +9,10 @@
   overflow: hidden;
   transition: box-shadow .2s var(--e-quart);
 }
-.legend:hover { box-shadow: 0 4px 10px rgba(35,38,31,.08); }
+.legend:active { box-shadow: 0 4px 10px rgba(35,38,31,.08); }
+@media (hover: hover) {
+  .legend:hover { box-shadow: 0 4px 10px rgba(35,38,31,.08); }
+}
 .head {
   display: flex;
   align-items: center;
@@ -24,7 +27,10 @@
   color: var(--c-text);
   transition: background .18s var(--e-quart);
 }
-.head:hover { background: var(--c-bg-linen); }
+.head:active { background: var(--c-bg-linen); }
+@media (hover: hover) {
+  .head:hover { background: var(--c-bg-linen); }
+}
 .ttl { font-weight: 600; font-size: 12px; flex: 1; }
 .miniRamp {
   width: 40px; height: 6px; border-radius: 2px; border: 1px solid var(--c-border);
@@ -54,4 +60,25 @@
 .iffiRow i {
   width: 16px; height: 10px; border: 1.6px solid var(--c-russet);
   background: rgba(122,31,16,.14); border-radius: 2px; display: inline-block;
+}
+
+/* ───── Mobile / tablet ───── */
+@media (max-width: 768px) {
+  .legend {
+    /* Honest touch target on the head row. */
+    max-width: calc(100vw - 24px);
+  }
+  .head {
+    min-height: 44px;
+    padding: 10px 12px;
+  }
+  .ramp { width: 180px; }
+}
+
+/* On the smallest phones the legend competes with ZonesPill / Threshold /
+ * LayersPanel — keep the head row visible but collapse its body by default
+ * is the user's job; we just shrink the footprint. */
+@media (max-width: 480px) {
+  .legend { max-width: calc(100vw - 16px); left: 8px; bottom: 8px; }
+  .ramp { width: 140px; }
 }
