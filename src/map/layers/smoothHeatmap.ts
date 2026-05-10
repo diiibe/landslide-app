@@ -6,11 +6,21 @@ export const HEAT_LAYER = "smooth-heatmap";
 
 /** Weight ramp: cells below threshold contribute zero, cells above get a
  * weight that grows linearly from 0 at threshold to 1 at p=1. Re-applied
- * via `updateSmoothHeatmapThreshold` whenever the user moves the slider. */
-function weightFor(threshold: number): unknown {
+ * via `updateSmoothHeatmapThreshold` whenever the user moves the slider.
+ *
+ * P2.4: when `threshold` is near zero, `threshold - 0.001` could collapse
+ * stop1 onto stop2 (== 1) or below 0, both of which break MapLibre's
+ * "strictly increasing input" requirement on interpolate expressions.
+ * For thresholds below 0.01 we instead return a constant `case`
+ * expression (every cell with p ≥ 0 gets weight 1) so the heatmap stays
+ * defined and the style validator is happy. */
+export function weightFor(threshold: number): unknown {
+  if (threshold < 0.01) {
+    return ["case", [">=", ["get", "p"], 0], 1, 0];
+  }
   return [
     "interpolate", ["linear"], ["get", "p"],
-    Math.max(0, threshold - 0.001), 0,
+    threshold - 0.001, 0,
     1, 1,
   ];
 }

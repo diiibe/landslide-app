@@ -42,17 +42,15 @@ export function AnalyticsPanel() {
   const zoneStats = useZoneStats();
   const live = useMapStats();
 
-  // Per-threshold percentage from current viewport (live), or "—" if no data.
+  // Exact "% above threshold" for each row in the table. P1.3: useMapStats
+  // counts every standard threshold in the same loop that builds the
+  // histogram, so we get the true count of cells with p ≥ t — no
+  // histogram-midpoint approximation that would mis-count the 0.85
+  // threshold (which splits the 0.8–0.9 bin in half).
   const pctAt = (t: number): string => {
-    if (!live) return "—";
-    let n = 0;
-    // Re-derive from histogram (10 bins). For threshold t, count cells with
-    // p >= t by summing bins where the lower-bound matches.
-    for (let i = 0; i < live.histogram.length; i++) {
-      const lo = i / 10;
-      if (lo + 0.05 >= t) n += live.histogram[i] ?? 0;
-    }
-    if (live.cells_visible === 0) return "—";
+    if (!live || live.cells_visible === 0) return "—";
+    const n = live.above_at[t.toString()];
+    if (n === undefined) return "—";
     return ((n / live.cells_visible) * 100).toFixed(1);
   };
 
