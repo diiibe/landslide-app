@@ -40,6 +40,10 @@ npm-debug.log*
 public/tiles/*.mbtiles
 public/tiles/*.geojson
 # Note: *.pmtiles ARE committed — production data served by the app
+# Large OSM-derived GeoJSON for risk-tinted networks (35–40 MB each).
+# Regenerate with `npm run build:roads` (queries Overpass).
+public/data/roads_fvg.geojson
+public/data/trails_fvg.geojson
 venv/
 vite.config.d.ts
 vite.config.js
