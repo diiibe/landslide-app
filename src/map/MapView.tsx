@@ -186,7 +186,6 @@ export function MapView() {
     const m = mapRef.current;
     if (!m || !m.isStyleLoaded()) return;
     setupModelLayers(m);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [model]);
 
   useEffect(() => {
@@ -231,7 +230,6 @@ export function MapView() {
     const m = mapRef.current;
     if (!m || !m.isStyleLoaded()) return;
     applyThemeToLayers(m);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [theme]);
 
   useEffect(() => {
