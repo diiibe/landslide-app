@@ -27,6 +27,27 @@
   --c-group-head-bg: #F1EADB;
   --c-group-head-border: #DCD2B9;
 
+  /* search / topbar tokens (light) */
+  --c-search-hover-border: #C9D7BE;
+  --c-search-hover-bg: #FBF4E3;
+  --c-search-placeholder: #8A8472;
+
+  /* layers panel hover (light) */
+  --c-panel-head-hover: #F8F2DF;
+  --c-panel-item-hover: #F0F4EC;
+
+  /* analytics table tokens (light) */
+  --c-analytics-row-border: #E8D0C6;
+  --c-analytics-use: #8A7A6E;
+
+  /* calibration plot tokens (light) */
+  --c-plot-bg: #FFFFFF;
+  --c-plot-grid: #EEF1F4;
+  --c-plot-tick: #9CA48C;
+
+  /* focus ring — adapts per theme */
+  --c-focus: var(--c-forest);
+
   /* easing */
   --e-quart: cubic-bezier(0.25, 1, 0.5, 1);
   --e-expo:  cubic-bezier(0.16, 1, 0.3, 1);
@@ -89,6 +110,27 @@
 
   --c-group-head-bg: #0F1318;
   --c-group-head-border: #1F252D;
+
+  /* search / topbar tokens (dark) */
+  --c-search-hover-border: #2D3A2F;
+  --c-search-hover-bg: #1F252D;
+  --c-search-placeholder: #6E7886;
+
+  /* layers panel hover (dark) */
+  --c-panel-head-hover: #1F252D;
+  --c-panel-item-hover: #1F252D;
+
+  /* analytics table tokens (dark) */
+  --c-analytics-row-border: #232932;
+  --c-analytics-use: #6E7886;
+
+  /* calibration plot tokens (dark) */
+  --c-plot-bg: #161B22;
+  --c-plot-grid: #232932;
+  --c-plot-tick: #6E7886;
+
+  /* focus ring — green is hard to see on deep navy; use cyan-teal accent */
+  --c-focus: #5EBFCC;
 
   color-scheme: dark;
 }
