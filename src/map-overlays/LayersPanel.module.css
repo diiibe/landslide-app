@@ -9,7 +9,10 @@
   overflow: hidden;
   transition: box-shadow .2s var(--e-quart);
 }
-.panel:hover { box-shadow: 0 4px 14px rgba(35,38,31,.08); }
+.panel:active { box-shadow: 0 4px 14px rgba(35,38,31,.08); }
+@media (hover: hover) {
+  .panel:hover { box-shadow: 0 4px 14px rgba(35,38,31,.08); }
+}
 .head {
   padding: 8px 12px;
   display: flex;
@@ -22,8 +25,13 @@
   text-align: left;
   border-bottom: 1px solid var(--c-border);
   transition: background .18s var(--e-quart);
+  font: inherit;
+  color: inherit;
 }
-.head:hover { background: #F8F2DF; }
+.head:active { background: var(--c-panel-head-hover); }
+@media (hover: hover) {
+  .head:hover { background: var(--c-panel-head-hover); }
+}
 .ttl { font-weight: 600; font-size: 13px; color: var(--c-text); flex: 1; }
 .caret { color: var(--c-text-soft); font-size: 11px; transition: transform .28s var(--e-expo); }
 .panel[data-open="false"] .caret { transform: rotate(-90deg); }
@@ -43,7 +51,10 @@
   background: var(--c-surface);
   transition: background .15s var(--e-quart), border-color .15s var(--e-quart), color .15s var(--e-quart), filter .15s var(--e-quart);
 }
-.bm:hover { filter: brightness(1.04) saturate(1.06); }
+.bm:active { filter: brightness(1.04) saturate(1.06); }
+@media (hover: hover) {
+  .bm:hover { filter: brightness(1.04) saturate(1.06); }
+}
 .bm[data-active="true"] { font-weight: 700; }
 .bm[data-kind="outdoors"]   { background: #F4F9EB; border-color: #E5ECD5; color: #4D6E3C; }
 .bm[data-kind="light"]      { background: #FBF5E4; border-color: #EEE2C6; color: #886824; }
@@ -77,7 +88,52 @@
   border-radius: var(--radius-sm);
   transition: background .15s var(--e-quart), color .15s var(--e-quart), padding-left .18s var(--e-expo);
 }
-.item:hover { background: #F0F4EC; color: var(--c-forest); padding-left: 10px; }
+.item:active { background: var(--c-panel-item-hover); color: var(--c-forest); padding-left: 10px; }
+@media (hover: hover) {
+  .item:hover { background: var(--c-panel-item-hover); color: var(--c-forest); padding-left: 10px; }
+}
 .item input { accent-color: var(--c-forest); }
 .itemName { flex: 1; }
 .itemState { color: var(--c-text-soft); font-size: 11px; font-variant-numeric: tabular-nums; }
+
+/* ───── Mobile / tablet ───── */
+@media (max-width: 768px) {
+  .panel {
+    /* Sit below the floating drawer handle (44 px + 8 px top + 8 px gap). */
+    top: 60px;
+    right: 8px;
+    width: min(calc(100vw - 16px), 280px);
+    max-height: calc(100dvh - 80px);
+    overflow: auto;
+  }
+  /* Each row is the user's primary tap target → must reach 44 px. */
+  .head {
+    min-height: 44px;
+    padding: 10px 14px;
+  }
+  .item {
+    min-height: 44px;
+    padding: 10px 8px;
+    margin: 0 -8px;
+    gap: 12px;
+  }
+  /* Larger checkbox so it's actually tappable. */
+  .item input { width: 18px; height: 18px; }
+  /* Basemap and model pills at 44 px each. */
+  .bm {
+    min-height: 44px;
+    font-size: 12px;
+    padding: 10px 0;
+  }
+  .bmRow { gap: 6px; }
+}
+
+/* On the smallest phones, collapse the panel head-only by default looks
+ * crowded — keep current behavior but ensure the body scrolls inside. */
+@media (max-width: 480px) {
+  .panel {
+    /* Slightly tighter on tiny screens. */
+    width: calc(100vw - 16px);
+  }
+  .gTtl { font-size: 11px; }
+}

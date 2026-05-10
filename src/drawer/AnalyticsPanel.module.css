@@ -7,7 +7,7 @@
 .thrTable tr:hover { background: var(--accent-tint); }
 .thrTable td {
   padding: 4px 0;
-  border-top: 1px solid #E8D0C6;
+  border-top: 1px solid var(--c-analytics-row-border);
   transition: color .15s var(--e-quart), transform .2s var(--e-expo);
 }
 .thrTable tr:first-child td { border-top: none; }
@@ -27,5 +27,5 @@
 .thrTable tr:hover td:last-child { color: var(--accent); transform: scale(1.08); }
 .thrTable tr.active td { color: var(--accent); font-weight: 700; }
 .thrTable tr.active td:first-child::before { content: "▸ "; color: var(--c-terracotta-stripe); }
-.thrTable .use { color: #8A7A6E; font-weight: 400; font-style: italic; font-size: 11px; margin-left: 6px; }
+.thrTable .use { color: var(--c-analytics-use); font-weight: 400; font-style: italic; font-size: 11px; margin-left: 6px; }
 .thrTable tr.active .use { color: var(--accent); font-style: normal; }
