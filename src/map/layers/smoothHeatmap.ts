@@ -1,4 +1,7 @@
-import type { Map as MLMap } from "maplibre-gl";
+import type {
+  Map as MLMap,
+  ExpressionSpecification,
+} from "maplibre-gl";
 import type { ModelId } from "@/app/types";
 
 export const HEAT_SOURCE = "centroids";
@@ -14,7 +17,7 @@ export const HEAT_LAYER = "smooth-heatmap";
  * For thresholds below 0.01 we instead return a constant `case`
  * expression (every cell with p ≥ 0 gets weight 1) so the heatmap stays
  * defined and the style validator is happy. */
-export function weightFor(threshold: number): unknown {
+export function weightFor(threshold: number): ExpressionSpecification {
   if (threshold < 0.01) {
     return ["case", [">=", ["get", "p"], 0], 1, 0];
   }
@@ -56,7 +59,7 @@ export function addSmoothHeatmap(
     source: HEAT_SOURCE,
     "source-layer": "centroids",
     paint: {
-      "heatmap-weight": weightFor(threshold) as never,
+      "heatmap-weight": weightFor(threshold),
       "heatmap-intensity": [
         "interpolate", ["linear"], ["zoom"],
         6, 1.8,
@@ -95,7 +98,7 @@ export function addSmoothHeatmap(
 
 export function updateSmoothHeatmapThreshold(m: MLMap, threshold: number): void {
   if (!m.getLayer(HEAT_LAYER)) return;
-  m.setPaintProperty(HEAT_LAYER, "heatmap-weight", weightFor(threshold) as never);
+  m.setPaintProperty(HEAT_LAYER, "heatmap-weight", weightFor(threshold));
 }
 
 export function setSmoothHeatmapVisible(m: MLMap, v: boolean): void {
