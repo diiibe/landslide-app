@@ -71,25 +71,67 @@ async function loadTrails(): Promise<GeoJSON.FeatureCollection> {
   return trailsRaw;
 }
 
-let bakingPromise: Promise<void> | null = null;
+/** Same chunked-bake + coalesce pattern as roads.ts. See P0.4 / P0.5 there.
+ *  The trail network is smaller but the radius=8 bake is still ~100M point
+ *  ops on a dense FVG dataset — synchronous walk freezes a frame. */
+const CHUNK_SIZE = 2000;
+
+async function bakeChunked(
+  fc: GeoJSON.FeatureCollection,
+  grid: CellGrid,
+  opts: { gamma: number; radius: number },
+): Promise<GeoJSON.FeatureCollection> {
+  const total = fc.features.length;
+  if (total <= CHUNK_SIZE) return bakeRiskIntoFeatures(fc, grid, opts);
+  const out: GeoJSON.Feature[] = [];
+  for (let i = 0; i < total; i += CHUNK_SIZE) {
+    const slice: GeoJSON.FeatureCollection = {
+      type: "FeatureCollection",
+      features: fc.features.slice(i, i + CHUNK_SIZE),
+    };
+    const baked = bakeRiskIntoFeatures(slice, grid, opts);
+    for (const f of baked.features) out.push(f);
+    await new Promise((r) => setTimeout(r, 0));
+  }
+  return { type: "FeatureCollection", features: out };
+}
+
+async function doBake(m: MLMap, model: ModelId): Promise<void> {
+  const [grid, trails]: [CellGrid, GeoJSON.FeatureCollection] = await Promise.all([
+    loadCellGrid(model),
+    loadTrails(),
+  ]);
+  const params = useAppStore.getState().riskParams.trails[model];
+  const baked = await bakeChunked(trails, grid, {
+    gamma: params.gamma,
+    radius: params.radius,
+  });
+  const src = m.getSource(TRAILS_SOURCE) as GeoJSONSource | undefined;
+  src?.setData(baked);
+}
+
+// Single pending slot — see roads.ts for the rationale (P0.5).
+let inflight: Promise<void> | null = null;
+let pending: { model: ModelId } | null = null;
 
 async function refreshTrailData(m: MLMap, model: ModelId): Promise<void> {
-  if (bakingPromise) await bakingPromise;
-  bakingPromise = (async () => {
-    const [grid, trails]: [CellGrid, GeoJSON.FeatureCollection] = await Promise.all([
-      loadCellGrid(model),
-      loadTrails(),
-    ]);
-    const params = useAppStore.getState().riskParams.trails[model];
-    const baked = bakeRiskIntoFeatures(trails, grid, {
-      gamma: params.gamma,
-      radius: params.radius,
-    });
-    const src = m.getSource(TRAILS_SOURCE) as GeoJSONSource | undefined;
-    src?.setData(baked);
+  if (inflight) {
+    pending = { model };
+    return inflight;
+  }
+  inflight = (async () => {
+    try {
+      await doBake(m, model);
+      while (pending) {
+        const next = pending;
+        pending = null;
+        await doBake(m, next.model);
+      }
+    } finally {
+      inflight = null;
+    }
   })();
-  await bakingPromise;
-  bakingPromise = null;
+  return inflight;
 }
 
 export function addTrails(m: MLMap, visible: boolean, dark: boolean): void {

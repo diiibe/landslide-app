@@ -32,4 +32,70 @@ describe("useAppStore", () => {
     useAppStore.getState().toggleDrawer();
     expect(useAppStore.getState().drawerOpen).toBe(false);
   });
+
+  // P2.13 — clampParams must reject NaN / non-finite / missing values and
+  // fall back to defaults. The bug was `Number(undefined)` = NaN, which
+  // then `clamp(NaN, lo, hi)` propagated unchanged.
+  describe("clampParams (P2.13) rejects malformed values", () => {
+    it("setRiskParam with NaN falls back to default (sensitivity = 1)", () => {
+      useAppStore.getState().setRiskParam("roads", "j3", "sensitivity", NaN);
+      const s = useAppStore.getState().riskParams.roads.j3;
+      expect(Number.isFinite(s.sensitivity)).toBe(true);
+      expect(s.sensitivity).toBe(1);
+    });
+
+    it("setRiskParam with Infinity falls back to default", () => {
+      useAppStore.getState().setRiskParam("roads", "j3", "gamma", Infinity);
+      const s = useAppStore.getState().riskParams.roads.j3;
+      expect(Number.isFinite(s.gamma)).toBe(true);
+      // Infinity is non-finite → falls back to DEFAULT_PARAMS.gamma (1.5),
+      // not to the clamped GAMMA_MAX.
+      expect(s.gamma).toBe(1.5);
+    });
+
+    it("setRiskParam with a finite out-of-range value clamps (does not reset)", () => {
+      // Sanity: a finite value above SENS_MAX (10) must still clamp, not
+      // bounce back to default.
+      useAppStore.getState().setRiskParam("roads", "j3", "sensitivity", 9999);
+      expect(useAppStore.getState().riskParams.roads.j3.sensitivity).toBe(10);
+    });
+
+    it("rejects malformed localStorage payload (NaN / missing keys / wrong types)", async () => {
+      // Re-import the module with a poisoned localStorage so loadSensDefaults
+      // hits every malformed branch in one go. vitest's resetModules gives
+      // us a fresh module-level singleton.
+      const { vi } = await import("vitest");
+      window.localStorage.setItem(
+        "fvg:sensitivity-defaults",
+        JSON.stringify({
+          roads: {
+            j2: { sensitivity: "not a number", gamma: null, radius: undefined },
+            j3: { sensitivity: NaN, gamma: Infinity, radius: -Infinity },
+          },
+          trails: {
+            j2: {}, // missing keys entirely
+            // j3 missing entirely
+          },
+        }),
+      );
+      vi.resetModules();
+      const mod = await import("./store");
+      const params = mod.useAppStore.getState().riskParamsDefaults;
+      for (const net of ["roads", "trails"] as const) {
+        for (const model of ["j2", "j3"] as const) {
+          const p = params[net][model];
+          expect(Number.isFinite(p.sensitivity)).toBe(true);
+          expect(Number.isFinite(p.gamma)).toBe(true);
+          expect(Number.isFinite(p.radius)).toBe(true);
+          expect(p.sensitivity).toBeGreaterThanOrEqual(0.1);
+          expect(p.sensitivity).toBeLessThanOrEqual(10);
+          expect(p.gamma).toBeGreaterThanOrEqual(0.3);
+          expect(p.gamma).toBeLessThanOrEqual(4);
+          expect(p.radius).toBeGreaterThanOrEqual(0);
+          expect(p.radius).toBeLessThanOrEqual(8);
+        }
+      }
+      window.localStorage.removeItem("fvg:sensitivity-defaults");
+    });
+  });
 });
