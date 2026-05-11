@@ -1,8 +1,6 @@
-import maplibregl, { type Map as MLMap, type MapMouseEvent, type MapGeoJSONFeature } from "maplibre-gl";
+import maplibregl, { type Map as MLMap, type MapMouseEvent } from "maplibre-gl";
 import { SUSCEPT_LAYER } from "./layers/susceptibility";
 import { IFFI_FILL } from "./layers/iffi";
-
-type LayerMouseEvent = MapMouseEvent & { features?: MapGeoJSONFeature[] };
 
 export interface CellPopupProps {
   cell_id: number | string;
@@ -106,69 +104,93 @@ export function buildIffiPopupNode(p: IffiPopupProps): HTMLElement {
 }
 
 /**
- * Bind click + hover handlers for cell + IFFI layers. Returns an unsubscribe
- * fn that removes ALL six handlers so a `style.load`-driven re-registration
- * doesn't leak (P1.1). The previous version only detached the two click
- * handlers, leaving four hover handlers bound to stale layer ids.
+ * Build a single combined popup node when the click lands on both a
+ * susceptibility cell and an IFFI polygon at the same point. The two
+ * sections sit one above the other inside one card; a thin divider
+ * marks the boundary. Either argument may be `null` (just one feature
+ * was hit); the resulting node renders only the relevant section.
+ */
+function buildCombinedNode(
+  cell: CellPopupProps | null,
+  iffi: IffiPopupProps | null,
+): HTMLElement {
+  const root = document.createElement("div");
+  root.style.display = "flex";
+  root.style.flexDirection = "column";
+  root.style.gap = "8px";
+  if (cell) root.appendChild(buildCellPopupNode(cell));
+  if (cell && iffi) {
+    const sep = document.createElement("div");
+    sep.style.borderTop = "1px solid rgba(0,0,0,.12)";
+    sep.style.margin = "0 -10px";
+    root.appendChild(sep);
+  }
+  if (iffi) root.appendChild(buildIffiPopupNode(iffi));
+  return root;
+}
+
+/**
+ * Single map-scoped click handler that queries the cell + IFFI layers
+ * at the click point and renders ONE combined popup. Previously the
+ * two layer-scoped handlers each created their own popup, so clicking
+ * on a cell inside an IFFI polygon produced overlapping cards.
+ * Hover is still per-layer so the cursor only changes over actually
+ * interactive geometry.
  */
 export function registerPopups(m: MLMap): () => void {
-  const onCell = (e: LayerMouseEvent) => {
-    const f = e.features?.[0];
-    if (!f) return;
-    const props = f.properties as Partial<CellPopupProps> | null;
-    if (!props) return;
-    new maplibregl.Popup({ closeButton: false, offset: 8, className: "cell-popup" })
-      .setLngLat(e.lngLat)
-      .setDOMContent(
-        buildCellPopupNode({
-          cell_id: props.cell_id ?? "?",
-          p: Number(props.p ?? 0),
-          zone: String(props.zone ?? ""),
-          sub_zone: String(props.sub_zone ?? ""),
-          iffi_hit: Boolean(props.iffi_hit),
-        }),
-      )
-      .addTo(m);
-  };
-  const onIffi = (e: LayerMouseEvent) => {
-    const f = e.features?.[0];
-    if (!f) return;
-    const props = f.properties as Partial<IffiPopupProps> | null;
-    if (!props) return;
+  const onClick = (e: MapMouseEvent) => {
+    const layers = [SUSCEPT_LAYER, IFFI_FILL].filter((id) => m.getLayer(id));
+    if (layers.length === 0) return;
+    const feats = m.queryRenderedFeatures(e.point, { layers });
+    const cellFeat = feats.find((f) => f.layer.id === SUSCEPT_LAYER);
+    const iffiFeat = feats.find((f) => f.layer.id === IFFI_FILL);
+    if (!cellFeat && !iffiFeat) return;
+    const cell: CellPopupProps | null = cellFeat
+      ? {
+          cell_id:
+            (cellFeat.properties?.cell_id as number | string | undefined) ?? "?",
+          p: Number(cellFeat.properties?.p ?? 0),
+          zone: String(cellFeat.properties?.zone ?? ""),
+          sub_zone: String(cellFeat.properties?.sub_zone ?? ""),
+          iffi_hit: Boolean(cellFeat.properties?.iffi_hit),
+        }
+      : null;
+    const iffi: IffiPopupProps | null = iffiFeat
+      ? {
+          id_frana: String(iffiFeat.properties?.id_frana ?? ""),
+          tipo_movimento: String(iffiFeat.properties?.tipo_movimento ?? ""),
+          nome_tipo: String(iffiFeat.properties?.nome_tipo ?? ""),
+          comune: String(iffiFeat.properties?.comune ?? ""),
+          provincia: String(iffiFeat.properties?.provincia ?? ""),
+        }
+      : null;
     new maplibregl.Popup({
       closeButton: true,
       closeOnClick: true,
       offset: 8,
-      className: "iffi-popup",
+      className: "feature-popup",
+      maxWidth: "260px",
     })
       .setLngLat(e.lngLat)
-      .setDOMContent(
-        buildIffiPopupNode({
-          id_frana: String(props.id_frana ?? ""),
-          tipo_movimento: String(props.tipo_movimento ?? ""),
-          nome_tipo: String(props.nome_tipo ?? ""),
-          comune: String(props.comune ?? ""),
-          provincia: String(props.provincia ?? ""),
-        }),
-      )
+      .setDOMContent(buildCombinedNode(cell, iffi))
       .addTo(m);
   };
+
   const cellEnter = () => {
     m.getCanvas().style.cursor = "pointer";
   };
   const cellLeave = () => {
     m.getCanvas().style.cursor = "";
   };
-  m.on("click", SUSCEPT_LAYER, onCell);
-  m.on("click", IFFI_FILL, onIffi);
+
+  m.on("click", onClick);
   m.on("mouseenter", SUSCEPT_LAYER, cellEnter);
   m.on("mouseleave", SUSCEPT_LAYER, cellLeave);
   m.on("mouseenter", IFFI_FILL, cellEnter);
   m.on("mouseleave", IFFI_FILL, cellLeave);
 
   return () => {
-    m.off("click", SUSCEPT_LAYER, onCell);
-    m.off("click", IFFI_FILL, onIffi);
+    m.off("click", onClick);
     m.off("mouseenter", SUSCEPT_LAYER, cellEnter);
     m.off("mouseleave", SUSCEPT_LAYER, cellLeave);
     m.off("mouseenter", IFFI_FILL, cellEnter);
