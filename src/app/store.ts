@@ -145,10 +145,8 @@ function initialDrawerOpen(): boolean {
 }
 
 /**
- * Default LayersPanel open-state. With `layers.roads` + `layers.trails` and
- * their two RiskParamsControl sub-blocks each, the panel is ~850px tall on
- * mobile — opening it by default swamps the map on first paint (P0.6).
- * SSR-safe: returns `true` (the desktop default) when there's no `window`.
+ * Default LayersPanel open-state. SSR-safe: returns `true` (the desktop
+ * default) when there's no `window`. Mobile defaults to collapsed (P0.6).
  */
 function initialLayersPanelOpen(): boolean {
   if (typeof window === "undefined") return true;
@@ -163,6 +161,16 @@ function initialLayersPanelOpen(): boolean {
     /* matchMedia unavailable — fall through to desktop default */
   }
   return true;
+}
+
+/**
+ * Default open state for the floating panels that appear next to the
+ * LayersPanel (Sensitivity, Comune filter). They mount conditionally on
+ * the underlying layer being active; this flag controls whether the body
+ * is expanded or just the head is showing. Mirror the LayersPanel default.
+ */
+function initialFloatingPanelOpen(): boolean {
+  return initialLayersPanelOpen();
 }
 
 function applyTheme(t: Theme): void {
@@ -202,6 +210,17 @@ export interface AppState {
   drawerOpen: boolean;
   legendOpen: boolean;
   layersPanelOpen: boolean;
+  /** Open state of the floating "Sensitivity" panel that hosts the
+   *  per-network risk shaping sliders. The panel mounts conditionally on
+   *  `layers.roads || layers.trails`; this flag governs body expansion. */
+  sensitivityPanelOpen: boolean;
+  /** Open state of the floating "Comune filter" panel that lets the user
+   *  pick comuni to restrict the choropleth. Mounts conditionally on
+   *  `layers.comuni`; this flag governs body expansion. */
+  comuneFilterPanelOpen: boolean;
+  /** ISTAT codes of comuni selected via the filter panel. Empty array =
+   *  no filter (show every comune). */
+  selectedComuni: string[];
   groupOpen: Record<GroupId, boolean>;
   search: { query: string; placeName: string | null };
   setModel: (m: ModelId) => void;
@@ -224,6 +243,11 @@ export interface AppState {
   toggleDrawer: () => void;
   toggleLegend: () => void;
   toggleLayersPanel: () => void;
+  toggleSensitivityPanel: () => void;
+  toggleComuneFilterPanel: () => void;
+  setSelectedComuni: (istatCodes: string[]) => void;
+  toggleComune: (istat: string) => void;
+  clearComuni: () => void;
   toggleGroup: (g: GroupId) => void;
   setSearch: (s: { query: string; placeName: string | null }) => void;
   reset: () => void;
@@ -236,7 +260,9 @@ const initial: Omit<
   | "setModel" | "setBasemap" | "setThreshold" | "setSelectedZones" | "toggleZone"
   | "toggleLayer" | "setRiskParam" | "lockRiskParams"
   | "setTheme" | "toggleTheme" | "toggleDrawer" | "toggleLegend"
-  | "toggleLayersPanel" | "toggleGroup" | "setSearch" | "reset"
+  | "toggleLayersPanel" | "toggleSensitivityPanel" | "toggleComuneFilterPanel"
+  | "setSelectedComuni" | "toggleComune" | "clearComuni"
+  | "toggleGroup" | "setSearch" | "reset"
 > = {
   model: "j3",
   basemap: "outdoors",
@@ -264,6 +290,9 @@ const initial: Omit<
   drawerOpen: initialDrawerOpen(),
   legendOpen: true,
   layersPanelOpen: initialLayersPanelOpen(),
+  sensitivityPanelOpen: initialFloatingPanelOpen(),
+  comuneFilterPanelOpen: initialFloatingPanelOpen(),
+  selectedComuni: [],
   groupOpen: { view: true, monitoring: true, analytics: true, model: true },
   search: { query: "", placeName: null },
 };
@@ -320,6 +349,18 @@ export const useAppStore = create<AppState>((set) => ({
   toggleDrawer: () => set((s) => ({ drawerOpen: !s.drawerOpen })),
   toggleLegend: () => set((s) => ({ legendOpen: !s.legendOpen })),
   toggleLayersPanel: () => set((s) => ({ layersPanelOpen: !s.layersPanelOpen })),
+  toggleSensitivityPanel: () =>
+    set((s) => ({ sensitivityPanelOpen: !s.sensitivityPanelOpen })),
+  toggleComuneFilterPanel: () =>
+    set((s) => ({ comuneFilterPanelOpen: !s.comuneFilterPanelOpen })),
+  setSelectedComuni: (istatCodes) => set({ selectedComuni: istatCodes }),
+  toggleComune: (istat) =>
+    set((s) =>
+      s.selectedComuni.includes(istat)
+        ? { selectedComuni: s.selectedComuni.filter((x) => x !== istat) }
+        : { selectedComuni: [...s.selectedComuni, istat] },
+    ),
+  clearComuni: () => set({ selectedComuni: [] }),
   toggleGroup: (g) =>
     set((s) => ({ groupOpen: { ...s.groupOpen, [g]: !s.groupOpen[g] } })),
   setSearch: (search) => set({ search }),
