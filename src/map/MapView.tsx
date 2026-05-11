@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import maplibregl, { type RequestParameters, type ResourceType } from "maplibre-gl";
 import { useAppStore } from "@/app/store";
+import type { ModelId } from "@/app/types";
 import { BASEMAP_STYLE, FVG_BOUNDS, FVG_CENTER } from "./style";
 import { installPmtilesProtocol } from "./pmtiles-protocol";
 import {
@@ -103,7 +104,15 @@ function setupStaticLayers(m: maplibregl.Map): void {
  * (P1.2). Roads and trails encode halo opacity in their layer paint at
  * add time; we re-add them on theme change rather than poking individual
  * properties, since the cached GeoJSON keeps the rebuild cheap.
+ *
+ * Gated by `appliedTheme`: every `style.load` calls us right after
+ * `setupStaticLayers` already added these. On the *initial* call after a
+ * setup, the theme hasn't actually transitioned — there's no work to do,
+ * and re-adding kicks off a redundant bake (P1.1). Track the last theme
+ * we applied so we only re-add on genuine transitions.
  */
+let appliedTheme: "dark" | "light" | null = null;
+
 function applyThemeToLayers(m: maplibregl.Map): void {
   const s = useAppStore.getState();
   const dark = s.theme === "dark";
@@ -114,11 +123,17 @@ function applyThemeToLayers(m: maplibregl.Map): void {
   } else {
     addDtmHillshade(m, s.layers.dtm, dark);
   }
-  // Roads/trails carry theme-driven halo opacity baked into addLayer.
-  // Re-creating is cheap because the GeoJSON is cached in module scope.
-  addTrails(m, s.layers.trails, dark);
-  addRoads(m, s.layers.roads, dark);
-  addCriticalPoi(m, s.layers.poiCritical, s.layers.poiHuts);
+  // Re-add roads/trails/POI only when the theme has genuinely changed.
+  // On the first call after `setupStaticLayers`, `appliedTheme` is null
+  // and we adopt the current value without re-adding — setupStaticLayers
+  // owns the initial add. P1.11 fix: previously both functions re-added,
+  // double-baking every basemap switch.
+  if (appliedTheme !== null && appliedTheme !== s.theme) {
+    addTrails(m, s.layers.trails, dark);
+    addRoads(m, s.layers.roads, dark);
+    addCriticalPoi(m, s.layers.poiCritical, s.layers.poiHuts);
+  }
+  appliedTheme = s.theme;
 }
 
 /**
@@ -146,10 +161,22 @@ function setupModelLayers(m: maplibregl.Map): void {
   setSusceptibilityVisible(m, s.layers.susceptibility);
 }
 
+// Trailing-edge debounce delay for the rebake effects. Slider drags emit
+// param updates at ~60Hz; a 120ms quiet window collapses a burst into a
+// single bake (P0.4 / P1.12).
+const REBAKE_DEBOUNCE_MS = 120;
+
 export function MapView() {
   const ref = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const popupsUnsubRef = useRef<(() => void) | null>(null);
+  // P1.10 — `model` changes trigger both the model effect (which rebakes)
+  // and the param effects (because the selectors return new values for
+  // the new model). Track the last-seen model in a ref so the param
+  // effects can skip the rebake when the change was caused by a model
+  // switch — the model effect already handled it.
+  const prevModelForRoads = useRef<ModelId | null>(null);
+  const prevModelForTrails = useRef<ModelId | null>(null);
 
   const basemap = useAppStore((s) => s.basemap);
   const model = useAppStore((s) => s.model);
@@ -230,6 +257,12 @@ export function MapView() {
     if (useAppStore.getState().layers.comuni) applyComuniModel(m);
     const ls = useAppStore.getState().layers;
     if (ls.poiCritical || ls.poiHuts) applyPoiModel(m);
+    // Keep the param-effect refs in sync so a model switch followed by a
+    // param change doesn't double-bake. The param effects compare their
+    // own ref to the live model; setting both here means a later effect
+    // ordering still sees prev === current and skips. (P1.10)
+    prevModelForRoads.current = model;
+    prevModelForTrails.current = model;
   }, [model]);
 
   useEffect(() => {
@@ -285,11 +318,35 @@ export function MapView() {
   useEffect(() => {
     if (mapRef.current && trailsOn) applyTrailSensitivity(mapRef.current);
   }, [sensTrails, trailsOn]);
+  // P0.4 / P1.12 — slider drags fire ~60 events/sec; without a debounce
+  // each event kicks off a full ~290M-op rebake. Schedule a trailing-edge
+  // rebake; clearing on every new event coalesces a burst into one bake.
+  //
+  // P1.10 — a `model` change re-runs these effects (selectors return new
+  // values for the new model) AND the model effect, which already
+  // rebakes. Skip the rebake when the change was caused by a model
+  // switch: the model effect owns the rebake in that case.
   useEffect(() => {
-    if (mapRef.current && roadsOn) rebakeRoads(mapRef.current);
+    const m = mapRef.current;
+    if (!m || !roadsOn) return;
+    const currentModel = useAppStore.getState().model;
+    if (prevModelForRoads.current !== currentModel) {
+      prevModelForRoads.current = currentModel;
+      return; // model effect handles the rebake
+    }
+    const id = setTimeout(() => rebakeRoads(m), REBAKE_DEBOUNCE_MS);
+    return () => clearTimeout(id);
   }, [gammaRoads, radiusRoads, roadsOn]);
   useEffect(() => {
-    if (mapRef.current && trailsOn) rebakeTrails(mapRef.current);
+    const m = mapRef.current;
+    if (!m || !trailsOn) return;
+    const currentModel = useAppStore.getState().model;
+    if (prevModelForTrails.current !== currentModel) {
+      prevModelForTrails.current = currentModel;
+      return; // model effect handles the rebake
+    }
+    const id = setTimeout(() => rebakeTrails(m), REBAKE_DEBOUNCE_MS);
+    return () => clearTimeout(id);
   }, [gammaTrails, radiusTrails, trailsOn]);
 
   useEffect(() => {
