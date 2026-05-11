@@ -31,6 +31,28 @@
   background: #EDE7D6;
 }
 
+/* Single right-edge column hosting SensitivityPanel + ComuneFilterPanel.
+   Wrapping them in a flex column means each panel's collapse/expand
+   transition pushes its neighbour up or down naturally — no manual
+   coordination via body classes or fixed offsets needed. The wrapper
+   itself has no pointer events so map clicks pass through the gaps;
+   children opt back in. */
+.rightOverlays {
+  position: absolute;
+  top: 12px;
+  /* LayersPanel: right 12 + width 216 + 8 gap = 236. */
+  right: 236px;
+  width: 240px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 4;
+  pointer-events: none;
+}
+.rightOverlays > * {
+  pointer-events: auto;
+}
+
 /* ───── Mobile / tablet layout ─────
  * On viewports ≤ 768 px the right-hand drawer becomes a full-screen overlay
  * sheet anchored to the right edge. The map gets the entire row when the
@@ -63,5 +85,20 @@
    * — the overlay shadow disappears with it. */
   .body[data-drawer="closed"] :global(.drawer) {
     box-shadow: none;
+  }
+
+  /* Right-overlays stack relocates below the mobile LayersPanel head. */
+  .rightOverlays {
+    top: calc(60px + 56px + 8px);
+    right: 8px;
+    width: min(calc(100vw - 16px), 320px);
+    max-height: calc(100dvh - 140px);
+    overflow-y: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .rightOverlays {
+    width: calc(100vw - 16px);
   }
 }

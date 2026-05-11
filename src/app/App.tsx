@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, type ComponentType } from "react";
+import { lazy, Suspense, type ComponentType } from "react";
 import styles from "./App.module.css";
 import { TopBar } from "@/topbar/TopBar";
 import { SearchLocality } from "@/topbar/SearchLocality";
@@ -33,17 +33,6 @@ import { useAppStore } from "@/app/store";
 
 export default function App() {
   const drawerOpen = useAppStore((s) => s.drawerOpen);
-  // The SensitivityPanel and ComuneFilterPanel share the same right-edge
-  // column. When the Sensitivity one is mounted (roads or trails on),
-  // the Comune one needs to shift down to clear it. Coordinate via a
-  // body class the CSS modules pick up with a `:global(...)` selector.
-  const sensitivityMounted = useAppStore(
-    (s) => s.layers.roads || s.layers.trails,
-  );
-  useEffect(() => {
-    document.body.classList.toggle("has-sensitivity-panel", sensitivityMounted);
-    return () => document.body.classList.remove("has-sensitivity-panel");
-  }, [sensitivityMounted]);
 
   return (
     <div className={styles.shell}>
@@ -56,8 +45,10 @@ export default function App() {
           <ZonesPill />
           <ThresholdControl />
           <LayersPanel />
-          <SensitivityPanel />
-          <ComuneFilterPanel />
+          <div className={styles.rightOverlays}>
+            <SensitivityPanel />
+            <ComuneFilterPanel />
+          </div>
           <Legend />
         </div>
         <Drawer>

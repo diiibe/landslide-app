@@ -3,13 +3,11 @@
    collapsible head + caret) so the two panels read as a row of related
    controls. Layout values mirror LayersPanel deliberately. */
 
+/* Positioning is owned by the parent .rightOverlays wrapper in
+   App.module.css — this panel just describes its own internals so the
+   sibling ComuneFilterPanel can shift down as this one expands. */
 .panel {
-  position: absolute;
-  top: 12px;
-  /* LayersPanel: right 12px + width 216px = 228px occupied on the right.
-     8px gap → start at right 236px so the two panels read as a tight pair. */
-  right: 236px;
-  width: 240px;
+  width: 100%;
   background: var(--c-surface);
   border: 1px solid var(--c-border);
   border-radius: var(--radius-md);
@@ -17,7 +15,6 @@
      don't get truncated at the panel edge. */
   overflow: clip;
   transition: box-shadow .2s var(--e-quart);
-  z-index: 4;
 }
 
 .panel:active {
@@ -97,19 +94,4 @@
   opacity: 0;
 }
 
-/* ───── Mobile / tablet ───── */
-@media (max-width: 768px) {
-  .panel {
-    /* On mobile the LayersPanel takes ~280px on the right; stack this
-       panel below it instead of trying to fit alongside. */
-    top: calc(60px + 56px + 8px); /* below LayersPanel's mobile top + head height + gap */
-    right: 8px;
-    width: min(calc(100vw - 16px), 280px);
-  }
-}
-
-@media (max-width: 480px) {
-  .panel {
-    width: calc(100vw - 16px);
-  }
-}
+/* Mobile / tablet sizing is handled by the .rightOverlays wrapper. */

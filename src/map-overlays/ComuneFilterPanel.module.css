@@ -1,27 +1,17 @@
 /* Floating Comune-filter panel — sits below the SensitivityPanel on the
    right edge, sharing the visual language with LayersPanel + SensitivityPanel. */
 
+/* Positioning is owned by the parent .rightOverlays flex column in
+   App.module.css. The panel just fills its slot — when the sibling
+   SensitivityPanel expands or collapses, this one moves up/down with
+   the natural flex flow. */
 .panel {
-  position: absolute;
-  top: 12px;
-  /* Same column as SensitivityPanel (right 236, width 240). When the
-     SensitivityPanel is mounted this panel sits beneath it; when it
-     isn't, this panel slides up to top:12 via the conditional below. */
-  right: 236px;
-  width: 240px;
+  width: 100%;
   background: var(--c-surface);
   border: 1px solid var(--c-border);
   border-radius: var(--radius-md);
   overflow: clip;
   transition: box-shadow .2s var(--e-quart);
-  z-index: 4;
-}
-
-/* When the SensitivityPanel is also mounted (one of layers.roads /
-   layers.trails is on), nudge this panel below it. The selector keys on
-   a sibling-presence trick we set up in App.tsx via a parent class. */
-:global(.has-sensitivity-panel) .panel {
-  top: calc(12px + var(--sensitivity-panel-height, 80px) + 8px);
 }
 
 .panel:active {
@@ -265,25 +255,8 @@
   font-style: italic;
 }
 
-/* ───── Mobile / tablet ───── */
-@media (max-width: 768px) {
-  .panel {
-    /* When stacked under the LayersPanel + SensitivityPanel on mobile,
-       sit at the bottom of the stack. Exact offset is approximate; the
-       overlays competing here all use position: absolute on the map
-       so visual collisions are gentle. */
-    top: auto;
-    bottom: calc(12px + 64px); /* leave room above the Legend */
-    right: 8px;
-    width: min(calc(100vw - 16px), 320px);
-    max-height: 50dvh;
-  }
-}
-
+/* Mobile / tablet sizing is handled by the .rightOverlays wrapper. */
 @media (max-width: 480px) {
-  .panel {
-    width: calc(100vw - 16px);
-  }
   .chipName {
     max-width: 120px;
   }
