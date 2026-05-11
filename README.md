@@ -20,6 +20,40 @@ npm run test:run         # vitest (unit + component)
 npm run test:e2e         # playwright smoke
 ```
 
+## Production build / deploy
+
+The map depends on a set of static GeoJSON / sprite assets under
+`public/data/` and `public/icons/` that are **gitignored** because of their
+size (combined ~80 MB). A fresh clone will build but the roads, trails,
+comune, and POI overlays will be empty until these are baked.
+
+Build chain (run in this order, from repo root):
+
+| Script              | Output                                                 | Source           | Approx. time |
+|---------------------|--------------------------------------------------------|------------------|--------------|
+| `build:cell-grid`   | `public/data/cell_grid_fvg.geojson` (~12 MB)           | local pipelines  | < 1 min      |
+| `build:comuni`      | `public/data/comuni_fvg.geojson` (~3 MB)               | local pipelines  | < 1 min      |
+| `build:poi`         | `public/data/poi_*.geojson`                            | local pipelines  | < 1 min      |
+| `build:icons`       | `public/icons/sprite.{png,json}`                       | local SVG sources| seconds      |
+| `build:roads`       | `public/data/roads_fvg.geojson` (~35 MB) and `trails_fvg.geojson` (~40 MB) | **Overpass API** | 2–10 min     |
+
+`build:roads` produces both the roads and the trails layers. It is the
+only script that hits the public Overpass API; Overpass is rate-limited,
+so the script falls back across a few mirrors with retry-and-backoff —
+expect occasional 429s and re-runs.
+
+Because of that flakiness and runtime, `build:roads` should be run
+**manually before each deploy**, not in CI. The resulting
+`roads_fvg.geojson` and `trails_fvg.geojson` should be uploaded as a
+GitHub release artifact (or committed to a `data-snapshots` branch and
+checked out by the deploy workflow) so the deploy job has them
+available without re-hitting Overpass.
+
+The non-Overpass scripts (`build:cell-grid`, `build:comuni`,
+`build:poi`, `build:icons`) are reproducible from local inputs and are
+exercised in CI to make sure they don't bitrot — see
+`.github/workflows/ci.yml`.
+
 ## Privacy & token scope
 
 The Mapbox public token is consumed via `VITE_MAPBOX_TOKEN` and is statically
