@@ -62,7 +62,7 @@ export function LayersPanel() {
                   key={m.id}
                   type="button"
                   className={styles.bm}
-                  data-kind={m.id === "j2" ? "outdoors" : "satellite"}
+                  data-kind={m.id}
                   data-active={model === m.id}
                   aria-pressed={model === m.id}
                   title={`Use model ${m.label}`}
