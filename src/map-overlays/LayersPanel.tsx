@@ -222,6 +222,15 @@ function RiskParamsControl(props: RiskParamsControlProps) {
   const { network, model, params, defaults, onChange, onLock } = props;
   const dirty = !paramsEqual(params, defaults);
   const label = network === "roads" ? "Roads" : "Trails";
+  // P1.15: dynamic, descriptive aria-label so the toggle reads correctly
+  // in both states (the previous "Lock as default" was static and lied
+  // when nothing was dirty). `aria-pressed` reflects the "saved" /
+  // "matches default" state so SR users get state info alongside the
+  // visual border tint. The inline SVG (stroke-only) replaces the emoji
+  // so the visual signal works in monochrome / colourblind viewing too.
+  const ariaLabel = dirty
+    ? "Save current parameters as default"
+    : "Defaults match current values";
   return (
     <div className={styles.paramsBlock}>
       <div className={styles.paramsHead}>
@@ -236,13 +245,52 @@ function RiskParamsControl(props: RiskParamsControlProps) {
           title={dirty
             ? `Save current params as default for ${label.toLowerCase()} on ${model.toUpperCase()}`
             : "Current values match the saved default"}
-          aria-label="Lock as default"
+          aria-pressed={!dirty}
+          aria-label={ariaLabel}
         >
-          {dirty ? "🔓" : "🔒"}
+          {dirty ? (
+            // Bookmark outline → "unsaved / save me".
+            <svg
+              viewBox="0 0 16 16"
+              width="12"
+              height="12"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M4 2.5h8v11l-4-2.5-4 2.5z" />
+            </svg>
+          ) : (
+            // Filled bookmark with check → "saved as default".
+            <svg
+              viewBox="0 0 16 16"
+              width="12"
+              height="12"
+              fill="currentColor"
+              stroke="currentColor"
+              strokeWidth="1"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M4 2.5h8v11l-4-2.5-4 2.5z" />
+              <path
+                d="M5.8 7.4l1.6 1.6 3-3"
+                fill="none"
+                stroke="var(--c-surface, #fff)"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          )}
         </button>
       </div>
       <ParamSlider
-        id={`sens-${network}`}
+        kind={network}
+        prop="sensitivity"
         title="Sensitivity"
         suffix="×"
         decimals={2}
@@ -253,7 +301,8 @@ function RiskParamsControl(props: RiskParamsControlProps) {
         onChange={(v) => onChange("sensitivity", v)}
       />
       <ParamSlider
-        id={`gamma-${network}`}
+        kind={network}
+        prop="gamma"
         title="Gamma"
         suffix=""
         decimals={2}
@@ -264,7 +313,8 @@ function RiskParamsControl(props: RiskParamsControlProps) {
         onChange={(v) => onChange("gamma", v)}
       />
       <ParamSlider
-        id={`radius-${network}`}
+        kind={network}
+        prop="radius"
         title="Radius"
         suffix=" cells"
         decimals={0}
@@ -279,7 +329,11 @@ function RiskParamsControl(props: RiskParamsControlProps) {
 }
 
 interface ParamSliderProps {
-  id: string;
+  // P1.16: replaces the old free-form `id` with structured props so we
+  // can derive both the slider `id` and the value-span `id` from the
+  // same source — `aria-describedby` needs them in lockstep.
+  kind: LayerNetwork;
+  prop: keyof RiskParams;
   title: string;
   suffix: string;
   decimals: number;
@@ -291,21 +345,30 @@ interface ParamSliderProps {
 }
 
 function ParamSlider(props: ParamSliderProps) {
-  const { id, title, suffix, decimals, min, max, step, value, onChange } = props;
+  const { kind, prop, title, suffix, decimals, min, max, step, value, onChange } =
+    props;
+  const sliderId = `risk-${kind}-${prop}`;
+  const valId = `${sliderId}-val`;
+  // P1.16: `aria-valuetext` so screen readers announce the human-formatted
+  // value ("1.5 ×", "2.0", "0 cells") instead of the raw number. The
+  // visible `<span class="val">` is wired in via `aria-describedby` so SRs
+  // pick it up as additional context tied to the slider.
+  const valueText = `${value.toFixed(decimals)}${suffix}`;
   return (
     <div className={styles.paramRow}>
-      <label htmlFor={id}>{title}</label>
-      <span className={styles.val}>
-        {value.toFixed(decimals)}
-        {suffix}
+      <label htmlFor={sliderId}>{title}</label>
+      <span id={valId} className={styles.val}>
+        {valueText}
       </span>
       <input
-        id={id}
+        id={sliderId}
         type="range"
         min={min}
         max={max}
         step={step}
         value={value}
+        aria-valuetext={valueText}
+        aria-describedby={valId}
         onChange={(e) => onChange(Number(e.target.value))}
       />
     </div>

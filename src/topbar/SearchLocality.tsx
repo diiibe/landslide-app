@@ -71,6 +71,12 @@ export function SearchLocality() {
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [activeIdx, setActiveIdx] = useState(-1);
   const [open, setOpen] = useState(false);
+  // P2.16: distinguish "fetched, zero matches" from "still typing /
+  // debounced". `loading` is true between a 2+ char query landing in
+  // state and the next fetch resolving. We need this to decide whether
+  // to render the "No matches" status row.
+  const [loading, setLoading] = useState(false);
+  const [fetchedFor, setFetchedFor] = useState<string>("");
   const wrapRef = useRef<HTMLDivElement>(null);
   // P1.7: AbortController keyed to the in-flight request. Each new debounced
   // fetch aborts its predecessor so out-of-order responses can't update the
@@ -92,11 +98,14 @@ export function SearchLocality() {
       if (q.length < 2) {
         setSuggestions([]);
         setActiveIdx(-1);
+        setLoading(false);
+        setFetchedFor("");
         return;
       }
       inflightRef.current?.abort();
       const ctrl = new AbortController();
       inflightRef.current = ctrl;
+      setLoading(true);
       const url =
         `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(q)}.json` +
         `?access_token=${TOKEN}&country=it&bbox=${FVG_BBOX}` +
@@ -113,21 +122,28 @@ export function SearchLocality() {
         setSuggestions(next);
         setActiveIdx(next.length > 0 ? 0 : -1);
         setOpen(true);
+        setFetchedFor(q);
       } catch {
         // network failure or aborted request — silently drop
+      } finally {
+        if (inflightRef.current === ctrl) setLoading(false);
       }
     }, DEBOUNCE_MS);
     return () => clearTimeout(timer);
   }, [query]);
 
-  // Click-outside to close.
+  // Click-outside to close. P1.14: listen on `pointerdown` (covers
+  // mouse + touch + pen). On iOS Safari / Android Chrome with the on-
+  // screen keyboard open, taps outside the dropdown don't reliably
+  // synthesise `mousedown` so the menu stays stuck open. PointerEvents
+  // are supported in every browser we ship to today.
   useEffect(() => {
     if (!open) return;
-    const onDown = (e: MouseEvent) => {
+    const onDown = (e: Event) => {
       if (!wrapRef.current?.contains(e.target as Node)) setOpen(false);
     };
-    document.addEventListener("mousedown", onDown);
-    return () => document.removeEventListener("mousedown", onDown);
+    document.addEventListener("pointerdown", onDown);
+    return () => document.removeEventListener("pointerdown", onDown);
   }, [open]);
 
   const pick = (s: Suggestion) => {
@@ -135,8 +151,23 @@ export function SearchLocality() {
     setSuggestions([]);
     setActiveIdx(-1);
     setOpen(false);
+    setLoading(false);
+    setFetchedFor("");
     flyTo(s);
   };
+
+  // P2.16: render an empty-state status row when the latest *resolved*
+  // fetch returned zero matches for a 2+ char query. We require
+  // `fetchedFor === query.trim()` so we don't flash a "no matches"
+  // message while the user is still typing past a debounce.
+  const trimmed = query.trim();
+  const hasResults = suggestions.length > 0;
+  const showEmptyState =
+    !loading &&
+    trimmed.length >= 2 &&
+    !hasResults &&
+    fetchedFor === trimmed;
+  const menuOpen = open && (hasResults || showEmptyState);
 
   const onKey = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "ArrowDown") {
@@ -181,7 +212,7 @@ export function SearchLocality() {
         placeholder="Search locality, comune…"
         aria-label="Search locality"
         aria-autocomplete="list"
-        aria-expanded={open && suggestions.length > 0}
+        aria-expanded={menuOpen}
         aria-activedescendant={activeIdx >= 0 ? `sl-opt-${activeIdx}` : undefined}
         value={query}
         onChange={(e) => setSearch({ query: e.target.value, placeName: null })}
@@ -189,28 +220,41 @@ export function SearchLocality() {
         onKeyDown={onKey}
       />
       <span className={styles.kbd}>{KBD_HINT}</span>
-      {open && suggestions.length > 0 && (
+      {menuOpen && (
         <ul className={styles.menu} role="listbox">
-          {suggestions.map((s, i) => (
-            <li
-              id={`sl-opt-${i}`}
-              key={s.id}
-              role="option"
-              aria-selected={i === activeIdx}
-              data-active={i === activeIdx}
-              className={styles.opt}
-              onMouseEnter={() => setActiveIdx(i)}
-              onMouseDown={(e) => {
-                // mousedown (not click) so the input's blur doesn't close
-                // the list before the selection lands.
-                e.preventDefault();
-                pick(s);
-              }}
-            >
-              <span className={styles.optName}>{s.name}</span>
-              <span className={styles.optCtx}>{s.context}</span>
+          {hasResults &&
+            suggestions.map((s, i) => (
+              <li
+                id={`sl-opt-${i}`}
+                key={s.id}
+                role="option"
+                aria-selected={i === activeIdx}
+                data-active={i === activeIdx}
+                // P2.16: surface the full locality name on hover/long-press
+                // when ellipsised. iOS Safari shows `title` on long-press
+                // via the action sheet preview; desktop browsers via tooltip.
+                title={s.name}
+                className={styles.opt}
+                onMouseEnter={() => setActiveIdx(i)}
+                onMouseDown={(e) => {
+                  // mousedown (not click) so the input's blur doesn't close
+                  // the list before the selection lands.
+                  e.preventDefault();
+                  pick(s);
+                }}
+              >
+                <span className={styles.optName}>{s.name}</span>
+                <span className={styles.optCtx}>{s.context}</span>
+              </li>
+            ))}
+          {/* P2.16: screen-reader-friendly empty state. `role="status"`
+              announces politely so users typing fast aren't spammed; the
+              row is not selectable as an option. */}
+          {showEmptyState && (
+            <li role="status" className={styles.optEmpty}>
+              No matches in FVG
             </li>
-          ))}
+          )}
         </ul>
       )}
     </div>
