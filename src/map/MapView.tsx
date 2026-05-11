@@ -35,6 +35,7 @@ import {
 } from "./layers/trails";
 import {
   addComuni,
+  applyComuniFilter,
   applyComuniModel,
   setComuniVisible,
 } from "./layers/comuni";
@@ -201,6 +202,7 @@ export function MapView() {
   const radiusTrails = useAppStore((s) => s.riskParams.trails[s.model].radius);
   const dtmOn = useAppStore((s) => s.layers.dtm);
   const theme = useAppStore((s) => s.theme);
+  const selectedComuni = useAppStore((s) => s.selectedComuni);
 
   useEffect(() => {
     if (!ref.current || mapRef.current) return;
@@ -373,6 +375,36 @@ export function MapView() {
     window.addEventListener("fvg:flyto", onFly);
     return () => window.removeEventListener("fvg:flyto", onFly);
   }, []);
+
+  // fitBounds dispatch (e.g. from ComuneFilterPanel). The detail carries
+  // a [[w,s],[e,n]] bbox plus an optional padding override.
+  useEffect(() => {
+    const onFit = (e: Event) => {
+      const d = (e as CustomEvent<{
+        bounds: [[number, number], [number, number]];
+        padding?: number;
+      }>).detail;
+      mapRef.current?.fitBounds(d.bounds, {
+        padding: d.padding ?? 64,
+        duration: 600,
+        essential: true,
+      });
+    };
+    window.addEventListener("fvg:fitbounds", onFit);
+    return () => window.removeEventListener("fvg:fitbounds", onFit);
+  }, []);
+
+  // Reactive comune filter — pushes the current selection into MapLibre's
+  // filter expression. Runs whenever the selection array reference changes
+  // OR the layer is freshly added (comuniOn flip from off→on adds the
+  // layer; applyComuniFilter inside addComuni already covers that path,
+  // but we re-run here too in case selection changed while the layer was
+  // hidden).
+  useEffect(() => {
+    if (mapRef.current && comuniOn) {
+      applyComuniFilter(mapRef.current, selectedComuni);
+    }
+  }, [selectedComuni, comuniOn]);
 
   return <div ref={ref} className={styles.root} aria-label="FVG susceptibility map" />;
 }
