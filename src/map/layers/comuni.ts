@@ -30,7 +30,7 @@ const DATA_URL_KEY = "comuni_fvg.geojson";
 let comuniRaw: GeoJSON.FeatureCollection | null = null;
 let comuniInFlight: Promise<GeoJSON.FeatureCollection> | null = null;
 
-async function loadComuni(): Promise<GeoJSON.FeatureCollection> {
+export async function loadComuni(): Promise<GeoJSON.FeatureCollection> {
   if (comuniRaw) return comuniRaw;
   if (!comuniInFlight) {
     comuniInFlight = (async () => {
