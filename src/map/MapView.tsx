@@ -52,6 +52,19 @@ import {
   setHutsVisible,
 } from "./layers/criticalPoi";
 import { addDtmHillshade, DTM_LAYER, setDtmHillshadeVisible } from "./layers/dtmHillshade";
+import {
+  addUserLayer,
+  applyUserLayer,
+  bringUserLayerToFront,
+  removeUserLayer,
+} from "./layers/userLayer";
+import {
+  openPolygonPopup,
+  registerPolygonClicks,
+  setupUserPolygons,
+  updateUserPolygonsData,
+} from "./layers/userPolygons";
+import { startDrawing, stopDrawing } from "./drawing";
 import { registerPopups } from "./popups";
 import { setMap } from "./instance";
 import styles from "./MapView.module.css";
@@ -241,6 +254,9 @@ export function MapView() {
   const dtmOn = useAppStore((s) => s.layers.dtm);
   const theme = useAppStore((s) => s.theme);
   const selectedComuni = useAppStore((s) => s.selectedComuni);
+  const userLayers = useAppStore((s) => s.userLayers);
+  const userPolygons = useAppStore((s) => s.userPolygons);
+  const drawingMode = useAppStore((s) => s.drawingMode);
 
   useEffect(() => {
     if (!ref.current || mapRef.current) return;
@@ -267,8 +283,22 @@ export function MapView() {
       setupStaticLayers(m);
       applyThemeToLayers(m);
       setupModelLayers(m);
+      // Re-add user uploads after a basemap swap wiped the style. The
+      // userLayers effect would catch this too, but firing here keeps
+      // the layers visible without a one-frame gap.
+      for (const layer of useAppStore.getState().userLayers) {
+        addUserLayer(m, layer);
+      }
+      setupUserPolygons(m, useAppStore.getState().userPolygons);
       popupsUnsubRef.current?.();
-      popupsUnsubRef.current = registerPopups(m);
+      const popupsUnsub = registerPopups(m);
+      const polygonUnsub = registerPolygonClicks(m, () =>
+        useAppStore.getState().userPolygons,
+      );
+      popupsUnsubRef.current = () => {
+        popupsUnsub();
+        polygonUnsub();
+      };
     });
     mapRef.current = m;
     setMap(m);
@@ -445,6 +475,69 @@ export function MapView() {
       applyComuniFilter(mapRef.current, selectedComuni);
     }
   }, [selectedComuni, comuniOn]);
+
+  // User-uploaded layers — reconcile the store array against the map's
+  // current set: remove gone-ids, add new-ids (also after a style swap
+  // that wiped them), apply paint/visibility tweaks on every change.
+  // Always end with the user layers on top of every model and network
+  // layer so uploads stay visible regardless of underlying data.
+  const prevUserIds = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    const m = mapRef.current;
+    if (!m || !m.isStyleLoaded()) return;
+    const seen = new Set<string>();
+    for (const layer of userLayers) {
+      seen.add(layer.id);
+      const sourceId = `user-src-${layer.id}`;
+      if (!m.getSource(sourceId)) {
+        addUserLayer(m, layer);
+      } else {
+        applyUserLayer(m, layer);
+      }
+      bringUserLayerToFront(m, layer.id);
+    }
+    for (const oldId of prevUserIds.current) {
+      if (!seen.has(oldId)) removeUserLayer(m, oldId);
+    }
+    prevUserIds.current = seen;
+  }, [userLayers]);
+
+  // Drawing mode toggle: wire terra-draw on, tear it down on off.
+  useEffect(() => {
+    const m = mapRef.current;
+    if (!m) return;
+    if (drawingMode) {
+      startDrawing(m);
+    } else {
+      stopDrawing();
+    }
+    return () => stopDrawing();
+  }, [drawingMode]);
+
+  // Push the saved polygons array into the map source on every change.
+  useEffect(() => {
+    const m = mapRef.current;
+    if (!m || !m.isStyleLoaded()) return;
+    if (!m.getSource("user-polygons")) {
+      setupUserPolygons(m, userPolygons);
+    } else {
+      updateUserPolygonsData(m, userPolygons);
+    }
+  }, [userPolygons]);
+
+  // LayersPanel's Saved areas row dispatches this event after fitBounds
+  // so the user lands on the polygon and sees its stats in one motion.
+  useEffect(() => {
+    const onShow = (e: Event) => {
+      const m = mapRef.current;
+      if (!m) return;
+      const id = (e as CustomEvent<{ id: string }>).detail.id;
+      const polygon = useAppStore.getState().userPolygons.find((p) => p.id === id);
+      if (polygon) openPolygonPopup(m, polygon);
+    };
+    window.addEventListener("fvg:show-polygon-stats", onShow);
+    return () => window.removeEventListener("fvg:show-polygon-stats", onShow);
+  }, []);
 
   return <div ref={ref} className={styles.root} aria-label="FVG susceptibility map" />;
 }

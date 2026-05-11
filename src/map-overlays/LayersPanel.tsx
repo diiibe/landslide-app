@@ -171,8 +171,114 @@ export function LayersPanel() {
                 SensitivityPanel (mounted in App.tsx) — see
                 src/map-overlays/SensitivityPanel.tsx. */}
           </div>
+          <UserLayersSection />
+          <UserPolygonsSection />
         </div>
       </div>
+    </div>
+  );
+}
+
+function UserLayersSection() {
+  const userLayers = useAppStore((s) => s.userLayers);
+  const updateUserLayer = useAppStore((s) => s.updateUserLayer);
+  const removeUserLayer = useAppStore((s) => s.removeUserLayer);
+  if (userLayers.length === 0) return null;
+  return (
+    <div className={styles.g}>
+      <div className={styles.gTtl}>Tracks &amp; overlays</div>
+      {userLayers.map((l) => (
+        <div key={l.id} className={styles.userRow}>
+          <input
+            type="checkbox"
+            className={styles.userCheck}
+            checked={l.visible}
+            onChange={() => updateUserLayer(l.id, { visible: !l.visible })}
+            aria-label={`Show ${l.name}`}
+          />
+          <input
+            type="color"
+            className={styles.userSwatch}
+            value={l.color}
+            onChange={(e) => updateUserLayer(l.id, { color: e.target.value })}
+            aria-label={`Colour for ${l.name}`}
+            title="Pick a colour"
+          />
+          <button
+            type="button"
+            className={styles.userName}
+            title={l.name}
+            onClick={() => {
+              if (l.bounds) {
+                window.dispatchEvent(
+                  new CustomEvent("fvg:fitbounds", {
+                    detail: { bounds: l.bounds, padding: 80 },
+                  }),
+                );
+              }
+            }}
+          >
+            {l.name}
+          </button>
+          <button
+            type="button"
+            className={styles.userDel}
+            aria-label={`Remove ${l.name}`}
+            title="Remove this layer"
+            onClick={() => removeUserLayer(l.id)}
+          >
+            ×
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function UserPolygonsSection() {
+  const polygons = useAppStore((s) => s.userPolygons);
+  const removeUserPolygon = useAppStore((s) => s.removeUserPolygon);
+  if (polygons.length === 0) return null;
+  return (
+    <div className={styles.g}>
+      <div className={styles.gTtl}>Saved areas</div>
+      {polygons.map((p) => (
+        <div key={p.id} className={styles.userRow}>
+          <span
+            className={styles.userSwatch}
+            style={{ background: p.color, border: 0 }}
+            aria-hidden="true"
+          />
+          <button
+            type="button"
+            className={styles.userName}
+            title={`${p.stats.cellsAboveThreshold} cells ≥ ${p.stats.threshold.toFixed(
+              2,
+            )} · ${p.stats.areaKm2.toFixed(1)} km²`}
+            onClick={() => {
+              window.dispatchEvent(
+                new CustomEvent("fvg:fitbounds", {
+                  detail: { bounds: p.bounds, padding: 64 },
+                }),
+              );
+              window.dispatchEvent(
+                new CustomEvent("fvg:show-polygon-stats", { detail: { id: p.id } }),
+              );
+            }}
+          >
+            {p.name}
+          </button>
+          <button
+            type="button"
+            className={styles.userDel}
+            aria-label={`Remove ${p.name}`}
+            title="Remove this area"
+            onClick={() => removeUserPolygon(p.id)}
+          >
+            ×
+          </button>
+        </div>
+      ))}
     </div>
   );
 }

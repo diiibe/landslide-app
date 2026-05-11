@@ -18,10 +18,16 @@
     "build:icons": "node scripts/build-icons.mjs"
   },
   "dependencies": {
+    "@turf/area": "^7.3.5",
+    "@turf/bbox": "^7.3.5",
+    "@turf/boolean-point-in-polygon": "^7.3.5",
+    "@turf/centroid": "^7.3.5",
     "maplibre-gl": "^5.24.0",
     "pmtiles": "^3.2.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "terra-draw": "^1.30.0",
+    "terra-draw-maplibre-gl-adapter": "^1.4.0",
     "zod": "^4.4.3",
     "zustand": "^4.5.7"
   },

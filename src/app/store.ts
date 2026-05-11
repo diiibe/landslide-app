@@ -1,10 +1,33 @@
 import { create } from "zustand";
-import type { Basemap, ModelId, Theme, Threshold, Zone } from "./types";
+import type {
+  Basemap,
+  ModelId,
+  Theme,
+  Threshold,
+  UserLayer,
+  UserPolygon,
+  Zone,
+} from "./types";
 
 export type GroupId = "view" | "monitoring" | "analytics" | "model";
 
 const THEME_KEY = "fvg:theme";
 const SENS_DEFAULTS_KEY = "fvg:sensitivity-defaults";
+const USER_DATA_KEY = "fvg:user-data";
+
+/** Bright, high-contrast palette assigned round-robin to new user layers
+ *  and drawn polygons. Hand-picked so they stay readable on light AND
+ *  dark basemaps and don't collide with the susceptibility ramp. */
+export const USER_COLOR_PALETTE: readonly string[] = [
+  "#FF3FA4", // hot pink
+  "#00E0D6", // electric cyan
+  "#FFD400", // safety yellow
+  "#7CFC00", // lawn green
+  "#FF7A00", // saturated orange
+  "#A88BFF", // lavender
+  "#3F8CFF", // azure
+  "#FF4D4D", // bright red
+];
 
 export type LayerNetwork = "roads" | "trails";
 
@@ -93,6 +116,65 @@ function persistSensDefaults(s: RiskParamsMap): void {
   } catch {
     /* localStorage may be disabled — ignore */
   }
+}
+
+interface PersistedUserData {
+  layers: UserLayer[];
+  polygons: UserPolygon[];
+}
+
+/** Best-effort load of user uploads + drawn polygons from localStorage.
+ *  Returns empty arrays on missing/corrupt payload — the user's data is
+ *  important but not critical to render the app at all. */
+function loadUserData(): PersistedUserData {
+  if (typeof window === "undefined") return { layers: [], polygons: [] };
+  try {
+    const raw = window.localStorage.getItem(USER_DATA_KEY);
+    if (!raw) return { layers: [], polygons: [] };
+    const parsed = JSON.parse(raw) as Partial<PersistedUserData>;
+    return {
+      layers: Array.isArray(parsed.layers) ? parsed.layers : [],
+      polygons: Array.isArray(parsed.polygons) ? parsed.polygons : [],
+    };
+  } catch {
+    return { layers: [], polygons: [] };
+  }
+}
+
+function persistUserData(d: PersistedUserData): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(USER_DATA_KEY, JSON.stringify(d));
+  } catch {
+    // QuotaExceededError is realistic here (a 5 MB GPX bundle saved into
+    // the same key). The store stays consistent in memory; persistence
+    // just lapses silently for the offending payload.
+  }
+}
+
+/** Generate a stable, sortable id for new user layers / polygons. */
+function uid(prefix: string): string {
+  return `${prefix}_${Date.now().toString(36)}_${Math.random()
+    .toString(36)
+    .slice(2, 8)}`;
+}
+
+/** Round-robin colour assignment off USER_COLOR_PALETTE so each new
+ *  upload / drawn polygon gets a distinct hue without the user picking. */
+function nextUserColor(usedSoFar: string[]): string {
+  const pal = USER_COLOR_PALETTE;
+  const counts = new Map<string, number>(pal.map((c) => [c, 0]));
+  for (const c of usedSoFar) counts.set(c, (counts.get(c) ?? 0) + 1);
+  let best = pal[0]!;
+  let bestN = Infinity;
+  for (const c of pal) {
+    const n = counts.get(c) ?? 0;
+    if (n < bestN) {
+      bestN = n;
+      best = c;
+    }
+  }
+  return best;
 }
 
 export function paramsEqual(a: RiskParams, b: RiskParams): boolean {
@@ -221,6 +303,14 @@ export interface AppState {
   /** ISTAT codes of comuni selected via the filter panel. Empty array =
    *  no filter (show every comune). */
   selectedComuni: string[];
+  /** User-uploaded tracks / overlays (GPX, GeoJSON). Rendered as the
+   *  topmost map layers via the glow + halo + stroke stack. */
+  userLayers: UserLayer[];
+  /** User-drawn polygons with frozen stats taken at the moment of save. */
+  userPolygons: UserPolygon[];
+  /** True while the polygon-drawing tool is active. UI shows a hint and
+   *  the map captures clicks/taps via terra-draw. */
+  drawingMode: boolean;
   groupOpen: Record<GroupId, boolean>;
   search: { query: string; placeName: string | null };
   setModel: (m: ModelId) => void;
@@ -248,12 +338,28 @@ export interface AppState {
   setSelectedComuni: (istatCodes: string[]) => void;
   toggleComune: (istat: string) => void;
   clearComuni: () => void;
+  /* user uploads + drawings */
+  addUserLayer: (
+    layer: Omit<UserLayer, "id" | "color" | "opacity" | "visible" | "createdAt"> & {
+      color?: string;
+    },
+  ) => UserLayer;
+  removeUserLayer: (id: string) => void;
+  updateUserLayer: (id: string, patch: Partial<UserLayer>) => void;
+  addUserPolygon: (
+    polygon: Omit<UserPolygon, "id" | "color" | "createdAt"> & {
+      color?: string;
+    },
+  ) => UserPolygon;
+  removeUserPolygon: (id: string) => void;
+  setDrawingMode: (on: boolean) => void;
   toggleGroup: (g: GroupId) => void;
   setSearch: (s: { query: string; placeName: string | null }) => void;
   reset: () => void;
 }
 
 const riskDefaults = loadSensDefaults();
+const userData = loadUserData();
 
 const initial: Omit<
   AppState,
@@ -262,6 +368,8 @@ const initial: Omit<
   | "setTheme" | "toggleTheme" | "toggleDrawer" | "toggleLegend"
   | "toggleLayersPanel" | "toggleSensitivityPanel" | "toggleComuneFilterPanel"
   | "setSelectedComuni" | "toggleComune" | "clearComuni"
+  | "addUserLayer" | "removeUserLayer" | "updateUserLayer"
+  | "addUserPolygon" | "removeUserPolygon" | "setDrawingMode"
   | "toggleGroup" | "setSearch" | "reset"
 > = {
   model: "j3",
@@ -293,6 +401,9 @@ const initial: Omit<
   sensitivityPanelOpen: initialFloatingPanelOpen(),
   comuneFilterPanelOpen: initialFloatingPanelOpen(),
   selectedComuni: [],
+  userLayers: userData.layers,
+  userPolygons: userData.polygons,
+  drawingMode: false,
   groupOpen: { view: true, monitoring: true, analytics: true, model: true },
   search: { query: "", placeName: null },
 };
@@ -361,6 +472,63 @@ export const useAppStore = create<AppState>((set) => ({
         : { selectedComuni: [...s.selectedComuni, istat] },
     ),
   clearComuni: () => set({ selectedComuni: [] }),
+  addUserLayer: (input) => {
+    const usedColors = useAppStore.getState().userLayers.map((l) => l.color);
+    const layer: UserLayer = {
+      id: uid("ul"),
+      color: input.color ?? nextUserColor(usedColors),
+      opacity: 1,
+      visible: true,
+      createdAt: Date.now(),
+      name: input.name,
+      kind: input.kind,
+      data: input.data,
+      bounds: input.bounds,
+    };
+    set((s) => {
+      const next = [layer, ...s.userLayers];
+      persistUserData({ layers: next, polygons: s.userPolygons });
+      return { userLayers: next };
+    });
+    return layer;
+  },
+  removeUserLayer: (id) =>
+    set((s) => {
+      const next = s.userLayers.filter((l) => l.id !== id);
+      persistUserData({ layers: next, polygons: s.userPolygons });
+      return { userLayers: next };
+    }),
+  updateUserLayer: (id, patch) =>
+    set((s) => {
+      const next = s.userLayers.map((l) => (l.id === id ? { ...l, ...patch } : l));
+      persistUserData({ layers: next, polygons: s.userPolygons });
+      return { userLayers: next };
+    }),
+  addUserPolygon: (input) => {
+    const usedColors = useAppStore.getState().userPolygons.map((p) => p.color);
+    const polygon: UserPolygon = {
+      id: uid("up"),
+      color: input.color ?? nextUserColor(usedColors),
+      createdAt: Date.now(),
+      name: input.name,
+      geometry: input.geometry,
+      bounds: input.bounds,
+      stats: input.stats,
+    };
+    set((s) => {
+      const next = [polygon, ...s.userPolygons];
+      persistUserData({ layers: s.userLayers, polygons: next });
+      return { userPolygons: next };
+    });
+    return polygon;
+  },
+  removeUserPolygon: (id) =>
+    set((s) => {
+      const next = s.userPolygons.filter((p) => p.id !== id);
+      persistUserData({ layers: s.userLayers, polygons: next });
+      return { userPolygons: next };
+    }),
+  setDrawingMode: (on) => set({ drawingMode: on }),
   toggleGroup: (g) =>
     set((s) => ({ groupOpen: { ...s.groupOpen, [g]: !s.groupOpen[g] } })),
   setSearch: (search) => set({ search }),
