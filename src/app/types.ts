@@ -1,5 +1,56 @@
 export type ModelId = "j2" | "j3";
 
+/* ───── User-uploaded layers & drawn areas ───── */
+
+export type UserLayerKind = "gpx" | "geojson";
+
+export interface UserLayer {
+  /** Stable id used in MapLibre source/layer ids and the store array key.
+   *  Generated at upload time (timestamp + random suffix). */
+  id: string;
+  /** Display name, defaulted to the original filename without extension. */
+  name: string;
+  kind: UserLayerKind;
+  /** Hex colour driving the line/glow stack. User-editable via swatch. */
+  color: string;
+  /** 0..1 multiplier on every layer's paint opacity. */
+  opacity: number;
+  visible: boolean;
+  /** Parsed FeatureCollection ready to feed a `geojson` source. */
+  data: GeoJSON.FeatureCollection;
+  /** Track bounds for the optional fitBounds-on-load nicety. */
+  bounds: [[number, number], [number, number]] | null;
+  /** Unix ms — used for sort + localStorage round-trip. */
+  createdAt: number;
+}
+
+export interface UserPolygonStats {
+  /** km² of the polygon itself. */
+  areaKm2: number;
+  /** Susceptibility cells visible *inside* the polygon at save time. */
+  cellsVisible: number;
+  cellsAboveThreshold: number;
+  meanP: number;
+  medianP: number;
+  /** IFFI feature count whose centroid falls inside the polygon. */
+  iffiCount: number;
+  /** Threshold + model in force when the stats were computed — without
+   *  this the numbers above are meaningless out of context. */
+  threshold: number;
+  model: ModelId;
+}
+
+export interface UserPolygon {
+  id: string;
+  name: string;
+  color: string;
+  /** Single-Polygon geometry (4326). MultiPolygon support deferred. */
+  geometry: GeoJSON.Polygon;
+  bounds: [[number, number], [number, number]];
+  stats: UserPolygonStats;
+  createdAt: number;
+}
+
 /**
  * Zone count per model. Used by `useMapStats` to render `zones_active /
  * zones_total` without hardcoding 5 at the call site (P3 nit). Both J.2
