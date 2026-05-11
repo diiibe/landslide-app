@@ -6,7 +6,10 @@
   background: var(--c-surface);
   border: 1px solid var(--c-border);
   border-radius: var(--radius-md);
-  overflow: hidden;
+  /* P1.15: `clip` keeps the corner-rounding behaviour of `hidden` for
+   * children but does NOT establish a scroll/paint container, so the
+   * global \`:focus-visible\` ring isn't truncated at the panel edge. */
+  overflow: clip;
   transition: box-shadow .2s var(--e-quart);
 }
 .panel:active { box-shadow: 0 4px 14px rgba(35,38,31,.08); }
@@ -157,6 +160,14 @@
 .lockBtn[data-active="true"] {
   border-color: var(--c-forest);
   color: var(--c-forest);
+}
+/* P1.15: keyboard focus-visible mirroring the active border treatment.
+ * The global focus ring exists but a button this small benefits from a
+ * dedicated, higher-contrast indicator. */
+.lockBtn:focus-visible {
+  outline: none;
+  border-color: var(--c-forest);
+  box-shadow: 0 0 0 2px rgba(47, 93, 58, 0.35);
 }
 
 /* ───── Mobile / tablet ───── */
