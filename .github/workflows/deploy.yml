@@ -18,6 +18,32 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 20, cache: npm }
       - run: npm ci
+
+      # Static assets (roads/trails/POI/comuni/cell-grid/icons) are baked
+      # at deploy time so visitors see overlays on the very first page
+      # load without anyone having to run `npm run build:*` locally.
+      # The cache key folds in every build script's content + the lockfile
+      # — when a script or its deps change, OSM/Overpass gets re-queried.
+      - id: static-assets-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            public/data
+            public/icons
+          key: static-assets-v1-${{ hashFiles('scripts/**', 'package-lock.json') }}
+
+      # Build whatever is missing from the cache. `npm run build:roads`
+      # hits Overpass; the script already retries across 3 endpoints,
+      # but if all three are down the deploy fails fast (deliberate —
+      # better than shipping a half-empty map).
+      - if: steps.static-assets-cache.outputs.cache-hit != 'true'
+        run: |
+          npm run build:cell-grid
+          npm run build:roads
+          npm run build:comuni
+          npm run build:poi
+          npm run build:icons
+
       - run: VITE_BASE=/landslide-app/ VITE_MAPBOX_TOKEN=${{ secrets.MAPBOX_TOKEN }} npm run build
       - uses: actions/upload-pages-artifact@v3
         with: { path: dist }
