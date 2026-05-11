@@ -19,6 +19,7 @@ const MapView: ComponentType = import.meta.env.MODE === "test"
     );
 import { ZonesPill } from "@/map-overlays/ZonesPill";
 import { LayersPanel } from "@/map-overlays/LayersPanel";
+import { SensitivityPanel } from "@/map-overlays/SensitivityPanel";
 import { Legend } from "@/map-overlays/Legend";
 import { ThresholdControl } from "@/map-overlays/ThresholdControl";
 import { Drawer } from "@/drawer/Drawer";
@@ -42,6 +43,7 @@ export default function App() {
           <ZonesPill />
           <ThresholdControl />
           <LayersPanel />
+          <SensitivityPanel />
           <Legend />
         </div>
         <Drawer>

@@ -1,0 +1,115 @@
+/* Floating Sensitivity panel — sits to the left of LayersPanel on the
+   map's right edge. Shares the visual language (surface, border,
+   collapsible head + caret) so the two panels read as a row of related
+   controls. Layout values mirror LayersPanel deliberately. */
+
+.panel {
+  position: absolute;
+  top: 12px;
+  /* LayersPanel: right 12px + width 216px = 228px occupied on the right.
+     8px gap → start at right 236px so the two panels read as a tight pair. */
+  right: 236px;
+  width: 240px;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-md);
+  /* P1.15: clip (not hidden) so focus rings on the lock buttons inside
+     don't get truncated at the panel edge. */
+  overflow: clip;
+  transition: box-shadow .2s var(--e-quart);
+  z-index: 4;
+}
+
+.panel:active {
+  box-shadow: 0 4px 14px rgba(35, 38, 31, 0.08);
+}
+
+@media (hover: hover) {
+  .panel:hover {
+    box-shadow: 0 4px 14px rgba(35, 38, 31, 0.08);
+  }
+}
+
+.head {
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  border: 0;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  border-bottom: 1px solid var(--c-border);
+  transition: background .18s var(--e-quart);
+  font: inherit;
+  color: inherit;
+}
+
+.head:active {
+  background: var(--c-panel-head-hover);
+}
+
+@media (hover: hover) {
+  .head:hover {
+    background: var(--c-panel-head-hover);
+  }
+}
+
+.ttl {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--c-text);
+  flex: 1;
+}
+
+.caret {
+  color: var(--c-text-soft);
+  font-size: 11px;
+  transition: transform .28s var(--e-expo);
+}
+
+.panel[data-open="false"] .caret {
+  transform: rotate(-90deg);
+}
+
+.wrap {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows .35s var(--e-expo);
+}
+
+.wrap > .body {
+  min-height: 0;
+  overflow: hidden;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: opacity .28s var(--e-quart);
+}
+
+.panel[data-open="false"] .wrap {
+  grid-template-rows: 0fr;
+}
+
+.panel[data-open="false"] .wrap > .body {
+  opacity: 0;
+}
+
+/* ───── Mobile / tablet ───── */
+@media (max-width: 768px) {
+  .panel {
+    /* On mobile the LayersPanel takes ~280px on the right; stack this
+       panel below it instead of trying to fit alongside. */
+    top: calc(60px + 56px + 8px); /* below LayersPanel's mobile top + head height + gap */
+    right: 8px;
+    width: min(calc(100vw - 16px), 280px);
+  }
+}
+
+@media (max-width: 480px) {
+  .panel {
+    width: calc(100vw - 16px);
+  }
+}
