@@ -12,7 +12,7 @@ import {
   updateSusceptibilityThreshold,
   updateSusceptibilityZones,
 } from "./layers/susceptibility";
-import { addIffi, setIffiVisible } from "./layers/iffi";
+import { addIffi, IFFI_FILL, IFFI_LINE, setIffiVisible } from "./layers/iffi";
 import { addZoneBoundaries, setZoneBoundariesVisible, ZONE_LINE } from "./layers/zones";
 import {
   addSmoothHeatmap,
@@ -25,6 +25,9 @@ import {
   addRoads,
   applyRoadSensitivity,
   rebakeRoads,
+  ROADS_GLOW,
+  ROADS_HALO,
+  ROADS_LAYER,
   setRoadsVisible,
 } from "./layers/roads";
 import {
@@ -32,6 +35,9 @@ import {
   applyTrailSensitivity,
   rebakeTrails,
   setTrailsVisible,
+  TRAILS_GLOW,
+  TRAILS_HALO,
+  TRAILS_LAYER,
 } from "./layers/trails";
 import {
   addComuni,
@@ -149,6 +155,26 @@ function applyThemeToLayers(m: maplibregl.Map): void {
  * susceptibility, so it must be removed BEFORE the source; on add it
  * must come AFTER the source exists.
  */
+/**
+ * Bottom-most network layer currently in the style, in priority order
+ * (lowest z first). The road/trail/POI network should always sit on top
+ * of model data (cells + heatmap + IFFI + comuni choropleth) so the
+ * route context stays readable when a comune is highlighted. We collect
+ * the layer ids in the order they were added by `setupStaticLayers`
+ * (trails before roads) and return the first one still present.
+ */
+function networkAnchor(m: maplibregl.Map): string | undefined {
+  const candidates = [
+    TRAILS_GLOW,
+    TRAILS_HALO,
+    TRAILS_LAYER,
+    ROADS_GLOW,
+    ROADS_HALO,
+    ROADS_LAYER,
+  ];
+  return candidates.find((id) => m.getLayer(id));
+}
+
 function setupModelLayers(m: maplibregl.Map): void {
   const s = useAppStore.getState();
   if (m.getLayer(ZONE_LINE)) m.removeLayer(ZONE_LINE);
@@ -162,6 +188,18 @@ function setupModelLayers(m: maplibregl.Map): void {
   addIffi(m, s.layers.iffi);
   addZoneBoundaries(m, s.layers.zoneBoundaries);
   setSusceptibilityVisible(m, s.layers.susceptibility);
+
+  // Keep the network on top of the model data so roads + trails remain
+  // visible across the comune choropleth (and any other coloured fill
+  // below them). MapLibre's `addLayer` puts new layers on top by
+  // default; we move the freshly-added model layers below the network
+  // anchor (the bottom-most trail/road layer) after the fact.
+  const anchor = networkAnchor(m);
+  if (anchor) {
+    for (const id of [SUSCEPT_LAYER, HEAT_LAYER, IFFI_FILL, IFFI_LINE, ZONE_LINE]) {
+      if (m.getLayer(id)) m.moveLayer(id, anchor);
+    }
+  }
 }
 
 // Trailing-edge debounce delay for the rebake effects. Slider drags emit
