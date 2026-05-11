@@ -15,3 +15,29 @@ jobs:
       - run: npm run build
       - run: npm audit --omit=dev --audit-level=high
         continue-on-error: true
+
+  static-assets:
+    # Smoke-build the non-Overpass static assets so the scripts don't bitrot.
+    # build:roads is intentionally excluded — it hits the public Overpass
+    # API, which is rate-limited and unreliable in CI. See README for the
+    # full deploy chain. continue-on-error so a flaky pipeline doesn't
+    # block PR merges; artifacts are uploaded for inspection.
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm }
+      - run: npm ci
+      - run: npm run build:cell-grid
+      - run: npm run build:comuni
+      - run: npm run build:poi
+      - run: npm run build:icons
+      - uses: actions/upload-artifact@v4
+        with:
+          name: static-assets
+          path: |
+            public/data/
+            public/icons/
+          if-no-files-found: ignore
+          retention-days: 7
