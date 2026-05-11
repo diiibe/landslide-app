@@ -36,7 +36,7 @@
   appearance: none;
   width: 100%;
   height: 4px;
-  background: linear-gradient(90deg,#E8F0D8 0%,#8BB26B 25%,#D9A441 50%,#D25524 75%,#7A1F10 100%);
+  background: var(--c-ramp);
   border-radius: 2px;
   outline: none;
   margin: 4px 0 2px;
