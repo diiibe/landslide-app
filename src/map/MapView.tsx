@@ -52,6 +52,12 @@ import {
   setHutsVisible,
 } from "./layers/criticalPoi";
 import { addDtmHillshade, DTM_LAYER, setDtmHillshadeVisible } from "./layers/dtmHillshade";
+import {
+  addUserLayer,
+  applyUserLayer,
+  bringUserLayerToFront,
+  removeUserLayer,
+} from "./layers/userLayer";
 import { registerPopups } from "./popups";
 import { setMap } from "./instance";
 import styles from "./MapView.module.css";
@@ -241,6 +247,7 @@ export function MapView() {
   const dtmOn = useAppStore((s) => s.layers.dtm);
   const theme = useAppStore((s) => s.theme);
   const selectedComuni = useAppStore((s) => s.selectedComuni);
+  const userLayers = useAppStore((s) => s.userLayers);
 
   useEffect(() => {
     if (!ref.current || mapRef.current) return;
@@ -267,6 +274,12 @@ export function MapView() {
       setupStaticLayers(m);
       applyThemeToLayers(m);
       setupModelLayers(m);
+      // Re-add user uploads after a basemap swap wiped the style. The
+      // userLayers effect would catch this too, but firing here keeps
+      // the layers visible without a one-frame gap.
+      for (const layer of useAppStore.getState().userLayers) {
+        addUserLayer(m, layer);
+      }
       popupsUnsubRef.current?.();
       popupsUnsubRef.current = registerPopups(m);
     });
@@ -445,6 +458,32 @@ export function MapView() {
       applyComuniFilter(mapRef.current, selectedComuni);
     }
   }, [selectedComuni, comuniOn]);
+
+  // User-uploaded layers — reconcile the store array against the map's
+  // current set: remove gone-ids, add new-ids (also after a style swap
+  // that wiped them), apply paint/visibility tweaks on every change.
+  // Always end with the user layers on top of every model and network
+  // layer so uploads stay visible regardless of underlying data.
+  const prevUserIds = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    const m = mapRef.current;
+    if (!m || !m.isStyleLoaded()) return;
+    const seen = new Set<string>();
+    for (const layer of userLayers) {
+      seen.add(layer.id);
+      const sourceId = `user-src-${layer.id}`;
+      if (!m.getSource(sourceId)) {
+        addUserLayer(m, layer);
+      } else {
+        applyUserLayer(m, layer);
+      }
+      bringUserLayerToFront(m, layer.id);
+    }
+    for (const oldId of prevUserIds.current) {
+      if (!seen.has(oldId)) removeUserLayer(m, oldId);
+    }
+    prevUserIds.current = seen;
+  }, [userLayers]);
 
   return <div ref={ref} className={styles.root} aria-label="FVG susceptibility map" />;
 }
