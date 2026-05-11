@@ -2,6 +2,9 @@ import { describe, expect, it } from "vitest";
 import {
   CellGridFileSchema,
   ComuneFeatureCollectionSchema,
+  CriticalPoiFeatureCollectionSchema,
+  RoadsFeatureCollectionSchema,
+  TrailsFeatureCollectionSchema,
   parseOrThrow,
 } from "./schemas";
 
@@ -33,7 +36,11 @@ describe("CellGridFileSchema", () => {
 
   it("rejects non-numeric entries in data", () => {
     expect(() =>
-      parseOrThrow(CellGridFileSchema, { step: 0.002, data: [1, "two" as unknown as number, 3] }, "cell_grid"),
+      parseOrThrow(
+        CellGridFileSchema,
+        { step: 0.002, data: [1, "two" as unknown as number, 3] },
+        "cell_grid",
+      ),
     ).toThrow();
   });
 });
@@ -73,14 +80,6 @@ describe("ComuneFeatureCollectionSchema", () => {
     ).toThrow();
   });
 
-  it("rejects a feature with wrong type", () => {
-    const fc = {
-      type: "FeatureCollection",
-      features: [{ type: "NotAFeature", geometry: {}, properties: {} }],
-    };
-    expect(() => parseOrThrow(ComuneFeatureCollectionSchema, fc, "comuni")).toThrow();
-  });
-
   it("preserves unknown properties (passthrough)", () => {
     const fc = {
       type: "FeatureCollection",
@@ -93,8 +92,175 @@ describe("ComuneFeatureCollectionSchema", () => {
       ],
     };
     const parsed = parseOrThrow(ComuneFeatureCollectionSchema, fc, "comuni");
-    const first = parsed.features[0];
-    if (!first) throw new Error("expected feature");
-    expect((first.properties as { custom_field?: number }).custom_field).toBe(42);
+    const props = parsed.features[0]?.properties as Record<string, unknown>;
+    expect(props.custom_field).toBe(42);
+  });
+});
+
+describe("RoadsFeatureCollectionSchema", () => {
+  it("accepts an empty FeatureCollection", () => {
+    expect(() =>
+      parseOrThrow(
+        RoadsFeatureCollectionSchema,
+        { type: "FeatureCollection", features: [] },
+        "roads_fvg.geojson",
+      ),
+    ).not.toThrow();
+  });
+
+  it("accepts a feature with empty properties (as the builder writes)", () => {
+    const fc = {
+      type: "FeatureCollection",
+      features: [
+        {
+          type: "Feature",
+          geometry: { type: "LineString", coordinates: [[13, 46], [13.1, 46.1]] },
+          properties: {},
+        },
+      ],
+    };
+    expect(() =>
+      parseOrThrow(RoadsFeatureCollectionSchema, fc, "roads_fvg.geojson"),
+    ).not.toThrow();
+  });
+
+  it("rejects a wrong top-level type", () => {
+    expect(() =>
+      parseOrThrow(
+        RoadsFeatureCollectionSchema,
+        { type: "Feature", features: [] },
+        "roads_fvg.geojson",
+      ),
+    ).toThrow(/roads_fvg/);
+  });
+
+  it("rejects a feature with non-Feature type", () => {
+    const fc = {
+      type: "FeatureCollection",
+      features: [{ type: "Polygon", geometry: {}, properties: {} }],
+    };
+    expect(() =>
+      parseOrThrow(RoadsFeatureCollectionSchema, fc, "roads_fvg.geojson"),
+    ).toThrow();
+  });
+
+  it("rejects when features is missing", () => {
+    expect(() =>
+      parseOrThrow(
+        RoadsFeatureCollectionSchema,
+        { type: "FeatureCollection" },
+        "roads_fvg.geojson",
+      ),
+    ).toThrow();
+  });
+});
+
+describe("TrailsFeatureCollectionSchema", () => {
+  it("accepts a trail feature with OSM-shaped properties", () => {
+    const fc = {
+      type: "FeatureCollection",
+      features: [
+        {
+          type: "Feature",
+          geometry: { type: "LineString", coordinates: [[13, 46], [13.05, 46.05]] },
+          properties: { sac_scale: "hiking", trail_visibility: "good" },
+        },
+      ],
+    };
+    expect(() =>
+      parseOrThrow(TrailsFeatureCollectionSchema, fc, "trails_fvg.geojson"),
+    ).not.toThrow();
+  });
+
+  it("rejects a wrong top-level type", () => {
+    expect(() =>
+      parseOrThrow(
+        TrailsFeatureCollectionSchema,
+        { type: "FeatureCollection", features: "not-an-array" },
+        "trails_fvg.geojson",
+      ),
+    ).toThrow();
+  });
+});
+
+describe("CriticalPoiFeatureCollectionSchema", () => {
+  it("accepts a hospital feature", () => {
+    const fc = {
+      type: "FeatureCollection",
+      features: [
+        {
+          type: "Feature",
+          geometry: { type: "Point", coordinates: [13.78, 45.65] },
+          properties: {
+            name: "Ospedale di Cattinara",
+            category: "hospital",
+            group: "critical",
+            importance: 6,
+            risk_j2: 0.12,
+            risk_j3: 0.18,
+          },
+        },
+      ],
+    };
+    expect(() =>
+      parseOrThrow(CriticalPoiFeatureCollectionSchema, fc, "poi_fvg.geojson"),
+    ).not.toThrow();
+  });
+
+  it("rejects a feature missing category", () => {
+    const fc = {
+      type: "FeatureCollection",
+      features: [
+        {
+          type: "Feature",
+          geometry: { type: "Point", coordinates: [13, 46] },
+          properties: { group: "critical", importance: 5 },
+        },
+      ],
+    };
+    expect(() =>
+      parseOrThrow(CriticalPoiFeatureCollectionSchema, fc, "poi_fvg.geojson"),
+    ).toThrow(/category/);
+  });
+
+  it("rejects a feature missing group", () => {
+    const fc = {
+      type: "FeatureCollection",
+      features: [
+        {
+          type: "Feature",
+          geometry: { type: "Point", coordinates: [13, 46] },
+          properties: { category: "hospital", importance: 5 },
+        },
+      ],
+    };
+    expect(() =>
+      parseOrThrow(CriticalPoiFeatureCollectionSchema, fc, "poi_fvg.geojson"),
+    ).toThrow(/group/);
+  });
+
+  it("rejects a wrong top-level type", () => {
+    expect(() =>
+      parseOrThrow(
+        CriticalPoiFeatureCollectionSchema,
+        { type: "Wrong", features: [] },
+        "poi_fvg.geojson",
+      ),
+    ).toThrow();
+  });
+});
+
+describe("parseOrThrow error format", () => {
+  it("includes the source name in the thrown error", () => {
+    try {
+      parseOrThrow(
+        RoadsFeatureCollectionSchema,
+        { type: "wrong" },
+        "roads_fvg.geojson",
+      );
+      throw new Error("should have thrown");
+    } catch (e) {
+      expect((e as Error).message).toMatch(/roads_fvg\.geojson failed validation/);
+    }
   });
 });

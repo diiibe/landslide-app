@@ -1,4 +1,5 @@
 import type { Map as MLMap, GeoJSONSource } from "maplibre-gl";
+import type { ExpressionSpecification } from "@maplibre/maplibre-gl-style-spec";
 import { useAppStore } from "@/app/store";
 import type { ModelId } from "@/app/types";
 import {
@@ -6,6 +7,7 @@ import {
   loadCellGrid,
   type CellGrid,
 } from "./cellGrid";
+import { TrailsFeatureCollectionSchema, parseOrThrow } from "@/lib/schemas";
 
 /**
  * Trails overlay (risk-tinted) — sentieri / mulattiere / piste.
@@ -26,11 +28,11 @@ export const TRAILS_GLOW = "trails-overlay-glow";
 
 const DATA_URL_KEY = "trails_fvg.geojson";
 
-function scaledRisk(sens: number): unknown {
+function scaledRisk(sens: number): ExpressionSpecification {
   return ["min", 1, ["*", sens, ["coalesce", ["get", "risk"], 0]]];
 }
 
-function trailColor(sens: number): unknown {
+function trailColor(sens: number): ExpressionSpecification {
   return [
     "interpolate", ["linear"], scaledRisk(sens),
     0.00, "#7BAF8A", // forest green — safe trail
@@ -43,7 +45,7 @@ function trailColor(sens: number): unknown {
   ];
 }
 
-function trailGlow(sens: number): unknown {
+function trailGlow(sens: number): ExpressionSpecification {
   return [
     "interpolate", ["linear"], scaledRisk(sens),
     0.00, "#7BAF8A",
@@ -64,7 +66,9 @@ async function loadTrails(): Promise<GeoJSON.FeatureCollection> {
       const url = `${import.meta.env.BASE_URL}data/${DATA_URL_KEY}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error(`${DATA_URL_KEY}: ${res.status}`);
-      return (await res.json()) as GeoJSON.FeatureCollection;
+      const json: unknown = await res.json();
+      const validated = parseOrThrow(TrailsFeatureCollectionSchema, json, DATA_URL_KEY);
+      return validated as GeoJSON.FeatureCollection;
     })();
   }
   trailsRaw = await trailsInFlight;
@@ -156,7 +160,7 @@ export function addTrails(m: MLMap, visible: boolean, dark: boolean): void {
     type: "line",
     source: TRAILS_SOURCE,
     paint: {
-      "line-color": trailGlow(sens) as never,
+      "line-color": trailGlow(sens),
       "line-opacity": outerOpacity,
       "line-blur": 10,
       "line-width": 14,
@@ -174,7 +178,7 @@ export function addTrails(m: MLMap, visible: boolean, dark: boolean): void {
     type: "line",
     source: TRAILS_SOURCE,
     paint: {
-      "line-color": trailGlow(sens) as never,
+      "line-color": trailGlow(sens),
       "line-opacity": haloOpacity,
       "line-blur": 5,
       "line-width": 6,
@@ -192,7 +196,7 @@ export function addTrails(m: MLMap, visible: boolean, dark: boolean): void {
     type: "line",
     source: TRAILS_SOURCE,
     paint: {
-      "line-color": trailColor(sens) as never,
+      "line-color": trailColor(sens),
       "line-opacity": 1.0,
       "line-width": 1.6,
       "line-dasharray": [2, 1.6],
@@ -221,7 +225,7 @@ export function applyTrailSensitivity(m: MLMap): void {
   if (!m.getLayer(TRAILS_LAYER)) return;
   const st = useAppStore.getState();
   const sens = st.riskParams.trails[st.model].sensitivity;
-  m.setPaintProperty(TRAILS_LAYER, "line-color", trailColor(sens) as never);
-  m.setPaintProperty(TRAILS_HALO, "line-color", trailGlow(sens) as never);
-  m.setPaintProperty(TRAILS_GLOW, "line-color", trailGlow(sens) as never);
+  m.setPaintProperty(TRAILS_LAYER, "line-color", trailColor(sens));
+  m.setPaintProperty(TRAILS_HALO, "line-color", trailGlow(sens));
+  m.setPaintProperty(TRAILS_GLOW, "line-color", trailGlow(sens));
 }

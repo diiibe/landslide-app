@@ -8,9 +8,8 @@
  * (e.g. `Cannot read 'features' of undefined`) into a single, actionable
  * error at the loader.
  *
- * Sprint 6 adds schemas for the two loaders that need them right now
- * (cell grid + comuni). Roads / trails / POI loaders use a similar
- * pattern and will be migrated in a follow-up pass.
+ * Sprint 6 added schemas for cell grid + comuni. Sprint 8 extends the
+ * coverage to the remaining network/POI loaders (roads, trails, POI).
  */
 import { z } from "zod";
 
@@ -68,13 +67,112 @@ export const ComuneFeatureCollectionSchema = z.object({
 export type ComuneFeatureCollection = z.infer<typeof ComuneFeatureCollectionSchema>;
 
 /**
+ * Roads FeatureCollection — produced by `scripts/build-roads.mjs`.
+ *
+ * Each feature is a LineString / MultiLineString trimmed to FVG. The build
+ * script writes empty `properties` and `risk` is baked in at runtime by
+ * `bakeRiskIntoFeatures` (see `cellGrid.ts`). Older payloads may carry an
+ * OSM `class` (highway tag) — we accept it but don't require it.
+ *
+ * `passthrough()` on properties lets any future per-feature metadata
+ * survive validation without a schema update; only the structural shape
+ * is enforced here.
+ */
+export const RoadsFeatureSchema = z.object({
+  type: z.literal("Feature"),
+  geometry: z.unknown(),
+  properties: z
+    .object({
+      class: z.string().optional(),
+      risk: z.number().optional(),
+    })
+    .passthrough()
+    .nullable()
+    .optional(),
+});
+
+export const RoadsFeatureCollectionSchema = z.object({
+  type: z.literal("FeatureCollection"),
+  features: z.array(RoadsFeatureSchema),
+});
+
+export type RoadsFeatureCollection = z.infer<typeof RoadsFeatureCollectionSchema>;
+
+/**
+ * Trails FeatureCollection — produced by `scripts/build-roads.mjs` (same
+ * builder, different highway classes). Shape mirrors roads; OSM `sac_scale`
+ * and `trail_visibility` may appear in properties but are not required.
+ */
+export const TrailsFeatureSchema = z.object({
+  type: z.literal("Feature"),
+  geometry: z.unknown(),
+  properties: z
+    .object({
+      class: z.string().optional(),
+      sac_scale: z.string().optional(),
+      trail_visibility: z.string().optional(),
+      risk: z.number().optional(),
+    })
+    .passthrough()
+    .nullable()
+    .optional(),
+});
+
+export const TrailsFeatureCollectionSchema = z.object({
+  type: z.literal("FeatureCollection"),
+  features: z.array(TrailsFeatureSchema),
+});
+
+export type TrailsFeatureCollection = z.infer<typeof TrailsFeatureCollectionSchema>;
+
+/**
+ * Critical POI FeatureCollection — produced by `scripts/build-poi.mjs`.
+ *
+ * Each feature is a Point with classification metadata (`category`,
+ * `group`, `importance`) and per-model risk (`risk_j2`, `risk_j3`) baked
+ * at build time. The renderer (`criticalPoi.ts`) reads:
+ *
+ *   - `group` to filter into the critical/huts layer
+ *   - `category` to resolve the icon image
+ *   - `importance` for the size interpolation
+ *   - `risk_j2` / `risk_j3` for the per-model tint
+ *
+ * `name` is optional (some OSM entries lack one) and isn't load-bearing.
+ */
+export const CriticalPoiFeatureSchema = z.object({
+  type: z.literal("Feature"),
+  geometry: z.unknown(),
+  properties: z
+    .object({
+      name: z.string().optional(),
+      category: z.string(),
+      group: z.string(),
+      importance: z.number().optional(),
+      risk_j2: z.number().optional(),
+      risk_j3: z.number().optional(),
+    })
+    .passthrough(),
+});
+
+export const CriticalPoiFeatureCollectionSchema = z.object({
+  type: z.literal("FeatureCollection"),
+  features: z.array(CriticalPoiFeatureSchema),
+});
+
+export type CriticalPoiFeatureCollection = z.infer<typeof CriticalPoiFeatureCollectionSchema>;
+
+/**
  * Helper: parse with a schema and throw a descriptive error on failure.
  * The thrown message names the source (so the boundary point is obvious
  * in browser DevTools) and lists every zod issue path so a malformed
  * field is spotted at a glance.
  */
 export function parseOrThrow<T>(
-  schema: { safeParse: (data: unknown) => { success: true; data: T } | { success: false; error: { issues: ReadonlyArray<{ path: PropertyKey[]; message: string }> } } },
+  schema: {
+    safeParse: (data: unknown) =>
+      | { success: true; data: T }
+      | { success: false; error: { issues: ReadonlyArray<{ path: PropertyKey[]; message: string }> } };
+  },
   data: unknown,
   source: string,
 ): T {
@@ -83,5 +181,5 @@ export function parseOrThrow<T>(
   const summary = r.error.issues
     .map((i) => `${i.path.join(".") || "<root>"}: ${i.message}`)
     .join("; ");
-  throw new Error(`${source}: invalid payload — ${summary}`);
+  throw new Error(`${source} failed validation: ${summary}`);
 }
