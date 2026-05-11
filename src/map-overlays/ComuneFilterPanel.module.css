@@ -1,0 +1,274 @@
+/* Floating Comune-filter panel — sits below the SensitivityPanel on the
+   right edge, sharing the visual language with LayersPanel + SensitivityPanel. */
+
+.panel {
+  position: absolute;
+  top: 12px;
+  /* Same column as SensitivityPanel (right 236, width 240). When the
+     SensitivityPanel is mounted this panel sits beneath it; when it
+     isn't, this panel slides up to top:12 via the conditional below. */
+  right: 236px;
+  width: 240px;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-md);
+  overflow: clip;
+  transition: box-shadow .2s var(--e-quart);
+  z-index: 4;
+}
+
+/* When the SensitivityPanel is also mounted (one of layers.roads /
+   layers.trails is on), nudge this panel below it. The selector keys on
+   a sibling-presence trick we set up in App.tsx via a parent class. */
+:global(.has-sensitivity-panel) .panel {
+  top: calc(12px + var(--sensitivity-panel-height, 80px) + 8px);
+}
+
+.panel:active {
+  box-shadow: 0 4px 14px rgba(35, 38, 31, 0.08);
+}
+
+@media (hover: hover) {
+  .panel:hover {
+    box-shadow: 0 4px 14px rgba(35, 38, 31, 0.08);
+  }
+}
+
+.head {
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  border: 0;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  border-bottom: 1px solid var(--c-border);
+  transition: background .18s var(--e-quart);
+  font: inherit;
+  color: inherit;
+}
+
+.head:active {
+  background: var(--c-panel-head-hover);
+}
+
+@media (hover: hover) {
+  .head:hover {
+    background: var(--c-panel-head-hover);
+  }
+}
+
+.ttl {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--c-text);
+  flex: 1;
+}
+
+.count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 18px;
+  padding: 0 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--c-surface);
+  background: var(--c-forest);
+  border-radius: 9px;
+}
+
+.caret {
+  color: var(--c-text-soft);
+  font-size: 11px;
+  transition: transform .28s var(--e-expo);
+}
+
+.panel[data-open="false"] .caret {
+  transform: rotate(-90deg);
+}
+
+.wrap {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows .35s var(--e-expo);
+}
+
+.wrap > .body {
+  min-height: 0;
+  overflow: hidden;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: opacity .28s var(--e-quart);
+}
+
+.panel[data-open="false"] .wrap {
+  grid-template-rows: 0fr;
+}
+
+.panel[data-open="false"] .wrap > .body {
+  opacity: 0;
+}
+
+.searchWrap {
+  position: relative;
+}
+
+.input {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 12px;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-sm);
+  background: var(--c-surface);
+  color: var(--c-text);
+  outline: none;
+  transition: border-color .15s var(--e-quart);
+}
+
+.input::placeholder {
+  color: var(--c-text-soft);
+}
+
+.input:focus-visible {
+  border-color: var(--c-forest);
+  box-shadow: 0 0 0 2px rgba(47, 93, 58, 0.25);
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 240px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 4px 0;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 6px 18px rgba(35, 38, 31, 0.18);
+  list-style: none;
+  z-index: 5;
+}
+
+.opt {
+  padding: 7px 12px;
+  font-size: 12px;
+  color: var(--c-text);
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.opt[data-active="true"],
+.opt:hover {
+  background: var(--c-panel-item-hover);
+  color: var(--c-forest);
+}
+
+@media (max-width: 768px) {
+  .opt {
+    min-height: 44px;
+    padding: 12px 12px;
+    display: flex;
+    align-items: center;
+  }
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 4px 4px 8px;
+  font-size: 11px;
+  border: 1px solid var(--c-forest);
+  background: var(--c-bg-linen);
+  color: var(--c-forest);
+  border-radius: 12px;
+  cursor: pointer;
+  max-width: 100%;
+  transition: background .12s var(--e-quart);
+}
+
+.chip:hover {
+  background: var(--c-panel-item-hover);
+}
+
+.chipName {
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chipX {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  font-size: 14px;
+  color: var(--c-forest);
+  background: rgba(47, 93, 58, 0.12);
+  border-radius: 50%;
+}
+
+.clear {
+  font-size: 11px;
+  color: var(--c-text-muted);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  padding: 4px 6px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.clear:hover {
+  color: var(--c-text);
+}
+
+.hint {
+  margin: 0;
+  font-size: 11px;
+  color: var(--c-text-soft);
+  font-style: italic;
+}
+
+/* ───── Mobile / tablet ───── */
+@media (max-width: 768px) {
+  .panel {
+    /* When stacked under the LayersPanel + SensitivityPanel on mobile,
+       sit at the bottom of the stack. Exact offset is approximate; the
+       overlays competing here all use position: absolute on the map
+       so visual collisions are gentle. */
+    top: auto;
+    bottom: calc(12px + 64px); /* leave room above the Legend */
+    right: 8px;
+    width: min(calc(100vw - 16px), 320px);
+    max-height: 50dvh;
+  }
+}
+
+@media (max-width: 480px) {
+  .panel {
+    width: calc(100vw - 16px);
+  }
+  .chipName {
+    max-width: 120px;
+  }
+}

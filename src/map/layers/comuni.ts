@@ -112,6 +112,11 @@ export function addComuni(m: MLMap, visible: boolean, dark = false): void {
     const src = m.getSource(COMUNI_SOURCE) as GeoJSONSource | undefined;
     src?.setData(fc);
   });
+
+  // Apply any existing selection filter on initial add — covers the
+  // case where the user had a non-empty selection before the layer was
+  // mounted (e.g. toggling the layer off and back on).
+  applyComuniFilter(m, useAppStore.getState().selectedComuni);
 }
 
 export function setComuniVisible(m: MLMap, v: boolean): void {
@@ -124,4 +129,19 @@ export function applyComuniModel(m: MLMap): void {
   if (!m.getLayer(COMUNI_FILL)) return;
   const model = useAppStore.getState().model;
   m.setPaintProperty(COMUNI_FILL, "fill-color", fillColor(model));
+}
+
+/**
+ * Filter both comuni layers to the listed ISTAT codes. Empty list = no
+ * filter (every comune visible). Called reactively from MapView when
+ * `selectedComuni` changes in the store.
+ */
+export function applyComuniFilter(m: MLMap, istatCodes: readonly string[]): void {
+  const filter: ExpressionSpecification | null =
+    istatCodes.length === 0
+      ? null
+      : ["in", ["get", "istat"], ["literal", [...istatCodes]]];
+  for (const id of [COMUNI_FILL, COMUNI_LINE]) {
+    if (m.getLayer(id)) m.setFilter(id, filter);
+  }
 }
