@@ -4,9 +4,9 @@ import { useAppStore } from "./store";
 describe("useAppStore", () => {
   beforeEach(() => useAppStore.getState().reset());
 
-  it("starts with J.2 active and threshold 0.50", () => {
+  it("starts with J.3 active and threshold 0.50", () => {
     const s = useAppStore.getState();
-    expect(s.model).toBe("j2");
+    expect(s.model).toBe("j3");
     expect(s.threshold).toBe(0.5);
     expect(s.basemap).toBe("outdoors");
     expect(s.layers.iffi).toBe(true);
