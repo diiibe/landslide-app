@@ -69,12 +69,23 @@ async function loadIconImageData(category: string, size: number): Promise<ImageD
   return ctx.getImageData(0, 0, size, size);
 }
 
-let missingHandlerInstalled = false;
+/**
+ * P1.13: per-map registration of the `styleimagemissing` handler.
+ *
+ * MapLibre wipes registered images on `setStyle()`, and we re-run
+ * `addCriticalPoi` from the `style.load` listener. A naive module-level
+ * `installed = true` flag would skip rebinding after the style swap,
+ * causing icons to render as the default missing-image dot.
+ *
+ * Tracking installation per map instance via WeakMaps keeps the binding
+ * fresh on every style swap on the same map, supports multiple maps
+ * cleanly, and lets us remove the listener on unmount.
+ */
+const handlerByMap = new WeakMap<MLMap, (e: { id: string }) => void>();
 
 function installIconLoader(m: MLMap): void {
-  if (missingHandlerInstalled) return;
-  missingHandlerInstalled = true;
-  m.on("styleimagemissing", (e) => {
+  if (handlerByMap.has(m)) return;
+  const handler = (e: { id: string }) => {
     const id = e.id;
     if (!id.startsWith("poi-")) return;
     if (m.hasImage(id)) return;
@@ -86,7 +97,21 @@ function installIconLoader(m: MLMap): void {
       if (m.hasImage(id)) return;
       m.addImage(id, data, { sdf: true });
     });
-  });
+  };
+  handlerByMap.set(m, handler);
+  m.on("styleimagemissing", handler);
+}
+
+/**
+ * Remove the per-map `styleimagemissing` listener. Call on map teardown
+ * (the consumer is responsible — typically the React MapView unmount
+ * effect) so the handler closure (which captures `m`) can be GC'd.
+ */
+export function uninstallIconLoader(m: MLMap): void {
+  const handler = handlerByMap.get(m);
+  if (!handler) return;
+  m.off("styleimagemissing", handler);
+  handlerByMap.delete(m);
 }
 
 function iconColor(model: ModelId): unknown {
