@@ -310,13 +310,15 @@ export function MapView() {
   useEffect(() => {
     const m = mapRef.current;
     if (!m) return;
-    updateSusceptibilityThreshold(m, threshold);
+    updateSusceptibilityThreshold(m, threshold, selectedZones);
     updateSmoothHeatmapThreshold(m, threshold);
-  }, [threshold]);
+  }, [threshold, selectedZones]);
 
   useEffect(() => {
-    if (mapRef.current) updateSusceptibilityZones(mapRef.current, selectedZones);
-  }, [selectedZones]);
+    if (mapRef.current) {
+      updateSusceptibilityZones(mapRef.current, threshold, selectedZones);
+    }
+  }, [selectedZones, threshold]);
 
   useEffect(() => {
     if (mapRef.current) setSusceptibilityVisible(mapRef.current, susceptOn);
