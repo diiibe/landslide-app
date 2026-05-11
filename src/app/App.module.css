@@ -31,6 +31,30 @@
   background: #EDE7D6;
 }
 
+/* Drop-zone overlay shown while the user drags a file over the app. */
+.dropZone {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(47, 93, 58, 0.18);
+  backdrop-filter: blur(2px);
+  pointer-events: none;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--c-forest);
+  letter-spacing: 0.02em;
+}
+.dropZone > span {
+  padding: 14px 22px;
+  background: var(--c-surface);
+  border: 2px dashed var(--c-forest);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 28px rgba(35, 38, 31, 0.25);
+}
+
 /* Single right-edge column hosting SensitivityPanel + ComuneFilterPanel.
    Wrapping them in a flex column means each panel's collapse/expand
    transition pushes its neighbour up or down naturally — no manual

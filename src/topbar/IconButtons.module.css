@@ -25,6 +25,17 @@
   transform: translateY(0) scale(.94);
 }
 
+/* Active state (used by DrawButton when drawing mode is on). */
+.btn[data-active="true"] {
+  background: var(--c-bg-linen);
+  border-color: var(--c-forest);
+  color: var(--c-forest);
+}
+.btn[aria-busy="true"] {
+  opacity: 0.5;
+  cursor: progress;
+}
+
 /* Hover-only affordances on devices that actually have hover. */
 @media (hover: hover) {
   .btn { min-width: 28px; min-height: 28px; }
@@ -35,4 +46,20 @@
     color: var(--c-text);
     transform: translateY(-1px);
   }
+}
+
+/* Inline upload error — sits below the topbar as a transient toast. */
+.uploadErr {
+  position: fixed;
+  top: 64px;
+  right: 12px;
+  z-index: 50;
+  max-width: 360px;
+  padding: 8px 12px;
+  background: var(--c-surface);
+  border: 1px solid var(--c-russet);
+  color: var(--c-russet);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  box-shadow: 0 6px 18px rgba(122, 31, 16, .25);
 }
