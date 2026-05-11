@@ -99,76 +99,9 @@
 .itemName { flex: 1; }
 .itemState { color: var(--c-text-soft); font-size: 11px; font-variant-numeric: tabular-nums; }
 
-/* ───── Risk-params control block (Roads / Trails sensitivity sliders) ───── */
-.paramsBlock {
-  margin: 6px -6px 0;
-  padding: 6px 6px 8px;
-  border-top: 1px dashed var(--c-border-soft);
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.paramsHead {
-  display: flex; align-items: center; gap: 6px;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--c-text);
-  padding: 0 2px;
-}
-.paramsHead > span:first-child { flex: 1; }
-.paramRow {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: center;
-  gap: 2px 8px;
-  font-size: 11px;
-  color: var(--c-text-soft);
-  padding: 0 2px;
-}
-.paramRow label { color: var(--c-text-muted); }
-.paramRow .val {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-  color: var(--c-text);
-  font-weight: 600;
-}
-.paramRow input[type="range"] {
-  grid-column: 1 / -1;
-  width: 100%;
-  margin: 0;
-  accent-color: var(--c-russet);
-  cursor: pointer;
-}
-.lockBtn {
-  grid-column: 2;
-  width: 26px;
-  height: 22px;
-  border: 1px solid var(--c-border);
-  background: transparent;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  font-size: 12px;
-  line-height: 1;
-  padding: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--c-text-soft);
-  transition: background .15s var(--e-quart), border-color .15s var(--e-quart);
-}
-.lockBtn:hover { background: var(--c-surface-2); border-color: var(--c-text-muted); }
-.lockBtn[data-active="true"] {
-  border-color: var(--c-forest);
-  color: var(--c-forest);
-}
-/* P1.15: keyboard focus-visible mirroring the active border treatment.
- * The global focus ring exists but a button this small benefits from a
- * dedicated, higher-contrast indicator. */
-.lockBtn:focus-visible {
-  outline: none;
-  border-color: var(--c-forest);
-  box-shadow: 0 0 0 2px rgba(47, 93, 58, 0.35);
-}
+/* Risk-params control block (Roads / Trails sensitivity sliders) was
+   moved to RiskParamsControl.module.css and now lives in the floating
+   SensitivityPanel (mounted in App.tsx). */
 
 /* ───── Mobile / tablet ───── */
 @media (max-width: 768px) {
@@ -200,8 +133,6 @@
     padding: 10px 0;
   }
   .bmRow { gap: 6px; }
-  .paramRow input[type="range"] { height: 28px; }
-  .lockBtn { width: 32px; height: 32px; }
 }
 
 /* On the smallest phones, collapse the panel head-only by default looks
