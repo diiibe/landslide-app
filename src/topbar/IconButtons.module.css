@@ -48,6 +48,45 @@
   }
 }
 
+/* Compact menu popover for the Export/Import button. */
+.menuWrap {
+  position: relative;
+}
+.menuWrap > summary {
+  list-style: none;
+}
+.menuWrap > summary::-webkit-details-marker {
+  display: none;
+}
+.menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 4px;
+  min-width: 160px;
+  display: flex;
+  flex-direction: column;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 6px 18px rgba(35, 38, 31, .18);
+  z-index: 40;
+  padding: 4px 0;
+}
+.menuItem {
+  text-align: left;
+  border: 0;
+  background: transparent;
+  padding: 8px 12px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--c-text);
+  cursor: pointer;
+  transition: background .12s var(--e-quart);
+}
+.menuItem:hover { background: var(--c-panel-item-hover); }
+.menuItem:disabled { color: var(--c-text-soft); cursor: not-allowed; }
+
 /* Inline upload error — sits below the topbar as a transient toast. */
 .uploadErr {
   position: fixed;

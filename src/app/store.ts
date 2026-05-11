@@ -340,14 +340,16 @@ export interface AppState {
   clearComuni: () => void;
   /* user uploads + drawings */
   addUserLayer: (
-    layer: Omit<UserLayer, "id" | "color" | "opacity" | "visible" | "createdAt"> &
-      Partial<Pick<UserLayer, "color">>,
+    layer: Omit<UserLayer, "id" | "color" | "opacity" | "visible" | "createdAt"> & {
+      color?: string;
+    },
   ) => UserLayer;
   removeUserLayer: (id: string) => void;
   updateUserLayer: (id: string, patch: Partial<UserLayer>) => void;
   addUserPolygon: (
-    polygon: Omit<UserPolygon, "id" | "createdAt"> &
-      Partial<Pick<UserPolygon, "color">>,
+    polygon: Omit<UserPolygon, "id" | "color" | "createdAt"> & {
+      color?: string;
+    },
   ) => UserPolygon;
   removeUserPolygon: (id: string) => void;
   setDrawingMode: (on: boolean) => void;

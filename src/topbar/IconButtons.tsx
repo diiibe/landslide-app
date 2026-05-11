@@ -2,6 +2,7 @@ import { useAppStore } from "@/app/store";
 import styles from "./IconButtons.module.css";
 import { UploadButton } from "./UploadButton";
 import { DrawButton } from "./DrawButton";
+import { ExportImportButton } from "./ExportImportButton";
 
 export function IconButtons() {
   const theme = useAppStore((s) => s.theme);
@@ -10,6 +11,7 @@ export function IconButtons() {
   return (
     <>
       <UploadButton />
+      <ExportImportButton />
       <DrawButton />
       <button
         type="button"

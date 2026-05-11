@@ -58,6 +58,13 @@ import {
   bringUserLayerToFront,
   removeUserLayer,
 } from "./layers/userLayer";
+import {
+  openPolygonPopup,
+  registerPolygonClicks,
+  setupUserPolygons,
+  updateUserPolygonsData,
+} from "./layers/userPolygons";
+import { startDrawing, stopDrawing } from "./drawing";
 import { registerPopups } from "./popups";
 import { setMap } from "./instance";
 import styles from "./MapView.module.css";
@@ -248,6 +255,8 @@ export function MapView() {
   const theme = useAppStore((s) => s.theme);
   const selectedComuni = useAppStore((s) => s.selectedComuni);
   const userLayers = useAppStore((s) => s.userLayers);
+  const userPolygons = useAppStore((s) => s.userPolygons);
+  const drawingMode = useAppStore((s) => s.drawingMode);
 
   useEffect(() => {
     if (!ref.current || mapRef.current) return;
@@ -280,8 +289,16 @@ export function MapView() {
       for (const layer of useAppStore.getState().userLayers) {
         addUserLayer(m, layer);
       }
+      setupUserPolygons(m, useAppStore.getState().userPolygons);
       popupsUnsubRef.current?.();
-      popupsUnsubRef.current = registerPopups(m);
+      const popupsUnsub = registerPopups(m);
+      const polygonUnsub = registerPolygonClicks(m, () =>
+        useAppStore.getState().userPolygons,
+      );
+      popupsUnsubRef.current = () => {
+        popupsUnsub();
+        polygonUnsub();
+      };
     });
     mapRef.current = m;
     setMap(m);
@@ -484,6 +501,43 @@ export function MapView() {
     }
     prevUserIds.current = seen;
   }, [userLayers]);
+
+  // Drawing mode toggle: wire terra-draw on, tear it down on off.
+  useEffect(() => {
+    const m = mapRef.current;
+    if (!m) return;
+    if (drawingMode) {
+      startDrawing(m);
+    } else {
+      stopDrawing();
+    }
+    return () => stopDrawing();
+  }, [drawingMode]);
+
+  // Push the saved polygons array into the map source on every change.
+  useEffect(() => {
+    const m = mapRef.current;
+    if (!m || !m.isStyleLoaded()) return;
+    if (!m.getSource("user-polygons")) {
+      setupUserPolygons(m, userPolygons);
+    } else {
+      updateUserPolygonsData(m, userPolygons);
+    }
+  }, [userPolygons]);
+
+  // LayersPanel's Saved areas row dispatches this event after fitBounds
+  // so the user lands on the polygon and sees its stats in one motion.
+  useEffect(() => {
+    const onShow = (e: Event) => {
+      const m = mapRef.current;
+      if (!m) return;
+      const id = (e as CustomEvent<{ id: string }>).detail.id;
+      const polygon = useAppStore.getState().userPolygons.find((p) => p.id === id);
+      if (polygon) openPolygonPopup(m, polygon);
+    };
+    window.addEventListener("fvg:show-polygon-stats", onShow);
+    return () => window.removeEventListener("fvg:show-polygon-stats", onShow);
+  }, []);
 
   return <div ref={ref} className={styles.root} aria-label="FVG susceptibility map" />;
 }
