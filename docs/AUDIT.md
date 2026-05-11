@@ -384,13 +384,14 @@ returns `NaN`. A malformed `riskParamsLocked` key bypasses validation.
 **Fix**: replace `Number(p?.x ?? d)` with
 `Number.isFinite(n) ? n : d` before `clamp`.
 
-### P2.14 `lockRiskParams` not synced cross-tab
+### P2.14 `lockRiskParams` not synced cross-tab — **RESOLVED**
 
-`src/app/store.ts:261-272` — `riskParamsDefaults` is captured *once* at
-module load. Tab A locks j3-roads → tab B has stale defaults → dirty
-chip in `LayersPanel.tsx:241` is wrong until reload. **Fix**: add a
-`storage` event listener that re-hydrates defaults; or document as out
-of scope.
+`src/app/store.ts` now listens for the `storage` event keyed on
+`SENS_DEFAULTS_KEY` and re-hydrates `riskParamsDefaults` via
+`loadSensDefaults()`. The writing tab itself doesn't receive the event,
+so the round-trip is one-way (which is what we want). Test covers a
+synthetic `StorageEvent` and asserts both networks/models pick up the
+new payload.
 
 ### P2.15 Build pipeline not wired into CI / no deploy story for the static GeoJSON
 
