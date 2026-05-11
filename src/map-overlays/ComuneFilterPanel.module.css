@@ -140,25 +140,41 @@
   box-shadow: 0 0 0 2px rgba(47, 93, 58, 0.25);
 }
 
+/* Dropdown sits flush under the input as part of the same column, no
+   floating shadow. Border-radius drops the top corners so the seam with
+   the input feels continuous; the input gets a matching bottom-radius
+   reset when the menu is open (handled via :has below, with a
+   defensive class-based fallback). */
 .menu {
   position: absolute;
-  top: calc(100% + 4px);
+  top: 100%;
   left: 0;
   right: 0;
   max-height: 240px;
   overflow-y: auto;
   margin: 0;
-  padding: 4px 0;
+  padding: 2px 0;
   background: var(--c-surface);
   border: 1px solid var(--c-border);
-  border-radius: var(--radius-sm);
-  box-shadow: 0 6px 18px rgba(35, 38, 31, 0.18);
+  border-top: 0;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
   list-style: none;
   z-index: 5;
 }
 
+/* When the menu is open, square off the input's bottom corners so the
+   two shapes read as one continuous control. :has support is broad in
+   evergreen browsers; the menu's own border-radius alone already looks
+   right even where :has isn't honoured. */
+.searchWrap:has(.menu) .input {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
 .opt {
-  padding: 7px 12px;
+  /* Match the input's horizontal padding so items align with the typed
+     text rather than starting at the menu's content edge. */
+  padding: 7px 10px;
   font-size: 12px;
   color: var(--c-text);
   cursor: pointer;
@@ -176,7 +192,7 @@
 @media (max-width: 768px) {
   .opt {
     min-height: 44px;
-    padding: 12px 12px;
+    padding: 12px 10px;
     display: flex;
     align-items: center;
   }
