@@ -55,7 +55,7 @@ function fillColor(model: ModelId): unknown {
   ];
 }
 
-export function addComuni(m: MLMap, visible: boolean): void {
+export function addComuni(m: MLMap, visible: boolean, dark = false): void {
   for (const id of [COMUNI_FILL, COMUNI_LINE]) {
     if (m.getLayer(id)) m.removeLayer(id);
   }
@@ -67,6 +67,9 @@ export function addComuni(m: MLMap, visible: boolean): void {
   });
 
   const model = useAppStore.getState().model;
+  // Comune outlines need higher contrast on the dark basemap; in light
+  // mode the existing warm-grey reads fine over the cream paper.
+  const outline = dark ? "rgba(232,224,210,0.45)" : "rgba(60,55,40,0.55)";
 
   m.addLayer({
     id: COMUNI_FILL,
@@ -84,7 +87,7 @@ export function addComuni(m: MLMap, visible: boolean): void {
     type: "line",
     source: COMUNI_SOURCE,
     paint: {
-      "line-color": "rgba(60,55,40,0.55)",
+      "line-color": outline,
       "line-width": 0.6,
     },
     layout: { visibility: visible ? "visible" : "none" },

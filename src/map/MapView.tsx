@@ -91,7 +91,7 @@ function setupStaticLayers(m: maplibregl.Map): void {
   const s = useAppStore.getState();
   const dark = s.theme === "dark";
   addDtmHillshade(m, s.layers.dtm, dark);
-  addComuni(m, s.layers.comuni);
+  addComuni(m, s.layers.comuni, dark);
   addTrails(m, s.layers.trails, dark);
   addRoads(m, s.layers.roads, dark);
   addCriticalPoi(m, s.layers.poiCritical, s.layers.poiHuts);
@@ -116,6 +116,9 @@ function applyThemeToLayers(m: maplibregl.Map): void {
   }
   // Roads/trails carry theme-driven halo opacity baked into addLayer.
   // Re-creating is cheap because the GeoJSON is cached in module scope.
+  // Comuni outline color also varies by theme — re-add with the new flag
+  // so adjacent comuni stay readable on the dark basemap.
+  addComuni(m, s.layers.comuni, dark);
   addTrails(m, s.layers.trails, dark);
   addRoads(m, s.layers.roads, dark);
   addCriticalPoi(m, s.layers.poiCritical, s.layers.poiHuts);
