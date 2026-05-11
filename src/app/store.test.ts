@@ -98,4 +98,38 @@ describe("useAppStore", () => {
       window.localStorage.removeItem("fvg:sensitivity-defaults");
     });
   });
+
+  // P2.14 — when another tab locks a parameter, our store should pick up
+  // the new defaults on the next `storage` event so the "dirty" indicator
+  // doesn't lie until the user reloads.
+  describe("cross-tab riskParamsDefaults sync (P2.14)", () => {
+    it("re-hydrates riskParamsDefaults when localStorage changes from another tab", () => {
+      // Simulate tab B writing fresh defaults.
+      const payload = {
+        roads: {
+          j2: { sensitivity: 3.3, gamma: 1.7, radius: 4 },
+          j3: { sensitivity: 3.3, gamma: 1.7, radius: 4 },
+        },
+        trails: {
+          j2: { sensitivity: 2.2, gamma: 2.1, radius: 3 },
+          j3: { sensitivity: 2.2, gamma: 2.1, radius: 3 },
+        },
+      };
+      window.localStorage.setItem(
+        "fvg:sensitivity-defaults",
+        JSON.stringify(payload),
+      );
+      // Dispatch the synthetic storage event our listener wires up.
+      window.dispatchEvent(
+        new StorageEvent("storage", {
+          key: "fvg:sensitivity-defaults",
+          newValue: JSON.stringify(payload),
+        }),
+      );
+      const after = useAppStore.getState().riskParamsDefaults;
+      expect(after.roads.j3.sensitivity).toBe(3.3);
+      expect(after.trails.j2.gamma).toBeCloseTo(2.1, 5);
+      window.localStorage.removeItem("fvg:sensitivity-defaults");
+    });
+  });
 });

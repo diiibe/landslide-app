@@ -325,3 +325,21 @@ export const useAppStore = create<AppState>((set) => ({
   setSearch: (search) => set({ search }),
   reset: () => set(initial),
 }));
+
+/**
+ * P2.14 — cross-tab sync of riskParamsDefaults via the browser `storage`
+ * event. The store captures `riskParamsDefaults` once at module load
+ * (via `loadSensDefaults()`), so when tab A locks a parameter via
+ * `lockRiskParams`, tab B's snapshot stays stale and its lock indicator
+ * shows "dirty" forever until reload. Listen for the storage event that
+ * fires in other tabs (the writing tab itself does not receive it), and
+ * re-hydrate from the persisted payload.
+ */
+if (typeof window !== "undefined") {
+  window.addEventListener("storage", (e) => {
+    if (e.key !== SENS_DEFAULTS_KEY) return;
+    // A `null` newValue means the key was cleared; reload from scratch
+    // (which falls back to HARD_DEFAULT) to stay consistent.
+    useAppStore.setState({ riskParamsDefaults: loadSensDefaults() });
+  });
+}
