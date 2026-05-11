@@ -120,14 +120,18 @@ export function SearchLocality() {
     return () => clearTimeout(timer);
   }, [query]);
 
-  // Click-outside to close.
+  // Click-outside to close. P1.14: listen on `pointerdown` (covers
+  // mouse + touch + pen). On iOS Safari / Android Chrome with the on-
+  // screen keyboard open, taps outside the dropdown don't reliably
+  // synthesise `mousedown` so the menu stays stuck open. PointerEvents
+  // are supported in every browser we ship to today.
   useEffect(() => {
     if (!open) return;
-    const onDown = (e: MouseEvent) => {
+    const onDown = (e: Event) => {
       if (!wrapRef.current?.contains(e.target as Node)) setOpen(false);
     };
-    document.addEventListener("mousedown", onDown);
-    return () => document.removeEventListener("mousedown", onDown);
+    document.addEventListener("pointerdown", onDown);
+    return () => document.removeEventListener("pointerdown", onDown);
   }, [open]);
 
   const pick = (s: Suggestion) => {
