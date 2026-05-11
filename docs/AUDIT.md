@@ -423,14 +423,15 @@ choropleth → colored polygons with no key. **Fix**: extend `Legend`
 with a conditional `{layers.comuni && <ComuneRamp />}` block, or
 document that the susceptibility ramp doubles for both.
 
-### P2.18 IA confusion: ThresholdControl + sensitivity sub-block coexist
+### P2.18 IA confusion: ThresholdControl + sensitivity sub-block coexist — **RESOLVED by design**
 
-`src/app/App.tsx:43` still renders `<ThresholdControl />` (top-left)
-while `src/map-overlays/LayersPanel.tsx:296-310` now hosts the
-sensitivity sliders. Two parallel "live parameter" UIs do unrelated
-things on the same map. Not a bug, but confusing. **Fix (UX)**: decide
-which is canonical and either hide the other behind a settings toggle
-or merge them into one control surface.
+`src/app/App.tsx` renders `<ThresholdControl />` (top-left, susceptibility
+`p ≥ X` cutoff for cells & heatmap) while `src/map-overlays/LayersPanel.tsx`
+hosts the per-network sensitivity / gamma / radius sliders for the risk
+tint on roads & trails. The two controls drive different downstream
+math on different layers — they're not duplicates. **Decision (2026-05):
+keep both as-is.** Re-labeling can happen if user testing surfaces a
+real comprehension gap; closing this finding without code change.
 
 ### P2.19 Hardcoded ramp gradients duplicated across 3 stylesheets, no dark variant
 
