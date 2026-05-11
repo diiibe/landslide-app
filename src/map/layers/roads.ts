@@ -1,4 +1,5 @@
 import type { Map as MLMap, GeoJSONSource } from "maplibre-gl";
+import type { ExpressionSpecification } from "@maplibre/maplibre-gl-style-spec";
 import { useAppStore } from "@/app/store";
 import type { ModelId } from "@/app/types";
 import {
@@ -6,6 +7,7 @@ import {
   loadCellGrid,
   type CellGrid,
 } from "./cellGrid";
+import { RoadsFeatureCollectionSchema, parseOrThrow } from "@/lib/schemas";
 
 /**
  * Roads overlay (risk-tinted).
@@ -37,11 +39,11 @@ const DATA_URL_KEY = "roads_fvg.geojson";
 // Sensitivity is applied *inside* the expression input (not by pre-scaling
 // the stops). Pre-scaling collapses multiple stops to 1 when sens > 1,
 // which breaks the strict-ascending requirement of `interpolate`.
-function scaledRisk(sens: number): unknown {
+function scaledRisk(sens: number): ExpressionSpecification {
   return ["min", 1, ["*", sens, ["coalesce", ["get", "risk"], 0]]];
 }
 
-function riskColor(sens: number): unknown {
+function riskColor(sens: number): ExpressionSpecification {
   return [
     "interpolate", ["linear"], scaledRisk(sens),
     0.00, "#22D3FF",
@@ -54,7 +56,7 @@ function riskColor(sens: number): unknown {
   ];
 }
 
-function riskGlow(sens: number): unknown {
+function riskGlow(sens: number): ExpressionSpecification {
   return [
     "interpolate", ["linear"], scaledRisk(sens),
     0.00, "#38BDF8",
@@ -76,7 +78,9 @@ async function loadRoads(): Promise<GeoJSON.FeatureCollection> {
       const url = `${import.meta.env.BASE_URL}data/${DATA_URL_KEY}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error(`${DATA_URL_KEY}: ${res.status}`);
-      return (await res.json()) as GeoJSON.FeatureCollection;
+      const json: unknown = await res.json();
+      const validated = parseOrThrow(RoadsFeatureCollectionSchema, json, DATA_URL_KEY);
+      return validated as GeoJSON.FeatureCollection;
     })();
   }
   roadsRaw = await roadsInFlight;
@@ -126,7 +130,7 @@ export function addRoads(m: MLMap, visible: boolean, dark: boolean): void {
     type: "line",
     source: ROADS_SOURCE,
     paint: {
-      "line-color": riskGlow(sens) as never,
+      "line-color": riskGlow(sens),
       "line-opacity": outerOpacity,
       "line-blur": 16,
       "line-width": 24,
@@ -143,7 +147,7 @@ export function addRoads(m: MLMap, visible: boolean, dark: boolean): void {
     type: "line",
     source: ROADS_SOURCE,
     paint: {
-      "line-color": riskGlow(sens) as never,
+      "line-color": riskGlow(sens),
       "line-opacity": haloOpacity,
       "line-blur": 8,
       "line-width": 10,
@@ -160,7 +164,7 @@ export function addRoads(m: MLMap, visible: boolean, dark: boolean): void {
     type: "line",
     source: ROADS_SOURCE,
     paint: {
-      "line-color": riskColor(sens) as never,
+      "line-color": riskColor(sens),
       "line-opacity": 1.0,
       "line-width": 2.5,
     },
@@ -188,9 +192,9 @@ export function applyRoadSensitivity(m: MLMap): void {
   if (!m.getLayer(ROADS_LAYER)) return;
   const st = useAppStore.getState();
   const sens = st.riskParams.roads[st.model].sensitivity;
-  m.setPaintProperty(ROADS_LAYER, "line-color", riskColor(sens) as never);
-  m.setPaintProperty(ROADS_HALO, "line-color", riskGlow(sens) as never);
-  m.setPaintProperty(ROADS_GLOW, "line-color", riskGlow(sens) as never);
+  m.setPaintProperty(ROADS_LAYER, "line-color", riskColor(sens));
+  m.setPaintProperty(ROADS_HALO, "line-color", riskGlow(sens));
+  m.setPaintProperty(ROADS_GLOW, "line-color", riskGlow(sens));
 }
 
 // Kept exported for backwards compatibility with MapView call sites that
