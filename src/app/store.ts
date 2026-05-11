@@ -41,11 +41,27 @@ function clamp(v: number, lo: number, hi: number): number {
   return Math.min(hi, Math.max(lo, v));
 }
 
+/** Coerce a single field to a finite number, falling back to the default.
+ *  Bare `Number(p?.x ?? d)` returns NaN for non-numeric strings, `null`,
+ *  `undefined` after the `??`, or already-NaN values — and `clamp(NaN, ...)`
+ *  propagates NaN unchanged. Guard with `Number.isFinite` so malformed
+ *  localStorage payloads can't slip past validation (P2.13). */
+function coerceFinite(v: unknown, d: number): number {
+  const n = typeof v === "number" ? v : Number(v);
+  return Number.isFinite(n) ? n : d;
+}
+
 function clampParams(p: Partial<RiskParams> | undefined): RiskParams {
   return {
-    sensitivity: clamp(Number(p?.sensitivity ?? DEFAULT_PARAMS.sensitivity), SENS_MIN, SENS_MAX),
-    gamma: clamp(Number(p?.gamma ?? DEFAULT_PARAMS.gamma), GAMMA_MIN, GAMMA_MAX),
-    radius: Math.round(clamp(Number(p?.radius ?? DEFAULT_PARAMS.radius), RADIUS_MIN, RADIUS_MAX)),
+    sensitivity: clamp(
+      coerceFinite(p?.sensitivity, DEFAULT_PARAMS.sensitivity),
+      SENS_MIN,
+      SENS_MAX,
+    ),
+    gamma: clamp(coerceFinite(p?.gamma, DEFAULT_PARAMS.gamma), GAMMA_MIN, GAMMA_MAX),
+    radius: Math.round(
+      clamp(coerceFinite(p?.radius, DEFAULT_PARAMS.radius), RADIUS_MIN, RADIUS_MAX),
+    ),
   };
 }
 
@@ -114,6 +130,27 @@ function initialTheme(): Theme {
  * no `window`.
  */
 function initialDrawerOpen(): boolean {
+  if (typeof window === "undefined") return true;
+  try {
+    if (
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(max-width: 768px)").matches
+    ) {
+      return false;
+    }
+  } catch {
+    /* matchMedia unavailable — fall through to desktop default */
+  }
+  return true;
+}
+
+/**
+ * Default LayersPanel open-state. With `layers.roads` + `layers.trails` and
+ * their two RiskParamsControl sub-blocks each, the panel is ~850px tall on
+ * mobile — opening it by default swamps the map on first paint (P0.6).
+ * SSR-safe: returns `true` (the desktop default) when there's no `window`.
+ */
+function initialLayersPanelOpen(): boolean {
   if (typeof window === "undefined") return true;
   try {
     if (
@@ -226,7 +263,7 @@ const initial: Omit<
   theme: initialTheme(),
   drawerOpen: initialDrawerOpen(),
   legendOpen: true,
-  layersPanelOpen: true,
+  layersPanelOpen: initialLayersPanelOpen(),
   groupOpen: { view: true, monitoring: true, analytics: true, model: true },
   search: { query: "", placeName: null },
 };
@@ -288,3 +325,21 @@ export const useAppStore = create<AppState>((set) => ({
   setSearch: (search) => set({ search }),
   reset: () => set(initial),
 }));
+
+/**
+ * P2.14 — cross-tab sync of riskParamsDefaults via the browser `storage`
+ * event. The store captures `riskParamsDefaults` once at module load
+ * (via `loadSensDefaults()`), so when tab A locks a parameter via
+ * `lockRiskParams`, tab B's snapshot stays stale and its lock indicator
+ * shows "dirty" forever until reload. Listen for the storage event that
+ * fires in other tabs (the writing tab itself does not receive it), and
+ * re-hydrate from the persisted payload.
+ */
+if (typeof window !== "undefined") {
+  window.addEventListener("storage", (e) => {
+    if (e.key !== SENS_DEFAULTS_KEY) return;
+    // A `null` newValue means the key was cleared; reload from scratch
+    // (which falls back to HARD_DEFAULT) to stay consistent.
+    useAppStore.setState({ riskParamsDefaults: loadSensDefaults() });
+  });
+}

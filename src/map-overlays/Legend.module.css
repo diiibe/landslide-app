@@ -34,7 +34,7 @@
 .ttl { font-weight: 600; font-size: 12px; flex: 1; }
 .miniRamp {
   width: 40px; height: 6px; border-radius: 2px; border: 1px solid var(--c-border);
-  background: linear-gradient(90deg, #E8F0D8 0%, #8BB26B 25%, #D9A441 50%, #D25524 75%, #7A1F10 100%);
+  background: var(--c-ramp);
   opacity: 0;
   transition: opacity .25s var(--e-quart);
 }
@@ -49,7 +49,7 @@
 .ramp {
   width: 200px; height: 10px; border-radius: 3px; margin: 4px 0 4px;
   border: 1px solid var(--c-border);
-  background: linear-gradient(90deg, #E8F0D8 0%, #8BB26B 25%, #D9A441 50%, #D25524 75%, #7A1F10 100%);
+  background: var(--c-ramp);
 }
 .ticks { display: flex; justify-content: space-between; color: var(--c-text-soft); font-size: 11px; font-variant-numeric: tabular-nums; }
 .iffiRow {
@@ -60,6 +60,33 @@
 .iffiRow i {
   width: 16px; height: 10px; border: 1.6px solid var(--c-russet);
   background: rgba(122,31,16,.14); border-radius: 2px; display: inline-block;
+}
+
+/* Secondary section (e.g. comune choropleth) appended below the main ramp.
+ * Reuses the .ramp visual but with a tighter top margin and a hairline
+ * separator so it reads as a related-but-distinct block. */
+.section {
+  margin-top: 8px; padding-top: 8px;
+  border-top: 1px solid var(--c-border);
+}
+.title {
+  margin: 0 0 4px;
+  font-weight: 600;
+  font-size: 11px;
+  color: var(--c-text-soft);
+  letter-spacing: .02em;
+}
+.sub {
+  margin: 0 0 4px;
+  font-size: 11px;
+  color: var(--c-text-soft);
+}
+.rampLabels {
+  display: flex;
+  justify-content: space-between;
+  color: var(--c-text-soft);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
 }
 
 /* ───── Mobile / tablet ───── */

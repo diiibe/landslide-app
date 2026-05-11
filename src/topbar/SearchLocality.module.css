@@ -101,3 +101,27 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+/* P2.16: empty-state row, intentionally non-interactive and visually
+ * de-emphasised so it reads as a status message rather than a result. */
+.optEmpty {
+  padding: 6px 10px;
+  font-size: 11px;
+  font-style: italic;
+  color: var(--c-text-soft);
+  cursor: default;
+}
+
+/* P2.16: WCAG 2.5.8 — pointer targets must be ≥ 24×24, recommended 44×44.
+ * Desktop keeps the dense 32 px row; phones get the larger tap area. */
+@media (max-width: 768px) {
+  .opt {
+    min-height: 44px;
+    padding: 10px 12px;
+  }
+  .optEmpty {
+    min-height: 44px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+  }
+}

@@ -15,6 +15,18 @@
   --c-ramp-3: #D25524;
   --c-ramp-4: #7A1F10;
 
+  /* Pre-composed susceptibility gradient. Single source of truth so legend
+   * and threshold slider stay in sync; each theme overrides the stops to
+   * match its surface palette. */
+  --c-ramp: linear-gradient(
+    90deg,
+    #E8F0D8 0%,
+    #8BB26B 25%,
+    #D9A441 50%,
+    #D25524 75%,
+    #7A1F10 100%
+  );
+
   /* accents per drawer group — light theme values */
   --c-view: #3E5E8A;     --c-view-stripe: #7A99BE;   --c-view-bg: #F6F9FC;   --c-view-row: #E1E9F3;
   --c-forest: #2F5D3A;   --c-forest-stripe: #2F5D3A; --c-forest-bg: #F6FAF2; --c-forest-row: #D9E4CF;
@@ -131,6 +143,20 @@
 
   /* focus ring — green is hard to see on deep navy; use cyan-teal accent */
   --c-focus: #5EBFCC;
+
+  /* Susceptibility gradient — muted variant for the dark control-room
+   * surface. The bright #E8F0D8 cream of the light ramp punches a hole in
+   * the neutral palette; replace it with a deep olive. Mid hues are kept
+   * close to their light counterparts so the perceptual ordering survives;
+   * the top end is desaturated to avoid blowing out on a #0D0D0D surface. */
+  --c-ramp: linear-gradient(
+    90deg,
+    #2A2E22 0%,
+    #5E7A48 25%,
+    #B0863F 50%,
+    #A04A28 75%,
+    #5A3329 100%
+  );
 
   color-scheme: dark;
 }

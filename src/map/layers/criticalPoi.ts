@@ -1,6 +1,11 @@
 import type { Map as MLMap, GeoJSONSource } from "maplibre-gl";
+import type {
+  ExpressionSpecification,
+  FilterSpecification,
+} from "@maplibre/maplibre-gl-style-spec";
 import { useAppStore } from "@/app/store";
 import type { ModelId } from "@/app/types";
+import { CriticalPoiFeatureCollectionSchema, parseOrThrow } from "@/lib/schemas";
 
 /**
  * Critical points + alpine huts overlay.
@@ -34,7 +39,9 @@ async function loadPoi(): Promise<GeoJSON.FeatureCollection> {
       const url = `${import.meta.env.BASE_URL}data/${DATA_URL_KEY}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error(`${DATA_URL_KEY}: ${res.status}`);
-      return (await res.json()) as GeoJSON.FeatureCollection;
+      const json: unknown = await res.json();
+      const validated = parseOrThrow(CriticalPoiFeatureCollectionSchema, json, DATA_URL_KEY);
+      return validated as GeoJSON.FeatureCollection;
     })();
   }
   poiRaw = await poiInFlight;
@@ -69,12 +76,23 @@ async function loadIconImageData(category: string, size: number): Promise<ImageD
   return ctx.getImageData(0, 0, size, size);
 }
 
-let missingHandlerInstalled = false;
+/**
+ * P1.13: per-map registration of the `styleimagemissing` handler.
+ *
+ * MapLibre wipes registered images on `setStyle()`, and we re-run
+ * `addCriticalPoi` from the `style.load` listener. A naive module-level
+ * `installed = true` flag would skip rebinding after the style swap,
+ * causing icons to render as the default missing-image dot.
+ *
+ * Tracking installation per map instance via WeakMaps keeps the binding
+ * fresh on every style swap on the same map, supports multiple maps
+ * cleanly, and lets us remove the listener on unmount.
+ */
+const handlerByMap = new WeakMap<MLMap, (e: { id: string }) => void>();
 
 function installIconLoader(m: MLMap): void {
-  if (missingHandlerInstalled) return;
-  missingHandlerInstalled = true;
-  m.on("styleimagemissing", (e) => {
+  if (handlerByMap.has(m)) return;
+  const handler = (e: { id: string }) => {
     const id = e.id;
     if (!id.startsWith("poi-")) return;
     if (m.hasImage(id)) return;
@@ -86,10 +104,24 @@ function installIconLoader(m: MLMap): void {
       if (m.hasImage(id)) return;
       m.addImage(id, data, { sdf: true });
     });
-  });
+  };
+  handlerByMap.set(m, handler);
+  m.on("styleimagemissing", handler);
 }
 
-function iconColor(model: ModelId): unknown {
+/**
+ * Remove the per-map `styleimagemissing` listener. Call on map teardown
+ * (the consumer is responsible — typically the React MapView unmount
+ * effect) so the handler closure (which captures `m`) can be GC'd.
+ */
+export function uninstallIconLoader(m: MLMap): void {
+  const handler = handlerByMap.get(m);
+  if (!handler) return;
+  m.off("styleimagemissing", handler);
+  handlerByMap.delete(m);
+}
+
+function iconColor(model: ModelId): ExpressionSpecification {
   const prop = model === "j2" ? "risk_j2" : "risk_j3";
   return [
     "interpolate", ["linear"],
@@ -103,25 +135,25 @@ function iconColor(model: ModelId): unknown {
   ];
 }
 
-const FILTER_CRITICAL = ["==", ["get", "group"], "critical"];
-const FILTER_HUTS = ["==", ["get", "group"], "huts"];
+const FILTER_CRITICAL: FilterSpecification = ["==", ["get", "group"], "critical"];
+const FILTER_HUTS: FilterSpecification = ["==", ["get", "group"], "huts"];
 
-const ICON_IMAGE = ["concat", "poi-", ["get", "category"]] as never;
+const ICON_IMAGE: ExpressionSpecification = ["concat", "poi-", ["get", "category"]];
 
 // Sizes are tuned for `ICON_PX` raster (96 px). icon-size=1 means the icon
 // renders at native pixel size, so values < 0.3 keep dots tight and
 // readable at high zoom.
-const ICON_SIZE = [
+const ICON_SIZE: ExpressionSpecification = [
   "interpolate", ["linear"], ["zoom"],
   6, ["*", ["coalesce", ["get", "importance"], 4], 0.022],
   11, ["*", ["coalesce", ["get", "importance"], 4], 0.040],
   14, ["*", ["coalesce", ["get", "importance"], 4], 0.060],
-] as never;
+];
 
 function addSymbolLayer(
   m: MLMap,
   id: string,
-  filter: unknown,
+  filter: FilterSpecification,
   visible: boolean,
   model: ModelId,
   haloColor: string,
@@ -130,7 +162,7 @@ function addSymbolLayer(
     id,
     type: "symbol",
     source: POI_SOURCE,
-    filter: filter as never,
+    filter,
     layout: {
       "icon-image": ICON_IMAGE,
       "icon-size": ICON_SIZE,
@@ -140,7 +172,7 @@ function addSymbolLayer(
       visibility: visible ? "visible" : "none",
     },
     paint: {
-      "icon-color": iconColor(model) as never,
+      "icon-color": iconColor(model),
       "icon-halo-color": haloColor,
       "icon-halo-width": 1.6,
       "icon-opacity": 0.95,
@@ -194,7 +226,7 @@ export function applyPoiModel(m: MLMap): void {
   const model = useAppStore.getState().model;
   for (const id of [POI_CRITICAL, POI_HUTS]) {
     if (m.getLayer(id)) {
-      m.setPaintProperty(id, "icon-color", iconColor(model) as never);
+      m.setPaintProperty(id, "icon-color", iconColor(model));
     }
   }
 }

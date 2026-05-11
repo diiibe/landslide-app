@@ -1,4 +1,5 @@
 import type { ModelId } from "@/app/types";
+import { CellGridFileSchema, parseOrThrow } from "@/lib/schemas";
 
 /**
  * Static cell-risk grid loaded from `public/data/cell_grid_<model>.json`.
@@ -17,6 +18,22 @@ export interface CellGrid {
 const cache = new Map<ModelId, CellGrid>();
 const inFlight = new Map<ModelId, Promise<CellGrid>>();
 
+/**
+ * P2.10 — the cell index packs gx/gy into a 32-bit int (16 bits each),
+ * which wraps silently outside [0, 0xffff]. The FVG bbox (gx ∈ [6150,
+ * 6975], gy ∈ [22750, 23325] at step 0.002°) fits comfortably, but a
+ * future build script change could push triplets out of range and
+ * produce undetectable key collisions. Validate at load time.
+ */
+function assertGridCoord(name: "gx" | "gy", v: number, i: number): void {
+  if (!Number.isInteger(v) || v < 0 || v > 0xffff) {
+    throw new RangeError(
+      `cell_grid: ${name}=${v} at triplet ${i / 3} is outside [0, 65535] — ` +
+        `the 16-bit packed key would wrap silently and produce collisions`,
+    );
+  }
+}
+
 export async function loadCellGrid(model: ModelId): Promise<CellGrid> {
   const cached = cache.get(model);
   if (cached) return cached;
@@ -26,27 +43,50 @@ export async function loadCellGrid(model: ModelId): Promise<CellGrid> {
       const url = `${import.meta.env.BASE_URL}data/cell_grid_${model}.json`;
       const res = await fetch(url);
       if (!res.ok) throw new Error(`cell_grid_${model}.json: ${res.status}`);
-      const json = (await res.json()) as { step: number; data: number[] };
+      const raw = (await res.json()) as unknown;
+      const json = parseOrThrow(CellGridFileSchema, raw, `cell_grid_${model}.json`);
       const cells = new Map<number, number>();
       for (let i = 0; i < json.data.length; i += 3) {
         const gx = json.data[i] as number;
         const gy = json.data[i + 1] as number;
         const v = json.data[i + 2] as number;
-        cells.set(((gx & 0xffff) << 16) | (gy & 0xffff), v);
+        assertGridCoord("gx", gx, i);
+        assertGridCoord("gy", gy, i);
+        cells.set((gx << 16) | gy, v);
       }
       const grid: CellGrid = { step: json.step, cells };
       cache.set(model, grid);
       return grid;
     })();
+    promise.catch(() => {
+      // Surface the rejection but don't poison the in-flight cache: a
+      // subsequent retry should be allowed to re-fetch.
+      inFlight.delete(model);
+    });
     inFlight.set(model, promise);
   }
   return promise;
 }
 
+/**
+ * Pack a (gx, gy) pair into the same 32-bit key the loader uses. Returns
+ * `null` if either coordinate is outside [0, 0xffff] — outside the FVG
+ * bbox the 16-bit packing would wrap into a colliding key and return
+ * stale risk from an unrelated cell. A null result short-circuits to
+ * `risk = 0` at the call site, which is the correct answer for any
+ * geometry outside the loaded grid.
+ */
+function packKey(gx: number, gy: number): number | null {
+  if (gx < 0 || gx > 0xffff || gy < 0 || gy > 0xffff) return null;
+  return (gx << 16) | gy;
+}
+
 export function lookupRiskInGrid(grid: CellGrid, lng: number, lat: number): number {
   const gx = Math.floor(lng / grid.step);
   const gy = Math.floor(lat / grid.step);
-  return grid.cells.get(((gx & 0xffff) << 16) | (gy & 0xffff)) ?? 0;
+  const k = packKey(gx, gy);
+  if (k === null) return 0;
+  return grid.cells.get(k) ?? 0;
 }
 
 /**
@@ -60,7 +100,8 @@ function bufferMaxP(grid: CellGrid, lng: number, lat: number, radius: number): n
   let m = 0;
   for (let dy = -radius; dy <= radius; dy++) {
     for (let dx = -radius; dx <= radius; dx++) {
-      const k = (((cx + dx) & 0xffff) << 16) | ((cy + dy) & 0xffff);
+      const k = packKey(cx + dx, cy + dy);
+      if (k === null) continue;
       const v = grid.cells.get(k);
       if (v !== undefined && v > m) m = v;
     }

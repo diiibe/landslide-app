@@ -220,3 +220,281 @@ system preference on first visit; persist on user toggle.
 
 P2.7 (strict TS) + P2.8 (pipeline) + P3 nits deferred to a follow-up
 because they require coordinated retyping or non-frontend work.
+
+---
+
+# Follow-up audit — risk-tinted networks, comune choropleth, POI, search autocomplete
+
+Snapshot date: 2026-05-10. Branch: `claude/dreamy-elgamal-8c91cb` (fast-forwarded
+to `main`). Method: 2-agent parallel audit (map/perf/types + UI/a11y/mobile).
+Triggered by commits `9465465` (data pipeline scripts) and `46e8396` (map
+features). Same severity convention as above. Findings here are NEW — no
+overlap with the original audit, except where explicitly cross-referenced.
+
+## P0 — blockers
+
+### P0.4 Slider drag triggers unbounded re-bake of 35–40 MB GeoJSON
+
+`src/map-overlays/LayersPanel.tsx:309` fires `onChange` on every `input`
+event → `src/app/store.ts:250` → `src/map/MapView.tsx:288-293` (`rebakeRoads`
+or `rebakeTrails`). One drag of `gamma` (step 0.05, range 0.3–4) emits
+~70 events; each invokes `bakeRiskIntoFeatures` which walks hundreds of
+thousands of vertices doing a `(2R+1)²` grid lookup per vertex. With
+`radius = 8` that's 289 lookups per vertex per event, no debounce, no
+coalescing. UI freezes for the whole drag. **Fix**: trailing-debounce at
+the slider (~120 ms) and a "pending params" slot inside
+`refreshRoadData` / `refreshTrailData` so the in-flight bake superseded
+by newer params is dropped on completion.
+
+### P0.5 `bakingPromise` serialises but does not coalesce
+
+`src/map/layers/roads.ts:86-106` (and the identical block in
+`src/map/layers/trails.ts:74-93`) — when N concurrent
+`refreshRoadData` calls land, each `await`s the prior, then each runs
+its own `bake`. With slider events, 70 sequential bakes queue and ALL
+run, even though only the last one's output is visible. **Fix**: store
+*desired params* in a `pending` slot; the in-flight bake checks the
+slot on completion and re-runs once against the latest params.
+
+### P0.6 Mobile UX regression: LayersPanel default-open with two RiskParamsControl sub-blocks covers the map
+
+`src/app/store.ts:229` `layersPanelOpen: true`, combined with
+`layers.roads = true` + `layers.trails = true` defaults, makes the
+panel render **two** sensitivity sub-blocks (3 sliders + lock each) on
+top of 10 overlay rows + 6 pill rows. With 44 px touch targets enforced
+on mobile, the panel is ~850 px tall; at viewport ≤ 480 px the panel
+takes `width: calc(100vw - 16px)` and covers the entire map until the
+user manually collapses. Re-opens P0.1 from the original audit.
+**Fix**: read `matchMedia("(max-width: 768px)")` once at store init and
+default `layersPanelOpen: false` on mobile.
+
+## P1 — visible bugs
+
+### P1.9 Default model change broke `store.test.ts`
+
+`src/app/store.test.ts:7-9` asserts `model === "j2"`; `src/app/store.ts:204`
+is now `"j3"` (intentional per commit message). **Fix**: update the
+assertion. CLAUDE.md §5/§13 — tests should land in the same commit as
+the behaviour change.
+
+### P1.10 Model toggle redundantly re-bakes both networks
+
+`src/map/MapView.tsx:167-172` — `sensRoads` is
+`s.riskParams.roads[s.model].sensitivity`. When `model` flips, all 6
+parameter selectors return new values *and* `model` itself changes →
+the model effect runs `rebakeRoads` + `rebakeTrails`, then the param
+effects fire `applyRoadSensitivity`/`rebakeRoads` against the new
+values. Two redundant rebakes per network on every model switch.
+**Fix**: track `prevModel` in a ref; param-only effects no-op when the
+model just changed.
+
+### P1.11 `addRoads` / `addTrails` / `addCriticalPoi` run twice per basemap change
+
+`src/map/MapView.tsx:197-203` — `style.load` runs `setupStaticLayers`
+*and* `applyThemeToLayers` (lines 119-121). Both call `addRoads` /
+`addTrails` / `addCriticalPoi`. Each `add*` removes the existing
+layers, re-adds the source, and triggers another `refreshRoadData` /
+`refreshTrailData`. So the static GeoJSON is bake-walked twice on every
+basemap switch (and once on cold start). **Fix**: gate the
+`addRoads`/`addTrails`/`addCriticalPoi` calls inside
+`applyThemeToLayers` to actual theme changes; on first `style.load`
+let `setupStaticLayers` own them.
+
+### P1.12 Single bake on radius=8 is multi-second blocking work
+
+`src/map/layers/cellGrid.ts:56-69` — 289 `Map.get`s per vertex × ~500K–1M
+vertices = 290M lookups + a `Math.pow` per vertex on the JS main
+thread. Even with P0.4 / P0.5 fixed, a single legitimate
+parameter-change still freezes the UI for 2–6 s. **Fix**: chunk the
+feature loop with `await new Promise(r => setTimeout(r, 0))` every N
+features, or move the bake to a Web Worker (transferable
+`ArrayBuffer` for the cell map + the GeoJSON).
+
+### P1.13 `styleimagemissing` handler leaks across `setStyle()`
+
+`src/map/layers/criticalPoi.ts:72-90` — `missingHandlerInstalled` is a
+module-level boolean. After a `setStyle()` MapLibre wipes registered
+images but the boolean stays `true`, so the next `style.load` does NOT
+reinstall the handler. POI icons render as the default missing-image
+dot. Also: handler is never removed on map unmount → strict leak in
+test environments. **Fix**: tie to a `WeakMap<MLMap, boolean>` and
+reset on `addCriticalPoi` re-entry, plus `m.off("styleimagemissing", …)`
+on unmount.
+
+### P1.14 SearchLocality dropdown click-outside ignores touch
+
+`src/topbar/SearchLocality.tsx:124-131` — only listens for
+`mousedown`. iOS Safari / Android Chrome don't reliably synthesise
+`mousedown` from a touch when the on-screen keyboard is open; the
+dropdown stays stuck after the user taps the map. **Fix**: also listen
+for `touchstart` (passive) or use `pointerdown`.
+
+### P1.15 Lock toggle is invisible to color-blind + screen-reader users
+
+`src/map-overlays/LayersPanel.tsx:233-242` — `🔓` vs `🔒` emoji + a
+border-tint colour change is the *only* state signal. No
+`aria-pressed`, no text label, `aria-label` is static. Also
+`:focus-visible` on `.lockBtn` may be clipped by the panel's
+`overflow: hidden` (`LayersPanel.module.css:9`). **Fix**:
+`aria-pressed={!dirty}`, dynamic aria-label ("Save defaults" /
+"Defaults match"), replace emoji with a stroke icon + visible "Save" /
+"Saved" text, change `.panel` to `overflow: clip`.
+
+### P1.16 Sensitivity sliders missing accessibility wiring
+
+`src/map-overlays/LayersPanel.tsx:296-310` — no `aria-valuetext` (so
+VoiceOver reads `1.5` instead of `1.5×`, `0` instead of `0 cells`),
+the live numeric value (`<span class={styles.val}>` line 298-301) is
+not `aria-describedby`-linked to the slider, and there's no native
+size on the thumb in `.paramRow input[type=range]` for desktop touch
+targets. **Fix**: add `aria-valuetext={value.toFixed(d) + suffix}`
+and `aria-describedby` linking the val span.
+
+## P2 — latent / hardening
+
+### P2.10 Cell-grid coordinate hashing wraps silently outside FVG
+
+`src/map/layers/cellGrid.ts:35,49,63` packs `(gx & 0xffff) << 16 | (gy & 0xffff)`.
+For lng/lat in the FVG bbox `gx, gy` fit 16 bits; outside, the encoding
+silently wraps with no error — wrong risk value, no detection. **Fix**:
+assert at `loadCellGrid` time that all `gx, gy ∈ [0, 0xffff]`, or move
+to BigInt / string keys.
+
+### P2.11 No JSON shape validation at any data fetch boundary
+
+`src/map/layers/cellGrid.ts:29` (`as { step, data: number[] }`),
+`roads.ts:79`, `trails.ts:67`, `comuni.ts:35`, `criticalPoi.ts:37` all
+`as`-cast unvalidated `fetch().json()` to typed shapes. A truncated
+GeoJSON (network blip) crashes deep inside the bake. CLAUDE.md §4
+requires validation at boundaries. **Fix**: zod schemas in
+`src/lib/schemas.ts`, validated once at fetch.
+
+### P2.12 ~15 unsafe `as never` / `as unknown` casts in expression builders
+
+`src/map/layers/{roads,trails,comuni,criticalPoi,smoothHeatmap}.ts` —
+the cast pattern is needed only because layer paint expressions are
+typed as `unknown`. The MapLibre SDK exports `ExpressionSpecification`.
+**Fix**: type expression helpers as `maplibregl.ExpressionSpecification`
+and remove the casts.
+
+### P2.13 `clampParams` accepts `NaN` from malformed localStorage
+
+`src/app/store.ts:46-48` — `Number(undefined)` is `NaN`; `clamp(NaN, lo, hi)`
+returns `NaN`. A malformed `riskParamsLocked` key bypasses validation.
+**Fix**: replace `Number(p?.x ?? d)` with
+`Number.isFinite(n) ? n : d` before `clamp`.
+
+### P2.14 `lockRiskParams` not synced cross-tab — **RESOLVED**
+
+`src/app/store.ts` now listens for the `storage` event keyed on
+`SENS_DEFAULTS_KEY` and re-hydrates `riskParamsDefaults` via
+`loadSensDefaults()`. The writing tab itself doesn't receive the event,
+so the round-trip is one-way (which is what we want). Test covers a
+synthetic `StorageEvent` and asserts both networks/models pick up the
+new payload.
+
+### P2.15 Build pipeline not wired into CI / no deploy story for the static GeoJSON
+
+`package.json:11-15` adds 5 `build:*` scripts. `roads_fvg.geojson` and
+`trails_fvg.geojson` are gitignored (correct — 35–40 MB each). But
+there's no documented way for a freshly-cloned CI box to assemble a
+deployable bundle: production deploy needs all 5 to have run, and
+Overpass is rate-limited / flaky. **Fix**: README "deploy" section
+listing the build chain; CI workflow that runs `npm run build:*` and
+uploads artifacts; or commit a pinned snapshot to a release artifact.
+
+### P2.16 SearchLocality dropdown accessibility & mobile issues
+
+- `src/topbar/SearchLocality.tsx:184` — `aria-expanded` only reflects
+  `open && suggestions.length > 0`. During the 220 ms debounce + fetch
+  SR users hear "collapsed" while typing. No "no results" affordance
+  for a 2+ char query that returns empty.
+- `src/topbar/SearchLocality.module.css:83-87` — `.opt` is ~32 px
+  tall (under WCAG 2.5.8 24 px min and far under 44 px touch target).
+  No mobile breakpoint, no `title` attribute on truncated names.
+**Fix**: a non-result `<li>` when `q.length >= 2 && !loading && !suggestions.length`,
+plus `@media (max-width: 768px) { .opt { min-height: 44px } }` and
+`title={s.name}` on `<li>`.
+
+### P2.17 Comune choropleth has no legend
+
+`src/map-overlays/LayersPanel.tsx:158-166` toggles `layers.comuni` but
+`src/map-overlays/Legend.tsx` has no comune ramp. User enables the
+choropleth → colored polygons with no key. **Fix**: extend `Legend`
+with a conditional `{layers.comuni && <ComuneRamp />}` block, or
+document that the susceptibility ramp doubles for both.
+
+### P2.18 IA confusion: ThresholdControl + sensitivity sub-block coexist — **RESOLVED by design**
+
+`src/app/App.tsx` renders `<ThresholdControl />` (top-left, susceptibility
+`p ≥ X` cutoff for cells & heatmap) while `src/map-overlays/LayersPanel.tsx`
+hosts the per-network sensitivity / gamma / radius sliders for the risk
+tint on roads & trails. The two controls drive different downstream
+math on different layers — they're not duplicates. **Decision (2026-05):
+keep both as-is.** Re-labeling can happen if user testing surfaces a
+real comprehension gap; closing this finding without code change.
+
+### P2.19 Hardcoded ramp gradients duplicated across 3 stylesheets, no dark variant
+
+`src/map-overlays/Legend.module.css:37,52` and
+`src/map-overlays/ThresholdControl.module.css:39` —
+`linear-gradient(90deg,#E8F0D8 0%,#8BB26B 25%,…)`. Same five hex
+duplicated 3×; in dark theme `#E8F0D8` against `--c-surface` = `#1A1A1A`
+breaks the neutralised palette. **Fix**: lift to `--c-ramp-stops`
+tokens or a `.ramp` utility class with muted dark variant.
+
+## P3 — nits
+
+- `src/map/layers/roads.ts:199-208` — `tintRoadsByRisk` /
+  `installRoadTinting` exported "for backwards compatibility" but no
+  caller exists. Dead code; delete.
+- `src/map-overlays/LayersPanel.tsx:65,84` —
+  `data-kind={m.id === "j2" ? "outdoors" : "satellite"}` reuses
+  basemap colors for model pills. A 3rd model would silently miscolor.
+- `src/map/layers/comuni.ts:87` — `line-color: rgba(60,55,40,0.55)` is
+  theme-agnostic; outlines look muddy on dark basemap.
+- `src/topbar/SearchLocality.tsx:32` — `navigator.platform` is
+  deprecated; `navigator.userAgentData?.platform` is the modern
+  replacement (Chromium-only, fine as enrichment).
+- `src/map/layers/criticalPoi.ts:114-119` — icon size at z6 with
+  importance=1 is ~2 px (sub-readable). Probably intentional faintness;
+  flag.
+- `src/app/store.ts:90-108` — `initialTheme` now respects
+  `prefers-color-scheme`. Closes original P2.9.
+- Original P2.5 (`color-mix` fallback in `Group.module.css`) and the
+  Sprint 2 popup hardening still hold; not regressed.
+
+## Test gaps to close (cumulative — appended to original list)
+
+6. `bakeRiskIntoFeatures` invariants: identity at `gamma=1, radius=0`
+   vs. raw `lookupRiskInGrid`; risk monotone-decreasing as `gamma`
+   grows (catches future regressions in the bake math).
+7. `clampParams` rejects `NaN` and out-of-range payloads (P2.13).
+8. `bakingPromise` coalescing: 5 sequential calls → only 1 final bake
+   runs (P0.5).
+9. `lockRiskParams` round-trip: lock j3-roads → reload module →
+   defaults match (P2.14).
+10. `installIconLoader` reattaches across `setStyle()` (P1.13).
+
+## Sprint plan (cumulative)
+
+- **Sprint 4 — urgent perf**: P0.4 + P0.5 + P0.6 + P1.10 + P1.11.
+  Slider debounce, bake coalescing, model-switch double-bake,
+  basemap double-bake, mobile default-collapsed panel. Touches
+  `LayersPanel.tsx`, `MapView.tsx`, `roads.ts`, `trails.ts`,
+  `store.ts`. Adds tests #6, #8.
+- **Sprint 5 — correctness + a11y**: P1.9 + P1.12 + P1.13 + P1.14 +
+  P1.15 + P1.16 + P2.13. Test fix, async chunking, icon handler
+  lifecycle, touch click-outside, lock a11y, slider a11y. Adds tests
+  #7, #10.
+- **Sprint 6 — types + boundary validation**: P2.10 + P2.11 + P2.12.
+  zod schemas, `ExpressionSpecification` typing, cell-grid bounds
+  assertion.
+- **Sprint 7 — UI polish + deploy**: P2.15 + P2.16 + P2.17 + P2.18 +
+  P2.19. README/CI for `build:*`, search a11y, comune legend, IA
+  decision, ramp tokens. Plus P3 nits in the same pass.
+
+P2.7 (strict TS frontend zod), P2.8 (pipeline tippecanoe — already
+done in commit `deeb5ac`/`edf21a9` per the original audit) and the
+remaining nits stay deferred until Sprint 7 unless they block earlier
+work.
