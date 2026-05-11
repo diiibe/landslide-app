@@ -1,6 +1,11 @@
-import type { Map as MLMap, GeoJSONSource } from "maplibre-gl";
+import type {
+  Map as MLMap,
+  GeoJSONSource,
+  ExpressionSpecification,
+} from "maplibre-gl";
 import { useAppStore } from "@/app/store";
 import type { ModelId } from "@/app/types";
+import { ComuneFeatureCollectionSchema, parseOrThrow } from "@/lib/schemas";
 
 /**
  * Comune-level choropleth.
@@ -32,7 +37,13 @@ async function loadComuni(): Promise<GeoJSON.FeatureCollection> {
       const url = `${import.meta.env.BASE_URL}data/${DATA_URL_KEY}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error(`${DATA_URL_KEY}: ${res.status}`);
-      return (await res.json()) as GeoJSON.FeatureCollection;
+      const raw = (await res.json()) as unknown;
+      // Validated to the schema, then re-typed as the GeoJSON DOM type
+      // MapLibre expects. The zod schema keeps `geometry` as unknown
+      // because validating polygons here is heavy and MapLibre will
+      // reject malformed geometry with a clear error of its own.
+      const parsed = parseOrThrow(ComuneFeatureCollectionSchema, raw, DATA_URL_KEY);
+      return parsed as unknown as GeoJSON.FeatureCollection;
     })();
   }
   comuniRaw = await comuniInFlight;
@@ -41,7 +52,7 @@ async function loadComuni(): Promise<GeoJSON.FeatureCollection> {
 
 /** Choropleth gradient — hue follows the established susceptibility palette
  *  but on a polygon-mean p (which is concentrated in [0, 0.4] for FVG). */
-function fillColor(model: ModelId): unknown {
+function fillColor(model: ModelId): ExpressionSpecification {
   const prop = model === "j2" ? "risk_j2" : "risk_j3";
   return [
     "interpolate", ["linear"],
@@ -55,7 +66,14 @@ function fillColor(model: ModelId): unknown {
   ];
 }
 
-export function addComuni(m: MLMap, visible: boolean): void {
+/** Outline that stays legible on both light and dark basemaps. The
+ *  default keeps today's warm-grey color so existing callers (which
+ *  don't pass `dark`) render identically. */
+function outlineColor(dark: boolean): string {
+  return dark ? "rgba(240,230,200,0.45)" : "rgba(60,55,40,0.55)";
+}
+
+export function addComuni(m: MLMap, visible: boolean, dark = false): void {
   for (const id of [COMUNI_FILL, COMUNI_LINE]) {
     if (m.getLayer(id)) m.removeLayer(id);
   }
@@ -73,7 +91,7 @@ export function addComuni(m: MLMap, visible: boolean): void {
     type: "fill",
     source: COMUNI_SOURCE,
     paint: {
-      "fill-color": fillColor(model) as never,
+      "fill-color": fillColor(model),
       "fill-outline-color": "rgba(0,0,0,0)",
     },
     layout: { visibility: visible ? "visible" : "none" },
@@ -84,7 +102,7 @@ export function addComuni(m: MLMap, visible: boolean): void {
     type: "line",
     source: COMUNI_SOURCE,
     paint: {
-      "line-color": "rgba(60,55,40,0.55)",
+      "line-color": outlineColor(dark),
       "line-width": 0.6,
     },
     layout: { visibility: visible ? "visible" : "none" },
@@ -105,5 +123,5 @@ export function setComuniVisible(m: MLMap, v: boolean): void {
 export function applyComuniModel(m: MLMap): void {
   if (!m.getLayer(COMUNI_FILL)) return;
   const model = useAppStore.getState().model;
-  m.setPaintProperty(COMUNI_FILL, "fill-color", fillColor(model) as never);
+  m.setPaintProperty(COMUNI_FILL, "fill-color", fillColor(model));
 }
