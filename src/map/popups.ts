@@ -15,6 +15,9 @@ export interface CellPopupProps {
 export interface IffiPopupProps {
   id_frana: string;
   tipo_movimento: string;
+  /** Human-readable description of the movement type (e.g. "Colamento
+   *  rapido"). Optional — older IFFI records may not carry it. */
+  nome_tipo: string;
   comune: string;
   provincia: string;
 }
@@ -63,20 +66,42 @@ export function buildIffiPopupNode(p: IffiPopupProps): HTMLElement {
   root.style.fontFamily = "var(--font-stack)";
   root.style.fontSize = "12px";
   root.style.color = "#23261F";
+  root.style.minWidth = "180px";
 
   const title = document.createElement("div");
   title.style.fontWeight = "700";
-  title.textContent = `Frana ${p.id_frana}`;
+  title.style.marginBottom = "2px";
+  title.textContent = p.id_frana ? `Frana ${p.id_frana}` : "Frana";
   root.appendChild(title);
 
-  const tipo = document.createElement("div");
-  tipo.textContent = p.tipo_movimento;
-  root.appendChild(tipo);
+  // Human-readable movement-type name takes the headline slot under the
+  // id (e.g. "Colamento rapido"). Fall back gracefully when the IFFI
+  // record predates this column.
+  if (p.nome_tipo) {
+    const nome = document.createElement("div");
+    nome.style.fontWeight = "600";
+    nome.textContent = p.nome_tipo;
+    root.appendChild(nome);
+  }
+
+  if (p.tipo_movimento) {
+    const tipo = document.createElement("div");
+    tipo.style.color = "#7A7A6E";
+    tipo.style.fontVariant = "small-caps";
+    tipo.style.letterSpacing = ".04em";
+    tipo.textContent = p.tipo_movimento;
+    root.appendChild(tipo);
+  }
 
   const place = document.createElement("div");
   place.style.color = "#7A7A6E";
-  place.textContent = `${p.comune} (${p.provincia})`;
-  root.appendChild(place);
+  place.style.marginTop = "4px";
+  if (p.comune && p.provincia) {
+    place.textContent = `${p.comune} (${p.provincia})`;
+  } else {
+    place.textContent = p.comune || p.provincia || "";
+  }
+  if (place.textContent) root.appendChild(place);
   return root;
 }
 
@@ -110,12 +135,18 @@ export function registerPopups(m: MLMap): () => void {
     if (!f) return;
     const props = f.properties as Partial<IffiPopupProps> | null;
     if (!props) return;
-    new maplibregl.Popup({ closeButton: false, offset: 8 })
+    new maplibregl.Popup({
+      closeButton: true,
+      closeOnClick: true,
+      offset: 8,
+      className: "iffi-popup",
+    })
       .setLngLat(e.lngLat)
       .setDOMContent(
         buildIffiPopupNode({
           id_frana: String(props.id_frana ?? ""),
           tipo_movimento: String(props.tipo_movimento ?? ""),
+          nome_tipo: String(props.nome_tipo ?? ""),
           comune: String(props.comune ?? ""),
           provincia: String(props.provincia ?? ""),
         }),

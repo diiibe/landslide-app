@@ -47,6 +47,7 @@ describe("buildIffiPopupNode", () => {
     const node = buildIffiPopupNode({
       id_frana: "F-001",
       tipo_movimento: "frana di crollo",
+      nome_tipo: "Crollo / ribaltamento",
       comune: "<script>alert('xss')</script>",
       provincia: "<b>UD</b>",
     });

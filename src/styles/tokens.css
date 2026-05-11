@@ -72,8 +72,10 @@
   --radius-md: 6px;
   --radius-lg: 8px;
 
-  /* type */
-  --font-stack: system-ui, -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  /* type — Manrope is loaded via Google Fonts in index.html; the
+     system stack stays as fallback while the webfont is in flight or
+     if the user is offline. */
+  --font-stack: "Manrope", system-ui, -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
 
   color-scheme: light;
 }

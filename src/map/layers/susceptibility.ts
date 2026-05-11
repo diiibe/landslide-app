@@ -6,23 +6,23 @@ export const SUSCEPT_SOURCE = "cells";
 export const SUSCEPT_LAYER = "susceptibility";
 
 /**
- * Opacity model: only cells with `p >= threshold` are painted (0.85 alpha).
- * Cells below threshold are fully transparent — the basemap shows through
- * untouched. The complementary "Study area (DTM)" layer is what the user
- * toggles when they want to see the analysis extent regardless of p.
+ * Combined visibility + zone filter: only cells with `p >= threshold`
+ * AND (no zone filter OR in the selected zones) are rendered. Using a
+ * filter (rather than a 0-opacity case) means cells below threshold
+ * are skipped by MapLibre's hit-testing too, so click handlers fire
+ * only on the coloured at-risk cells the user can actually see.
  */
-function opacityForThreshold(threshold: number): unknown {
+function susceptibilityFilter(
+  threshold: number,
+  selectedZones: Zone[],
+): unknown {
+  const thresholdClause = [">=", ["get", "p"], threshold];
+  if (selectedZones.length === 0) return thresholdClause;
   return [
-    "case",
-    [">=", ["get", "p"], threshold], 0.85,
-    0.0,
+    "all",
+    thresholdClause,
+    ["in", ["get", "zone"], ["literal", selectedZones]],
   ];
-}
-
-function zoneFilterFor(selectedZones: Zone[]): unknown {
-  return selectedZones.length === 0
-    ? ["all"]
-    : ["in", ["get", "zone"], ["literal", selectedZones]];
 }
 
 export function addSusceptibility(
@@ -46,21 +46,35 @@ export function addSusceptibility(
     "source-layer": "cells",
     paint: {
       "fill-color": rampPaint() as never,
-      "fill-opacity": opacityForThreshold(threshold) as never,
+      "fill-opacity": 0.85,
       "fill-outline-color": "rgba(0,0,0,0)",
     },
-    filter: zoneFilterFor(selectedZones) as never,
+    filter: susceptibilityFilter(threshold, selectedZones) as never,
   });
 }
 
-export function updateSusceptibilityThreshold(m: MLMap, threshold: number): void {
+export function updateSusceptibilityThreshold(
+  m: MLMap,
+  threshold: number,
+  selectedZones: Zone[],
+): void {
   if (!m.getLayer(SUSCEPT_LAYER)) return;
-  m.setPaintProperty(SUSCEPT_LAYER, "fill-opacity", opacityForThreshold(threshold) as never);
+  m.setFilter(
+    SUSCEPT_LAYER,
+    susceptibilityFilter(threshold, selectedZones) as never,
+  );
 }
 
-export function updateSusceptibilityZones(m: MLMap, selectedZones: Zone[]): void {
+export function updateSusceptibilityZones(
+  m: MLMap,
+  threshold: number,
+  selectedZones: Zone[],
+): void {
   if (!m.getLayer(SUSCEPT_LAYER)) return;
-  m.setFilter(SUSCEPT_LAYER, zoneFilterFor(selectedZones) as never);
+  m.setFilter(
+    SUSCEPT_LAYER,
+    susceptibilityFilter(threshold, selectedZones) as never,
+  );
 }
 
 export function setSusceptibilityVisible(m: MLMap, v: boolean): void {
