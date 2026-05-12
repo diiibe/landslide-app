@@ -81,9 +81,9 @@ const FILTER_HUTS: FilterSpecification = ["==", ["get", "group"], "huts"];
    multipliers. Tuned so the three stacked circles read as a single soft
    bloom rather than as concentric rings. */
 const BASE_RADIUS = {
-  glow: 26,
-  halo: 14,
-  core: 5,
+  glow: 22,
+  halo: 12,
+  core: 4.5,
 } as const;
 
 /* Breathing animation:
@@ -102,7 +102,11 @@ const TIER_PHASE_OFFSET: Record<Tier, number> = {
 /** Build the per-tier `circle-radius` expression. Per-feature `importance`
  *  (typical range 1–5) scales every tier so hospitals/large structures
  *  read bigger than minor schools. `scale` is the global breathing
- *  multiplier set via setPaintProperty every frame. */
+ *  multiplier set via setPaintProperty every frame.
+ *
+ *  Use 2-arg `*` operands only — some MapLibre style-spec validations
+ *  reject variadic forms even when the runtime supports them, and the
+ *  net effect (importance × zoom × base × scale) is the same. */
 function radiusExpr(tier: Tier, scale: number): ExpressionSpecification {
   const base = BASE_RADIUS[tier] * scale;
   // The product (importance / 4 + 0.5) maps importance 1..5 to ~0.75..1.75
@@ -123,7 +127,7 @@ function radiusExpr(tier: Tier, scale: number): ExpressionSpecification {
     12, 1.0,
     16, 1.3,
   ];
-  return ["*", importanceMult, zoomMult, base];
+  return ["*", ["*", importanceMult, zoomMult], base];
 }
 
 function addTier(
@@ -135,9 +139,11 @@ function addTier(
 ): void {
   const id = layerId(group, tier);
   // Outer tiers get more blur (gaussian fall-off) and lower opacity.
-  // The core is bright and only lightly softened.
-  const opacity = tier === "glow" ? 0.22 : tier === "halo" ? 0.55 : 0.95;
-  const blur = tier === "glow" ? 1.4 : tier === "halo" ? 0.7 : 0.15;
+  // The core is bright and only lightly softened. circle-blur over ~1
+  // is "fully blurred to the centerpoint" which makes the circle
+  // perceptually invisible at small radii — keep it ≤ 0.9.
+  const opacity = tier === "glow" ? 0.35 : tier === "halo" ? 0.7 : 1.0;
+  const blur = tier === "glow" ? 0.9 : tier === "halo" ? 0.45 : 0.1;
   m.addLayer({
     id,
     type: "circle",
