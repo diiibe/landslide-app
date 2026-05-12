@@ -362,6 +362,7 @@ export interface AppState {
     },
   ) => UserPolygon;
   removeUserPolygon: (id: string) => void;
+  updateUserPolygon: (id: string, patch: Partial<UserPolygon>) => void;
   setDrawingMode: (on: boolean) => void;
   setPoiColor: (category: PoiCategory, hex: string) => void;
   resetPoiColors: () => void;
@@ -381,7 +382,7 @@ const initial: Omit<
   | "toggleLayersPanel" | "toggleSensitivityPanel" | "toggleComuneFilterPanel"
   | "setSelectedComuni" | "toggleComune" | "clearComuni"
   | "addUserLayer" | "removeUserLayer" | "updateUserLayer"
-  | "addUserPolygon" | "removeUserPolygon" | "setDrawingMode"
+  | "addUserPolygon" | "removeUserPolygon" | "updateUserPolygon" | "setDrawingMode"
   | "setPoiColor" | "resetPoiColors"
   | "toggleGroup" | "setSearch" | "reset"
 > = {
@@ -542,6 +543,12 @@ export const useAppStore = create<AppState>((set) => ({
   removeUserPolygon: (id) =>
     set((s) => {
       const next = s.userPolygons.filter((p) => p.id !== id);
+      persistUserData({ layers: s.userLayers, polygons: next, poiColors: s.poiColors });
+      return { userPolygons: next };
+    }),
+  updateUserPolygon: (id, patch) =>
+    set((s) => {
+      const next = s.userPolygons.map((p) => (p.id === id ? { ...p, ...patch } : p));
       persistUserData({ layers: s.userLayers, polygons: next, poiColors: s.poiColors });
       return { userPolygons: next };
     }),

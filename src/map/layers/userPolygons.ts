@@ -93,6 +93,16 @@ export function updateUserPolygonsData(m: MLMap, polygons: UserPolygon[]): void 
   m.triggerRepaint();
 }
 
+/** Move the polygon fill+line layers to the very top of the style so a
+ *  freshly-drawn polygon's outline isn't covered by a user-layer glow
+ *  halo (line-blur 6, line-width up to 20). Called after the userLayers
+ *  effect promotes user uploads to the front — order matters: the LAST
+ *  moveLayer wins, so this must run after `bringUserLayerToFront`. */
+export function bringUserPolygonsToFront(m: MLMap): void {
+  if (m.getLayer(USER_POLY_FILL)) m.moveLayer(USER_POLY_FILL);
+  if (m.getLayer(USER_POLY_LINE)) m.moveLayer(USER_POLY_LINE);
+}
+
 /** Build the stats popup card for a saved polygon. Used both when the
  *  user clicks the fill on the map and when a row in the LayersPanel
  *  Saved areas section dispatches `fvg:show-polygon-stats`. */
