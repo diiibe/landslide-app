@@ -15,6 +15,20 @@
   cursor: pointer;
   padding: 0;
   transition: transform .12s var(--e-quart), border-color .12s var(--e-quart);
+  /* Ensure the colour swatch is large enough to tap on touch devices
+     without overriding the per-instance pixel `size` that desktop
+     rows depend on. We expand the hit area via a transparent ::after
+     so the visible swatch stays small. */
+  position: relative;
+}
+.trigger::after {
+  content: "";
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+}
+@media (hover: hover) {
+  .trigger::after { inset: 0; }
 }
 
 .trigger:hover:not(:disabled) {
