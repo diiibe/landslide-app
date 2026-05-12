@@ -6,7 +6,13 @@ import {
   POI_DEFAULT_COLORS,
   type PoiCategory,
 } from "@/app/types";
+import { ColorButton } from "./ColorButton";
 import styles from "./PoiLegendPanel.module.css";
+
+/** All six default POI colours, listed so the palette popover offers
+ *  one-tap restore of the original hue per category in addition to
+ *  the standard user palette. */
+const POI_PALETTE = Object.values(POI_DEFAULT_COLORS);
 
 /**
  * Floating legend for the breathing POI balls. Mounts only when at
@@ -68,13 +74,12 @@ export function PoiLegendPanel() {
                 <div className={styles.groupTitle}>{g.title}</div>
                 {g.categories.map((cat) => (
                   <div key={cat} className={styles.row}>
-                    <input
-                      type="color"
-                      className={styles.swatch}
+                    <ColorButton
                       value={poiColors[cat]}
-                      onChange={(e) => setPoiColor(cat, e.target.value)}
-                      aria-label={`Colour for ${POI_CATEGORY_LABELS[cat]}`}
-                      title="Pick a colour"
+                      onChange={(hex) => setPoiColor(cat, hex)}
+                      palette={POI_PALETTE}
+                      ariaLabel={`Colour for ${POI_CATEGORY_LABELS[cat]}`}
+                      size={22}
                     />
                     <span className={styles.name}>{POI_CATEGORY_LABELS[cat]}</span>
                   </div>

@@ -1,5 +1,6 @@
 import { useAppStore } from "@/app/store";
 import type { Basemap, ModelId } from "@/app/types";
+import { ColorButton } from "./ColorButton";
 import styles from "./LayersPanel.module.css";
 
 const BASEMAPS: { id: Basemap; label: string }[] = [
@@ -196,13 +197,11 @@ function UserLayersSection() {
             onChange={() => updateUserLayer(l.id, { visible: !l.visible })}
             aria-label={`Show ${l.name}`}
           />
-          <input
-            type="color"
-            className={styles.userSwatch}
+          <ColorButton
             value={l.color}
-            onChange={(e) => updateUserLayer(l.id, { color: e.target.value })}
-            aria-label={`Colour for ${l.name}`}
-            title="Pick a colour"
+            onChange={(hex) => updateUserLayer(l.id, { color: hex })}
+            ariaLabel={`Colour for ${l.name}`}
+            size={22}
             disabled={l.colorMode === "riskHeatmap"}
           />
           <button
