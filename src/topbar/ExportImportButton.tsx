@@ -1,32 +1,25 @@
 import { useRef, useState } from "react";
 import { useAppStore } from "@/app/store";
-import { buildBundle, downloadBundle, parseBundleFile } from "@/lib/bundle";
+import { parseBundleFile } from "@/lib/bundle";
+import { ExportPanel } from "@/map-overlays/ExportPanel";
 import styles from "./IconButtons.module.css";
 
 /**
- * Two micro-features under one button: tap → menu with Export bundle /
- * Import bundle. The menu is a barebones <details> so we get keyboard
- * activation + focus management for free.
- *
- * Bundle = a single .geojson that round-trips uploaded layers + drawn
- * polygons with their stats. Import is additive (no merge logic, no
- * dedup); the user can clear via the per-row × in the LayersPanel.
+ * Topbar entry-point for export + import. The export menu is a full
+ * modal dialog (ExportPanel) where the user picks format and selects
+ * which tracks / saved areas to include. Import stays a single hidden
+ * file input — bundle files round-trip back into the store.
  */
 export function ExportImportButton() {
-  const userLayers = useAppStore((s) => s.userLayers);
-  const userPolygons = useAppStore((s) => s.userPolygons);
   const addUserLayer = useAppStore((s) => s.addUserLayer);
   const addUserPolygon = useAppStore((s) => s.addUserPolygon);
   const fileRef = useRef<HTMLInputElement>(null);
   const detailsRef = useRef<HTMLDetailsElement>(null);
   const [error, setError] = useState<string | null>(null);
+  const [exportOpen, setExportOpen] = useState(false);
 
-  const hasData = userLayers.length > 0 || userPolygons.length > 0;
-
-  const onExport = async () => {
-    if (!hasData) return;
-    const bundle = buildBundle(userLayers, userPolygons);
-    await downloadBundle(bundle);
+  const onExport = () => {
+    setExportOpen(true);
     detailsRef.current?.removeAttribute("open");
   };
 
@@ -54,7 +47,7 @@ export function ExportImportButton() {
         <summary
           className={styles.btn}
           title="Export / import your tracks and saved areas"
-          aria-label="Export or import bundle"
+          aria-label="Export or import data"
         >
           <svg
             viewBox="0 0 16 16"
@@ -76,9 +69,8 @@ export function ExportImportButton() {
             role="menuitem"
             className={styles.menuItem}
             onClick={onExport}
-            disabled={!hasData}
           >
-            Export bundle…
+            Export…
           </button>
           <button
             type="button"
@@ -106,6 +98,7 @@ export function ExportImportButton() {
           {error}
         </div>
       )}
+      <ExportPanel open={exportOpen} onClose={() => setExportOpen(false)} />
     </>
   );
 }
