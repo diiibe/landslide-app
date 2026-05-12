@@ -4,15 +4,19 @@
  * with single taps and the polygon is closed by double-tapping the
  * last vertex (or right-click on desktop).
  *
- * On `finish`, the freshly-drawn polygon's geometry is read out of
- * terra-draw, statistics are computed against the current map state
- * (susceptibility cells inside, IFFI count, area), the polygon is
- * persisted via the store's addUserPolygon, and the tool deactivates.
+ * Lifecycle:
+ *   1. `startDrawing(m)` starts the tool. The DrawingPanel mounts on
+ *      `drawingMode === true` and renders the live preview.
+ *   2. Every vertex change emits a `DrawingPreview` to subscribers so
+ *      the panel can show vertex count and the running area.
+ *   3. When terra-draw's `finish` event fires (double-tap close), the
+ *      preview transitions to `phase: "ready"` and the user gets a
+ *      Save/Discard form. There is no more window.prompt; commit is
+ *      driven by the panel.
  */
 
 import type { Map as MLMap } from "maplibre-gl";
-import { TerraDraw, TerraDrawPolygonMode } from "terra-draw";
-import { TerraDrawMapLibreGLAdapter } from "terra-draw-maplibre-gl-adapter";
+import type { TerraDraw } from "terra-draw";
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 import { point } from "@turf/helpers";
 import turfBbox from "@turf/bbox";
@@ -29,19 +33,76 @@ type DrawFeature = {
   geometry: GeoJSON.Geometry;
 };
 
+export interface DrawingPreview {
+  /** `drawing`: the user is still placing vertices; `ready`: terra-draw
+   *  closed the polygon and is waiting for a Save/Discard decision. */
+  phase: "drawing" | "ready";
+  vertexCount: number;
+  /** Area in km² of the current polygon ring. 0 until ≥ 3 vertices. */
+  areaKm2: number;
+  /** Closed polygon geometry, present once `phase === "ready"`. */
+  geometry?: GeoJSON.Polygon;
+}
+
+type Listener = (p: DrawingPreview) => void;
+const listeners = new Set<Listener>();
+
 let active: TerraDraw | null = null;
-let onFinishOnce: ((id: string | number) => void) | null = null;
+let mapRef: MLMap | null = null;
+/** terra-draw feature id of the polygon currently being committed. Set
+ *  in the `finish` handler so commitDrawing knows which polygon to
+ *  persist if the user has started another after closing the first. */
+let readyFeatureId: string | number | null = null;
 
-/** Start drawing. Returns immediately; the polygon is delivered async
- *  via the `fvg:polygon-drawn` window event with the freshly-built stats
- *  and bounds. Re-entrant: calling twice replaces the previous instance. */
-export function startDrawing(m: MLMap): void {
+function publish(p: DrawingPreview): void {
+  for (const fn of listeners) {
+    try {
+      fn(p);
+    } catch {
+      // listeners are UI handlers; a throw inside one shouldn't kill
+      // the others.
+    }
+  }
+}
+
+function readPreview(phase: "drawing" | "ready"): DrawingPreview {
+  if (!active) return { phase, vertexCount: 0, areaKm2: 0 };
+  const feats = active.getSnapshot() as DrawFeature[];
+  const open = feats.find((f) => f.properties?.mode === "polygon");
+  const closed = feats.find((f) => f.id === readyFeatureId);
+  const target = phase === "ready" ? closed : open ?? closed;
+  if (!target || target.geometry.type !== "Polygon") {
+    return { phase, vertexCount: 0, areaKm2: 0 };
+  }
+  const ring = target.geometry.coordinates[0] ?? [];
+  // terra-draw closes the ring by repeating the first vertex; the user-
+  // facing count subtracts that duplicate so "3 points" reads naturally.
+  const vertexCount = Math.max(0, ring.length - (phase === "ready" ? 1 : 0));
+  const areaKm2 = ring.length >= 3 ? turfArea(target as never) / 1_000_000 : 0;
+  const preview: DrawingPreview = { phase, vertexCount, areaKm2 };
+  if (phase === "ready") preview.geometry = target.geometry;
+  return preview;
+}
+
+/** Start drawing. Re-entrant: calling twice replaces the previous tool.
+ *  terra-draw + its MapLibre adapter are lazy-imported so vitest's
+ *  jsdom integration tests — which `vi.mock` the whole MapView away —
+ *  don't have to resolve the adapter's CJS/ESM interop. */
+export async function startDrawing(m: MLMap): Promise<void> {
   stopDrawing();
+  mapRef = m;
+  readyFeatureId = null;
 
-  // terra-draw-maplibre-gl-adapter ships its own MapLibre type; ours is
-  // the same runtime instance but a different TS class identity. Cast
-  // to `unknown` once at the boundary instead of importing two
-  // overlapping definitions.
+  const [{ TerraDraw, TerraDrawPolygonMode }, { TerraDrawMapLibreGLAdapter }] =
+    await Promise.all([
+      import("terra-draw"),
+      import("terra-draw-maplibre-gl-adapter"),
+    ]);
+
+  // Race: if the user toggled drawing off again while the adapter was
+  // resolving, bail without registering anything.
+  if (!useAppStore.getState().drawingMode) return;
+
   const draw = new TerraDraw({
     adapter: new TerraDrawMapLibreGLAdapter({ map: m as unknown as never }),
     modes: [new TerraDrawPolygonMode()],
@@ -49,42 +110,17 @@ export function startDrawing(m: MLMap): void {
   draw.start();
   draw.setMode("polygon");
   active = draw;
+  publish({ phase: "drawing", vertexCount: 0, areaKm2: 0 });
 
-  onFinishOnce = (id) => {
-    const feats = draw.getSnapshot() as DrawFeature[];
-    const feature = feats.find((f) => f.id === id);
-    if (!feature || feature.geometry.type !== "Polygon") {
-      stopDrawing();
-      useAppStore.getState().setDrawingMode(false);
-      return;
-    }
-    const geom = feature.geometry;
-    const stats = computeStatsForPolygon(m, geom);
-    const bbox = turfBbox({
-      type: "Feature",
-      properties: {},
-      geometry: geom,
-    } as GeoJSON.Feature<GeoJSON.Polygon>);
-    const bounds: [[number, number], [number, number]] = [
-      [bbox[0]!, bbox[1]!],
-      [bbox[2]!, bbox[3]!],
-    ];
-    const defaultName = `Area ${useAppStore.getState().userPolygons.length + 1}`;
-    const name = window.prompt("Name this area:", defaultName) ?? defaultName;
-    if (name.trim()) {
-      useAppStore.getState().addUserPolygon({
-        name: name.trim(),
-        geometry: geom,
-        bounds,
-        stats,
-      });
-    }
-    stopDrawing();
-    useAppStore.getState().setDrawingMode(false);
-  };
+  draw.on("change", () => {
+    if (!active) return;
+    if (readyFeatureId === null) publish(readPreview("drawing"));
+  });
 
-  // terra-draw fires `finish` when the polygon is closed.
-  draw.on("finish", (id) => onFinishOnce?.(id));
+  draw.on("finish", (id) => {
+    readyFeatureId = id;
+    publish(readPreview("ready"));
+  });
 }
 
 export function stopDrawing(): void {
@@ -96,17 +132,61 @@ export function stopDrawing(): void {
     }
     active = null;
   }
-  onFinishOnce = null;
+  mapRef = null;
+  readyFeatureId = null;
+  publish({ phase: "drawing", vertexCount: 0, areaKm2: 0 });
+}
+
+export function subscribeDrawingPreview(fn: Listener): () => void {
+  listeners.add(fn);
+  return () => {
+    listeners.delete(fn);
+  };
+}
+
+/** Commit the closed polygon to the store with the user-chosen name and
+ *  optional colour. Returns true on success. */
+export function commitDrawing(name: string, color?: string): boolean {
+  if (!active || !mapRef || readyFeatureId === null) return false;
+  const feats = active.getSnapshot() as DrawFeature[];
+  const feature = feats.find((f) => f.id === readyFeatureId);
+  if (!feature || feature.geometry.type !== "Polygon") return false;
+  const geom = feature.geometry;
+  const stats = computeStatsForPolygon(mapRef, geom);
+  const bbox = turfBbox({
+    type: "Feature",
+    properties: {},
+    geometry: geom,
+  } as GeoJSON.Feature<GeoJSON.Polygon>);
+  const bounds: [[number, number], [number, number]] = [
+    [bbox[0]!, bbox[1]!],
+    [bbox[2]!, bbox[3]!],
+  ];
+  const trimmed = name.trim() || `Area ${useAppStore.getState().userPolygons.length + 1}`;
+  useAppStore.getState().addUserPolygon({
+    name: trimmed,
+    geometry: geom,
+    bounds,
+    stats,
+    ...(color ? { color } : {}),
+  });
+  stopDrawing();
+  useAppStore.getState().setDrawingMode(false);
+  return true;
+}
+
+/** Discard the current closed polygon and exit drawing mode. */
+export function cancelDrawing(): void {
+  stopDrawing();
+  useAppStore.getState().setDrawingMode(false);
 }
 
 export function isDrawing(): boolean {
   return active !== null;
 }
 
-/** Sample stats inside a polygon from the currently-rendered map state.
- *  Susceptibility cells come from queryRenderedFeatures (so the filter
- *  expression that hides below-threshold cells is respected), IFFI from
- *  the same path. */
+/** Stats sampled from the currently-rendered map state for a polygon
+ *  closed via terra-draw. */
 function computeStatsForPolygon(
   m: MLMap,
   polygon: GeoJSON.Polygon,
@@ -128,9 +208,6 @@ function computeStatsForPolygon(
     ? m.queryRenderedFeatures({ layers: [IFFI_FILL] })
     : [];
 
-  // Cells: use the centroid of the rendered geometry as the test point.
-  // queryRenderedFeatures may emit a feature multiple times (one per
-  // tile that clips it); de-dupe on cell_id when possible.
   let cellsVisible = 0;
   let cellsAboveThreshold = 0;
   let pSum = 0;
@@ -191,7 +268,6 @@ function featureCentroid(g: GeoJSON.Geometry): [number, number] | null {
     return [c[0]!, c[1]!];
   }
   if (g.type === "Polygon") {
-    // arithmetic mean of the outer ring is fine for our 200m cells.
     const ring = g.coordinates[0];
     if (!ring || ring.length === 0) return null;
     let sx = 0;

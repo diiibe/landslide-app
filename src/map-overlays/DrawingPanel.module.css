@@ -1,0 +1,172 @@
+/* Drawing overlay panel. Floats bottom-left on desktop, full-width
+   bottom sheet on mobile. Distinct from the right-edge stack — it sits
+   over the lower-left chrome alongside the Legend. */
+
+.panel {
+  position: absolute;
+  left: 12px;
+  bottom: 60px;
+  width: min(280px, calc(100vw - 24px));
+  background: var(--c-surface);
+  border: 1px solid var(--c-forest);
+  border-radius: var(--radius-md);
+  box-shadow: 0 6px 20px rgba(35, 38, 31, 0.18);
+  z-index: 12;
+  overflow: hidden;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--c-border);
+  background: var(--c-bg-linen);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c-forest);
+  box-shadow: 0 0 0 0 rgba(47, 93, 58, 0.6);
+  animation: pulseDot 1.6s infinite var(--e-quart);
+}
+
+@keyframes pulseDot {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(47, 93, 58, 0.7); }
+  50% { box-shadow: 0 0 0 6px rgba(47, 93, 58, 0); }
+}
+
+.ttl {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--c-text);
+}
+
+.body {
+  padding: 10px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.kvRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.kvLabel {
+  color: var(--c-text-soft);
+}
+
+.kvValue {
+  font-weight: 700;
+  color: var(--c-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.hint {
+  margin: 0;
+  font-size: 11px;
+  color: var(--c-text-soft);
+  font-style: italic;
+  line-height: 1.4;
+}
+
+.formRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 8px;
+  font-size: 12px;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-sm);
+  background: var(--c-surface);
+  color: var(--c-text);
+  outline: none;
+}
+
+.input:focus-visible {
+  border-color: var(--c-forest);
+  box-shadow: 0 0 0 2px rgba(47, 93, 58, 0.25);
+}
+
+.swatch {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid var(--c-border);
+  border-radius: 50%;
+  cursor: pointer;
+  background: transparent;
+  overflow: hidden;
+}
+
+.swatch::-webkit-color-swatch-wrapper { padding: 0; }
+.swatch::-webkit-color-swatch { border: 0; border-radius: 50%; }
+.swatch::-moz-color-swatch { border: 0; border-radius: 50%; }
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.cancel,
+.save {
+  flex: 1;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  border: 1px solid var(--c-border);
+  background: var(--c-surface);
+  color: var(--c-text);
+  transition: background .12s var(--e-quart), color .12s var(--e-quart), border-color .12s var(--e-quart);
+}
+
+.cancel:hover {
+  background: rgba(122, 31, 16, 0.08);
+  color: var(--c-russet);
+  border-color: var(--c-russet);
+}
+
+.save {
+  background: var(--c-forest);
+  color: var(--c-surface);
+  border-color: var(--c-forest);
+}
+
+.save:hover {
+  filter: brightness(1.06);
+}
+
+.save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .panel {
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    width: auto;
+    max-width: none;
+  }
+  .actions button {
+    min-height: 44px;
+  }
+}

@@ -560,7 +560,7 @@ export function MapView() {
     const m = mapRef.current;
     if (!m) return;
     if (drawingMode) {
-      startDrawing(m);
+      void startDrawing(m);
     } else {
       stopDrawing();
     }
