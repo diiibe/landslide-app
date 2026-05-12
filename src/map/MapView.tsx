@@ -47,6 +47,7 @@ import {
 } from "./layers/comuni";
 import {
   addCriticalPoi,
+  applyPoiColors,
   applyPoiModel,
   setCriticalVisible,
   setHutsVisible,
@@ -257,6 +258,7 @@ export function MapView() {
   const userLayers = useAppStore((s) => s.userLayers);
   const userPolygons = useAppStore((s) => s.userPolygons);
   const drawingMode = useAppStore((s) => s.drawingMode);
+  const poiColors = useAppStore((s) => s.poiColors);
 
   useEffect(() => {
     if (!ref.current || mapRef.current) return;
@@ -501,6 +503,14 @@ export function MapView() {
     }
     prevUserIds.current = seen;
   }, [userLayers]);
+
+  // Reactive POI palette — push the user-edited category colours into
+  // every live POI tier's `circle-color` whenever the store map changes.
+  useEffect(() => {
+    const m = mapRef.current;
+    if (!m || !m.isStyleLoaded()) return;
+    applyPoiColors(m);
+  }, [poiColors]);
 
   // Drawing mode toggle: wire terra-draw on, tear it down on off.
   useEffect(() => {

@@ -4,6 +4,8 @@ import type {
   ExpressionSpecification,
   FilterSpecification,
 } from "@maplibre/maplibre-gl-style-spec";
+import { useAppStore } from "@/app/store";
+import { POI_DEFAULT_COLORS, type PoiCategory } from "@/app/types";
 import { CriticalPoiFeatureCollectionSchema, parseOrThrow } from "@/lib/schemas";
 
 /**
@@ -61,18 +63,39 @@ async function loadPoi(): Promise<GeoJSON.FeatureCollection> {
 /** Per-category colour ramp. Picked so each category reads at a glance
  *  on both light and dark basemaps; no two categories share a hue. */
 function colorByCategory(): DataDrivenPropertyValueSpecification<string> {
-  return [
+  // Read live from the store so user overrides in the PoiLegendPanel
+  // take effect on the next addLayer or setPaintProperty call.
+  const colors = useAppStore.getState().poiColors;
+  // The strict tuple type for `match` is too narrow to accept a rest
+  // spread of unknown length — cast through `unknown` once at the
+  // boundary, the runtime expression is the standard MapLibre shape.
+  const expr: unknown = [
     "match",
     ["get", "category"],
-    "hospital", "#FF3D5A",
-    "fire_station", "#FF7A1F",
-    "police", "#3F8CFF",
-    "school", "#FFD400",
-    "alpine_hut", "#2FCB6E",
-    "wilderness_hut", "#00E0D6",
-    /* default */ "#FFD400",
+    "hospital", colors.hospital ?? POI_DEFAULT_COLORS.hospital,
+    "fire_station", colors.fire_station ?? POI_DEFAULT_COLORS.fire_station,
+    "police", colors.police ?? POI_DEFAULT_COLORS.police,
+    "school", colors.school ?? POI_DEFAULT_COLORS.school,
+    "alpine_hut", colors.alpine_hut ?? POI_DEFAULT_COLORS.alpine_hut,
+    "wilderness_hut", colors.wilderness_hut ?? POI_DEFAULT_COLORS.wilderness_hut,
+    /* default */ POI_DEFAULT_COLORS.school,
   ];
+  return expr as DataDrivenPropertyValueSpecification<string>;
 }
+
+/** Push the current store palette into every live POI tier's
+ *  `circle-color`. Cheap enough to run on every store change since
+ *  there are only six layers. */
+export function applyPoiColors(m: import("maplibre-gl").Map): void {
+  for (const group of ["critical", "huts"] as const) {
+    for (const tier of TIER_NAMES) {
+      const id = layerId(group, tier);
+      if (m.getLayer(id)) m.setPaintProperty(id, "circle-color", colorByCategory());
+    }
+  }
+}
+
+export type { PoiCategory };
 
 const FILTER_CRITICAL: FilterSpecification = ["==", ["get", "group"], "critical"];
 const FILTER_HUTS: FilterSpecification = ["==", ["get", "group"], "huts"];
