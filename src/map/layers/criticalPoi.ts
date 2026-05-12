@@ -87,10 +87,11 @@ function colorByCategory(): DataDrivenPropertyValueSpecification<string> {
  *  `circle-color`. Cheap enough to run on every store change since
  *  there are only six layers. */
 export function applyPoiColors(m: import("maplibre-gl").Map): void {
+  const expr = colorByCategory();
   for (const group of ["critical", "huts"] as const) {
     for (const tier of TIER_NAMES) {
       const id = layerId(group, tier);
-      if (m.getLayer(id)) m.setPaintProperty(id, "circle-color", colorByCategory());
+      if (m.getLayer(id)) m.setPaintProperty(id, "circle-color", expr);
     }
   }
 }

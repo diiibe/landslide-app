@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAppStore, USER_COLOR_PALETTE } from "@/app/store";
+import { ColorButton } from "./ColorButton";
 import {
   cancelDrawing,
   commitDrawing,
@@ -89,16 +90,15 @@ export function DrawingPanel() {
                 autoFocus
               />
             </label>
-            <label className={styles.formRow}>
+            <div className={styles.formRow}>
               <span className={styles.kvLabel}>Colour</span>
-              <input
-                type="color"
-                className={styles.swatch}
+              <ColorButton
                 value={color}
-                onChange={(e) => setColor(e.target.value)}
-                aria-label="Polygon colour"
+                onChange={setColor}
+                ariaLabel="Polygon colour"
+                size={26}
               />
-            </label>
+            </div>
           </>
         )}
         <div className={styles.actions}>

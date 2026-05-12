@@ -117,7 +117,10 @@ export function addUserLayer(m: MLMap, layer: UserLayer): void {
     },
   });
 
-  // STROKE — bright inner line at full opacity.
+  // STROKE — bright inner line in the user's colour (or the risk
+  // gradient when colorMode=riskHeatmap). Previously hardcoded to
+  // #FFFFFF, which made colour changes invisible because the white
+  // stroke covered the halo's tint underneath.
   m.addLayer({
     id: id.stroke,
     type: "line",
@@ -129,7 +132,7 @@ export function addUserLayer(m: MLMap, layer: UserLayer): void {
       "line-join": "round",
     },
     paint: {
-      "line-color": "#FFFFFF",
+      "line-color": lineColorFor(layer),
       "line-opacity": 0.95 * layer.opacity,
       "line-width": [
         "interpolate", ["exponential", 1.4], ["zoom"],
@@ -198,6 +201,7 @@ export function applyUserLayer(m: MLMap, layer: UserLayer): void {
     m.setPaintProperty(id.halo, "line-opacity", 0.65 * layer.opacity);
   }
   if (m.getLayer(id.stroke)) {
+    m.setPaintProperty(id.stroke, "line-color", lineColorFor(layer));
     m.setPaintProperty(id.stroke, "line-opacity", 0.95 * layer.opacity);
   }
   if (m.getLayer(id.point)) {

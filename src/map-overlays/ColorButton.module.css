@@ -1,0 +1,85 @@
+/* Reusable palette-based colour picker. The trigger is a coloured
+   circle; the popover is a small grid of preset swatches that work
+   on every touch device (iPad Safari's native input[type=color] is
+   unreliable in some setups, so we don't depend on it). */
+
+.wrap {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.trigger {
+  border: 1px solid var(--c-border);
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 0;
+  transition: transform .12s var(--e-quart), border-color .12s var(--e-quart);
+}
+
+.trigger:hover:not(:disabled) {
+  transform: scale(1.06);
+  border-color: var(--c-text-muted);
+}
+
+.trigger:focus-visible {
+  outline: none;
+  border-color: var(--c-forest);
+  box-shadow: 0 0 0 2px rgba(47, 93, 58, 0.35);
+}
+
+.trigger:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.popover {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 100;
+  padding: 8px;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 6px 18px rgba(35, 38, 31, 0.22);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+
+.swatch {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--c-border);
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 0;
+  transition: transform .12s var(--e-quart), border-color .12s var(--e-quart);
+}
+
+.swatch:hover {
+  transform: scale(1.1);
+}
+
+.swatch[data-selected="true"] {
+  box-shadow: 0 0 0 2px var(--c-surface), 0 0 0 4px var(--c-forest);
+}
+
+.swatch:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--c-surface), 0 0 0 4px var(--c-forest);
+}
+
+@media (max-width: 768px) {
+  .swatch {
+    width: 36px;
+    height: 36px;
+  }
+  .grid {
+    gap: 8px;
+  }
+}
