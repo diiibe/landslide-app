@@ -9,10 +9,26 @@
   flex-shrink: 0;
 }
 .brand {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
   font-weight: 600;
   font-size: 14px;
   color: var(--c-text);
   white-space: nowrap;
+}
+.version {
+  font-weight: 500;
+  font-size: 10px;
+  color: var(--c-text-soft);
+  letter-spacing: .02em;
+  padding: 1px 5px;
+  border: 1px solid var(--c-border);
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+@media (max-width: 480px) {
+  .version { display: none; }
 }
 .spacer { margin-left: auto; display: flex; gap: 4px; align-items: center; }
 

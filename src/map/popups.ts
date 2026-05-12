@@ -29,12 +29,10 @@ export interface IffiPopupProps {
  */
 export function buildCellPopupNode(p: CellPopupProps): HTMLElement {
   const root = document.createElement("div");
-  root.style.fontFamily = "var(--font-stack)";
-  root.style.fontSize = "12px";
-  root.style.color = "#23261F";
+  root.className = "fvg-popup";
 
   const title = document.createElement("div");
-  title.style.fontWeight = "700";
+  title.className = "fvg-popup__title";
   title.textContent = `Cell ${p.cell_id}`;
   root.appendChild(title);
 
@@ -46,13 +44,13 @@ export function buildCellPopupNode(p: CellPopupProps): HTMLElement {
   root.appendChild(probLine);
 
   const zoneLine = document.createElement("div");
-  zoneLine.style.color = "#7A7A6E";
+  zoneLine.className = "fvg-popup__muted";
   zoneLine.textContent = `${p.zone} · ${p.sub_zone}`;
   root.appendChild(zoneLine);
 
   if (p.iffi_hit) {
     const hit = document.createElement("div");
-    hit.style.color = "#7A1F10";
+    hit.className = "fvg-popup__warn";
     hit.textContent = "IFFI intersected";
     root.appendChild(hit);
   }
@@ -61,14 +59,11 @@ export function buildCellPopupNode(p: CellPopupProps): HTMLElement {
 
 export function buildIffiPopupNode(p: IffiPopupProps): HTMLElement {
   const root = document.createElement("div");
-  root.style.fontFamily = "var(--font-stack)";
-  root.style.fontSize = "12px";
-  root.style.color = "#23261F";
+  root.className = "fvg-popup";
   root.style.minWidth = "180px";
 
   const title = document.createElement("div");
-  title.style.fontWeight = "700";
-  title.style.marginBottom = "2px";
+  title.className = "fvg-popup__title";
   title.textContent = p.id_frana ? `Frana ${p.id_frana}` : "Frana";
   root.appendChild(title);
 
@@ -77,22 +72,20 @@ export function buildIffiPopupNode(p: IffiPopupProps): HTMLElement {
   // record predates this column.
   if (p.nome_tipo) {
     const nome = document.createElement("div");
-    nome.style.fontWeight = "600";
+    nome.className = "fvg-popup__strong";
     nome.textContent = p.nome_tipo;
     root.appendChild(nome);
   }
 
   if (p.tipo_movimento) {
     const tipo = document.createElement("div");
-    tipo.style.color = "#7A7A6E";
-    tipo.style.fontVariant = "small-caps";
-    tipo.style.letterSpacing = ".04em";
+    tipo.className = "fvg-popup__caps";
     tipo.textContent = p.tipo_movimento;
     root.appendChild(tipo);
   }
 
   const place = document.createElement("div");
-  place.style.color = "#7A7A6E";
+  place.className = "fvg-popup__muted";
   place.style.marginTop = "4px";
   if (p.comune && p.provincia) {
     place.textContent = `${p.comune} (${p.provincia})`;
@@ -115,14 +108,11 @@ function buildCombinedNode(
   iffi: IffiPopupProps | null,
 ): HTMLElement {
   const root = document.createElement("div");
-  root.style.display = "flex";
-  root.style.flexDirection = "column";
-  root.style.gap = "8px";
+  root.className = "fvg-popup fvg-popup--stack";
   if (cell) root.appendChild(buildCellPopupNode(cell));
   if (cell && iffi) {
     const sep = document.createElement("div");
-    sep.style.borderTop = "1px solid rgba(0,0,0,.12)";
-    sep.style.margin = "0 -10px";
+    sep.className = "fvg-popup__divider";
     root.appendChild(sep);
   }
   if (iffi) root.appendChild(buildIffiPopupNode(iffi));
