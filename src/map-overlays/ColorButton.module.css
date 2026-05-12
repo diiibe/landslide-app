@@ -33,16 +33,19 @@
   cursor: not-allowed;
 }
 
+/* Portaled to document.body so ancestor `overflow: clip` never crops
+   us. Position (top/left) is supplied by the component once the
+   trigger's bounding rect is known; while computing we render with
+   visibility:hidden so there's no flash at 0,0. */
 .popover {
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
-  z-index: 100;
+  position: fixed;
+  z-index: 1000;
   padding: 8px;
   background: var(--c-surface);
   border: 1px solid var(--c-border);
   border-radius: var(--radius-sm);
   box-shadow: 0 6px 18px rgba(35, 38, 31, 0.22);
+  font-family: var(--font-stack);
 }
 
 .grid {

@@ -31,3 +31,77 @@ input { font-family: inherit; }
   outline-offset: 2px;
   border-radius: var(--radius-sm);
 }
+
+/* ───── MapLibre popup theming ─────
+ * The default popup ships with a hard-coded white background, black
+ * text and a white tip — readable on a light basemap, jarring on the
+ * dark theme. Re-tint everything from theme tokens so the popup is
+ * consistent in both modes. */
+.maplibregl-popup-content {
+  background: var(--c-surface);
+  color: var(--c-text);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .25);
+  font-family: var(--font-stack);
+  font-size: 12px;
+  padding: 10px 12px;
+}
+.maplibregl-popup-tip,
+.maplibregl-popup-anchor-top .maplibregl-popup-tip,
+.maplibregl-popup-anchor-bottom .maplibregl-popup-tip,
+.maplibregl-popup-anchor-left .maplibregl-popup-tip,
+.maplibregl-popup-anchor-right .maplibregl-popup-tip {
+  border-top-color: var(--c-surface);
+  border-bottom-color: var(--c-surface);
+  border-left-color: var(--c-surface);
+  border-right-color: var(--c-surface);
+}
+.maplibregl-popup-close-button {
+  color: var(--c-text-soft);
+  font-size: 18px;
+  line-height: 1;
+  padding: 4px 8px;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+.maplibregl-popup-close-button:hover {
+  color: var(--c-text);
+  background: var(--c-bg-linen);
+  border-radius: var(--radius-sm);
+}
+
+/* Programmatic popup card built by src/map/popups.ts and
+ * src/map/layers/userPolygons.ts. Class-driven so it tracks the
+ * active theme automatically — no inline hex literals to forget. */
+.fvg-popup { color: var(--c-text); font-family: var(--font-stack); font-size: 12px; }
+.fvg-popup--stack { display: flex; flex-direction: column; gap: 8px; }
+.fvg-popup__title { font-weight: 700; margin-bottom: 2px; color: var(--c-text); }
+.fvg-popup__strong { font-weight: 600; color: var(--c-text); }
+.fvg-popup__muted { color: var(--c-text-soft); }
+.fvg-popup__caps {
+  color: var(--c-text-muted);
+  font-variant: small-caps;
+  letter-spacing: .04em;
+}
+.fvg-popup__warn { color: var(--c-russet); font-weight: 600; }
+.fvg-popup__divider {
+  border-top: 1px solid var(--c-border);
+  margin: 0 -10px;
+}
+.fvg-popup--polygon { min-width: 200px; }
+.fvg-popup__meta { font-size: 11px; margin-bottom: 8px; }
+.fvg-popup__stats {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 10px;
+  row-gap: 3px;
+  margin: 0;
+}
+.fvg-popup__statValue {
+  margin: 0;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-text);
+}

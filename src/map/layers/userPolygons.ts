@@ -93,38 +93,27 @@ export function updateUserPolygonsData(m: MLMap, polygons: UserPolygon[]): void 
  *  Saved areas section dispatches `fvg:show-polygon-stats`. */
 export function buildPolygonStatsNode(p: UserPolygon): HTMLElement {
   const root = document.createElement("div");
-  root.style.fontFamily = "var(--font-stack)";
-  root.style.fontSize = "12px";
-  root.style.minWidth = "200px";
+  root.className = "fvg-popup fvg-popup--polygon";
 
   const title = document.createElement("div");
-  title.style.fontWeight = "700";
-  title.style.marginBottom = "4px";
+  title.className = "fvg-popup__title";
   title.textContent = p.name;
   root.appendChild(title);
 
   const meta = document.createElement("div");
-  meta.style.color = "#7A7A6E";
-  meta.style.marginBottom = "8px";
-  meta.style.fontSize = "11px";
+  meta.className = "fvg-popup__muted fvg-popup__meta";
   meta.textContent = `${p.stats.model.toUpperCase()} · saved at p ≥ ${p.stats.threshold.toFixed(2)}`;
   root.appendChild(meta);
 
   const dl = document.createElement("dl");
-  dl.style.display = "grid";
-  dl.style.gridTemplateColumns = "auto 1fr";
-  dl.style.columnGap = "10px";
-  dl.style.rowGap = "3px";
-  dl.style.margin = "0";
+  dl.className = "fvg-popup__stats";
 
   const row = (label: string, value: string) => {
     const dt = document.createElement("dt");
-    dt.style.color = "#7A7A6E";
+    dt.className = "fvg-popup__muted";
     dt.textContent = label;
     const dd = document.createElement("dd");
-    dd.style.margin = "0";
-    dd.style.fontWeight = "600";
-    dd.style.fontVariantNumeric = "tabular-nums";
+    dd.className = "fvg-popup__statValue";
     dd.textContent = value;
     dl.append(dt, dd);
   };
