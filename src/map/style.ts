@@ -1,18 +1,40 @@
+import type { StyleSpecification } from "maplibre-gl";
 import type { Basemap } from "@/app/types";
 
 const TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string | undefined;
 
+/** A token looks valid when it follows the `pk.<jwt>` shape AND is not
+ *  the placeholder shipped in `.env.example`. Anything else triggers
+ *  the OSM raster fallback so contributors can run the app locally
+ *  without provisioning a Mapbox account just to develop. */
+const HAS_TOKEN = !!TOKEN && TOKEN.startsWith("pk.") && !TOKEN.includes("your-public-mapbox-token");
+
+/** Public MapLibre demo style — works without an API key. Used as the
+ *  fallback for all four basemap entries when no Mapbox token is
+ *  configured so the app still boots locally for contributors. */
+const FALLBACK_STYLE_URL = "https://demotiles.maplibre.org/style.json";
+
 /**
- * Full Mapbox Styles API URLs (not `mapbox://...` because MapLibre GL JS
+ * Mapbox Styles API URLs (not `mapbox://...` because MapLibre GL JS
  * does not support Mapbox's proprietary protocol). The user's token is
- * embedded at build time.
+ * embedded at build time. When the token is missing, every entry falls
+ * back to a self-contained OSM raster style so MapLibre's `style.load`
+ * still fires — without it, every layer setup (POI, susceptibility,
+ * everything) would be silently skipped.
  */
-export const BASEMAP_STYLE: Record<Basemap, string> = {
-  outdoors: `https://api.mapbox.com/styles/v1/mapbox/outdoors-v12?access_token=${TOKEN}`,
-  light: `https://api.mapbox.com/styles/v1/mapbox/light-v11?access_token=${TOKEN}`,
-  satellite: `https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12?access_token=${TOKEN}`,
-  dark: `https://api.mapbox.com/styles/v1/mapbox/dark-v11?access_token=${TOKEN}`,
-};
+export const BASEMAP_STYLE: Record<Basemap, string | StyleSpecification> = HAS_TOKEN
+  ? {
+      outdoors: `https://api.mapbox.com/styles/v1/mapbox/outdoors-v12?access_token=${TOKEN}`,
+      light: `https://api.mapbox.com/styles/v1/mapbox/light-v11?access_token=${TOKEN}`,
+      satellite: `https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12?access_token=${TOKEN}`,
+      dark: `https://api.mapbox.com/styles/v1/mapbox/dark-v11?access_token=${TOKEN}`,
+    }
+  : {
+      outdoors: FALLBACK_STYLE_URL,
+      light: FALLBACK_STYLE_URL,
+      satellite: FALLBACK_STYLE_URL,
+      dark: FALLBACK_STYLE_URL,
+    };
 
 export const FVG_BOUNDS: [[number, number], [number, number]] = [
   [12.3, 45.5],
