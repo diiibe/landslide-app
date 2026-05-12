@@ -1,10 +1,17 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { addCriticalPoi, uninstallIconLoader } from "./criticalPoi";
 
-// `addCriticalPoi` fires a background fetch for the POI GeoJSON. In jsdom
-// the relative URL can't be resolved, so stub fetch to a benign empty
-// FeatureCollection — keeps unhandled-rejection noise out of the report
-// without changing what we're testing (the handler lifecycle).
+/**
+ * POI renderer used to draw SDF symbol icons + cache them through a
+ * styleimagemissing listener. It now draws three stacked circle layers
+ * per group (glow + halo + core) and animates the radii via a
+ * requestAnimationFrame loop. The legacy P1.13 tests for the icon-loader
+ * lifecycle were dropped along with the loader itself; what we still
+ * care about is:
+ *   1. `addCriticalPoi` adds three layers per group.
+ *   2. `uninstallIconLoader` is safe to call any number of times.
+ */
+
 beforeEach(() => {
   vi.stubGlobal(
     "fetch",
@@ -13,100 +20,52 @@ beforeEach(() => {
       json: async () => ({ type: "FeatureCollection", features: [] }),
     })),
   );
+  // jsdom doesn't ship requestAnimationFrame by default in older
+  // environments; vitest provides it but stub it explicitly to avoid
+  // background ticks bleeding into other tests.
+  vi.stubGlobal("requestAnimationFrame", vi.fn(() => 0));
+  vi.stubGlobal("cancelAnimationFrame", vi.fn());
 });
 
-/**
- * P1.13: the `styleimagemissing` handler must be registered per-map
- * instance, not gated by a single module-level flag. After `setStyle()`
- * MapLibre wipes registered images; our MapView responds by re-running
- * `addCriticalPoi` on `style.load`. A stale module-level flag would
- * cause the handler not to be re-bound, leaving icons as default
- * missing-image dots.
- */
-
-interface FakeListener {
-  type: string;
-  fn: (e: { id: string }) => void;
-}
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
 
 function makeFakeMap() {
-  const listeners: FakeListener[] = [];
   const layers = new Set<string>();
   const sources = new Set<string>();
-  const m = {
-    on: vi.fn((type: string, fn: (e: { id: string }) => void) => {
-      listeners.push({ type, fn });
-    }),
-    off: vi.fn((type: string, fn: (e: { id: string }) => void) => {
-      const idx = listeners.findIndex((l) => l.type === type && l.fn === fn);
-      if (idx >= 0) listeners.splice(idx, 1);
-    }),
+  return {
+    on: vi.fn(),
+    off: vi.fn(),
     getLayer: vi.fn((id: string) => (layers.has(id) ? { id } : undefined)),
     removeLayer: vi.fn((id: string) => layers.delete(id)),
     getSource: vi.fn((id: string) =>
       sources.has(id) ? { id, setData: vi.fn() } : undefined,
     ),
     removeSource: vi.fn((id: string) => sources.delete(id)),
-    // `getSource` returns an object with `setData` so the background
-    // `loadPoi().then(...)` doesn't blow up the test runner with an
-    // unhandled rejection after the resolved fetch.
     addSource: vi.fn((id: string) => sources.add(id)),
     addLayer: vi.fn((spec: { id: string }) => layers.add(spec.id)),
-    hasImage: vi.fn(() => false),
-    addImage: vi.fn(),
     setLayoutProperty: vi.fn(),
     setPaintProperty: vi.fn(),
+    layers,
   };
-  return { m, listeners };
 }
 
-describe("criticalPoi · styleimagemissing handler lifecycle", () => {
-  it("binds the handler on each new map instance (simulates setStyle re-init)", () => {
-    const fake1 = makeFakeMap();
-    addCriticalPoi(fake1.m as never, true, false);
-    const styleListenersOn1 = fake1.listeners.filter(
-      (l) => l.type === "styleimagemissing",
-    );
-    expect(styleListenersOn1).toHaveLength(1);
-
-    // Simulate `setStyle()` clearing the map's image cache: in production,
-    // MapView re-creates the map (or re-fires `style.load`) and we call
-    // `addCriticalPoi` again. With a module-level boolean flag this second
-    // call would be skipped → icons render as default missing dots.
-    const fake2 = makeFakeMap();
-    addCriticalPoi(fake2.m as never, true, false);
-    const styleListenersOn2 = fake2.listeners.filter(
-      (l) => l.type === "styleimagemissing",
-    );
-    expect(styleListenersOn2).toHaveLength(1);
+describe("criticalPoi · gaussian-balls renderer", () => {
+  it("adds three circle layers per group (glow, halo, core)", () => {
+    const m = makeFakeMap();
+    addCriticalPoi(m as never, true, true);
+    for (const group of ["critical", "huts"] as const) {
+      for (const tier of ["glow", "halo", "core"] as const) {
+        expect(m.layers.has(`poi-${group}-${tier}`)).toBe(true);
+      }
+    }
   });
 
-  it("is idempotent: calling addCriticalPoi twice on the same map binds the handler once", () => {
-    const fake = makeFakeMap();
-    addCriticalPoi(fake.m as never, true, false);
-    addCriticalPoi(fake.m as never, true, false);
-    const styleListeners = fake.listeners.filter(
-      (l) => l.type === "styleimagemissing",
-    );
-    expect(styleListeners).toHaveLength(1);
-  });
-
-  it("uninstallIconLoader removes the listener and allows a fresh bind afterwards", () => {
-    const fake = makeFakeMap();
-    addCriticalPoi(fake.m as never, true, false);
-    expect(
-      fake.listeners.filter((l) => l.type === "styleimagemissing"),
-    ).toHaveLength(1);
-
-    uninstallIconLoader(fake.m as never);
-    expect(
-      fake.listeners.filter((l) => l.type === "styleimagemissing"),
-    ).toHaveLength(0);
-
-    // After uninstall, a subsequent call must re-bind.
-    addCriticalPoi(fake.m as never, true, false);
-    expect(
-      fake.listeners.filter((l) => l.type === "styleimagemissing"),
-    ).toHaveLength(1);
+  it("uninstallIconLoader is a safe no-op (legacy contract preserved)", () => {
+    const m = makeFakeMap();
+    addCriticalPoi(m as never, false, false);
+    expect(() => uninstallIconLoader()).not.toThrow();
+    expect(() => uninstallIconLoader()).not.toThrow();
   });
 });

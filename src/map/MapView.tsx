@@ -328,7 +328,7 @@ export function MapView() {
     if (useAppStore.getState().layers.trails) rebakeTrails(m);
     if (useAppStore.getState().layers.comuni) applyComuniModel(m);
     const ls = useAppStore.getState().layers;
-    if (ls.poiCritical || ls.poiHuts) applyPoiModel(m);
+    if (ls.poiCritical || ls.poiHuts) applyPoiModel();
     // Keep the param-effect refs in sync so a model switch followed by a
     // param change doesn't double-bake. The param effects compare their
     // own ref to the live model; setting both here means a later effect
