@@ -59,6 +59,7 @@ import {
   bringUserLayerToFront,
   removeUserLayer,
 } from "./layers/userLayer";
+import { bakeUserLayerRisk } from "./layers/userLayerHeatmap";
 import {
   openPolygonPopup,
   registerPolygonClicks,
@@ -511,6 +512,48 @@ export function MapView() {
     if (!m || !m.isStyleLoaded()) return;
     applyPoiColors(m);
   }, [poiColors]);
+
+  // Risk-tinted user layers — when a layer's colorMode flips to
+  // `riskHeatmap`, bake per-segment risk against the active model's
+  // cell grid and push it into the source so the trail ramp expression
+  // has data to interpolate over. The ORIGINAL FeatureCollection is
+  // stashed in a ref so toggling back to solid restores it cleanly.
+  const userLayerOriginals = useRef(new Map<string, GeoJSON.FeatureCollection>());
+  const userLayerBakedFor = useRef(new Map<string, string>());
+  useEffect(() => {
+    const m = mapRef.current;
+    if (!m || !m.isStyleLoaded()) return;
+    const sourceFor = (id: string) =>
+      m.getSource(`user-src-${id}`) as maplibregl.GeoJSONSource | undefined;
+    for (const layer of userLayers) {
+      if (layer.colorMode === "riskHeatmap") {
+        const params = useAppStore.getState().riskParams.trails[model];
+        const key = `${model}|g${params.gamma}|r${params.radius}`;
+        if (userLayerBakedFor.current.get(layer.id) === key) continue;
+        if (!userLayerOriginals.current.has(layer.id)) {
+          userLayerOriginals.current.set(layer.id, layer.data);
+        }
+        const orig = userLayerOriginals.current.get(layer.id)!;
+        userLayerBakedFor.current.set(layer.id, key);
+        void bakeUserLayerRisk(orig, model)
+          .then((baked) => {
+            // Only push if no later bake has superseded us.
+            if (userLayerBakedFor.current.get(layer.id) !== key) return;
+            sourceFor(layer.id)?.setData(baked);
+          })
+          .catch(() => {
+            // Cell grid missing or fetch failure — restore original so
+            // the layer doesn't sit empty.
+            userLayerBakedFor.current.delete(layer.id);
+            sourceFor(layer.id)?.setData(orig);
+          });
+      } else if (userLayerBakedFor.current.has(layer.id)) {
+        const orig = userLayerOriginals.current.get(layer.id);
+        if (orig) sourceFor(layer.id)?.setData(orig);
+        userLayerBakedFor.current.delete(layer.id);
+      }
+    }
+  }, [userLayers, model]);
 
   // Drawing mode toggle: wire terra-draw on, tear it down on off.
   useEffect(() => {

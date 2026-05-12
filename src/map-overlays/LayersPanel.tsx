@@ -203,7 +203,34 @@ function UserLayersSection() {
             onChange={(e) => updateUserLayer(l.id, { color: e.target.value })}
             aria-label={`Colour for ${l.name}`}
             title="Pick a colour"
+            disabled={l.colorMode === "riskHeatmap"}
           />
+          <button
+            type="button"
+            className={styles.userHeat}
+            data-active={l.colorMode === "riskHeatmap"}
+            aria-pressed={l.colorMode === "riskHeatmap"}
+            aria-label={
+              l.colorMode === "riskHeatmap"
+                ? `Switch ${l.name} back to solid colour`
+                : `Tint ${l.name} with the trails risk heatmap`
+            }
+            title={
+              l.colorMode === "riskHeatmap"
+                ? "Solid colour"
+                : "Tint with the trails risk heatmap"
+            }
+            onClick={() =>
+              updateUserLayer(l.id, {
+                colorMode: l.colorMode === "riskHeatmap" ? "solid" : "riskHeatmap",
+              })
+            }
+          >
+            <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M2.5 13l3-3 3 2 3-5 2 3" />
+              <circle cx="13" cy="3" r="1" />
+            </svg>
+          </button>
           <button
             type="button"
             className={styles.userName}

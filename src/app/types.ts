@@ -42,6 +42,13 @@ export const POI_CATEGORY_LABELS: Record<PoiCategory, string> = {
 
 export type UserLayerKind = "gpx" | "geojson";
 
+/** Colour mode for a user-uploaded line layer.
+ *  - `solid`: the user-picked `color` paints the whole line.
+ *  - `riskHeatmap`: each segment is baked against the active model's
+ *    cell grid and tinted with the trails risk ramp, so the line
+ *    reads as a heatmap of slide susceptibility along its path. */
+export type UserLayerColorMode = "solid" | "riskHeatmap";
+
 export interface UserLayer {
   /** Stable id used in MapLibre source/layer ids and the store array key.
    *  Generated at upload time (timestamp + random suffix). */
@@ -60,6 +67,9 @@ export interface UserLayer {
   bounds: [[number, number], [number, number]] | null;
   /** Unix ms — used for sort + localStorage round-trip. */
   createdAt: number;
+  /** Default solid colouring. `riskHeatmap` re-paints the line with the
+   *  trails risk ramp, baked against the active model's cell grid. */
+  colorMode?: UserLayerColorMode;
 }
 
 export interface UserPolygonStats {
