@@ -85,7 +85,12 @@ export function setupUserPolygons(m: MLMap, polygons: UserPolygon[]): void {
 
 export function updateUserPolygonsData(m: MLMap, polygons: UserPolygon[]): void {
   const src = m.getSource(USER_POLY_SOURCE) as GeoJSONSource | undefined;
-  if (src) src.setData(toFeatureCollection(polygons));
+  if (!src) return;
+  src.setData(toFeatureCollection(polygons));
+  // setData is asynchronous on some MapLibre code paths; force a paint
+  // tick so the removed polygon's geometry actually disappears on the
+  // next frame instead of waiting for the next user interaction.
+  m.triggerRepaint();
 }
 
 /** Build the stats popup card for a saved polygon. Used both when the
