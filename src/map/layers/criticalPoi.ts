@@ -99,35 +99,35 @@ const TIER_PHASE_OFFSET: Record<Tier, number> = {
   core: 400,
 };
 
-/** Build the per-tier `circle-radius` expression. Per-feature `importance`
- *  (typical range 1–5) scales every tier so hospitals/large structures
- *  read bigger than minor schools. `scale` is the global breathing
- *  multiplier set via setPaintProperty every frame.
+/** Build the per-tier `circle-radius` expression.
  *
- *  Use 2-arg `*` operands only — some MapLibre style-spec validations
- *  reject variadic forms even when the runtime supports them, and the
- *  net effect (importance × zoom × base × scale) is the same. */
+ *  MapLibre constraint: `["zoom"]` may ONLY appear as the input to a
+ *  TOP-LEVEL `step` or `interpolate`. Nesting it inside `*`, `+` or any
+ *  other expression triggers a validation error and the whole layer is
+ *  silently rejected — which is exactly how this layer disappeared in
+ *  the first place. Keep `interpolate(["zoom"], …)` as the outermost
+ *  expression and fold importance × base × scale into each stop. */
 function radiusExpr(tier: Tier, scale: number): ExpressionSpecification {
   const base = BASE_RADIUS[tier] * scale;
-  // The product (importance / 4 + 0.5) maps importance 1..5 to ~0.75..1.75
-  // — a gentle, non-linear scaling. importance defaults to 4 (=1.5×).
+  // Per-feature `importance` (typical range 1..5) maps to ~0.75..1.75 so
+  // hospitals/large structures read bigger than minor schools.
+  // `importance` defaults to 4 (=1.5×) for any feature missing it.
   const importanceMult: ExpressionSpecification = [
     "+",
     0.5,
     ["/", ["coalesce", ["get", "importance"], 4], 4],
   ];
-  // Zoom factor: shrink at very low zoom so the glows don't overwhelm
-  // the regional view.
-  const zoomMult: ExpressionSpecification = [
+  // Top-level zoom interpolate. Each stop is importance × base ×
+  // zoomFactor — non-zoom expressions are allowed as stop values.
+  return [
     "interpolate",
     ["linear"],
     ["zoom"],
-    6, 0.55,
-    9, 0.85,
-    12, 1.0,
-    16, 1.3,
+    6, ["*", importanceMult, base * 0.55],
+    9, ["*", importanceMult, base * 0.85],
+    12, ["*", importanceMult, base * 1.0],
+    16, ["*", importanceMult, base * 1.3],
   ];
-  return ["*", ["*", importanceMult, zoomMult], base];
 }
 
 function addTier(
