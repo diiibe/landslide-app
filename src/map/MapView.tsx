@@ -47,6 +47,7 @@ import {
 } from "./layers/comuni";
 import {
   addCriticalPoi,
+  applyPoiCategoryFilter,
   applyPoiColors,
   applyPoiModel,
   setCriticalVisible,
@@ -261,6 +262,7 @@ export function MapView() {
   const userPolygons = useAppStore((s) => s.userPolygons);
   const drawingMode = useAppStore((s) => s.drawingMode);
   const poiColors = useAppStore((s) => s.poiColors);
+  const poiCategoryVisible = useAppStore((s) => s.poiCategoryVisible);
 
   useEffect(() => {
     if (!ref.current || mapRef.current) return;
@@ -518,6 +520,15 @@ export function MapView() {
     if (!m || !m.isStyleLoaded()) return;
     applyPoiColors(m);
   }, [poiColors]);
+
+  // Reactive per-category POI filter — toggling a category in the legend
+  // hides those features by rewriting the layer filter rather than
+  // tearing the source down.
+  useEffect(() => {
+    const m = mapRef.current;
+    if (!m || !m.isStyleLoaded()) return;
+    applyPoiCategoryFilter(m);
+  }, [poiCategoryVisible]);
 
   // Risk-tinted user layers — when a layer's colorMode flips to
   // `riskHeatmap`, bake per-segment risk against the active model's

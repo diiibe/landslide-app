@@ -113,6 +113,21 @@
   align-items: center;
   gap: 10px;
   min-height: 26px;
+  cursor: pointer;
+}
+
+.check {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  accent-color: var(--c-forest);
+  cursor: pointer;
+}
+
+.name[data-dim="true"] {
+  color: var(--c-text-muted);
+  text-decoration: line-through;
+  text-decoration-color: var(--c-border);
 }
 
 .swatch {
