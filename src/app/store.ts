@@ -1,12 +1,14 @@
 import { create } from "zustand";
-import type {
-  Basemap,
-  ModelId,
-  Theme,
-  Threshold,
-  UserLayer,
-  UserPolygon,
-  Zone,
+import {
+  POI_DEFAULT_COLORS,
+  type Basemap,
+  type ModelId,
+  type PoiCategory,
+  type Theme,
+  type Threshold,
+  type UserLayer,
+  type UserPolygon,
+  type Zone,
 } from "./types";
 
 export type GroupId = "view" | "monitoring" | "analytics" | "model";
@@ -121,6 +123,7 @@ function persistSensDefaults(s: RiskParamsMap): void {
 interface PersistedUserData {
   layers: UserLayer[];
   polygons: UserPolygon[];
+  poiColors?: Record<string, string>;
 }
 
 /** Best-effort load of user uploads + drawn polygons from localStorage.
@@ -132,10 +135,14 @@ function loadUserData(): PersistedUserData {
     const raw = window.localStorage.getItem(USER_DATA_KEY);
     if (!raw) return { layers: [], polygons: [] };
     const parsed = JSON.parse(raw) as Partial<PersistedUserData>;
-    return {
+    const base: PersistedUserData = {
       layers: Array.isArray(parsed.layers) ? parsed.layers : [],
       polygons: Array.isArray(parsed.polygons) ? parsed.polygons : [],
     };
+    if (parsed.poiColors && typeof parsed.poiColors === "object") {
+      base.poiColors = parsed.poiColors;
+    }
+    return base;
   } catch {
     return { layers: [], polygons: [] };
   }
@@ -311,6 +318,9 @@ export interface AppState {
   /** True while the polygon-drawing tool is active. UI shows a hint and
    *  the map captures clicks/taps via terra-draw. */
   drawingMode: boolean;
+  /** Per-category colour for the gaussian POI balls. Defaults to
+   *  POI_DEFAULT_COLORS; user-editable via the PoiLegendPanel. */
+  poiColors: Record<PoiCategory, string>;
   groupOpen: Record<GroupId, boolean>;
   search: { query: string; placeName: string | null };
   setModel: (m: ModelId) => void;
@@ -353,6 +363,8 @@ export interface AppState {
   ) => UserPolygon;
   removeUserPolygon: (id: string) => void;
   setDrawingMode: (on: boolean) => void;
+  setPoiColor: (category: PoiCategory, hex: string) => void;
+  resetPoiColors: () => void;
   toggleGroup: (g: GroupId) => void;
   setSearch: (s: { query: string; placeName: string | null }) => void;
   reset: () => void;
@@ -370,6 +382,7 @@ const initial: Omit<
   | "setSelectedComuni" | "toggleComune" | "clearComuni"
   | "addUserLayer" | "removeUserLayer" | "updateUserLayer"
   | "addUserPolygon" | "removeUserPolygon" | "setDrawingMode"
+  | "setPoiColor" | "resetPoiColors"
   | "toggleGroup" | "setSearch" | "reset"
 > = {
   model: "j3",
@@ -404,6 +417,10 @@ const initial: Omit<
   userLayers: userData.layers,
   userPolygons: userData.polygons,
   drawingMode: false,
+  poiColors: {
+    ...POI_DEFAULT_COLORS,
+    ...((userData.poiColors ?? {}) as Partial<Record<PoiCategory, string>>),
+  },
   groupOpen: { view: true, monitoring: true, analytics: true, model: true },
   search: { query: "", placeName: null },
 };
@@ -487,7 +504,7 @@ export const useAppStore = create<AppState>((set) => ({
     };
     set((s) => {
       const next = [layer, ...s.userLayers];
-      persistUserData({ layers: next, polygons: s.userPolygons });
+      persistUserData({ layers: next, polygons: s.userPolygons, poiColors: s.poiColors });
       return { userLayers: next };
     });
     return layer;
@@ -495,13 +512,13 @@ export const useAppStore = create<AppState>((set) => ({
   removeUserLayer: (id) =>
     set((s) => {
       const next = s.userLayers.filter((l) => l.id !== id);
-      persistUserData({ layers: next, polygons: s.userPolygons });
+      persistUserData({ layers: next, polygons: s.userPolygons, poiColors: s.poiColors });
       return { userLayers: next };
     }),
   updateUserLayer: (id, patch) =>
     set((s) => {
       const next = s.userLayers.map((l) => (l.id === id ? { ...l, ...patch } : l));
-      persistUserData({ layers: next, polygons: s.userPolygons });
+      persistUserData({ layers: next, polygons: s.userPolygons, poiColors: s.poiColors });
       return { userLayers: next };
     }),
   addUserPolygon: (input) => {
@@ -517,7 +534,7 @@ export const useAppStore = create<AppState>((set) => ({
     };
     set((s) => {
       const next = [polygon, ...s.userPolygons];
-      persistUserData({ layers: s.userLayers, polygons: next });
+      persistUserData({ layers: s.userLayers, polygons: next, poiColors: s.poiColors });
       return { userPolygons: next };
     });
     return polygon;
@@ -525,10 +542,29 @@ export const useAppStore = create<AppState>((set) => ({
   removeUserPolygon: (id) =>
     set((s) => {
       const next = s.userPolygons.filter((p) => p.id !== id);
-      persistUserData({ layers: s.userLayers, polygons: next });
+      persistUserData({ layers: s.userLayers, polygons: next, poiColors: s.poiColors });
       return { userPolygons: next };
     }),
   setDrawingMode: (on) => set({ drawingMode: on }),
+  setPoiColor: (category, hex) =>
+    set((s) => {
+      const next = { ...s.poiColors, [category]: hex };
+      persistUserData({
+        layers: s.userLayers,
+        polygons: s.userPolygons,
+        poiColors: next,
+      });
+      return { poiColors: next };
+    }),
+  resetPoiColors: () =>
+    set((s) => {
+      persistUserData({
+        layers: s.userLayers,
+        polygons: s.userPolygons,
+        poiColors: { ...POI_DEFAULT_COLORS },
+      });
+      return { poiColors: { ...POI_DEFAULT_COLORS } };
+    }),
   toggleGroup: (g) =>
     set((s) => ({ groupOpen: { ...s.groupOpen, [g]: !s.groupOpen[g] } })),
   setSearch: (search) => set({ search }),

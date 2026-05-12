@@ -1,0 +1,220 @@
+/* Modal-ish Export dialog. Floats centred over the map with a dimmed
+   backdrop the user can click to dismiss. */
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.panel {
+  width: 100%;
+  max-width: 440px;
+  max-height: calc(100dvh - 32px);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 12px 32px rgba(35, 38, 31, 0.28);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--c-border);
+  background: var(--c-bg-linen);
+}
+
+.ttl {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--c-text);
+}
+
+.close {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  line-height: 1;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  color: var(--c-text-soft);
+}
+
+.close:hover { background: var(--c-bg-linen); color: var(--c-text); }
+
+.body {
+  padding: 12px 14px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.section {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sectionTitle {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--c-text-soft);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sectionActions {
+  margin-left: auto;
+  display: flex;
+  gap: 6px;
+}
+
+.linkBtn {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-size: 11px;
+  color: var(--c-text-muted);
+  padding: 2px 4px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.linkBtn:hover { color: var(--c-text); }
+
+.radioRow,
+.checkRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 2px;
+  font-size: 13px;
+  color: var(--c-text);
+  cursor: pointer;
+  min-height: 30px;
+}
+
+.radioRow input,
+.checkRow input {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.radioName,
+.rowName {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.subSection + .subSection {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px dashed var(--c-border-soft);
+}
+
+.subTitle {
+  font-size: 11px;
+  color: var(--c-text-soft);
+  margin-bottom: 4px;
+}
+
+.swatch {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid var(--c-border);
+}
+
+.hint {
+  margin: 4px 0 0;
+  font-size: 11px;
+  font-style: italic;
+  color: var(--c-text-soft);
+  line-height: 1.4;
+}
+
+.err {
+  font-size: 12px;
+  color: var(--c-russet);
+  background: rgba(122, 31, 16, 0.08);
+  border: 1px solid var(--c-russet);
+  border-radius: var(--radius-sm);
+  padding: 6px 8px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  padding: 10px 14px;
+  border-top: 1px solid var(--c-border);
+  background: var(--c-bg-linen);
+}
+
+.cancel,
+.export {
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  border: 1px solid var(--c-border);
+  background: var(--c-surface);
+  color: var(--c-text);
+  transition: background .12s var(--e-quart), color .12s var(--e-quart);
+}
+
+.cancel:hover {
+  background: rgba(122, 31, 16, 0.08);
+  color: var(--c-russet);
+  border-color: var(--c-russet);
+}
+
+.export {
+  background: var(--c-forest);
+  color: var(--c-surface);
+  border-color: var(--c-forest);
+}
+
+.export:hover {
+  filter: brightness(1.06);
+}
+
+.export:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 480px) {
+  .panel { max-width: none; max-height: calc(100dvh - 16px); }
+  .actions button { min-height: 44px; }
+}

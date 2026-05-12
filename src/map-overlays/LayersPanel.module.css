@@ -133,6 +133,40 @@
 .userSwatch::-webkit-color-swatch-wrapper { padding: 0; }
 .userSwatch::-webkit-color-swatch { border: 0; border-radius: 50%; }
 .userSwatch::-moz-color-swatch { border: 0; border-radius: 50%; }
+.userSwatch:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.userHeat {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--c-border);
+  background: transparent;
+  color: var(--c-text-soft);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  padding: 0;
+  transition: background .12s var(--e-quart), color .12s var(--e-quart), border-color .12s var(--e-quart);
+}
+.userHeat:hover {
+  background: var(--c-bg-linen);
+  color: var(--c-forest);
+}
+.userHeat[data-active="true"] {
+  background: linear-gradient(90deg, #7BAF8A 0%, #FFD17A 50%, #EE3E2C 100%);
+  color: #FFFFFF;
+  border-color: var(--c-forest);
+}
+.userHeat:focus-visible {
+  outline: none;
+  border-color: var(--c-forest);
+  box-shadow: 0 0 0 2px rgba(47, 93, 58, 0.35);
+}
+@media (max-width: 768px) {
+  .userHeat { width: 32px; height: 32px; }
+}
 
 .userName {
   flex: 1;

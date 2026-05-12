@@ -22,6 +22,8 @@ import { ZonesPill } from "@/map-overlays/ZonesPill";
 import { LayersPanel } from "@/map-overlays/LayersPanel";
 import { SensitivityPanel } from "@/map-overlays/SensitivityPanel";
 import { ComuneFilterPanel } from "@/map-overlays/ComuneFilterPanel";
+import { PoiLegendPanel } from "@/map-overlays/PoiLegendPanel";
+import { DrawingPanel } from "@/map-overlays/DrawingPanel";
 import { Legend } from "@/map-overlays/Legend";
 import { ThresholdControl } from "@/map-overlays/ThresholdControl";
 import { Drawer } from "@/drawer/Drawer";
@@ -117,8 +119,10 @@ export default function App() {
           <div className={styles.rightOverlays}>
             <SensitivityPanel />
             <ComuneFilterPanel />
+            <PoiLegendPanel />
           </div>
           <Legend />
+          <DrawingPanel />
         </div>
         <Drawer>
           <Group id="view" label="View"><ViewPanel /></Group>

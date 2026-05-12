@@ -32,7 +32,7 @@ function scaledRisk(sens: number): ExpressionSpecification {
   return ["min", 1, ["*", sens, ["coalesce", ["get", "risk"], 0]]];
 }
 
-function trailColor(sens: number): ExpressionSpecification {
+export function trailColor(sens: number): ExpressionSpecification {
   return [
     "interpolate", ["linear"], scaledRisk(sens),
     0.00, "#7BAF8A", // forest green — safe trail
@@ -45,7 +45,7 @@ function trailColor(sens: number): ExpressionSpecification {
   ];
 }
 
-function trailGlow(sens: number): ExpressionSpecification {
+export function trailGlow(sens: number): ExpressionSpecification {
   return [
     "interpolate", ["linear"], scaledRisk(sens),
     0.00, "#7BAF8A",

@@ -13,6 +13,26 @@ import type {
   GeoJSONSource,
 } from "maplibre-gl";
 import type { UserLayer } from "@/app/types";
+import { useAppStore } from "@/app/store";
+import { trailColor, trailGlow } from "./trails";
+
+/** Per-feature paint helpers. When the layer is in `riskHeatmap` mode
+ *  the line stack borrows the trails ramp (tinted by per-segment baked
+ *  risk); otherwise the user-picked solid colour wins. */
+function lineColorFor(layer: UserLayer): string | ExpressionSpecification {
+  if (layer.colorMode === "riskHeatmap") {
+    const s = useAppStore.getState();
+    return trailColor(s.riskParams.trails[s.model].sensitivity);
+  }
+  return layer.color;
+}
+function glowColorFor(layer: UserLayer): string | ExpressionSpecification {
+  if (layer.colorMode === "riskHeatmap") {
+    const s = useAppStore.getState();
+    return trailGlow(s.riskParams.trails[s.model].sensitivity);
+  }
+  return layer.color;
+}
 
 /** Source / layer id derivation. Stable across re-renders for a given
  *  user-layer id so React's reactivity can use `setData` instead of
@@ -60,7 +80,7 @@ export function addUserLayer(m: MLMap, layer: UserLayer): void {
       "line-join": "round",
     },
     paint: {
-      "line-color": layer.color,
+      "line-color": glowColorFor(layer),
       "line-opacity": 0.35 * layer.opacity,
       "line-blur": 6,
       "line-width": [
@@ -85,7 +105,7 @@ export function addUserLayer(m: MLMap, layer: UserLayer): void {
       "line-join": "round",
     },
     paint: {
-      "line-color": layer.color,
+      "line-color": lineColorFor(layer),
       "line-opacity": 0.65 * layer.opacity,
       "line-width": [
         "interpolate", ["exponential", 1.4], ["zoom"],
@@ -170,11 +190,11 @@ export function applyUserLayer(m: MLMap, layer: UserLayer): void {
     m.setLayoutProperty(lid, "visibility", vis);
   }
   if (m.getLayer(id.glow)) {
-    m.setPaintProperty(id.glow, "line-color", layer.color);
+    m.setPaintProperty(id.glow, "line-color", glowColorFor(layer));
     m.setPaintProperty(id.glow, "line-opacity", 0.35 * layer.opacity);
   }
   if (m.getLayer(id.halo)) {
-    m.setPaintProperty(id.halo, "line-color", layer.color);
+    m.setPaintProperty(id.halo, "line-color", lineColorFor(layer));
     m.setPaintProperty(id.halo, "line-opacity", 0.65 * layer.opacity);
   }
   if (m.getLayer(id.stroke)) {

@@ -1,8 +1,53 @@
 export type ModelId = "j2" | "j3";
 
+/** Critical-structure and hut categories carried by features in
+ *  `poi_fvg.geojson`. Stable strings — used as MapLibre filter values
+ *  and as keys for the user-customisable colour map. */
+export type PoiCategory =
+  | "hospital"
+  | "fire_station"
+  | "police"
+  | "school"
+  | "alpine_hut"
+  | "wilderness_hut";
+
+export const POI_CATEGORIES: PoiCategory[] = [
+  "hospital",
+  "fire_station",
+  "police",
+  "school",
+  "alpine_hut",
+  "wilderness_hut",
+];
+
+export const POI_DEFAULT_COLORS: Record<PoiCategory, string> = {
+  hospital: "#FF3D5A",
+  fire_station: "#FF7A1F",
+  police: "#3F8CFF",
+  school: "#FFD400",
+  alpine_hut: "#2FCB6E",
+  wilderness_hut: "#00E0D6",
+};
+
+export const POI_CATEGORY_LABELS: Record<PoiCategory, string> = {
+  hospital: "Hospital",
+  fire_station: "Fire station",
+  police: "Police",
+  school: "School",
+  alpine_hut: "Alpine hut",
+  wilderness_hut: "Wilderness hut",
+};
+
 /* ───── User-uploaded layers & drawn areas ───── */
 
 export type UserLayerKind = "gpx" | "geojson";
+
+/** Colour mode for a user-uploaded line layer.
+ *  - `solid`: the user-picked `color` paints the whole line.
+ *  - `riskHeatmap`: each segment is baked against the active model's
+ *    cell grid and tinted with the trails risk ramp, so the line
+ *    reads as a heatmap of slide susceptibility along its path. */
+export type UserLayerColorMode = "solid" | "riskHeatmap";
 
 export interface UserLayer {
   /** Stable id used in MapLibre source/layer ids and the store array key.
@@ -22,6 +67,9 @@ export interface UserLayer {
   bounds: [[number, number], [number, number]] | null;
   /** Unix ms — used for sort + localStorage round-trip. */
   createdAt: number;
+  /** Default solid colouring. `riskHeatmap` re-paints the line with the
+   *  trails risk ramp, baked against the active model's cell grid. */
+  colorMode?: UserLayerColorMode;
 }
 
 export interface UserPolygonStats {
