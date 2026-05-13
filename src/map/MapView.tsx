@@ -511,6 +511,10 @@ export function MapView() {
       if (!seen.has(oldId)) removeUserLayer(m, oldId);
     }
     prevUserIds.current = seen;
+    // bringUserLayerToFront above promoted every GPX glow/halo/stroke to
+    // the top of the style — which buries the polygon outline (line-width
+    // 2.5) under a 14-20px line-blur glow. Re-promote polygons so the
+    // outline stays visible regardless of how user layers move.
     bringUserPolygonsToFront(m);
   }, [userLayers]);
 
@@ -598,6 +602,8 @@ export function MapView() {
     } else {
       updateUserPolygonsData(m, userPolygons);
     }
+    // Keep polygons above user GPX layers so a freshly-drawn outline is
+    // visible even when uploads are stacked on top of the model layers.
     bringUserPolygonsToFront(m);
   }, [userPolygons]);
 
