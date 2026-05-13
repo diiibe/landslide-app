@@ -490,7 +490,12 @@ export function MapView() {
   const prevUserIds = useRef<Set<string>>(new Set());
   useEffect(() => {
     const m = mapRef.current;
-    if (!m || !m.isStyleLoaded()) return;
+    // Don't gate on `isStyleLoaded()`: that returns false whenever any
+    // source still has pending tiles, which happens routinely after the
+    // initial style.load (tiles fetch asynchronously) and on every
+    // basemap swap. Bailing here meant the GPX never got mounted —
+    // addUserLayer is safe to call against a created map even mid-load.
+    if (!m || !m.getStyle()) return;
     const seen = new Set<string>();
     for (const layer of userLayers) {
       seen.add(layer.id);
@@ -506,10 +511,6 @@ export function MapView() {
       if (!seen.has(oldId)) removeUserLayer(m, oldId);
     }
     prevUserIds.current = seen;
-    // bringUserLayerToFront above promoted every GPX glow/halo/stroke to
-    // the top of the style — which buries the polygon outline (line-width
-    // 2.5) under a 14-20px line-blur glow. Re-promote polygons so the
-    // outline stays visible regardless of how user layers move.
     bringUserPolygonsToFront(m);
   }, [userLayers]);
 
@@ -517,7 +518,7 @@ export function MapView() {
   // every live POI tier's `circle-color` whenever the store map changes.
   useEffect(() => {
     const m = mapRef.current;
-    if (!m || !m.isStyleLoaded()) return;
+    if (!m || !m.getStyle()) return;
     applyPoiColors(m);
   }, [poiColors]);
 
@@ -526,7 +527,7 @@ export function MapView() {
   // tearing the source down.
   useEffect(() => {
     const m = mapRef.current;
-    if (!m || !m.isStyleLoaded()) return;
+    if (!m || !m.getStyle()) return;
     applyPoiCategoryFilter(m);
   }, [poiCategoryVisible]);
 
@@ -539,7 +540,7 @@ export function MapView() {
   const userLayerBakedFor = useRef(new Map<string, string>());
   useEffect(() => {
     const m = mapRef.current;
-    if (!m || !m.isStyleLoaded()) return;
+    if (!m || !m.getStyle()) return;
     const sourceFor = (id: string) =>
       m.getSource(`user-src-${id}`) as maplibregl.GeoJSONSource | undefined;
     for (const layer of userLayers) {
@@ -585,16 +586,18 @@ export function MapView() {
   }, [drawingMode]);
 
   // Push the saved polygons array into the map source on every change.
+  // Same rationale as the userLayers effect: gate on `getStyle()`, not
+  // `isStyleLoaded()`. The latter goes false the moment any source has
+  // pending tiles, which would silently skip every polygon update made
+  // while the basemap is still warming up.
   useEffect(() => {
     const m = mapRef.current;
-    if (!m || !m.isStyleLoaded()) return;
+    if (!m || !m.getStyle()) return;
     if (!m.getSource("user-polygons")) {
       setupUserPolygons(m, userPolygons);
     } else {
       updateUserPolygonsData(m, userPolygons);
     }
-    // Keep polygons above user GPX layers so a freshly-drawn outline is
-    // visible even when uploads are stacked on top of the model layers.
     bringUserPolygonsToFront(m);
   }, [userPolygons]);
 
