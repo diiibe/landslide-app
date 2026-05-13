@@ -5,37 +5,37 @@ import type {
   FilterSpecification,
 } from "@maplibre/maplibre-gl-style-spec";
 import { useAppStore } from "@/app/store";
-import { POI_DEFAULT_COLORS, type PoiCategory } from "@/app/types";
+import { POI_CATEGORIES, POI_DEFAULT_COLORS, type PoiCategory } from "@/app/types";
 import { CriticalPoiFeatureCollectionSchema, parseOrThrow } from "@/lib/schemas";
 
 /**
- * Critical structures + alpine huts overlay rendered as luminous,
- * breathing gaussian balls coloured by category. Each POI emits three
- * stacked circle layers:
+ * Critical structures + alpine huts overlay rendered as a SINGLE
+ * gaussian-blurred circle per group that breathes in and out via a
+ * requestAnimationFrame loop. The previous three-tier stack (glow +
+ * halo + core) was tweaked away — a single feathered circle reads as
+ * one cleaner point of light, and we animate both radius and opacity
+ * so the breath is more legible than radius alone.
  *
- *   • Outer glow  — large radius, low opacity, high `circle-blur` → soft halo
- *   • Mid halo    — medium radius, medium opacity, medium blur
- *   • Bright core — small radius, ~full opacity, slight blur
- *
- * The radii pulse via a requestAnimationFrame loop that drives a single
- * scalar multiplier on `circle-radius` for the three tiers (one
- * setPaintProperty per layer per frame — fine for the ~250 FVG POIs).
- * Colour is data-driven from the feature's `category` so hospitals,
- * fire stations, police, schools, alpine huts and wilderness huts each
- * have their own hue regardless of risk model.
+ * Visibility lives at two levels:
+ *  • group switch (`layers.poiCritical` / `layers.poiHuts`) — gates the
+ *    whole layer via `visibility`.
+ *  • per-category switch (`poiCategoryVisible`) — folded into the
+ *    layer's `filter` so individual categories can be hidden without
+ *    tearing down the source.
  */
 
 export const POI_SOURCE = "poi-static";
-const TIER_NAMES = ["glow", "halo", "core"] as const;
-type Tier = (typeof TIER_NAMES)[number];
 
-function layerId(group: "critical" | "huts", tier: Tier): string {
-  return `poi-${group}-${tier}`;
+function layerId(group: "critical" | "huts"): string {
+  return `poi-${group}`;
 }
-export const POI_CRITICAL = layerId("critical", "halo"); // exported for layer-anchor lookup
-export const POI_HUTS = layerId("huts", "halo");
+export const POI_CRITICAL = layerId("critical");
+export const POI_HUTS = layerId("huts");
 
 const DATA_URL_KEY = "poi_fvg.geojson";
+
+const CRITICAL_CATEGORIES: PoiCategory[] = ["hospital", "fire_station", "police", "school"];
+const HUTS_CATEGORIES: PoiCategory[] = ["alpine_hut", "wilderness_hut"];
 
 let poiRaw: GeoJSON.FeatureCollection | null = null;
 let poiInFlight: Promise<GeoJSON.FeatureCollection> | null = null;
@@ -60,15 +60,8 @@ async function loadPoi(): Promise<GeoJSON.FeatureCollection> {
   return poiRaw;
 }
 
-/** Per-category colour ramp. Picked so each category reads at a glance
- *  on both light and dark basemaps; no two categories share a hue. */
 function colorByCategory(): DataDrivenPropertyValueSpecification<string> {
-  // Read live from the store so user overrides in the PoiLegendPanel
-  // take effect on the next addLayer or setPaintProperty call.
   const colors = useAppStore.getState().poiColors;
-  // The strict tuple type for `match` is too narrow to accept a rest
-  // spread of unknown length — cast through `unknown` once at the
-  // boundary, the runtime expression is the standard MapLibre shape.
   const expr: unknown = [
     "match",
     ["get", "category"],
@@ -83,110 +76,109 @@ function colorByCategory(): DataDrivenPropertyValueSpecification<string> {
   return expr as DataDrivenPropertyValueSpecification<string>;
 }
 
-/** Push the current store palette into every live POI tier's
- *  `circle-color`. Cheap enough to run on every store change since
- *  there are only six layers. */
 export function applyPoiColors(m: import("maplibre-gl").Map): void {
   const expr = colorByCategory();
   for (const group of ["critical", "huts"] as const) {
-    for (const tier of TIER_NAMES) {
-      const id = layerId(group, tier);
-      if (m.getLayer(id)) m.setPaintProperty(id, "circle-color", expr);
-    }
+    const id = layerId(group);
+    if (m.getLayer(id)) m.setPaintProperty(id, "circle-color", expr);
   }
 }
 
 export type { PoiCategory };
 
-const FILTER_CRITICAL: FilterSpecification = ["==", ["get", "group"], "critical"];
-const FILTER_HUTS: FilterSpecification = ["==", ["get", "group"], "huts"];
+/** Build the layer filter: group AND visible categories. Each group's
+ *  filter is dynamic so toggling a category in the legend hides those
+ *  features without re-baking the source. When all categories in a
+ *  group are off, MapLibre receives a filter that excludes every row —
+ *  cheaper than fiddling with `visibility`. */
+function buildFilter(group: "critical" | "huts"): FilterSpecification {
+  const visible = useAppStore.getState().poiCategoryVisible;
+  const inGroup = group === "critical" ? CRITICAL_CATEGORIES : HUTS_CATEGORIES;
+  const allowed = inGroup.filter((c) => visible[c]);
+  // ["in", ["get", "category"], ["literal", [...]]] — match the feature's
+  // category against an inline list. Empty allowed list → match against
+  // an empty array → always false → nothing rendered. That's the desired
+  // behaviour when every category in the group is toggled off.
+  return [
+    "all",
+    ["==", ["get", "group"], group],
+    ["in", ["get", "category"], ["literal", allowed]],
+  ] as FilterSpecification;
+}
 
-/* Base radius (px) at z=11 per tier, before importance and breathing
-   multipliers. Tuned so the three stacked circles read as a single soft
-   bloom rather than as concentric rings. */
-const BASE_RADIUS = {
-  glow: 22,
-  halo: 12,
-  core: 4.5,
-} as const;
+/** Apply the current per-category visibility to both POI layers. Called
+ *  from the reactive effect in MapView whenever `poiCategoryVisible`
+ *  changes in the store. */
+export function applyPoiCategoryFilter(m: MLMap): void {
+  for (const group of ["critical", "huts"] as const) {
+    const id = layerId(group);
+    if (m.getLayer(id)) m.setFilter(id, buildFilter(group));
+  }
+}
+
+/* Base radius (px) at z=12, modulated by per-feature importance and the
+ * breathing wave below. Tuned to read as a soft glowing point at urban
+ * zooms (10-13) without dominating the screen at low zoom. */
+const BASE_RADIUS = 14;
 
 /* Breathing animation:
- *   period: 2400 ms per inhale-exhale
- *   amplitude: ±18 % around the base radius
- *   tier offset: ±200 ms so the glow leads, then the halo, then the core
- * The animation runs as long as at least one POI layer is visible. */
+ *   period 2400 ms, radius amplitude ±22 %, opacity amplitude ±18 %.
+ *   Coupling radius + opacity gives a clear "inhale → bright + grow"
+ *   beat instead of the subtler radius-only pulse the old three-tier
+ *   stack used. */
 const BREATH_PERIOD = 2400;
-const BREATH_AMPLITUDE = 0.18;
-const TIER_PHASE_OFFSET: Record<Tier, number> = {
-  glow: 0,
-  halo: 200,
-  core: 400,
-};
+const BREATH_RADIUS_AMP = 0.22;
+const BREATH_OPACITY_AMP = 0.18;
+const BREATH_OPACITY_MEAN = 0.78;
 
-/** Build the per-tier `circle-radius` expression.
- *
- *  MapLibre constraint: `["zoom"]` may ONLY appear as the input to a
- *  TOP-LEVEL `step` or `interpolate`. Nesting it inside `*`, `+` or any
- *  other expression triggers a validation error and the whole layer is
- *  silently rejected — which is exactly how this layer disappeared in
- *  the first place. Keep `interpolate(["zoom"], …)` as the outermost
- *  expression and fold importance × base × scale into each stop. */
-function radiusExpr(tier: Tier, scale: number): ExpressionSpecification {
-  const base = BASE_RADIUS[tier] * scale;
-  // Per-feature `importance` (typical range 1..5) maps to ~0.75..1.75 so
-  // hospitals/large structures read bigger than minor schools.
-  // `importance` defaults to 4 (=1.5×) for any feature missing it.
+/** Per-zoom radius scale (constant across breath); breath is a runtime
+ *  multiplier applied via setPaintProperty. Keep `["zoom"]` as the
+ *  outermost expression input — nesting it inside `*` is a style-spec
+ *  validation error (the same trap the old code documented). */
+function radiusExpr(scale: number): ExpressionSpecification {
+  const base = BASE_RADIUS * scale;
   const importanceMult: ExpressionSpecification = [
     "+",
-    0.5,
+    0.55,
     ["/", ["coalesce", ["get", "importance"], 4], 4],
   ];
-  // Top-level zoom interpolate. Each stop is importance × base ×
-  // zoomFactor — non-zoom expressions are allowed as stop values.
   return [
     "interpolate",
     ["linear"],
     ["zoom"],
-    6, ["*", importanceMult, base * 0.55],
-    9, ["*", importanceMult, base * 0.85],
+    6, ["*", importanceMult, base * 0.45],
+    9, ["*", importanceMult, base * 0.75],
     12, ["*", importanceMult, base * 1.0],
-    16, ["*", importanceMult, base * 1.3],
+    16, ["*", importanceMult, base * 1.35],
   ];
 }
 
-function addTier(
+function addGroup(
   m: MLMap,
   group: "critical" | "huts",
-  tier: Tier,
-  filter: FilterSpecification,
   visible: boolean,
 ): void {
-  const id = layerId(group, tier);
-  // Outer tiers get more blur (gaussian fall-off) and lower opacity.
-  // The core is bright and only lightly softened. circle-blur over ~1
-  // is "fully blurred to the centerpoint" which makes the circle
-  // perceptually invisible at small radii — keep it ≤ 0.9.
-  const opacity = tier === "glow" ? 0.35 : tier === "halo" ? 0.7 : 1.0;
-  const blur = tier === "glow" ? 0.9 : tier === "halo" ? 0.45 : 0.1;
+  const id = layerId(group);
   m.addLayer({
     id,
     type: "circle",
     source: POI_SOURCE,
-    filter,
+    filter: buildFilter(group),
     layout: { visibility: visible ? "visible" : "none" },
     paint: {
       "circle-color": colorByCategory(),
-      "circle-radius": radiusExpr(tier, 1.0),
-      "circle-opacity": opacity,
-      "circle-blur": blur,
+      "circle-radius": radiusExpr(1.0),
+      // Strong blur produces the gaussian fall-off so the dot reads as a
+      // single soft point rather than a hard disc. Values >1 push the
+      // center toward zero — 0.85 is the sweet spot where the centre
+      // stays bright but the edges feather convincingly.
+      "circle-blur": 0.85,
+      "circle-opacity": BREATH_OPACITY_MEAN,
       "circle-pitch-alignment": "map",
     },
   });
 }
 
-/* The animation handle is module-scoped because there is at most one
- * map at a time and the loop is owned by the layer module rather than
- * by React. Stored so we can cancel it cleanly on teardown. */
 let breathAnimationId: number | null = null;
 
 function startBreathing(m: MLMap): void {
@@ -194,18 +186,15 @@ function startBreathing(m: MLMap): void {
   const startedAt = performance.now();
   const tick = (now: number) => {
     breathAnimationId = requestAnimationFrame(tick);
-    // Bail out (without cancelling — next visibility flip would re-start
-    // us) when no layer is around any more.
     for (const group of ["critical", "huts"] as const) {
-      for (const tier of TIER_NAMES) {
-        const id = layerId(group, tier);
-        if (!m.getLayer(id)) continue;
-        const phase =
-          (now - startedAt + TIER_PHASE_OFFSET[tier]) / BREATH_PERIOD;
-        const wave = Math.sin(phase * 2 * Math.PI);
-        const scale = 1 + BREATH_AMPLITUDE * wave;
-        m.setPaintProperty(id, "circle-radius", radiusExpr(tier, scale));
-      }
+      const id = layerId(group);
+      if (!m.getLayer(id)) continue;
+      const phase = (now - startedAt) / BREATH_PERIOD;
+      const wave = Math.sin(phase * 2 * Math.PI);
+      const radiusScale = 1 + BREATH_RADIUS_AMP * wave;
+      const opacity = BREATH_OPACITY_MEAN + BREATH_OPACITY_AMP * wave;
+      m.setPaintProperty(id, "circle-radius", radiusExpr(radiusScale));
+      m.setPaintProperty(id, "circle-opacity", opacity);
     }
   };
   breathAnimationId = requestAnimationFrame(tick);
@@ -219,9 +208,8 @@ function stopBreathing(): void {
 }
 
 export function uninstallIconLoader(): void {
-  // Kept exported because MapView still calls it on unmount. The
-  // gaussian-balls renderer no longer needs an SDF image loader, so
-  // this is now a no-op that also stops the breathing animation.
+  // No SDF icons in this renderer; kept as a no-op for call-site
+  // compatibility plus a hook to halt the breath loop on teardown.
   stopBreathing();
 }
 
@@ -231,10 +219,8 @@ export function addCriticalPoi(
   hutsVisible: boolean,
 ): void {
   for (const group of ["critical", "huts"] as const) {
-    for (const tier of TIER_NAMES) {
-      const id = layerId(group, tier);
-      if (m.getLayer(id)) m.removeLayer(id);
-    }
+    const id = layerId(group);
+    if (m.getLayer(id)) m.removeLayer(id);
   }
   if (m.getSource(POI_SOURCE)) m.removeSource(POI_SOURCE);
 
@@ -243,43 +229,38 @@ export function addCriticalPoi(
     data: { type: "FeatureCollection", features: [] },
   });
 
-  // Order matters: glow first so it sits underneath the halo, then the
-  // core lights on top. Drawing tiers per group in this order keeps the
-  // visual stack consistent even if a group gets toggled off later.
-  for (const tier of TIER_NAMES) {
-    addTier(m, "critical", tier, FILTER_CRITICAL, criticalVisible);
-  }
-  for (const tier of TIER_NAMES) {
-    addTier(m, "huts", tier, FILTER_HUTS, hutsVisible);
-  }
+  addGroup(m, "critical", criticalVisible);
+  addGroup(m, "huts", hutsVisible);
 
   void loadPoi().then((fc) => {
     const src = m.getSource(POI_SOURCE) as GeoJSONSource | undefined;
     src?.setData(fc);
   });
 
-  // Always start the breathing — visibility is handled by the layer
-  // visibility flag, but if neither group is visible the loop is a
-  // few microseconds per frame of no-ops.
   startBreathing(m);
 }
 
 export function setCriticalVisible(m: MLMap, v: boolean): void {
-  for (const tier of TIER_NAMES) {
-    const id = layerId("critical", tier);
-    if (m.getLayer(id)) m.setLayoutProperty(id, "visibility", v ? "visible" : "none");
-  }
+  const id = layerId("critical");
+  if (m.getLayer(id)) m.setLayoutProperty(id, "visibility", v ? "visible" : "none");
 }
 
 export function setHutsVisible(m: MLMap, v: boolean): void {
-  for (const tier of TIER_NAMES) {
-    const id = layerId("huts", tier);
-    if (m.getLayer(id)) m.setLayoutProperty(id, "visibility", v ? "visible" : "none");
-  }
+  const id = layerId("huts");
+  if (m.getLayer(id)) m.setLayoutProperty(id, "visibility", v ? "visible" : "none");
 }
 
 export function applyPoiModel(): void {
-  // No-op: gaussian balls are coloured by category (constant per POI),
+  // No-op: gaussian points are coloured by category (constant per POI),
   // not by per-model risk. Kept for call-site compatibility — MapView
   // calls it on model change but there is nothing to update here.
 }
+
+/** Convenience for legend / tests — the canonical set of categories
+ *  rendered per group. */
+export const POI_GROUP_CATEGORIES: Record<"critical" | "huts", PoiCategory[]> = {
+  critical: CRITICAL_CATEGORIES,
+  huts: HUTS_CATEGORIES,
+};
+
+void POI_CATEGORIES; // keep types import live for tooling

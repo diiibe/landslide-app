@@ -47,6 +47,7 @@ import {
 } from "./layers/comuni";
 import {
   addCriticalPoi,
+  applyPoiCategoryFilter,
   applyPoiColors,
   applyPoiModel,
   setCriticalVisible,
@@ -61,6 +62,7 @@ import {
 } from "./layers/userLayer";
 import { bakeUserLayerRisk } from "./layers/userLayerHeatmap";
 import {
+  bringUserPolygonsToFront,
   openPolygonPopup,
   registerPolygonClicks,
   setupUserPolygons,
@@ -260,6 +262,7 @@ export function MapView() {
   const userPolygons = useAppStore((s) => s.userPolygons);
   const drawingMode = useAppStore((s) => s.drawingMode);
   const poiColors = useAppStore((s) => s.poiColors);
+  const poiCategoryVisible = useAppStore((s) => s.poiCategoryVisible);
 
   useEffect(() => {
     if (!ref.current || mapRef.current) return;
@@ -503,6 +506,11 @@ export function MapView() {
       if (!seen.has(oldId)) removeUserLayer(m, oldId);
     }
     prevUserIds.current = seen;
+    // bringUserLayerToFront above promoted every GPX glow/halo/stroke to
+    // the top of the style — which buries the polygon outline (line-width
+    // 2.5) under a 14-20px line-blur glow. Re-promote polygons so the
+    // outline stays visible regardless of how user layers move.
+    bringUserPolygonsToFront(m);
   }, [userLayers]);
 
   // Reactive POI palette — push the user-edited category colours into
@@ -512,6 +520,15 @@ export function MapView() {
     if (!m || !m.isStyleLoaded()) return;
     applyPoiColors(m);
   }, [poiColors]);
+
+  // Reactive per-category POI filter — toggling a category in the legend
+  // hides those features by rewriting the layer filter rather than
+  // tearing the source down.
+  useEffect(() => {
+    const m = mapRef.current;
+    if (!m || !m.isStyleLoaded()) return;
+    applyPoiCategoryFilter(m);
+  }, [poiCategoryVisible]);
 
   // Risk-tinted user layers — when a layer's colorMode flips to
   // `riskHeatmap`, bake per-segment risk against the active model's
@@ -576,6 +593,9 @@ export function MapView() {
     } else {
       updateUserPolygonsData(m, userPolygons);
     }
+    // Keep polygons above user GPX layers so a freshly-drawn outline is
+    // visible even when uploads are stacked on top of the model layers.
+    bringUserPolygonsToFront(m);
   }, [userPolygons]);
 
   // LayersPanel's Saved areas row dispatches this event after fitBounds

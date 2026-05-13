@@ -15,25 +15,29 @@ import styles from "./PoiLegendPanel.module.css";
 const POI_PALETTE = Object.values(POI_DEFAULT_COLORS);
 
 /**
- * Floating legend for the breathing POI balls. Mounts only when at
+ * Floating legend for the breathing POI points. Mounts only when at
  * least one of the two POI groups is on (Critical structures / Alpine
- * huts). Each row shows the human-readable category label and a
- * native colour input bound to the store's `poiColors` map. Changes
- * round-trip through localStorage and update every live POI tier via
- * `applyPoiColors` reactively in MapView.
+ * huts). Each row shows:
+ *   • a visibility checkbox bound to `poiCategoryVisible[cat]` so the
+ *     user can hide individual categories within an active group;
+ *   • a colour swatch bound to `poiColors[cat]`;
+ *   • the human-readable category label.
+ *
+ * Visibility and colour changes round-trip through localStorage and
+ * are applied reactively in MapView (`applyPoiCategoryFilter` /
+ * `applyPoiColors`).
  */
 export function PoiLegendPanel() {
   const layers = useAppStore((s) => s.layers);
   const poiColors = useAppStore((s) => s.poiColors);
+  const poiCategoryVisible = useAppStore((s) => s.poiCategoryVisible);
   const setPoiColor = useAppStore((s) => s.setPoiColor);
+  const togglePoiCategory = useAppStore((s) => s.togglePoiCategory);
   const resetPoiColors = useAppStore((s) => s.resetPoiColors);
   const [open, setOpen] = useState(true);
 
   if (!layers.poiCritical && !layers.poiHuts) return null;
 
-  // Two groups: the LayersPanel checkboxes toggle the whole group, but
-  // the legend always lists every category so the user knows what to
-  // expect when they toggle the group on.
   const groups: { title: string; categories: PoiCategory[]; visible: boolean }[] =
     [
       {
@@ -73,16 +77,29 @@ export function PoiLegendPanel() {
               <div key={g.title} className={styles.group}>
                 <div className={styles.groupTitle}>{g.title}</div>
                 {g.categories.map((cat) => (
-                  <div key={cat} className={styles.row}>
+                  <label key={cat} className={styles.row}>
+                    <input
+                      type="checkbox"
+                      className={styles.check}
+                      checked={poiCategoryVisible[cat]}
+                      onChange={() => togglePoiCategory(cat)}
+                      aria-label={`Show ${POI_CATEGORY_LABELS[cat]}`}
+                    />
                     <ColorButton
                       value={poiColors[cat]}
                       onChange={(hex) => setPoiColor(cat, hex)}
                       palette={POI_PALETTE}
                       ariaLabel={`Colour for ${POI_CATEGORY_LABELS[cat]}`}
                       size={22}
+                      disabled={!poiCategoryVisible[cat]}
                     />
-                    <span className={styles.name}>{POI_CATEGORY_LABELS[cat]}</span>
-                  </div>
+                    <span
+                      className={styles.name}
+                      data-dim={!poiCategoryVisible[cat]}
+                    >
+                      {POI_CATEGORY_LABELS[cat]}
+                    </span>
+                  </label>
                 ))}
               </div>
             ))}

@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import {
+  POI_CATEGORIES,
   POI_DEFAULT_COLORS,
   type Basemap,
   type ModelId,
@@ -124,6 +125,7 @@ interface PersistedUserData {
   layers: UserLayer[];
   polygons: UserPolygon[];
   poiColors?: Record<string, string>;
+  poiCategoryVisible?: Record<string, boolean>;
 }
 
 /** Best-effort load of user uploads + drawn polygons from localStorage.
@@ -142,6 +144,9 @@ function loadUserData(): PersistedUserData {
     if (parsed.poiColors && typeof parsed.poiColors === "object") {
       base.poiColors = parsed.poiColors;
     }
+    if (parsed.poiCategoryVisible && typeof parsed.poiCategoryVisible === "object") {
+      base.poiCategoryVisible = parsed.poiCategoryVisible;
+    }
     return base;
   } catch {
     return { layers: [], polygons: [] };
@@ -157,6 +162,24 @@ function persistUserData(d: PersistedUserData): void {
     // the same key). The store stays consistent in memory; persistence
     // just lapses silently for the offending payload.
   }
+}
+
+/** Reads the current user-owned slice and persists it. Used by every
+ *  action that touches userLayers / userPolygons / poiColors /
+ *  poiCategoryVisible so we never silently drop a sibling field when
+ *  one of them updates. */
+function persistFromState(s: {
+  userLayers: UserLayer[];
+  userPolygons: UserPolygon[];
+  poiColors: Record<PoiCategory, string>;
+  poiCategoryVisible: Record<PoiCategory, boolean>;
+}): void {
+  persistUserData({
+    layers: s.userLayers,
+    polygons: s.userPolygons,
+    poiColors: s.poiColors,
+    poiCategoryVisible: s.poiCategoryVisible,
+  });
 }
 
 /** Generate a stable, sortable id for new user layers / polygons. */
@@ -321,6 +344,10 @@ export interface AppState {
   /** Per-category colour for the gaussian POI balls. Defaults to
    *  POI_DEFAULT_COLORS; user-editable via the PoiLegendPanel. */
   poiColors: Record<PoiCategory, string>;
+  /** Per-category visibility toggles. Independent from the group-level
+   *  `layers.poiCritical`/`layers.poiHuts` master switches — those gate
+   *  the whole group, this gates individual categories within. */
+  poiCategoryVisible: Record<PoiCategory, boolean>;
   groupOpen: Record<GroupId, boolean>;
   search: { query: string; placeName: string | null };
   setModel: (m: ModelId) => void;
@@ -362,9 +389,11 @@ export interface AppState {
     },
   ) => UserPolygon;
   removeUserPolygon: (id: string) => void;
+  updateUserPolygon: (id: string, patch: Partial<UserPolygon>) => void;
   setDrawingMode: (on: boolean) => void;
   setPoiColor: (category: PoiCategory, hex: string) => void;
   resetPoiColors: () => void;
+  togglePoiCategory: (category: PoiCategory) => void;
   toggleGroup: (g: GroupId) => void;
   setSearch: (s: { query: string; placeName: string | null }) => void;
   reset: () => void;
@@ -381,8 +410,8 @@ const initial: Omit<
   | "toggleLayersPanel" | "toggleSensitivityPanel" | "toggleComuneFilterPanel"
   | "setSelectedComuni" | "toggleComune" | "clearComuni"
   | "addUserLayer" | "removeUserLayer" | "updateUserLayer"
-  | "addUserPolygon" | "removeUserPolygon" | "setDrawingMode"
-  | "setPoiColor" | "resetPoiColors"
+  | "addUserPolygon" | "removeUserPolygon" | "updateUserPolygon" | "setDrawingMode"
+  | "setPoiColor" | "resetPoiColors" | "togglePoiCategory"
   | "toggleGroup" | "setSearch" | "reset"
 > = {
   model: "j3",
@@ -421,6 +450,18 @@ const initial: Omit<
     ...POI_DEFAULT_COLORS,
     ...((userData.poiColors ?? {}) as Partial<Record<PoiCategory, string>>),
   },
+  poiCategoryVisible: (() => {
+    const base = Object.fromEntries(POI_CATEGORIES.map((c) => [c, true])) as Record<
+      PoiCategory,
+      boolean
+    >;
+    const stored = (userData.poiCategoryVisible ?? {}) as Partial<Record<PoiCategory, boolean>>;
+    for (const c of POI_CATEGORIES) {
+      const v = stored[c];
+      if (typeof v === "boolean") base[c] = v;
+    }
+    return base;
+  })(),
   groupOpen: { view: true, monitoring: true, analytics: true, model: true },
   search: { query: "", placeName: null },
 };
@@ -504,7 +545,7 @@ export const useAppStore = create<AppState>((set) => ({
     };
     set((s) => {
       const next = [layer, ...s.userLayers];
-      persistUserData({ layers: next, polygons: s.userPolygons, poiColors: s.poiColors });
+      persistFromState({ ...s, userLayers: next });
       return { userLayers: next };
     });
     return layer;
@@ -512,13 +553,13 @@ export const useAppStore = create<AppState>((set) => ({
   removeUserLayer: (id) =>
     set((s) => {
       const next = s.userLayers.filter((l) => l.id !== id);
-      persistUserData({ layers: next, polygons: s.userPolygons, poiColors: s.poiColors });
+      persistFromState({ ...s, userLayers: next });
       return { userLayers: next };
     }),
   updateUserLayer: (id, patch) =>
     set((s) => {
       const next = s.userLayers.map((l) => (l.id === id ? { ...l, ...patch } : l));
-      persistUserData({ layers: next, polygons: s.userPolygons, poiColors: s.poiColors });
+      persistFromState({ ...s, userLayers: next });
       return { userLayers: next };
     }),
   addUserPolygon: (input) => {
@@ -534,7 +575,7 @@ export const useAppStore = create<AppState>((set) => ({
     };
     set((s) => {
       const next = [polygon, ...s.userPolygons];
-      persistUserData({ layers: s.userLayers, polygons: next, poiColors: s.poiColors });
+      persistFromState({ ...s, userPolygons: next });
       return { userPolygons: next };
     });
     return polygon;
@@ -542,28 +583,33 @@ export const useAppStore = create<AppState>((set) => ({
   removeUserPolygon: (id) =>
     set((s) => {
       const next = s.userPolygons.filter((p) => p.id !== id);
-      persistUserData({ layers: s.userLayers, polygons: next, poiColors: s.poiColors });
+      persistFromState({ ...s, userPolygons: next });
+      return { userPolygons: next };
+    }),
+  updateUserPolygon: (id, patch) =>
+    set((s) => {
+      const next = s.userPolygons.map((p) => (p.id === id ? { ...p, ...patch } : p));
+      persistFromState({ ...s, userPolygons: next });
       return { userPolygons: next };
     }),
   setDrawingMode: (on) => set({ drawingMode: on }),
   setPoiColor: (category, hex) =>
     set((s) => {
       const next = { ...s.poiColors, [category]: hex };
-      persistUserData({
-        layers: s.userLayers,
-        polygons: s.userPolygons,
-        poiColors: next,
-      });
+      persistFromState({ ...s, poiColors: next });
       return { poiColors: next };
     }),
   resetPoiColors: () =>
     set((s) => {
-      persistUserData({
-        layers: s.userLayers,
-        polygons: s.userPolygons,
-        poiColors: { ...POI_DEFAULT_COLORS },
-      });
-      return { poiColors: { ...POI_DEFAULT_COLORS } };
+      const next = { ...POI_DEFAULT_COLORS };
+      persistFromState({ ...s, poiColors: next });
+      return { poiColors: next };
+    }),
+  togglePoiCategory: (category) =>
+    set((s) => {
+      const next = { ...s.poiCategoryVisible, [category]: !s.poiCategoryVisible[category] };
+      persistFromState({ ...s, poiCategoryVisible: next });
+      return { poiCategoryVisible: next };
     }),
   toggleGroup: (g) =>
     set((s) => ({ groupOpen: { ...s.groupOpen, [g]: !s.groupOpen[g] } })),

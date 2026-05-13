@@ -264,16 +264,18 @@ function UserLayersSection() {
 function UserPolygonsSection() {
   const polygons = useAppStore((s) => s.userPolygons);
   const removeUserPolygon = useAppStore((s) => s.removeUserPolygon);
+  const updateUserPolygon = useAppStore((s) => s.updateUserPolygon);
   if (polygons.length === 0) return null;
   return (
     <div className={styles.g}>
       <div className={styles.gTtl}>Saved areas</div>
       {polygons.map((p) => (
         <div key={p.id} className={styles.userRow}>
-          <span
-            className={styles.userSwatch}
-            style={{ background: p.color, border: 0 }}
-            aria-hidden="true"
+          <ColorButton
+            value={p.color}
+            onChange={(hex) => updateUserPolygon(p.id, { color: hex })}
+            ariaLabel={`Colour for ${p.name}`}
+            size={22}
           />
           <button
             type="button"

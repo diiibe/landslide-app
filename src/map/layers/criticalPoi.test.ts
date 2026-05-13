@@ -3,12 +3,11 @@ import { addCriticalPoi, uninstallIconLoader } from "./criticalPoi";
 
 /**
  * POI renderer used to draw SDF symbol icons + cache them through a
- * styleimagemissing listener. It now draws three stacked circle layers
- * per group (glow + halo + core) and animates the radii via a
- * requestAnimationFrame loop. The legacy P1.13 tests for the icon-loader
- * lifecycle were dropped along with the loader itself; what we still
- * care about is:
- *   1. `addCriticalPoi` adds three layers per group.
+ * styleimagemissing listener. It now draws a single gaussian circle
+ * per group and animates radius + opacity via a requestAnimationFrame
+ * loop. The legacy P1.13 tests for the icon-loader lifecycle were
+ * dropped along with the loader itself; what we still care about is:
+ *   1. `addCriticalPoi` adds one layer per group.
  *   2. `uninstallIconLoader` is safe to call any number of times.
  */
 
@@ -51,13 +50,17 @@ function makeFakeMap() {
   };
 }
 
-describe("criticalPoi · gaussian-balls renderer", () => {
-  it("adds three circle layers per group (glow, halo, core)", () => {
+describe("criticalPoi · gaussian point renderer", () => {
+  it("adds one circle layer per group (critical, huts)", () => {
     const m = makeFakeMap();
     addCriticalPoi(m as never, true, true);
     for (const group of ["critical", "huts"] as const) {
+      expect(m.layers.has(`poi-${group}`)).toBe(true);
+    }
+    // legacy tiers must NOT be created any more
+    for (const group of ["critical", "huts"] as const) {
       for (const tier of ["glow", "halo", "core"] as const) {
-        expect(m.layers.has(`poi-${group}-${tier}`)).toBe(true);
+        expect(m.layers.has(`poi-${group}-${tier}`)).toBe(false);
       }
     }
   });
