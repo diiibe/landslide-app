@@ -46,6 +46,55 @@
 .g + .g { border-top: 1px solid var(--c-border); padding-top: 8px; }
 .gTtl { font-size: 12px; color: var(--c-text-soft); margin-bottom: 6px; }
 
+/* Collapsible overlay group: header is the toggle, body is a CSS-grid
+   row that animates from 0fr to 1fr. Same trick as the panel itself —
+   measurement-free, GPU-friendly. */
+.gHead {
+  appearance: none; background: transparent; border: 0; padding: 0;
+  margin: 0 0 6px; width: 100%;
+  display: flex; align-items: center; gap: 8px;
+  cursor: pointer; color: var(--c-text-soft); font: inherit;
+  border-radius: var(--radius-sm);
+  transition: color .15s var(--e-quart);
+}
+.gHead:hover { color: var(--c-text); }
+.gHead:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--c-forest-soft, rgba(47, 93, 58, 0.3));
+}
+.gHead .gTtl {
+  flex: 1; text-align: left;
+  font-size: 12px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .04em;
+  margin: 0;
+}
+.gCount {
+  font-size: 10px; font-variant-numeric: tabular-nums;
+  padding: 1px 6px; border-radius: 999px;
+  background: var(--c-panel-item-hover);
+  color: var(--c-text-muted);
+  transition: background .15s var(--e-quart), color .15s var(--e-quart);
+}
+.gCount[data-on="true"] {
+  background: var(--c-forest, #2F5D3A);
+  color: #FDFAF0;
+}
+.gCaret {
+  color: var(--c-text-soft); font-size: 11px;
+  transition: transform .28s var(--e-expo);
+}
+.g[data-grp-open="false"] .gCaret { transform: rotate(-90deg); }
+.gWrap {
+  display: grid; grid-template-rows: 1fr;
+  transition: grid-template-rows .35s var(--e-expo);
+}
+.gWrap > .gBody {
+  min-height: 0; overflow: hidden;
+  transition: opacity .28s var(--e-quart);
+}
+.g[data-grp-open="false"] .gWrap { grid-template-rows: 0fr; }
+.g[data-grp-open="false"] .gWrap > .gBody { opacity: 0; }
+
 .bmRow { display: flex; gap: 4px; }
 .bm {
   flex: 1; padding: 4px 0; text-align: center; font-size: 11px;
