@@ -312,7 +312,20 @@ export interface AppState {
     poiHuts: boolean;
     dtm: boolean;
     contours: boolean;
+    flood: boolean;
+    pai: boolean;
+    diff: boolean;
   };
+  /** Which flood overlay variant to render when `layers.flood` is on.
+   *  See `src/map/layers/floodSusceptibility.ts` for the semantics of
+   *  each value. */
+  floodView: "combined" | "P3" | "P2plus" | "P1plus";
+  /** 0–1 opacity for the flood raster overlay. */
+  floodOpacity: number;
+  /** 0–1 opacity for the PAI ground-truth raster overlay. */
+  paiOpacity: number;
+  /** 0–1 opacity for the model-vs-PAI difference raster overlay. */
+  diffOpacity: number;
   /** Per-(network × model) risk shaping params. Live (mutable) state. */
   riskParams: RiskParamsMap;
   /** Per-(network × model) defaults persisted to localStorage. Loaded on
@@ -356,6 +369,10 @@ export interface AppState {
   setSelectedZones: (z: Zone[]) => void;
   toggleZone: (z: Zone) => void;
   toggleLayer: (k: keyof AppState["layers"]) => void;
+  setFloodView: (v: AppState["floodView"]) => void;
+  setFloodOpacity: (o: number) => void;
+  setPaiOpacity: (o: number) => void;
+  setDiffOpacity: (o: number) => void;
   setRiskParam: (
     network: LayerNetwork,
     model: ModelId,
@@ -405,7 +422,7 @@ const userData = loadUserData();
 const initial: Omit<
   AppState,
   | "setModel" | "setBasemap" | "setThreshold" | "setSelectedZones" | "toggleZone"
-  | "toggleLayer" | "setRiskParam" | "lockRiskParams"
+  | "toggleLayer" | "setFloodView" | "setFloodOpacity" | "setPaiOpacity" | "setDiffOpacity" | "setRiskParam" | "lockRiskParams"
   | "setTheme" | "toggleTheme" | "toggleDrawer" | "toggleLegend"
   | "toggleLayersPanel" | "toggleSensitivityPanel" | "toggleComuneFilterPanel"
   | "setSelectedComuni" | "toggleComune" | "clearComuni"
@@ -430,7 +447,14 @@ const initial: Omit<
     poiHuts: false,
     dtm: false,
     contours: false,
+    flood: false,
+    pai: false,
+    diff: false,
   },
+  floodView: "combined",
+  floodOpacity: 0.85,
+  paiOpacity: 0.85,
+  diffOpacity: 0.9,
   riskParams: {
     roads: { j2: { ...riskDefaults.roads.j2 }, j3: { ...riskDefaults.roads.j3 } },
     trails: { j2: { ...riskDefaults.trails.j2 }, j3: { ...riskDefaults.trails.j3 } },
@@ -482,6 +506,10 @@ export const useAppStore = create<AppState>((set) => ({
         : { selectedZones: [...s.selectedZones, z] },
     ),
   toggleLayer: (k) => set((s) => ({ layers: { ...s.layers, [k]: !s.layers[k] } })),
+  setFloodView: (v) => set({ floodView: v }),
+  setFloodOpacity: (o) => set({ floodOpacity: Math.max(0, Math.min(1, o)) }),
+  setPaiOpacity: (o) => set({ paiOpacity: Math.max(0, Math.min(1, o)) }),
+  setDiffOpacity: (o) => set({ diffOpacity: Math.max(0, Math.min(1, o)) }),
   setRiskParam: (network, model, key, v) =>
     set((s) => {
       const current = s.riskParams[network][model];

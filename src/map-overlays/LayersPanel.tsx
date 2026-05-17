@@ -1,7 +1,15 @@
 import { useAppStore } from "@/app/store";
 import type { Basemap, ModelId } from "@/app/types";
+import type { AppState } from "@/app/store";
 import { ColorButton } from "./ColorButton";
 import styles from "./LayersPanel.module.css";
+
+const FLOOD_VIEWS: { id: AppState["floodView"]; label: string; hint: string }[] = [
+  { id: "combined", label: "Combined", hint: "PAI-style 3-class map (P1 + P2 + P3)" },
+  { id: "P3", label: "P3", hint: "Severe danger only (red)" },
+  { id: "P2plus", label: "P2", hint: "Medium danger only, no P3 (orange)" },
+  { id: "P1plus", label: "P1", hint: "Low danger only, no P2/P3 (yellow)" },
+];
 
 const BASEMAPS: { id: Basemap; label: string }[] = [
   { id: "outdoors", label: "Outdoors" },
@@ -24,6 +32,14 @@ export function LayersPanel() {
   const toggleLayer = useAppStore((s) => s.toggleLayer);
   const model = useAppStore((s) => s.model);
   const setModel = useAppStore((s) => s.setModel);
+  const floodView = useAppStore((s) => s.floodView);
+  const setFloodView = useAppStore((s) => s.setFloodView);
+  const floodOpacity = useAppStore((s) => s.floodOpacity);
+  const setFloodOpacity = useAppStore((s) => s.setFloodOpacity);
+  const paiOpacity = useAppStore((s) => s.paiOpacity);
+  const setPaiOpacity = useAppStore((s) => s.setPaiOpacity);
+  const diffOpacity = useAppStore((s) => s.diffOpacity);
+  const setDiffOpacity = useAppStore((s) => s.setDiffOpacity);
 
   return (
     <div className={styles.panel} data-open={open}>
@@ -171,6 +187,106 @@ export function LayersPanel() {
             {/* Roads + Trails sensitivity sliders live in the floating
                 SensitivityPanel (mounted in App.tsx) — see
                 src/map-overlays/SensitivityPanel.tsx. */}
+          </div>
+          <div className={styles.g}>
+            <div className={styles.gTtl}>Flood susceptibility (ml-flood-mapping)</div>
+            <label className={styles.item}>
+              <input
+                type="checkbox"
+                checked={layers.flood}
+                onChange={() => toggleLayer("flood")}
+              />
+              <span className={styles.itemName}>Flood overlay</span>
+              <span className={styles.itemState}>{layers.flood ? "on" : "off"}</span>
+            </label>
+            <div className={styles.bmRow} aria-disabled={!layers.flood}>
+              {FLOOD_VIEWS.map((v) => (
+                <button
+                  key={v.id}
+                  type="button"
+                  className={styles.bm}
+                  data-kind={v.id}
+                  data-active={floodView === v.id}
+                  aria-pressed={floodView === v.id}
+                  title={v.hint}
+                  disabled={!layers.flood}
+                  onClick={() => setFloodView(v.id)}
+                >
+                  {v.label}
+                </button>
+              ))}
+            </div>
+            <label className={styles.item} aria-disabled={!layers.flood}>
+              <span className={styles.itemName}>Opacity</span>
+              <input
+                type="range"
+                min={0}
+                max={1}
+                step={0.05}
+                value={floodOpacity}
+                disabled={!layers.flood}
+                onChange={(e) => setFloodOpacity(Number(e.target.value))}
+                style={{ flex: 1, marginLeft: 8 }}
+                aria-label="Flood overlay opacity"
+              />
+              <span className={styles.itemState}>{Math.round(floodOpacity * 100)}%</span>
+            </label>
+          </div>
+          <div className={styles.g}>
+            <div className={styles.gTtl}>PAI ufficiale (ground truth)</div>
+            <label className={styles.item}>
+              <input
+                type="checkbox"
+                checked={layers.pai}
+                onChange={() => toggleLayer("pai")}
+              />
+              <span className={styles.itemName}>PAI fasce</span>
+              <span className={styles.itemState}>{layers.pai ? "on" : "off"}</span>
+            </label>
+            <label className={styles.item} aria-disabled={!layers.pai}>
+              <span className={styles.itemName}>Opacity</span>
+              <input
+                type="range"
+                min={0}
+                max={1}
+                step={0.05}
+                value={paiOpacity}
+                disabled={!layers.pai}
+                onChange={(e) => setPaiOpacity(Number(e.target.value))}
+                style={{ flex: 1, marginLeft: 8 }}
+                aria-label="PAI overlay opacity"
+              />
+              <span className={styles.itemState}>{Math.round(paiOpacity * 100)}%</span>
+            </label>
+          </div>
+          <div className={styles.g}>
+            <div className={styles.gTtl}>Model vs PAI (difference)</div>
+            <label className={styles.item}>
+              <input
+                type="checkbox"
+                checked={layers.diff}
+                onChange={() => toggleLayer("diff")}
+              />
+              <span className={styles.itemName}>
+                Difference (🟢 agree · 🔵 model extends · 🟣 PAI only)
+              </span>
+              <span className={styles.itemState}>{layers.diff ? "on" : "off"}</span>
+            </label>
+            <label className={styles.item} aria-disabled={!layers.diff}>
+              <span className={styles.itemName}>Opacity</span>
+              <input
+                type="range"
+                min={0}
+                max={1}
+                step={0.05}
+                value={diffOpacity}
+                disabled={!layers.diff}
+                onChange={(e) => setDiffOpacity(Number(e.target.value))}
+                style={{ flex: 1, marginLeft: 8 }}
+                aria-label="Difference overlay opacity"
+              />
+              <span className={styles.itemState}>{Math.round(diffOpacity * 100)}%</span>
+            </label>
           </div>
           <UserLayersSection />
           <UserPolygonsSection />
