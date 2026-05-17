@@ -27,6 +27,18 @@ const FLOOD_VIEWS: { id: AppState["floodView"]; label: string; hint: string }[] 
   { id: "P1plus", label: "P1", hint: "Low danger only, no P2/P3 (yellow)" },
 ];
 
+/** Version of the underlying flood mapping model + tile pyramids. Bump
+ *  this when ml-flood-mapping ships a new sweep-tuned, calibrated
+ *  release. The string is rendered inline next to the Flood overlay
+ *  checkbox so the user can confirm at a glance whether the tiles they
+ *  see in the map come from the v1 (2026-05-15) or v2 (2026-05-17) run.
+ *  See ml-flood-mapping/docs/MODEL_CARD.md for what each version means. */
+const FLOOD_MAPPING_VERSION = "v2";
+const FLOOD_MAPPING_DATE = "2026-05-17";
+const FLOOD_MAPPING_TOOLTIP =
+  `ml-flood-mapping ${FLOOD_MAPPING_VERSION} (${FLOOD_MAPPING_DATE}) — ` +
+  "OOF AUC P3=0.83 / P2+=0.83 / P1+=0.88, Platt-calibrated";
+
 const BASEMAPS: { id: Basemap; label: string }[] = [
   { id: "outdoors", label: "Outdoors" },
   { id: "light", label: "Light" },
@@ -153,7 +165,23 @@ export function LayersPanel() {
                 checked={layers.flood}
                 onChange={() => toggleLayer("flood")}
               />
-              <span className={styles.itemName}>Flood overlay (ml-flood-mapping)</span>
+              <span className={styles.itemName} title={FLOOD_MAPPING_TOOLTIP}>
+                Flood overlay (ml-flood-mapping&nbsp;
+                <span
+                  style={{
+                    fontSize: "0.78em",
+                    padding: "1px 6px",
+                    borderRadius: "999px",
+                    background: "rgba(96,200,140,0.18)",
+                    border: "1px solid rgba(96,200,140,0.6)",
+                    color: "rgba(96,200,140,0.95)",
+                    fontWeight: 600,
+                  }}
+                >
+                  {FLOOD_MAPPING_VERSION}&nbsp;·&nbsp;{FLOOD_MAPPING_DATE}
+                </span>
+                )
+              </span>
               <span className={styles.itemState}>{layers.flood ? "on" : "off"}</span>
             </label>
             <div className={styles.bmRow} aria-disabled={!layers.flood}>
