@@ -55,6 +55,25 @@ import {
 } from "./layers/criticalPoi";
 import { addDtmHillshade, DTM_LAYER, setDtmHillshadeVisible } from "./layers/dtmHillshade";
 import {
+  addFloodOverlay,
+  removeFloodOverlay,
+  setFloodOpacity,
+  setFloodView,
+  setFloodVisible,
+} from "./layers/floodSusceptibility";
+import {
+  addPaiOverlay,
+  removePaiOverlay,
+  setPaiOpacity,
+  setPaiVisible,
+} from "./layers/paiOverlay";
+import {
+  addDiffOverlay,
+  removeDiffOverlay,
+  setDiffOpacity,
+  setDiffVisible,
+} from "./layers/diffOverlay";
+import {
   addUserLayer,
   applyUserLayer,
   bringUserLayerToFront,
@@ -202,6 +221,21 @@ function setupModelLayers(m: maplibregl.Map): void {
 
   addSusceptibility(m, s.model, s.threshold, s.selectedZones);
   addSmoothHeatmap(m, s.model, s.threshold, s.layers.smoothHeatmap);
+  if (s.layers.flood) {
+    addFloodOverlay(m, s.floodView, s.floodOpacity);
+  } else {
+    removeFloodOverlay(m);
+  }
+  if (s.layers.pai) {
+    addPaiOverlay(m, s.paiOpacity);
+  } else {
+    removePaiOverlay(m);
+  }
+  if (s.layers.diff) {
+    addDiffOverlay(m, s.diffOpacity);
+  } else {
+    removeDiffOverlay(m);
+  }
   addIffi(m, s.layers.iffi);
   addZoneBoundaries(m, s.layers.zoneBoundaries);
   setSusceptibilityVisible(m, s.layers.susceptibility);
@@ -256,6 +290,13 @@ export function MapView() {
   const radiusRoads = useAppStore((s) => s.riskParams.roads[s.model].radius);
   const radiusTrails = useAppStore((s) => s.riskParams.trails[s.model].radius);
   const dtmOn = useAppStore((s) => s.layers.dtm);
+  const floodOn = useAppStore((s) => s.layers.flood);
+  const floodView = useAppStore((s) => s.floodView);
+  const floodOpacityVal = useAppStore((s) => s.floodOpacity);
+  const paiOn = useAppStore((s) => s.layers.pai);
+  const paiOpacityVal = useAppStore((s) => s.paiOpacity);
+  const diffOn = useAppStore((s) => s.layers.diff);
+  const diffOpacityVal = useAppStore((s) => s.diffOpacity);
   const theme = useAppStore((s) => s.theme);
   const selectedComuni = useAppStore((s) => s.selectedComuni);
   const userLayers = useAppStore((s) => s.userLayers);
@@ -432,6 +473,64 @@ export function MapView() {
   useEffect(() => {
     if (mapRef.current) setDtmHillshadeVisible(mapRef.current, dtmOn);
   }, [dtmOn]);
+
+  // Flood overlay: master toggle adds/removes the layer; view changes
+  // re-create the raster source (tile URL is baked in at source-add);
+  // opacity changes are a cheap paint mutation.
+  useEffect(() => {
+    const m = mapRef.current;
+    if (!m) return;
+    if (floodOn) {
+      addFloodOverlay(m, floodView, floodOpacityVal);
+      setFloodVisible(m, true);
+    } else {
+      removeFloodOverlay(m);
+    }
+  }, [floodOn]);
+  useEffect(() => {
+    const m = mapRef.current;
+    if (!m || !floodOn) return;
+    setFloodView(m, floodView);
+  }, [floodView, floodOn]);
+  useEffect(() => {
+    const m = mapRef.current;
+    if (!m || !floodOn) return;
+    setFloodOpacity(m, floodOpacityVal);
+  }, [floodOpacityVal, floodOn]);
+
+  // PAI ground-truth overlay
+  useEffect(() => {
+    const m = mapRef.current;
+    if (!m) return;
+    if (paiOn) {
+      addPaiOverlay(m, paiOpacityVal);
+      setPaiVisible(m, true);
+    } else {
+      removePaiOverlay(m);
+    }
+  }, [paiOn]);
+  useEffect(() => {
+    const m = mapRef.current;
+    if (!m || !paiOn) return;
+    setPaiOpacity(m, paiOpacityVal);
+  }, [paiOpacityVal, paiOn]);
+
+  // Model-vs-PAI difference overlay
+  useEffect(() => {
+    const m = mapRef.current;
+    if (!m) return;
+    if (diffOn) {
+      addDiffOverlay(m, diffOpacityVal);
+      setDiffVisible(m, true);
+    } else {
+      removeDiffOverlay(m);
+    }
+  }, [diffOn]);
+  useEffect(() => {
+    const m = mapRef.current;
+    if (!m || !diffOn) return;
+    setDiffOpacity(m, diffOpacityVal);
+  }, [diffOpacityVal, diffOn]);
 
   // Theme switch: in-place DTM recolour + re-create roads/trails/POI so
   // their theme-dependent halo opacity follows the new mode. No teardown
