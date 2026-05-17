@@ -14,6 +14,13 @@ import {
 
 export type GroupId = "view" | "monitoring" | "analytics" | "model";
 
+/** Collapsible sections inside the LayersPanel's overlay list. Names
+ *  map to the user-facing labels (Italian) but the ids stay English-
+ *  agnostic for stability. Each group's open/close is independent and
+ *  persists via the existing localStorage user-data key so the panel
+ *  reopens in the same shape across sessions. */
+export type OverlayGroup = "landslide" | "flood" | "context";
+
 const THEME_KEY = "fvg:theme";
 const SENS_DEFAULTS_KEY = "fvg:sensitivity-defaults";
 const USER_DATA_KEY = "fvg:user-data";
@@ -362,6 +369,11 @@ export interface AppState {
    *  the whole group, this gates individual categories within. */
   poiCategoryVisible: Record<PoiCategory, boolean>;
   groupOpen: Record<GroupId, boolean>;
+  /** Per-section open state for the collapsible overlay categories in
+   *  the LayersPanel (Frane / Alluvioni / Contesto). Defaults to only
+   *  "landslide" open — the other two collapse to a single row each
+   *  so the panel doesn't dominate the viewport on first load. */
+  overlayGroupOpen: Record<OverlayGroup, boolean>;
   search: { query: string; placeName: string | null };
   setModel: (m: ModelId) => void;
   setBasemap: (b: Basemap) => void;
@@ -412,6 +424,7 @@ export interface AppState {
   resetPoiColors: () => void;
   togglePoiCategory: (category: PoiCategory) => void;
   toggleGroup: (g: GroupId) => void;
+  toggleOverlayGroup: (g: OverlayGroup) => void;
   setSearch: (s: { query: string; placeName: string | null }) => void;
   reset: () => void;
 }
@@ -429,7 +442,7 @@ const initial: Omit<
   | "addUserLayer" | "removeUserLayer" | "updateUserLayer"
   | "addUserPolygon" | "removeUserPolygon" | "updateUserPolygon" | "setDrawingMode"
   | "setPoiColor" | "resetPoiColors" | "togglePoiCategory"
-  | "toggleGroup" | "setSearch" | "reset"
+  | "toggleGroup" | "toggleOverlayGroup" | "setSearch" | "reset"
 > = {
   model: "j3",
   basemap: "outdoors",
@@ -487,6 +500,7 @@ const initial: Omit<
     return base;
   })(),
   groupOpen: { view: true, monitoring: true, analytics: true, model: true },
+  overlayGroupOpen: { landslide: true, flood: false, context: false },
   search: { query: "", placeName: null },
 };
 
@@ -641,6 +655,10 @@ export const useAppStore = create<AppState>((set) => ({
     }),
   toggleGroup: (g) =>
     set((s) => ({ groupOpen: { ...s.groupOpen, [g]: !s.groupOpen[g] } })),
+  toggleOverlayGroup: (g) =>
+    set((s) => ({
+      overlayGroupOpen: { ...s.overlayGroupOpen, [g]: !s.overlayGroupOpen[g] },
+    })),
   setSearch: (search) => set({ search }),
   reset: () => set(initial),
 }));

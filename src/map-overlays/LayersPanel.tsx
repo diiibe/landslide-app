@@ -1,8 +1,24 @@
+import type { ReactNode } from "react";
 import { useAppStore } from "@/app/store";
+import type { AppState, OverlayGroup } from "@/app/store";
 import type { Basemap, ModelId } from "@/app/types";
-import type { AppState } from "@/app/store";
 import { ColorButton } from "./ColorButton";
 import styles from "./LayersPanel.module.css";
+
+/** Keys of `state.layers` belonging to each overlay group. Used to count
+ *  the active items so the group header can display a "n / total on"
+ *  badge even while collapsed. */
+const OVERLAY_GROUP_KEYS: Record<OverlayGroup, readonly (keyof AppState["layers"])[]> = {
+  landslide: ["susceptibility", "smoothHeatmap", "iffi", "zoneBoundaries"],
+  flood: ["flood", "pai", "diff"],
+  context: ["dtm", "roads", "trails", "comuni", "poiCritical", "poiHuts"],
+};
+
+const OVERLAY_GROUP_LABEL: Record<OverlayGroup, string> = {
+  landslide: "Frane",
+  flood: "Alluvioni",
+  context: "Contesto",
+};
 
 const FLOOD_VIEWS: { id: AppState["floodView"]; label: string; hint: string }[] = [
   { id: "combined", label: "Combined", hint: "PAI-style 3-class map (P1 + P2 + P3)" },
@@ -94,8 +110,7 @@ export function LayersPanel() {
               ))}
             </div>
           </div>
-          <div className={styles.g}>
-            <div className={styles.gTtl}>Overlays</div>
+          <OverlaySection id="landslide">
             <label className={styles.item}>
               <input
                 type="checkbox"
@@ -117,15 +132,6 @@ export function LayersPanel() {
               <span className={styles.itemState}>{layers.smoothHeatmap ? "on" : "off"}</span>
             </label>
             <label className={styles.item}>
-              <input
-                type="checkbox"
-                checked={layers.dtm}
-                onChange={() => toggleLayer("dtm")}
-              />
-              <span className={styles.itemName}>Study area · DTM hillshade</span>
-              <span className={styles.itemState}>{layers.dtm ? "on" : "off"}</span>
-            </label>
-            <label className={styles.item}>
               <input type="checkbox" checked={layers.iffi} onChange={() => toggleLayer("iffi")} />
               <span className={styles.itemName}>IFFI landslides</span>
               <span className={styles.itemState}>{layers.iffi ? "on" : "off"}</span>
@@ -138,6 +144,110 @@ export function LayersPanel() {
               />
               <span className={styles.itemName}>Zone boundaries</span>
               <span className={styles.itemState}>{layers.zoneBoundaries ? "on" : "off"}</span>
+            </label>
+          </OverlaySection>
+          <OverlaySection id="flood">
+            <label className={styles.item}>
+              <input
+                type="checkbox"
+                checked={layers.flood}
+                onChange={() => toggleLayer("flood")}
+              />
+              <span className={styles.itemName}>Flood overlay (ml-flood-mapping)</span>
+              <span className={styles.itemState}>{layers.flood ? "on" : "off"}</span>
+            </label>
+            <div className={styles.bmRow} aria-disabled={!layers.flood}>
+              {FLOOD_VIEWS.map((v) => (
+                <button
+                  key={v.id}
+                  type="button"
+                  className={styles.bm}
+                  data-kind={v.id}
+                  data-active={floodView === v.id}
+                  aria-pressed={floodView === v.id}
+                  title={v.hint}
+                  disabled={!layers.flood}
+                  onClick={() => setFloodView(v.id)}
+                >
+                  {v.label}
+                </button>
+              ))}
+            </div>
+            <label className={styles.item} aria-disabled={!layers.flood}>
+              <span className={styles.itemName}>Flood opacity</span>
+              <input
+                type="range"
+                min={0}
+                max={1}
+                step={0.05}
+                value={floodOpacity}
+                disabled={!layers.flood}
+                onChange={(e) => setFloodOpacity(Number(e.target.value))}
+                style={{ flex: 1, marginLeft: 8 }}
+                aria-label="Flood overlay opacity"
+              />
+              <span className={styles.itemState}>{Math.round(floodOpacity * 100)}%</span>
+            </label>
+            <label className={styles.item}>
+              <input
+                type="checkbox"
+                checked={layers.pai}
+                onChange={() => toggleLayer("pai")}
+              />
+              <span className={styles.itemName}>PAI fasce (ground truth)</span>
+              <span className={styles.itemState}>{layers.pai ? "on" : "off"}</span>
+            </label>
+            <label className={styles.item} aria-disabled={!layers.pai}>
+              <span className={styles.itemName}>PAI opacity</span>
+              <input
+                type="range"
+                min={0}
+                max={1}
+                step={0.05}
+                value={paiOpacity}
+                disabled={!layers.pai}
+                onChange={(e) => setPaiOpacity(Number(e.target.value))}
+                style={{ flex: 1, marginLeft: 8 }}
+                aria-label="PAI overlay opacity"
+              />
+              <span className={styles.itemState}>{Math.round(paiOpacity * 100)}%</span>
+            </label>
+            <label className={styles.item}>
+              <input
+                type="checkbox"
+                checked={layers.diff}
+                onChange={() => toggleLayer("diff")}
+              />
+              <span className={styles.itemName}>
+                Model vs PAI (🟢 agree · 🔵 model · 🟣 PAI)
+              </span>
+              <span className={styles.itemState}>{layers.diff ? "on" : "off"}</span>
+            </label>
+            <label className={styles.item} aria-disabled={!layers.diff}>
+              <span className={styles.itemName}>Diff opacity</span>
+              <input
+                type="range"
+                min={0}
+                max={1}
+                step={0.05}
+                value={diffOpacity}
+                disabled={!layers.diff}
+                onChange={(e) => setDiffOpacity(Number(e.target.value))}
+                style={{ flex: 1, marginLeft: 8 }}
+                aria-label="Difference overlay opacity"
+              />
+              <span className={styles.itemState}>{Math.round(diffOpacity * 100)}%</span>
+            </label>
+          </OverlaySection>
+          <OverlaySection id="context">
+            <label className={styles.item}>
+              <input
+                type="checkbox"
+                checked={layers.dtm}
+                onChange={() => toggleLayer("dtm")}
+              />
+              <span className={styles.itemName}>Study area · DTM hillshade</span>
+              <span className={styles.itemState}>{layers.dtm ? "on" : "off"}</span>
             </label>
             <label className={styles.item}>
               <input
@@ -187,110 +297,49 @@ export function LayersPanel() {
             {/* Roads + Trails sensitivity sliders live in the floating
                 SensitivityPanel (mounted in App.tsx) — see
                 src/map-overlays/SensitivityPanel.tsx. */}
-          </div>
-          <div className={styles.g}>
-            <div className={styles.gTtl}>Flood susceptibility (ml-flood-mapping)</div>
-            <label className={styles.item}>
-              <input
-                type="checkbox"
-                checked={layers.flood}
-                onChange={() => toggleLayer("flood")}
-              />
-              <span className={styles.itemName}>Flood overlay</span>
-              <span className={styles.itemState}>{layers.flood ? "on" : "off"}</span>
-            </label>
-            <div className={styles.bmRow} aria-disabled={!layers.flood}>
-              {FLOOD_VIEWS.map((v) => (
-                <button
-                  key={v.id}
-                  type="button"
-                  className={styles.bm}
-                  data-kind={v.id}
-                  data-active={floodView === v.id}
-                  aria-pressed={floodView === v.id}
-                  title={v.hint}
-                  disabled={!layers.flood}
-                  onClick={() => setFloodView(v.id)}
-                >
-                  {v.label}
-                </button>
-              ))}
-            </div>
-            <label className={styles.item} aria-disabled={!layers.flood}>
-              <span className={styles.itemName}>Opacity</span>
-              <input
-                type="range"
-                min={0}
-                max={1}
-                step={0.05}
-                value={floodOpacity}
-                disabled={!layers.flood}
-                onChange={(e) => setFloodOpacity(Number(e.target.value))}
-                style={{ flex: 1, marginLeft: 8 }}
-                aria-label="Flood overlay opacity"
-              />
-              <span className={styles.itemState}>{Math.round(floodOpacity * 100)}%</span>
-            </label>
-          </div>
-          <div className={styles.g}>
-            <div className={styles.gTtl}>PAI ufficiale (ground truth)</div>
-            <label className={styles.item}>
-              <input
-                type="checkbox"
-                checked={layers.pai}
-                onChange={() => toggleLayer("pai")}
-              />
-              <span className={styles.itemName}>PAI fasce</span>
-              <span className={styles.itemState}>{layers.pai ? "on" : "off"}</span>
-            </label>
-            <label className={styles.item} aria-disabled={!layers.pai}>
-              <span className={styles.itemName}>Opacity</span>
-              <input
-                type="range"
-                min={0}
-                max={1}
-                step={0.05}
-                value={paiOpacity}
-                disabled={!layers.pai}
-                onChange={(e) => setPaiOpacity(Number(e.target.value))}
-                style={{ flex: 1, marginLeft: 8 }}
-                aria-label="PAI overlay opacity"
-              />
-              <span className={styles.itemState}>{Math.round(paiOpacity * 100)}%</span>
-            </label>
-          </div>
-          <div className={styles.g}>
-            <div className={styles.gTtl}>Model vs PAI (difference)</div>
-            <label className={styles.item}>
-              <input
-                type="checkbox"
-                checked={layers.diff}
-                onChange={() => toggleLayer("diff")}
-              />
-              <span className={styles.itemName}>
-                Difference (🟢 agree · 🔵 model extends · 🟣 PAI only)
-              </span>
-              <span className={styles.itemState}>{layers.diff ? "on" : "off"}</span>
-            </label>
-            <label className={styles.item} aria-disabled={!layers.diff}>
-              <span className={styles.itemName}>Opacity</span>
-              <input
-                type="range"
-                min={0}
-                max={1}
-                step={0.05}
-                value={diffOpacity}
-                disabled={!layers.diff}
-                onChange={(e) => setDiffOpacity(Number(e.target.value))}
-                style={{ flex: 1, marginLeft: 8 }}
-                aria-label="Difference overlay opacity"
-              />
-              <span className={styles.itemState}>{Math.round(diffOpacity * 100)}%</span>
-            </label>
-          </div>
+          </OverlaySection>
           <UserLayersSection />
           <UserPolygonsSection />
         </div>
+      </div>
+    </div>
+  );
+}
+
+/** Collapsible overlay category. The header is a button that toggles
+ *  the body, the body lazy-collapses via grid-template-rows so the
+ *  enter/exit animation stays measurement-free (same trick the outer
+ *  panel uses). A right-aligned count badge ("3/4") summarises active
+ *  items so the user can read the panel state without expanding it. */
+function OverlaySection({ id, children }: { id: OverlayGroup; children: ReactNode }) {
+  const open = useAppStore((s) => s.overlayGroupOpen[id]);
+  const toggle = useAppStore((s) => s.toggleOverlayGroup);
+  const layers = useAppStore((s) => s.layers);
+  const keys = OVERLAY_GROUP_KEYS[id];
+  const active = keys.reduce((n, k) => n + (layers[k] ? 1 : 0), 0);
+  const total = keys.length;
+  const bodyId = `overlay-section-${id}`;
+  return (
+    <div className={styles.g} data-grp-open={open}>
+      <button
+        type="button"
+        className={styles.gHead}
+        aria-expanded={open}
+        aria-controls={bodyId}
+        onClick={() => toggle(id)}
+      >
+        <span className={styles.gTtl}>{OVERLAY_GROUP_LABEL[id]}</span>
+        <span
+          className={styles.gCount}
+          data-on={active > 0}
+          aria-label={`${active} of ${total} overlays active`}
+        >
+          {active}/{total}
+        </span>
+        <span className={styles.gCaret} aria-hidden="true">▾</span>
+      </button>
+      <div className={styles.gWrap} id={bodyId}>
+        <div className={styles.gBody}>{children}</div>
       </div>
     </div>
   );
