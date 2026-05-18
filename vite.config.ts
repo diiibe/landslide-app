@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
@@ -7,6 +8,10 @@ const pkg = JSON.parse(
   readFileSync(path.resolve(__dirname, "package.json"), "utf8"),
 ) as { version: string };
 
+// The `test` block below is consumed by Vitest. The triple-slash reference
+// at the top of this file (`vitest/config`) widens the UserConfig type so
+// `test` is recognised by tsc — without it `tsc -b` fails the GitHub Pages
+// deploy with TS2769.
 export default defineConfig({
   base: process.env.VITE_BASE ?? "/",
   plugins: [react()],
