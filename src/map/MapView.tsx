@@ -53,7 +53,7 @@ import {
   setCriticalVisible,
   setHutsVisible,
 } from "./layers/criticalPoi";
-import { addDtmHillshade, DTM_LAYER, setDtmHillshadeVisible } from "./layers/dtmHillshade";
+import { addDtmHillshade, DEM_SOURCE, DTM_LAYER, setDtmHillshadeVisible } from "./layers/dtmHillshade";
 import {
   addFloodOverlay,
   removeFloodOverlay,
@@ -302,6 +302,7 @@ export function MapView() {
   const userLayers = useAppStore((s) => s.userLayers);
   const userPolygons = useAppStore((s) => s.userPolygons);
   const drawingMode = useAppStore((s) => s.drawingMode);
+  const view3D = useAppStore((s) => s.view3D);
   const poiColors = useAppStore((s) => s.poiColors);
   const poiCategoryVisible = useAppStore((s) => s.poiCategoryVisible);
 
@@ -337,6 +338,12 @@ export function MapView() {
         addUserLayer(m, layer);
       }
       setupUserPolygons(m, useAppStore.getState().userPolygons);
+      // Re-apply terrain after a basemap swap. setStyle wipes
+      // everything including terrain bindings; without this the 3D
+      // toggle would silently flatten on every basemap change.
+      if (useAppStore.getState().view3D && m.getSource(DEM_SOURCE)) {
+        try { m.setTerrain({ source: DEM_SOURCE, exaggeration: 1.5 }); } catch { /* ignore */ }
+      }
       popupsUnsubRef.current?.();
       const popupsUnsub = registerPopups(m);
       const polygonUnsub = registerPolygonClicks(m, () =>
@@ -687,6 +694,37 @@ export function MapView() {
     }
     return () => stopDrawing();
   }, [drawingMode]);
+
+  // 3D view toggle: tilt the camera to 60° AND enable terrain on the
+  // DTM raster-DEM source. The hillshade layer already owns that source
+  // (Mapbox Terrain-RGB via the public Raster Tiles API), so a single
+  // tile pipeline drives both hillshade colouring and elevation lift.
+  // Off goes back to pitch 0 and detaches terrain so performance
+  // returns to the flat baseline.
+  //
+  // Camera change uses `setPitch` (synchronous) instead of
+  // `easeTo({ pitch })` — the eased variant silently no-ops on maplibre
+  // 5.24 when only the pitch parameter changes (no center/zoom delta).
+  //
+  // `setTerrain` is not safe to call before the first `style.load` —
+  // maplibre throws "Style is not done loading". Wrap it in try/catch
+  // and retry once on the next `load` event so a click made immediately
+  // after page load doesn't dead-end.
+  useEffect(() => {
+    const m = mapRef.current;
+    if (!m) return;
+    m.setPitch(view3D ? 60 : 0);
+    const desiredTerrain = view3D
+      ? { source: DEM_SOURCE, exaggeration: 1.5 }
+      : null;
+    try {
+      m.setTerrain(desiredTerrain);
+    } catch {
+      m.once("load", () => {
+        try { m.setTerrain(desiredTerrain); } catch { /* give up */ }
+      });
+    }
+  }, [view3D]);
 
   // Push the saved polygons array into the map source on every change.
   // Same rationale as the userLayers effect: gate on `getStyle()`, not

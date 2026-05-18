@@ -3,6 +3,7 @@ import styles from "./IconButtons.module.css";
 import { UploadButton } from "./UploadButton";
 import { DrawButton } from "./DrawButton";
 import { ExportImportButton } from "./ExportImportButton";
+import { ThreeDButton } from "./ThreeDButton";
 
 export function IconButtons() {
   const theme = useAppStore((s) => s.theme);
@@ -13,6 +14,7 @@ export function IconButtons() {
       <UploadButton />
       <ExportImportButton />
       <DrawButton />
+      <ThreeDButton />
       <button
         type="button"
         className={styles.btn}
