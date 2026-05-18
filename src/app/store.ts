@@ -361,6 +361,10 @@ export interface AppState {
   /** True while the polygon-drawing tool is active. UI shows a hint and
    *  the map captures clicks/taps via terra-draw. */
   drawingMode: boolean;
+  /** Toggle for the 3D oblique-camera view. When on, the map enables
+   *  terrain (raster-dem exaggerated 1.5×) and tilts the camera to ~60°
+   *  pitch; when off it returns to the flat 0° top-down view. */
+  view3D: boolean;
   /** Per-category colour for the gaussian POI balls. Defaults to
    *  POI_DEFAULT_COLORS; user-editable via the PoiLegendPanel. */
   poiColors: Record<PoiCategory, string>;
@@ -420,6 +424,8 @@ export interface AppState {
   removeUserPolygon: (id: string) => void;
   updateUserPolygon: (id: string, patch: Partial<UserPolygon>) => void;
   setDrawingMode: (on: boolean) => void;
+  setView3D: (on: boolean) => void;
+  toggleView3D: () => void;
   setPoiColor: (category: PoiCategory, hex: string) => void;
   resetPoiColors: () => void;
   togglePoiCategory: (category: PoiCategory) => void;
@@ -441,6 +447,7 @@ const initial: Omit<
   | "setSelectedComuni" | "toggleComune" | "clearComuni"
   | "addUserLayer" | "removeUserLayer" | "updateUserLayer"
   | "addUserPolygon" | "removeUserPolygon" | "updateUserPolygon" | "setDrawingMode"
+  | "setView3D" | "toggleView3D"
   | "setPoiColor" | "resetPoiColors" | "togglePoiCategory"
   | "toggleGroup" | "toggleOverlayGroup" | "setSearch" | "reset"
 > = {
@@ -483,6 +490,7 @@ const initial: Omit<
   userLayers: userData.layers,
   userPolygons: userData.polygons,
   drawingMode: false,
+  view3D: false,
   poiColors: {
     ...POI_DEFAULT_COLORS,
     ...((userData.poiColors ?? {}) as Partial<Record<PoiCategory, string>>),
@@ -635,6 +643,8 @@ export const useAppStore = create<AppState>((set) => ({
       return { userPolygons: next };
     }),
   setDrawingMode: (on) => set({ drawingMode: on }),
+  setView3D: (on) => set({ view3D: on }),
+  toggleView3D: () => set((s) => ({ view3D: !s.view3D })),
   setPoiColor: (category, hex) =>
     set((s) => {
       const next = { ...s.poiColors, [category]: hex };
