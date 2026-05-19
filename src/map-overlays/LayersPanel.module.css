@@ -1,16 +1,23 @@
 .panel {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 216px;
+  /* Visual styles only. Placement is owned by the parent .rightStack
+   * flex column in App.module.css — both LayersPanel and BasemapPanel
+   * are siblings stacked there, so panel-local absolute positioning
+   * would steal them out of the flow.
+   *
+   * P1.15: `clip` keeps the corner-rounding behaviour of `hidden` for
+   * children but does NOT establish a scroll/paint container, so the
+   * global \`:focus-visible\` ring isn't truncated at the panel edge. */
   background: var(--c-surface);
   border: 1px solid var(--c-border);
   border-radius: var(--radius-md);
-  /* P1.15: `clip` keeps the corner-rounding behaviour of `hidden` for
-   * children but does NOT establish a scroll/paint container, so the
-   * global \`:focus-visible\` ring isn't truncated at the panel edge. */
   overflow: clip;
   transition: box-shadow .2s var(--e-quart);
+}
+/* Belt-and-suspenders modifier used by BasemapPanel to spell out that
+ * it never wants the historical absolute positioning. LayersPanel
+ * doesn't need it because the panel rule above has no positioning. */
+.panelInStack {
+  position: relative;
 }
 .panel:active { box-shadow: 0 4px 14px rgba(35,38,31,.08); }
 @media (hover: hover) {
@@ -96,6 +103,11 @@
 .g[data-grp-open="false"] .gWrap > .gBody { opacity: 0; }
 
 .bmRow { display: flex; gap: 4px; }
+/* Model selector sits at the top of the Frane OverlaySection. Same pill
+   styling as basemap rows (.bm inherits its colour by data-kind), with
+   a small bottom margin so it doesn't crowd the susceptibility
+   checkbox right under it. */
+.modelRow { display: flex; gap: 4px; margin-bottom: 8px; }
 .bm {
   flex: 1; padding: 4px 0; text-align: center; font-size: 11px;
   border: 1px solid transparent; border-radius: var(--radius-sm);
