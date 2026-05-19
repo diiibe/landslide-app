@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { useAppStore } from "@/app/store";
 import type { AppState, OverlayGroup } from "@/app/store";
-import type { Basemap, ModelId } from "@/app/types";
+import type { ModelId } from "@/app/types";
 import { ColorButton } from "./ColorButton";
 import styles from "./LayersPanel.module.css";
 
@@ -39,13 +39,6 @@ const FLOOD_MAPPING_TOOLTIP =
   `ml-flood-mapping ${FLOOD_MAPPING_VERSION} (${FLOOD_MAPPING_DATE}) — ` +
   "OOF AUC P3=0.83 / P2+=0.83 / P1+=0.88, Platt-calibrated";
 
-const BASEMAPS: { id: Basemap; label: string }[] = [
-  { id: "outdoors", label: "Outdoors" },
-  { id: "light", label: "Light" },
-  { id: "satellite", label: "Satellite" },
-  { id: "dark", label: "Dark" },
-];
-
 const MODELS: { id: ModelId; label: string }[] = [
   { id: "j2", label: "J.2" },
   { id: "j3", label: "J.3" },
@@ -54,8 +47,6 @@ const MODELS: { id: ModelId; label: string }[] = [
 export function LayersPanel() {
   const open = useAppStore((s) => s.layersPanelOpen);
   const toggle = useAppStore((s) => s.toggleLayersPanel);
-  const basemap = useAppStore((s) => s.basemap);
-  const setBasemap = useAppStore((s) => s.setBasemap);
   const layers = useAppStore((s) => s.layers);
   const toggleLayer = useAppStore((s) => s.toggleLayer);
   const model = useAppStore((s) => s.model);
@@ -84,9 +75,14 @@ export function LayersPanel() {
       </button>
       <div className={styles.wrap} id="layers-panel-body">
         <div className={styles.body}>
-          <div className={styles.g}>
-            <div className={styles.gTtl}>Model</div>
-            <div className={styles.bmRow}>
+          <OverlaySection id="landslide">
+            {/* Model selector lives at the top of the Frane section so the
+                user picks J.2 vs J.3 in the same place they enable the
+                susceptibility cells / heatmap / IFFI that those models
+                feed. Mutually exclusive — single `state.model` drives
+                every dependent layer (susceptibility, KDE, IFFI overlap,
+                zone bars, analytics drawer). */}
+            <div className={styles.modelRow}>
               {MODELS.map((m) => (
                 <button
                   key={m.id}
@@ -102,27 +98,6 @@ export function LayersPanel() {
                 </button>
               ))}
             </div>
-          </div>
-          <div className={styles.g}>
-            <div className={styles.gTtl}>Basemap</div>
-            <div className={styles.bmRow}>
-              {BASEMAPS.map((b) => (
-                <button
-                  key={b.id}
-                  type="button"
-                  className={styles.bm}
-                  data-kind={b.id}
-                  data-active={basemap === b.id}
-                  aria-pressed={basemap === b.id}
-                  title={`Use ${b.label} basemap`}
-                  onClick={() => setBasemap(b.id)}
-                >
-                  {b.label}
-                </button>
-              ))}
-            </div>
-          </div>
-          <OverlaySection id="landslide">
             <label className={styles.item}>
               <input
                 type="checkbox"

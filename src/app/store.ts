@@ -343,6 +343,11 @@ export interface AppState {
   drawerOpen: boolean;
   legendOpen: boolean;
   layersPanelOpen: boolean;
+  /** Open state for the floating Basemap picker that sits in the
+   *  right-hand stack directly below the LayersPanel. Defaults to open
+   *  on desktop, closed on phones so the map shows on first paint
+   *  (same heuristic as `layersPanelOpen`). */
+  basemapPanelOpen: boolean;
   /** Open state of the floating "Sensitivity" panel that hosts the
    *  per-network risk shaping sliders. The panel mounts conditionally on
    *  `layers.roads || layers.trails`; this flag governs body expansion. */
@@ -404,6 +409,7 @@ export interface AppState {
   toggleDrawer: () => void;
   toggleLegend: () => void;
   toggleLayersPanel: () => void;
+  toggleBasemapPanel: () => void;
   toggleSensitivityPanel: () => void;
   toggleComuneFilterPanel: () => void;
   setSelectedComuni: (istatCodes: string[]) => void;
@@ -444,7 +450,7 @@ const initial: Omit<
   | "setModel" | "setBasemap" | "setThreshold" | "setSelectedZones" | "toggleZone"
   | "toggleLayer" | "setFloodView" | "setFloodOpacity" | "setPaiOpacity" | "setDiffOpacity" | "setRiskParam" | "lockRiskParams"
   | "setTheme" | "toggleTheme" | "toggleDrawer" | "toggleLegend"
-  | "toggleLayersPanel" | "toggleSensitivityPanel" | "toggleComuneFilterPanel"
+  | "toggleLayersPanel" | "toggleBasemapPanel" | "toggleSensitivityPanel" | "toggleComuneFilterPanel"
   | "setSelectedComuni" | "toggleComune" | "clearComuni"
   | "addUserLayer" | "removeUserLayer" | "updateUserLayer"
   | "addUserPolygon" | "removeUserPolygon" | "updateUserPolygon" | "setDrawingMode"
@@ -486,6 +492,7 @@ const initial: Omit<
   drawerOpen: initialDrawerOpen(),
   legendOpen: true,
   layersPanelOpen: initialLayersPanelOpen(),
+  basemapPanelOpen: initialLayersPanelOpen(),
   sensitivityPanelOpen: initialFloatingPanelOpen(),
   comuneFilterPanelOpen: initialFloatingPanelOpen(),
   selectedComuni: [],
@@ -570,6 +577,7 @@ export const useAppStore = create<AppState>((set) => ({
   toggleDrawer: () => set((s) => ({ drawerOpen: !s.drawerOpen })),
   toggleLegend: () => set((s) => ({ legendOpen: !s.legendOpen })),
   toggleLayersPanel: () => set((s) => ({ layersPanelOpen: !s.layersPanelOpen })),
+  toggleBasemapPanel: () => set((s) => ({ basemapPanelOpen: !s.basemapPanelOpen })),
   toggleSensitivityPanel: () =>
     set((s) => ({ sensitivityPanelOpen: !s.sensitivityPanelOpen })),
   toggleComuneFilterPanel: () =>

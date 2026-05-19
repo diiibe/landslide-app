@@ -20,6 +20,7 @@ const MapView: ComponentType = import.meta.env.MODE === "test"
     );
 import { ZonesPill } from "@/map-overlays/ZonesPill";
 import { LayersPanel } from "@/map-overlays/LayersPanel";
+import { BasemapPanel } from "@/map-overlays/BasemapPanel";
 import { SensitivityPanel } from "@/map-overlays/SensitivityPanel";
 import { ComuneFilterPanel } from "@/map-overlays/ComuneFilterPanel";
 import { PoiLegendPanel } from "@/map-overlays/PoiLegendPanel";
@@ -115,7 +116,10 @@ export default function App() {
           </Suspense>
           <ZonesPill />
           <ThresholdControl />
-          <LayersPanel />
+          <div className={styles.rightStack}>
+            <LayersPanel />
+            <BasemapPanel />
+          </div>
           <div className={styles.rightOverlays}>
             <SensitivityPanel />
             <ComuneFilterPanel />

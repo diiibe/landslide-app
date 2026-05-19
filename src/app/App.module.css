@@ -55,16 +55,32 @@
   box-shadow: 0 8px 28px rgba(35, 38, 31, 0.25);
 }
 
-/* Single right-edge column hosting SensitivityPanel + ComuneFilterPanel.
+/* Right-edge column #1 — LayersPanel + BasemapPanel stacked vertically.
    Wrapping them in a flex column means each panel's collapse/expand
    transition pushes its neighbour up or down naturally — no manual
    coordination via body classes or fixed offsets needed. The wrapper
    itself has no pointer events so map clicks pass through the gaps;
    children opt back in. */
+.rightStack {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 216px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 5;
+  pointer-events: none;
+}
+.rightStack > * {
+  pointer-events: auto;
+}
+
+/* Right-edge column #2 — SensitivityPanel + ComuneFilterPanel sit to
+   the LEFT of the rightStack column. Width 216 + gap 8 + base 12 = 236. */
 .rightOverlays {
   position: absolute;
   top: 12px;
-  /* LayersPanel: right 12 + width 216 + 8 gap = 236. */
   right: 236px;
   width: 240px;
   display: flex;
