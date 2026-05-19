@@ -13,6 +13,12 @@ import {
   updateSusceptibilityZones,
 } from "./layers/susceptibility";
 import { addIffi, IFFI_FILL, IFFI_LINE, setIffiVisible } from "./layers/iffi";
+import {
+  addHistoricalFloods,
+  HFLOOD_FILL,
+  HFLOOD_LINE,
+  setHistoricalFloodsVisible,
+} from "./layers/historicalFloods";
 import { addZoneBoundaries, setZoneBoundariesVisible, ZONE_LINE } from "./layers/zones";
 import {
   addSmoothHeatmap,
@@ -237,6 +243,7 @@ function setupModelLayers(m: maplibregl.Map): void {
     removeDiffOverlay(m);
   }
   addIffi(m, s.layers.iffi);
+  addHistoricalFloods(m, s.layers.floodHistorical);
   addZoneBoundaries(m, s.layers.zoneBoundaries);
   setSusceptibilityVisible(m, s.layers.susceptibility);
 
@@ -247,7 +254,7 @@ function setupModelLayers(m: maplibregl.Map): void {
   // anchor (the bottom-most trail/road layer) after the fact.
   const anchor = networkAnchor(m);
   if (anchor) {
-    for (const id of [SUSCEPT_LAYER, HEAT_LAYER, IFFI_FILL, IFFI_LINE, ZONE_LINE]) {
+    for (const id of [SUSCEPT_LAYER, HEAT_LAYER, IFFI_FILL, IFFI_LINE, HFLOOD_FILL, HFLOOD_LINE, ZONE_LINE]) {
       if (m.getLayer(id)) m.moveLayer(id, anchor);
     }
   }
@@ -276,6 +283,7 @@ export function MapView() {
   const selectedZones = useAppStore((s) => s.selectedZones);
   const susceptOn = useAppStore((s) => s.layers.susceptibility);
   const iffiOn = useAppStore((s) => s.layers.iffi);
+  const floodHistoricalOn = useAppStore((s) => s.layers.floodHistorical);
   const zoneBoundariesOn = useAppStore((s) => s.layers.zoneBoundaries);
   const heatOn = useAppStore((s) => s.layers.smoothHeatmap);
   const roadsOn = useAppStore((s) => s.layers.roads);
@@ -411,6 +419,10 @@ export function MapView() {
   useEffect(() => {
     if (mapRef.current) setIffiVisible(mapRef.current, iffiOn);
   }, [iffiOn]);
+
+  useEffect(() => {
+    if (mapRef.current) setHistoricalFloodsVisible(mapRef.current, floodHistoricalOn);
+  }, [floodHistoricalOn]);
 
   useEffect(() => {
     if (mapRef.current) setZoneBoundariesVisible(mapRef.current, zoneBoundariesOn);

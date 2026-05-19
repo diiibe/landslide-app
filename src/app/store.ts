@@ -322,6 +322,7 @@ export interface AppState {
     flood: boolean;
     pai: boolean;
     diff: boolean;
+    floodHistorical: boolean;
   };
   /** Which flood overlay variant to render when `layers.flood` is on.
    *  See `src/map/layers/floodSusceptibility.ts` for the semantics of
@@ -470,6 +471,7 @@ const initial: Omit<
     flood: false,
     pai: false,
     diff: false,
+    floodHistorical: false,
   },
   floodView: "combined",
   floodOpacity: 0.85,

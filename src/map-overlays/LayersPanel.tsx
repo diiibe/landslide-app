@@ -10,7 +10,7 @@ import styles from "./LayersPanel.module.css";
  *  badge even while collapsed. */
 const OVERLAY_GROUP_KEYS: Record<OverlayGroup, readonly (keyof AppState["layers"])[]> = {
   landslide: ["susceptibility", "smoothHeatmap", "iffi", "zoneBoundaries"],
-  flood: ["flood", "pai", "diff"],
+  flood: ["flood", "pai", "diff", "floodHistorical"],
   context: ["dtm", "roads", "trails", "comuni", "poiCritical", "poiHuts"],
 };
 
@@ -265,6 +265,20 @@ export function LayersPanel() {
                 aria-label="Difference overlay opacity"
               />
               <span className={styles.itemState}>{Math.round(diffOpacity * 100)}%</span>
+            </label>
+            <label
+              className={styles.item}
+              title="Copernicus EMS Rapid Mapping: Storm Friuli 2017 + Vaia 2018 — 310 osservazioni satellitari"
+            >
+              <input
+                type="checkbox"
+                checked={layers.floodHistorical}
+                onChange={() => toggleLayer("floodHistorical")}
+              />
+              <span className={styles.itemName}>
+                Alluvioni storiche (Copernicus EMS)
+              </span>
+              <span className={styles.itemState}>{layers.floodHistorical ? "on" : "off"}</span>
             </label>
           </OverlaySection>
           <OverlaySection id="context">
