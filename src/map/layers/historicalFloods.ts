@@ -60,8 +60,13 @@ export function addHistoricalFloods(m: MLMap, visible: boolean): void {
       type: "line",
       source: HFLOOD_SOURCE,
       paint: {
-        "line-color": COLOR_BY_KIND,
-        "line-width": 1.2,
+        // Distinct outline colour so polygons read as flood evidence
+        // at a glance and don't blur into the red/orange fill — blue
+        // reads as "water" and contrasts cleanly against both the
+        // hydro-damage orange and the observed-flood red.
+        "line-color": "#1E3A8A",
+        "line-width": 1.6,
+        "line-opacity": 0.95,
       },
     });
   }
