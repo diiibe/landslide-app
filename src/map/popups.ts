@@ -1,6 +1,7 @@
 import maplibregl, { type Map as MLMap, type MapMouseEvent } from "maplibre-gl";
 import { SUSCEPT_LAYER } from "./layers/susceptibility";
 import { IFFI_FILL } from "./layers/iffi";
+import { HFLOOD_FILL } from "./layers/historicalFloods";
 
 export interface CellPopupProps {
   cell_id: number | string;
@@ -18,6 +19,17 @@ export interface IffiPopupProps {
   nome_tipo: string;
   comune: string;
   provincia: string;
+}
+
+/** Subset of the historical-flood GeoJSON feature properties we use to
+ *  build the popup. The source pipeline emits 5 keys; we read 4 of
+ *  them, plus parse the `event_id` to extract the AOI name. */
+export interface HFloodPopupProps {
+  event_id: string;
+  product: string;       // "GRADING" | "DELINEATION"
+  product_kind: string;  // "flood" | "hydro_damage"
+  src_date: string;      // ISO date or "" (only some records carry it)
+  obj_desc: string;      // "Riverine flood" or ""
 }
 
 /**
@@ -96,26 +108,109 @@ export function buildIffiPopupNode(p: IffiPopupProps): HTMLElement {
   return root;
 }
 
+/** Map Copernicus EMS activation codes to a human-readable event title
+ *  + a short Italian month/year tag for the popup headline. The current
+ *  geojson carries two activations (EMSR225 / EMSR332). New activations
+ *  picked up by the export pipeline fall back to the raw code so the
+ *  popup is never empty. */
+const HFLOOD_ACTIVATIONS: Record<string, { name: string; when: string }> = {
+  EMSR225: { name: "Storm in Friuli", when: "ago 2017" },
+  EMSR332: { name: "Vaia", when: "ott 2018" },
+};
+
+/** Parse an event_id like `EMSR332_08PORDENONE_01DELINEATION_MONIT01`
+ *  into `{ activation, aoi }`. The AOI slug is just the human part of
+ *  the second segment (`PORDENONE`, `SANVITO`, …) — the leading two
+ *  digits are a sequence number that means nothing to the user. */
+function parseHFloodEventId(eventId: string): { activation: string; aoi: string } {
+  const parts = eventId.split("_");
+  const activation = parts[0] ?? "";
+  const aoiRaw = parts[1] ?? "";
+  // Strip the leading "NN" sequence number to get the bare locality name.
+  const aoi = aoiRaw.replace(/^\d+/, "");
+  return { activation, aoi };
+}
+
+const HFLOOD_KIND_LABEL: Record<string, string> = {
+  flood: "Inondazione osservata",
+  hydro_damage: "Danno idrologico",
+};
+
+export function buildHFloodPopupNode(p: HFloodPopupProps): HTMLElement {
+  const root = document.createElement("div");
+  root.className = "fvg-popup";
+  root.style.minWidth = "200px";
+
+  const { activation, aoi } = parseHFloodEventId(p.event_id);
+  const meta = HFLOOD_ACTIVATIONS[activation];
+
+  const title = document.createElement("div");
+  title.className = "fvg-popup__title";
+  // Headline: human-readable event name, or fall back to the bare code.
+  title.textContent = meta ? `${meta.name} (${meta.when})` : activation || "Alluvione storica";
+  root.appendChild(title);
+
+  // Strong line: kind humanised (Inondazione / Danno idrologico). If we
+  // also have a richer Copernicus description we prefer it.
+  const kindLabel = p.obj_desc || HFLOOD_KIND_LABEL[p.product_kind] || p.product_kind;
+  if (kindLabel) {
+    const kind = document.createElement("div");
+    kind.className = "fvg-popup__strong";
+    kind.textContent = kindLabel;
+    root.appendChild(kind);
+  }
+
+  // CAPS tag: product type (Copernicus "DELINEATION" / "GRADING") — same
+  // visual slot the IFFI popup uses for the movement code.
+  if (p.product) {
+    const product = document.createElement("div");
+    product.className = "fvg-popup__caps";
+    product.textContent = p.product;
+    root.appendChild(product);
+  }
+
+  // Muted footer: AOI + activation code + source date when present.
+  const footerParts: string[] = [];
+  if (aoi) footerParts.push(aoi);
+  if (activation) footerParts.push(activation);
+  if (p.src_date) footerParts.push(p.src_date);
+  if (footerParts.length > 0) {
+    const place = document.createElement("div");
+    place.className = "fvg-popup__muted";
+    place.style.marginTop = "4px";
+    place.textContent = footerParts.join(" · ");
+    root.appendChild(place);
+  }
+
+  return root;
+}
+
 /**
- * Build a single combined popup node when the click lands on both a
- * susceptibility cell and an IFFI polygon at the same point. The two
- * sections sit one above the other inside one card; a thin divider
- * marks the boundary. Either argument may be `null` (just one feature
- * was hit); the resulting node renders only the relevant section.
+ * Build a single combined popup node when the click lands on more than
+ * one interactive layer at the same point. The sections sit one above
+ * the other inside one card; thin dividers separate them. Each argument
+ * may be `null` — the resulting node renders only the relevant
+ * sections.
  */
 function buildCombinedNode(
   cell: CellPopupProps | null,
   iffi: IffiPopupProps | null,
+  hflood: HFloodPopupProps | null,
 ): HTMLElement {
   const root = document.createElement("div");
   root.className = "fvg-popup fvg-popup--stack";
-  if (cell) root.appendChild(buildCellPopupNode(cell));
-  if (cell && iffi) {
-    const sep = document.createElement("div");
-    sep.className = "fvg-popup__divider";
-    root.appendChild(sep);
-  }
-  if (iffi) root.appendChild(buildIffiPopupNode(iffi));
+  const sections: HTMLElement[] = [];
+  if (cell) sections.push(buildCellPopupNode(cell));
+  if (iffi) sections.push(buildIffiPopupNode(iffi));
+  if (hflood) sections.push(buildHFloodPopupNode(hflood));
+  sections.forEach((node, i) => {
+    if (i > 0) {
+      const sep = document.createElement("div");
+      sep.className = "fvg-popup__divider";
+      root.appendChild(sep);
+    }
+    root.appendChild(node);
+  });
   return root;
 }
 
@@ -129,12 +224,15 @@ function buildCombinedNode(
  */
 export function registerPopups(m: MLMap): () => void {
   const onClick = (e: MapMouseEvent) => {
-    const layers = [SUSCEPT_LAYER, IFFI_FILL].filter((id) => m.getLayer(id));
+    const layers = [SUSCEPT_LAYER, IFFI_FILL, HFLOOD_FILL].filter((id) =>
+      m.getLayer(id),
+    );
     if (layers.length === 0) return;
     const feats = m.queryRenderedFeatures(e.point, { layers });
     const cellFeat = feats.find((f) => f.layer.id === SUSCEPT_LAYER);
     const iffiFeat = feats.find((f) => f.layer.id === IFFI_FILL);
-    if (!cellFeat && !iffiFeat) return;
+    const hfloodFeat = feats.find((f) => f.layer.id === HFLOOD_FILL);
+    if (!cellFeat && !iffiFeat && !hfloodFeat) return;
     const cell: CellPopupProps | null = cellFeat
       ? {
           cell_id:
@@ -154,6 +252,15 @@ export function registerPopups(m: MLMap): () => void {
           provincia: String(iffiFeat.properties?.provincia ?? ""),
         }
       : null;
+    const hflood: HFloodPopupProps | null = hfloodFeat
+      ? {
+          event_id: String(hfloodFeat.properties?.event_id ?? ""),
+          product: String(hfloodFeat.properties?.product ?? ""),
+          product_kind: String(hfloodFeat.properties?.product_kind ?? ""),
+          src_date: String(hfloodFeat.properties?.src_date ?? ""),
+          obj_desc: String(hfloodFeat.properties?.obj_desc ?? ""),
+        }
+      : null;
     new maplibregl.Popup({
       closeButton: true,
       closeOnClick: true,
@@ -162,7 +269,7 @@ export function registerPopups(m: MLMap): () => void {
       maxWidth: "260px",
     })
       .setLngLat(e.lngLat)
-      .setDOMContent(buildCombinedNode(cell, iffi))
+      .setDOMContent(buildCombinedNode(cell, iffi, hflood))
       .addTo(m);
   };
 
@@ -178,6 +285,8 @@ export function registerPopups(m: MLMap): () => void {
   m.on("mouseleave", SUSCEPT_LAYER, cellLeave);
   m.on("mouseenter", IFFI_FILL, cellEnter);
   m.on("mouseleave", IFFI_FILL, cellLeave);
+  m.on("mouseenter", HFLOOD_FILL, cellEnter);
+  m.on("mouseleave", HFLOOD_FILL, cellLeave);
 
   return () => {
     m.off("click", onClick);
@@ -185,5 +294,7 @@ export function registerPopups(m: MLMap): () => void {
     m.off("mouseleave", SUSCEPT_LAYER, cellLeave);
     m.off("mouseenter", IFFI_FILL, cellEnter);
     m.off("mouseleave", IFFI_FILL, cellLeave);
+    m.off("mouseenter", HFLOOD_FILL, cellEnter);
+    m.off("mouseleave", HFLOOD_FILL, cellLeave);
   };
 }
