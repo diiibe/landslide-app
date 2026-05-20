@@ -45,7 +45,7 @@ export function BasemapPanel() {
       <div className={styles.wrap} id="basemap-panel-body">
         <div className={styles.body}>
           <div className={styles.g}>
-            <div className={styles.bmRow}>
+            <div className={styles.bmGrid}>
               {items.map((b) => (
                 <button
                   key={b.id}
