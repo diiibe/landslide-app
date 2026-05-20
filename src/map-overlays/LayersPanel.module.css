@@ -103,6 +103,14 @@
 .g[data-grp-open="false"] .gWrap > .gBody { opacity: 0; }
 
 .bmRow { display: flex; gap: 4px; }
+/* 2×2 grid variant used by BasemapPanel — at 216 px panel width a single
+   row of four pills crams the labels and centres them awkwardly; the
+   grid gives each pill a square-ish footprint that reads cleanly. */
+.bmGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
 /* Model selector sits at the top of the Frane OverlaySection. Same pill
    styling as basemap rows (.bm inherits its colour by data-kind), with
    a small bottom margin so it doesn't crowd the susceptibility
