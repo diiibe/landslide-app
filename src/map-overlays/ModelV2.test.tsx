@@ -126,6 +126,26 @@ describe("Legend · Modello v2", () => {
   });
 });
 
+describe("J.2/J.3 pills while v2 is on", () => {
+  it("read unselected, and picking one brings the J cells back", async () => {
+    stubModelV2(READY);
+    useAppStore.getState().toggleLayer("v2Bodies");
+    render(<LayersPanel />);
+    const j3 = screen.getByRole("button", { name: "J.3" });
+    const j2 = screen.getByRole("button", { name: "J.2" });
+    expect(j3).toHaveAttribute("aria-pressed", "false");
+    expect(j3).toHaveAttribute("data-muted", "true");
+
+    fireEvent.click(j2);
+    const s = useAppStore.getState();
+    expect(s.model).toBe("j2");
+    expect(s.layers.susceptibility).toBe(true);
+    expect(s.layers.v2Bodies).toBe(false);
+    expect(j2).toHaveAttribute("aria-pressed", "true");
+    expect(j2).toHaveAttribute("data-muted", "false");
+  });
+});
+
 describe("J-only controls", () => {
   it("hide the zones pill and the p threshold while a v2 layer is on", () => {
     useAppStore.getState().toggleLayer("v2Diffuse");

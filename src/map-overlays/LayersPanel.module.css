@@ -347,3 +347,4 @@
 }
 .item[aria-disabled="true"] { cursor: default; opacity: .55; }
 .item[aria-disabled="true"]:hover { background: none; color: inherit; padding-left: 6px; }
+.bm[data-muted="true"] { opacity: .55; }

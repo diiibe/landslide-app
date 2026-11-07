@@ -34,10 +34,12 @@ import { MonitoringPanel } from "@/drawer/MonitoringPanel";
 import { AnalyticsPanel } from "@/drawer/AnalyticsPanel";
 import { ModelPanel } from "@/drawer/ModelPanel";
 import { ModelV2Panel } from "@/drawer/ModelV2Panel";
+import { JStatsNote } from "@/drawer/JStatsNote";
 import { useAppStore } from "@/app/store";
 
 export default function App() {
   const drawerOpen = useAppStore((s) => s.drawerOpen);
+  const v2On = useAppStore((s) => s.layers.v2Bodies || s.layers.v2Diffuse);
   const addUserLayer = useAppStore((s) => s.addUserLayer);
 
   // Drag & drop on the map area: accept the same file types as the
@@ -130,10 +132,17 @@ export default function App() {
           <DrawingPanel />
         </div>
         <Drawer>
-          <Group id="view" label="View"><ViewPanel /></Group>
-          <Group id="monitoring" label="Monitoring"><MonitoringPanel /></Group>
-          <Group id="analytics" label="Analytics"><AnalyticsPanel /></Group>
-          <Group id="model" label="Model"><ModelPanel /></Group>
+          {/* J-only statistics never sit next to a v2 surface. */}
+          {v2On ? (
+            <JStatsNote />
+          ) : (
+            <>
+              <Group id="view" label="View"><ViewPanel /></Group>
+              <Group id="monitoring" label="Monitoring"><MonitoringPanel /></Group>
+              <Group id="analytics" label="Analytics"><AnalyticsPanel /></Group>
+              <Group id="model" label="Model"><ModelPanel /></Group>
+            </>
+          )}
           {/* Separate group: v2 metrics are not comparable with J.2/J.3. */}
           <Group id="modelV2" label="Metriche v2"><ModelV2Panel /></Group>
         </Drawer>
