@@ -12,7 +12,7 @@ import {
   type Zone,
 } from "./types";
 
-export type GroupId = "view" | "monitoring" | "analytics" | "model";
+export type GroupId = "view" | "monitoring" | "analytics" | "model" | "modelV2";
 
 /** Collapsible sections inside the LayersPanel's overlay list. Names
  *  map to the user-facing labels (Italian) but the ids stay English-
@@ -537,7 +537,7 @@ const initial: Omit<
     }
     return base;
   })(),
-  groupOpen: { view: true, monitoring: true, analytics: true, model: true },
+  groupOpen: { view: true, monitoring: true, analytics: true, model: true, modelV2: true },
   overlayGroupOpen: { landslide: true, flood: false, context: false },
   search: { query: "", placeName: null },
 };

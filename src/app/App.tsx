@@ -33,6 +33,7 @@ import { ViewPanel } from "@/drawer/ViewPanel";
 import { MonitoringPanel } from "@/drawer/MonitoringPanel";
 import { AnalyticsPanel } from "@/drawer/AnalyticsPanel";
 import { ModelPanel } from "@/drawer/ModelPanel";
+import { ModelV2Panel } from "@/drawer/ModelV2Panel";
 import { useAppStore } from "@/app/store";
 
 export default function App() {
@@ -133,6 +134,8 @@ export default function App() {
           <Group id="monitoring" label="Monitoring"><MonitoringPanel /></Group>
           <Group id="analytics" label="Analytics"><AnalyticsPanel /></Group>
           <Group id="model" label="Model"><ModelPanel /></Group>
+          {/* Separate group: v2 metrics are not comparable with J.2/J.3. */}
+          <Group id="modelV2" label="Metriche v2"><ModelV2Panel /></Group>
         </Drawer>
       </div>
     </div>

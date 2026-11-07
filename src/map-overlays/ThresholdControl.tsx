@@ -14,6 +14,7 @@ const SNAPS: Threshold[] = [0.3, 0.5, 0.7, 0.85];
 export function ThresholdControl() {
   const threshold = useAppStore((s) => s.threshold);
   const setThreshold = useAppStore((s) => s.setThreshold);
+  const v2On = useAppStore((s) => s.layers.v2Bodies || s.layers.v2Diffuse);
 
   const onSlide = (v: number) => {
     const nearest = SNAPS.reduce<Threshold>(
@@ -23,6 +24,8 @@ export function ThresholdControl() {
     if (nearest !== threshold) setThreshold(nearest);
   };
 
+  // The p threshold filters J.2/J.3 cells only; v2 is drawn by class.
+  if (v2On) return null;
   return (
     <div className={styles.wrap}>
       <div className={styles.head}>

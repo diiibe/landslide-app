@@ -314,3 +314,36 @@
   }
   .gTtl { font-size: 11px; }
 }
+
+/* Model v2 block inside Frane: its own heading under the J.2/J.3 items
+   so the two model families read apart. No zone controls — v2 has no
+   zones. */
+.v2Block {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--c-border);
+}
+.v2Head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--c-text);
+  margin-bottom: 2px;
+}
+.v2Tag {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 999px;
+  border: 1px solid var(--c-border);
+  color: var(--c-text-soft);
+}
+.v2Hint {
+  font-size: 11px;
+  color: var(--c-text-soft);
+  margin: 0 0 4px;
+}
+.item[aria-disabled="true"] { cursor: default; opacity: .55; }
+.item[aria-disabled="true"]:hover { background: none; color: inherit; padding-left: 6px; }
