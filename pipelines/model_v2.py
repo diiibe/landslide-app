@@ -12,11 +12,22 @@ columns `i, j, score, source, seed_spread`. `i, j` index the HazardFVG
 Pipeline, per layer:
     1. Validate the parquet (columns, source values, cells inside the grid,
        no duplicate cell).
-    2. Class edges: score quantiles over every cell of the layer, 5 classes.
-    3. Cell polygons from (i, j), reprojected to EPSG:4326.
-    4. Slim GeoJSON (`score`, `source`, `cls`) → `v2_<layer>.pmtiles`.
-Then `model_v2.json` collects the per-layer edges and source counts, with
-empty `metrics` until the owner provides them.
+    2. Class edges: score quantiles over every cell of the layer, 5 classes
+       requested. Tied quantiles collapse (edges stay strictly increasing,
+       empty classes merge into a neighbour) and the real share of cells in
+       each class is recorded; fewer than 3 distinct classes is an error.
+    3. Cell polygons from (i, j), reprojected to EPSG:4326, with `score`,
+       `source`, `cls` and `ncls` (the layer's class count).
+    4. Tiles: one tippecanoe run per (cls, source) group with
+       --coalesce-densest-as-needed, then tile-join into `v2_<layer>.pmtiles`.
+       Coalescing therefore only ever merges cells of the same class and
+       source, so low zooms stay full without mixing classes (tippecanoe
+       keeps one feature's attributes when it coalesces; a single run moved
+       5-7 % of the area into the wrong class at z7-8). `score` of a
+       coalesced feature is the mean of the merged cells. GeoJSON
+       intermediates live in a temporary directory and are deleted.
+Then `model_v2.json` collects the per-layer edges, shares and source
+counts, with empty `metrics` until the owner provides them.
 
 The two layers are never merged: each gets its own tiles and its own edges.
 """
@@ -24,6 +35,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import subprocess
+import tempfile
+from collections.abc import Callable
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
@@ -32,7 +46,7 @@ import numpy as np
 import pandas as pd
 import shapely
 
-from pipelines.build_tiles import run_tippecanoe
+from pipelines.build_tiles import _check_tippecanoe_available
 
 
 @dataclass(frozen=True)
@@ -53,6 +67,17 @@ LAYERS = ("bodies", "diffuse")
 SOURCES = ("oof", "holdout", "in_sample")
 COLUMNS = ("i", "j", "score", "source", "seed_spread")
 N_CLASSES = 5
+MIN_CLASSES = 3
+# Starting per-part tile byte limit for the (cls, source) tippecanoe runs.
+# The parts are joined without a limit, so a joined tile can reach roughly
+# the sum of its parts; 100 kB keeps the densest synthetic low-zoom tile
+# under ~1 MB. When a part cannot be coalesced that far (tippecanoe exits
+# with TIPPECANOE_TOO_DENSE) the limit doubles, up to tippecanoe's default.
+PART_TILE_BYTES = 100_000
+TIPPECANOE_DEFAULT_BYTES = 500_000
+TIPPECANOE_TOO_DENSE = 100
+
+Runner = Callable[..., object]
 
 
 def load_layer(path: str | Path) -> pd.DataFrame:
@@ -77,12 +102,6 @@ def load_layer(path: str | Path) -> pd.DataFrame:
     return df.reset_index(drop=True)
 
 
-def quantile_edges(scores: np.ndarray, n_classes: int = N_CLASSES) -> list[float]:
-    """`n_classes + 1` edges: min, the inner quantiles, max."""
-    edges = np.quantile(np.asarray(scores, dtype="float64"), np.linspace(0, 1, n_classes + 1))
-    return [float(e) for e in edges]
-
-
 def assign_classes(scores: np.ndarray, edges: list[float]) -> np.ndarray:
     """Class 1..n per score. A score equal to an inner edge goes to the upper
     class; the maximum stays in the top class."""
@@ -90,10 +109,46 @@ def assign_classes(scores: np.ndarray, edges: list[float]) -> np.ndarray:
     return (np.searchsorted(inner, np.asarray(scores), side="right") + 1).astype("int8")
 
 
+def _class_counts(scores: np.ndarray, edges: list[float]) -> np.ndarray:
+    return np.bincount(assign_classes(scores, edges), minlength=len(edges))[1:]
+
+
+def class_edges(
+    scores: np.ndarray, n_classes: int = N_CLASSES, min_classes: int = MIN_CLASSES
+) -> list[float]:
+    """Quantile edges (min, inner breaks, max) on the distinct quantile values.
+
+    Tied scores make quantiles coincide; those collapse, and a class left
+    empty is merged into its upper neighbour (the top class into the one
+    below). Raises when fewer than `min_classes` distinct classes remain.
+    """
+    scores = np.asarray(scores, dtype="float64")
+    edges = [float(e) for e in np.unique(np.quantile(scores, np.linspace(0, 1, n_classes + 1)))]
+    while len(edges) > 2:
+        empty = np.flatnonzero(_class_counts(scores, edges) == 0)
+        if empty.size == 0:
+            break
+        k = int(empty[0])
+        del edges[k + 1 if k + 1 < len(edges) - 1 else k]
+    n = len(edges) - 1
+    if n < min_classes:
+        raise ValueError(
+            f"only {n} distinct classes left after collapsing tied quantiles "
+            f"(need at least {min_classes})"
+        )
+    return edges
+
+
+def class_shares(scores: np.ndarray, edges: list[float]) -> list[float]:
+    """Share of cells in each class, in class order."""
+    counts = _class_counts(np.asarray(scores), edges)
+    return [round(float(c) / counts.sum(), 4) for c in counts]
+
+
 def cells_to_geodataframe(
     df: pd.DataFrame, edges: list[float], crs: str = "EPSG:4326"
 ) -> gpd.GeoDataFrame:
-    """One square polygon per (i, j) cell, with `score`, `source`, `cls`."""
+    """One square polygon per (i, j) cell, with `score`, `source`, `cls`, `ncls`."""
     i = df["i"].to_numpy(dtype="float64")
     j = df["j"].to_numpy(dtype="float64")
     xmin = GRID.x0 + j * GRID.cell
@@ -104,6 +159,7 @@ def cells_to_geodataframe(
             "score": df["score"].astype("float32").round(4).to_numpy(),
             "source": df["source"].astype(str).to_numpy(),
             "cls": assign_classes(df["score"].to_numpy(), edges),
+            "ncls": np.full(len(df), len(edges) - 1, dtype="int8"),
         },
         geometry=boxes,
         crs=GRID.crs,
@@ -111,34 +167,97 @@ def cells_to_geodataframe(
     return gdf if crs == GRID.crs else gdf.to_crs(crs)
 
 
-def build_layer(name: str, map_dir: Path, tiles_dir: Path) -> dict[str, object]:
-    df = load_layer(map_dir / f"{name}.parquet")
-    edges = quantile_edges(df["score"].to_numpy())
-    gdf = cells_to_geodataframe(df, edges)
+def tile_layer(
+    gdf: gpd.GeoDataFrame,
+    out: Path,
+    *,
+    min_zoom: int = 6,
+    max_zoom: int = 14,
+    max_tile_bytes: int | None = None,
+    run: Runner = subprocess.run,
+) -> None:
+    """Write `out` (.pmtiles, layer `cells`) from cell polygons.
 
-    geojson = tiles_dir / f"v2_{name}.geojson"
-    gdf.to_file(geojson, driver="GeoJSON")
-    run_tippecanoe(geojson, tiles_dir / f"v2_{name}.pmtiles", min_zoom=6, max_zoom=14,
-                   layer_name="cells")
+    One tippecanoe run per (cls, source) group, so coalescing at low zoom
+    can only merge cells that share both attributes, then tile-join. The
+    joined tiles have no size limit: each part already respects it.
+    `run` is injected for tests; `max_tile_bytes` lowers tippecanoe's
+    500 kB per-part limit (see PART_TILE_BYTES).
+    """
+    if run is subprocess.run:
+        _check_tippecanoe_available()
+    with tempfile.TemporaryDirectory(prefix="v2_tiles_") as tmp:
+        parts: list[str] = []
+        for (cls, source), group in gdf.groupby(["cls", "source"], sort=True):
+            stem = Path(tmp) / f"cls{cls}_{source}"
+            group.to_file(stem.with_suffix(".geojson"), driver="GeoJSON")
+            cmd = [
+                "tippecanoe", "-q", "-o", str(stem.with_suffix(".pmtiles")), "--force",
+                "-l", "cells", "-Z", str(min_zoom), "-z", str(max_zoom),
+                "--coalesce-densest-as-needed",
+                "--extend-zooms-if-still-dropping",
+                "--accumulate-attribute=score:mean",
+            ]
+            limit = max_tile_bytes
+            while True:
+                size_flag = [] if limit is None else ["-M", str(limit)]
+                try:
+                    run([*cmd, *size_flag, str(stem.with_suffix(".geojson"))], check=True)
+                    break
+                except subprocess.CalledProcessError as err:
+                    if err.returncode != TIPPECANOE_TOO_DENSE or limit is None:
+                        raise
+                    limit = None if limit * 2 >= TIPPECANOE_DEFAULT_BYTES else limit * 2
+            parts.append(str(stem.with_suffix(".pmtiles")))
+        run(
+            ["tile-join", "-q", "-o", str(out), "--force", "--no-tile-size-limit", *parts],
+            check=True,
+        )
+
+
+def build_layer(
+    name: str, map_dir: Path, tiles_dir: Path, run: Runner = subprocess.run
+) -> dict[str, object]:
+    df = load_layer(map_dir / f"{name}.parquet")
+    scores = df["score"].to_numpy()
+    try:
+        edges = class_edges(scores)
+    except ValueError as err:
+        raise ValueError(f"{name}: {err}") from err
+    tile_layer(
+        cells_to_geodataframe(df, edges),
+        tiles_dir / f"v2_{name}.pmtiles",
+        max_tile_bytes=PART_TILE_BYTES,
+        run=run,
+    )
 
     counts = df["source"].value_counts()
     return {
         "n_cells": int(len(df)),
+        "classes": len(edges) - 1,
         "edges": [round(e, 6) for e in edges],
+        "shares": class_shares(scores, edges),
         "sources": {s: int(counts.get(s, 0)) for s in SOURCES},
         "metrics": {},
     }
 
 
-def build(map_dir: Path, tiles_dir: Path, data_dir: Path) -> Path:
+def build(
+    map_dir: Path, tiles_dir: Path, data_dir: Path, run: Runner = subprocess.run
+) -> Path:
     for name in LAYERS:
         if not (map_dir / f"{name}.parquet").exists():
             raise FileNotFoundError(f"{map_dir / f'{name}.parquet'} not found")
     tiles_dir.mkdir(parents=True, exist_ok=True)
     data_dir.mkdir(parents=True, exist_ok=True)
 
-    layers = {name: build_layer(name, map_dir, tiles_dir) for name in LAYERS}
-    model = {"model": "v2", "grid": asdict(GRID), "classes": N_CLASSES, "layers": layers}
+    layers = {name: build_layer(name, map_dir, tiles_dir, run) for name in LAYERS}
+    model = {
+        "model": "v2",
+        "grid": asdict(GRID),
+        "requested_classes": N_CLASSES,
+        "layers": layers,
+    }
     out = data_dir / "model_v2.json"
     out.write_text(json.dumps(model, indent=2) + "\n")
     return out
