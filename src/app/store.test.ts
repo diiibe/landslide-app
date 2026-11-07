@@ -133,3 +133,81 @@ describe("useAppStore", () => {
     });
   });
 });
+
+/* Model v2: only one susceptibility surface may be visible at a time. The
+ * two v2 layers are exclusive with each other (radio-like, both off
+ * allowed) and with the J.2/J.3 susceptibility + KDE surfaces. Inventory,
+ * flood and context overlays stay independent. */
+describe("model v2 layer exclusivity", () => {
+  beforeEach(() => useAppStore.getState().reset());
+
+  it("starts with both v2 layers off", () => {
+    const { layers } = useAppStore.getState();
+    expect(layers.v2Bodies).toBe(false);
+    expect(layers.v2Diffuse).toBe(false);
+  });
+
+  it("turning bodies on hides the J surfaces but keeps IFFI", () => {
+    useAppStore.getState().toggleLayer("v2Bodies");
+    const { layers } = useAppStore.getState();
+    expect(layers.v2Bodies).toBe(true);
+    expect(layers.susceptibility).toBe(false);
+    expect(layers.smoothHeatmap).toBe(false);
+    expect(layers.iffi).toBe(true);
+  });
+
+  it("bodies and diffuse are never on together", () => {
+    const s = useAppStore.getState();
+    s.toggleLayer("v2Bodies");
+    s.toggleLayer("v2Diffuse");
+    let { layers } = useAppStore.getState();
+    expect(layers.v2Diffuse).toBe(true);
+    expect(layers.v2Bodies).toBe(false);
+    s.toggleLayer("v2Bodies");
+    ({ layers } = useAppStore.getState());
+    expect(layers.v2Bodies).toBe(true);
+    expect(layers.v2Diffuse).toBe(false);
+  });
+
+  it("both v2 layers can be off at once", () => {
+    const s = useAppStore.getState();
+    s.toggleLayer("v2Diffuse");
+    s.toggleLayer("v2Diffuse");
+    const { layers } = useAppStore.getState();
+    expect(layers.v2Bodies).toBe(false);
+    expect(layers.v2Diffuse).toBe(false);
+  });
+
+  it("turning a J surface on hides the active v2 layer", () => {
+    const s = useAppStore.getState();
+    s.toggleLayer("v2Diffuse");
+    s.toggleLayer("susceptibility");
+    let { layers } = useAppStore.getState();
+    expect(layers.susceptibility).toBe(true);
+    expect(layers.v2Diffuse).toBe(false);
+
+    s.toggleLayer("v2Bodies"); // clears smoothHeatmap and susceptibility
+    s.toggleLayer("smoothHeatmap");
+    ({ layers } = useAppStore.getState());
+    expect(layers.smoothHeatmap).toBe(true);
+    expect(layers.v2Bodies).toBe(false);
+  });
+
+  it("turning a J surface off leaves the v2 layers alone", () => {
+    const s = useAppStore.getState();
+    s.toggleLayer("v2Bodies");
+    s.toggleLayer("iffi");
+    expect(useAppStore.getState().layers.v2Bodies).toBe(true);
+  });
+
+  it("flood and context overlays are independent of v2", () => {
+    const s = useAppStore.getState();
+    s.toggleLayer("flood");
+    s.toggleLayer("roads");
+    s.toggleLayer("v2Bodies");
+    const { layers } = useAppStore.getState();
+    expect(layers.flood).toBe(true);
+    expect(layers.roads).toBe(true);
+    expect(layers.v2Bodies).toBe(true);
+  });
+});
