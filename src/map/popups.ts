@@ -2,7 +2,7 @@ import maplibregl, { type Map as MLMap, type MapMouseEvent } from "maplibre-gl";
 import { SUSCEPT_LAYER } from "./layers/susceptibility";
 import { IFFI_FILL } from "./layers/iffi";
 import { HFLOOD_FILL } from "./layers/historicalFloods";
-import { V2_CLASS_COLORS, V2_LAYER_ID } from "./layers/modelV2";
+import { v2ClassColor, V2_LAYER_ID } from "./layers/modelV2";
 import type { V2Layer } from "@/app/types";
 
 export interface CellPopupProps {
@@ -190,6 +190,8 @@ export function buildHFloodPopupNode(p: HFloodPopupProps): HTMLElement {
 export interface V2PopupProps {
   layer: V2Layer;
   cls: number;
+  /** The layer's class count (5 unless tied quantiles collapsed). */
+  ncls: number;
   /** `oof` | `holdout` | `in_sample`; any other string is shown verbatim. */
   source: string;
 }
@@ -221,15 +223,14 @@ export function buildV2PopupNode(p: V2PopupProps): HTMLElement {
   title.textContent = `Modello v2 · ${V2_LAYER_LABEL[p.layer]}`;
   root.appendChild(title);
 
-  const n = V2_CLASS_COLORS.length;
   const cls = document.createElement("div");
   cls.className = "fvg-popup__strong";
   const swatch = document.createElement("span");
   swatch.style.cssText =
     "display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;" +
     "vertical-align:-1px;border:1px solid var(--c-border)";
-  swatch.style.background = V2_CLASS_COLORS[p.cls - 1] ?? "transparent";
-  cls.append(swatch, `Classe ${p.cls} di ${n}`);
+  swatch.style.background = v2ClassColor(p.cls, p.ncls);
+  cls.append(swatch, `Classe ${p.cls} di ${p.ncls}`);
   root.appendChild(cls);
 
   const what = document.createElement("div");
@@ -309,6 +310,7 @@ export function registerPopups(m: MLMap): () => void {
       ? {
           layer: v2Feat.layer.id === V2_LAYER_ID.diffuse ? "diffuse" : "bodies",
           cls: Number(v2Feat.properties?.cls ?? 0),
+          ncls: Number(v2Feat.properties?.ncls ?? 5),
           source: String(v2Feat.properties?.source ?? ""),
         }
       : null;

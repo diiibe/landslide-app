@@ -62,7 +62,7 @@ describe("buildIffiPopupNode", () => {
 
 describe("buildV2PopupNode", () => {
   it("names the layer, the class and explains a holdout source", () => {
-    const node = buildV2PopupNode({ layer: "bodies", cls: 4, source: "holdout" });
+    const node = buildV2PopupNode({ layer: "bodies", cls: 4, ncls: 5, source: "holdout" });
     const text = node.textContent ?? "";
     expect(text).toContain("corpi di frana");
     expect(text).toContain("Classe 4 di 5");
@@ -71,19 +71,20 @@ describe("buildV2PopupNode", () => {
   });
 
   it("flags in-sample cells", () => {
-    const node = buildV2PopupNode({ layer: "diffuse", cls: 2, source: "in_sample" });
+    const node = buildV2PopupNode({ layer: "diffuse", cls: 2, ncls: 4, source: "in_sample" });
     expect(node.textContent).toContain("zone diffuse");
+    expect(node.textContent).toContain("Classe 2 di 4"); // collapsed classes
     const warn = node.querySelector(".fvg-popup__warn");
     expect(warn?.textContent).toMatch(/in-sample/i);
   });
 
   it("never claims a landslide will happen", () => {
-    const node = buildV2PopupNode({ layer: "bodies", cls: 5, source: "oof" });
+    const node = buildV2PopupNode({ layer: "bodies", cls: 5, ncls: 5, source: "oof" });
     expect(node.textContent).toMatch(/non è una previsione/);
   });
 
   it("renders an unknown source string as text, not HTML", () => {
-    const node = buildV2PopupNode({ layer: "bodies", cls: 1, source: "<img src=x>" });
+    const node = buildV2PopupNode({ layer: "bodies", cls: 1, ncls: 5, source: "<img src=x>" });
     expect(node.querySelector("img")).toBeNull();
     expect(node.textContent).toContain("<img src=x>");
   });

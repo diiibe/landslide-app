@@ -10,10 +10,20 @@ import { ThresholdControl } from "./ThresholdControl";
 
 const layer = (metrics: Record<string, number> = {}) => ({
   n_cells: 1000,
+  classes: 5,
   edges: [0.01, 0.1, 0.2, 0.3, 0.4, 0.6],
+  shares: [0.2, 0.2, 0.2, 0.2, 0.2],
   sources: { oof: 700, holdout: 250, in_sample: 50 },
   metrics,
 });
+
+/** A layer whose tied quantiles collapsed to three uneven classes. */
+const tiedLayer = {
+  ...layer(),
+  classes: 3,
+  edges: [0.01, 0.02, 0.3, 0.6],
+  shares: [0.55, 0.25, 0.2],
+};
 
 function stubModelV2(payload: unknown | null) {
   vi.spyOn(globalThis, "fetch").mockImplementation(async () =>
@@ -23,7 +33,7 @@ function stubModelV2(payload: unknown | null) {
   );
 }
 
-const READY = { model: "v2", classes: 5, layers: { bodies: layer(), diffuse: layer() } };
+const READY = { model: "v2", requested_classes: 5, layers: { bodies: layer(), diffuse: layer() } };
 
 beforeEach(() => {
   vi.restoreAllMocks();
@@ -76,17 +86,32 @@ describe("LayersPanel · Modello v2", () => {
 });
 
 describe("Legend · Modello v2", () => {
-  it("explains what a red bodies cell means and is not a forecast", () => {
+  it("explains what a red bodies cell means and is not a forecast", async () => {
+    stubModelV2(READY);
     useAppStore.getState().toggleLayer("v2Bodies");
     render(<Legend />);
     const section = screen.getByRole("region", { name: /corpi di frana/i });
     expect(section).toHaveTextContent(/l'inventario ha mappato corpi di frana/);
     expect(section).toHaveTextContent(/Non significa che qui avverrà una frana/);
     expect(within(section).getAllByRole("listitem")).toHaveLength(5);
+    expect(
+      await within(section).findByText(/quote effettive: 20%, 20%, 20%, 20%, 20%/),
+    ).toBeInTheDocument();
     expect(screen.queryByText("0.3")).toBeNull(); // J ramp ticks are gone
   });
 
+  it("shows the real shares and class count when tied quantiles collapsed", async () => {
+    stubModelV2({ ...READY, layers: { bodies: layer(), diffuse: tiedLayer } });
+    useAppStore.getState().toggleLayer("v2Diffuse");
+    render(<Legend />);
+    const section = screen.getByRole("region", { name: /zone diffuse/i });
+    expect(await within(section).findByText(/quote effettive: 55%, 25%, 20%/)).toBeInTheDocument();
+    expect(within(section).getAllByRole("listitem")).toHaveLength(3);
+    expect(section).not.toHaveTextContent("20% ciascuna");
+  });
+
   it("uses the diffuse wording for the diffuse layer", () => {
+    stubModelV2(READY);
     useAppStore.getState().toggleLayer("v2Diffuse");
     render(<Legend />);
     expect(screen.getByRole("region", { name: /zone diffuse/i })).toHaveTextContent(

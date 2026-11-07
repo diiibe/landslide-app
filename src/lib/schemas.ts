@@ -164,57 +164,67 @@ export type CriticalPoiFeatureCollection = z.infer<typeof CriticalPoiFeatureColl
 /**
  * Model v2 summary — produced by `pipelines/model_v2.py`.
  *
- * One entry per layer (bodies, diffuse), each with its own quantile
- * class `edges` (`classes + 1` values: min, inner breaks, max). The class
- * of a cell is baked into the tiles as `cls`; the edges here only label
- * the legend. `metrics` is a free label → value map filled in by the
- * model owner; it is empty until then and is never compared with J.x.
+ * One entry per layer (bodies, diffuse). Each layer has its own quantile
+ * classes: `classes` is how many survived after tied quantiles collapsed
+ * (at least 3), `edges` has `classes + 1` values (min, inner breaks, max)
+ * and `shares` the real fraction of cells in each class. The class of a
+ * cell is baked into the tiles as `cls` (with `ncls`); the legend reads
+ * the shares from here. `metrics` is a free label → value map filled in
+ * by the model owner; it is empty until then and is never compared with
+ * J.x.
  */
-const V2LayerStatsSchema = z.object({
-  n_cells: z.number().int().nonnegative(),
-  edges: z
-    .array(z.number())
-    .refine((e) => e.every((v, i) => i === 0 || v >= e[i - 1]!), {
-      message: "edges must be non-decreasing",
-    }),
-  sources: z.object({
-    oof: z.number().int().nonnegative(),
-    holdout: z.number().int().nonnegative(),
-    in_sample: z.number().int().nonnegative(),
-  }),
-  metrics: z.record(z.string(), z.number()),
-});
-
-export const ModelV2FileSchema = z
+const V2LayerStatsSchema = z
   .object({
-    model: z.literal("v2"),
-    grid: z
-      .object({
-        crs: z.string(),
-        x0: z.number(),
-        y0: z.number(),
-        cell: z.number().positive(),
-        width: z.number().int().positive(),
-        height: z.number().int().positive(),
-      })
-      .optional(),
-    classes: z.number().int().min(2),
-    layers: z.object({
-      bodies: V2LayerStatsSchema,
-      diffuse: V2LayerStatsSchema,
+    n_cells: z.number().int().nonnegative(),
+    classes: z.number().int().min(3, { message: "classes must be at least 3" }),
+    edges: z
+      .array(z.number())
+      .refine((e) => e.every((v, i) => i === 0 || v > e[i - 1]!), {
+        message: "edges must be strictly increasing",
+      }),
+    shares: z.array(z.number().min(0).max(1)),
+    sources: z.object({
+      oof: z.number().int().nonnegative(),
+      holdout: z.number().int().nonnegative(),
+      in_sample: z.number().int().nonnegative(),
     }),
+    metrics: z.record(z.string(), z.number()),
   })
-  .superRefine((f, ctx) => {
-    for (const name of ["bodies", "diffuse"] as const) {
-      if (f.layers[name].edges.length !== f.classes + 1) {
-        ctx.addIssue({
-          code: "custom",
-          path: ["layers", name, "edges"],
-          message: `edges must have classes + 1 = ${f.classes + 1} values`,
-        });
-      }
+  .superRefine((l, ctx) => {
+    if (l.edges.length !== l.classes + 1) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["edges"],
+        message: `edges must have classes + 1 = ${l.classes + 1} values`,
+      });
+    }
+    if (l.shares.length !== l.classes) {
+      ctx.addIssue({ code: "custom", path: ["shares"], message: "one share per class" });
+    }
+    const total = l.shares.reduce((a, b) => a + b, 0);
+    if (Math.abs(total - 1) > 0.01) {
+      ctx.addIssue({ code: "custom", path: ["shares"], message: "shares must sum to 1" });
     }
   });
+
+export const ModelV2FileSchema = z.object({
+  model: z.literal("v2"),
+  grid: z
+    .object({
+      crs: z.string(),
+      x0: z.number(),
+      y0: z.number(),
+      cell: z.number().positive(),
+      width: z.number().int().positive(),
+      height: z.number().int().positive(),
+    })
+    .optional(),
+  requested_classes: z.number().int().positive(),
+  layers: z.object({
+    bodies: V2LayerStatsSchema,
+    diffuse: V2LayerStatsSchema,
+  }),
+});
 
 export type ModelV2File = z.infer<typeof ModelV2FileSchema>;
 

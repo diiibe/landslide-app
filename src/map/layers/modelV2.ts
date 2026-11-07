@@ -1,12 +1,14 @@
 import type { ExpressionSpecification, Map as MLMap } from "maplibre-gl";
 import type { V2Layer } from "@/app/types";
-import { RAMP_STOPS } from "../style";
+import { RAMP_STOPS, rampColorAt } from "../style";
 
 /**
  * Model v2 (HazardFVG) cell layers: `v2_bodies.pmtiles` and
  * `v2_diffuse.pmtiles`, built by `pipelines/model_v2.py`. Each tile
- * feature is one 120 m cell with `score`, `source` and `cls` (quantile
- * class 1..5, computed per layer by the pipeline).
+ * feature is one 120 m cell (or, at low zoom, coalesced cells of one
+ * class and source) with `score`, `source`, `cls` (quantile class
+ * 1..ncls) and `ncls` (the layer's class count: 5 unless tied quantiles
+ * collapsed, never fewer than 3).
  *
  * The two layers are separate sources and separate layers: they are
  * never merged, and the store keeps at most one of them visible. They
@@ -23,15 +25,19 @@ const V2_SOURCE_ID: Record<V2Layer, string> = {
   diffuse: "v2-diffuse-src",
 };
 
-/** One colour per class, taken from the five stops of the earthy ramp so
- *  v2 reads in the same visual language as J.x without sharing its scale. */
-export const V2_CLASS_COLORS: readonly string[] = RAMP_STOPS.map(([, c]) => c);
+/** Colour of class `cls` out of `ncls`: evenly spread over the earthy
+ *  ramp, so five classes land exactly on its five stops. Same visual
+ *  language as J.x without sharing its probability scale. */
+export function v2ClassColor(cls: number, ncls: number): string {
+  return rampColorAt(ncls > 1 ? (cls - 1) / (ncls - 1) : 1);
+}
 
-const CLASS_FILL: ExpressionSpecification = [
-  "match",
-  ["get", "cls"],
-  ...V2_CLASS_COLORS.flatMap((c, i) => [i + 1, c]),
-  "rgba(0,0,0,0)",
+/** GPU-side twin of `v2ClassColor`, reading `cls` / `ncls` per feature. */
+const CLASS_FILL = [
+  "interpolate",
+  ["linear"],
+  ["/", ["-", ["get", "cls"], 1], ["max", ["-", ["get", "ncls"], 1], 1]],
+  ...RAMP_STOPS.flat(),
 ] as unknown as ExpressionSpecification;
 
 export function addModelV2Layer(m: MLMap, which: V2Layer, beforeId?: string): void {

@@ -267,16 +267,18 @@ describe("parseOrThrow error format", () => {
 });
 
 describe("ModelV2FileSchema", () => {
-  const layer = (edges: number[]) => ({
+  const layer = (edges: number[], shares?: number[]) => ({
     n_cells: 1000,
+    classes: edges.length - 1,
     edges,
+    shares: shares ?? Array.from({ length: edges.length - 1 }, () => 1 / (edges.length - 1)),
     sources: { oof: 700, holdout: 250, in_sample: 50 },
     metrics: {},
   });
   const ok = {
     model: "v2",
     grid: { crs: "EPSG:32633", x0: 282549.4208, y0: 5176239.1188, cell: 120, width: 1180, height: 1120 },
-    classes: 5,
+    requested_classes: 5,
     layers: {
       bodies: layer([0.01, 0.1, 0.2, 0.3, 0.4, 0.6]),
       diffuse: layer([0.02, 0.05, 0.08, 0.2, 0.35, 0.59]),
@@ -300,14 +302,31 @@ describe("ModelV2FileSchema", () => {
     expect(() => parseOrThrow(ModelV2FileSchema, onlyBodies, "model_v2")).toThrow(/diffuse/);
   });
 
-  it("rejects edges that do not match the class count", () => {
-    const bad = { ...ok, layers: { ...ok.layers, bodies: layer([0, 0.5, 1]) } };
+  it("accepts a layer whose tied quantiles collapsed to fewer classes", () => {
+    const tied = { ...ok, layers: { ...ok.layers, diffuse: layer([0, 0.1, 0.4, 1], [0.55, 0.25, 0.2]) } };
+    expect(() => parseOrThrow(ModelV2FileSchema, tied, "model_v2")).not.toThrow();
+  });
+
+  it("rejects edges that do not match the layer's class count", () => {
+    const bad = { ...ok, layers: { ...ok.layers, bodies: { ...layer([0, 0.5, 0.7, 1]), classes: 5 } } };
     expect(() => parseOrThrow(ModelV2FileSchema, bad, "model_v2")).toThrow(/edges/);
   });
 
-  it("rejects decreasing edges", () => {
-    const bad = { ...ok, layers: { ...ok.layers, diffuse: layer([0, 0.3, 0.2, 0.4, 0.5, 0.6]) } };
-    expect(() => parseOrThrow(ModelV2FileSchema, bad, "model_v2")).toThrow(/non-decreasing/);
+  it("rejects shares that do not sum to 1", () => {
+    const bad = { ...ok, layers: { ...ok.layers, bodies: layer([0, 0.2, 0.5, 1], [0.5, 0.2, 0.1]) } };
+    expect(() => parseOrThrow(ModelV2FileSchema, bad, "model_v2")).toThrow(/shares/);
+  });
+
+  it("rejects fewer than 3 classes", () => {
+    const bad = { ...ok, layers: { ...ok.layers, bodies: layer([0, 0.5, 1]) } };
+    expect(() => parseOrThrow(ModelV2FileSchema, bad, "model_v2")).toThrow(/classes/);
+  });
+
+  it("rejects decreasing or repeated edges", () => {
+    for (const edges of [[0, 0.3, 0.2, 0.4, 0.5, 0.6], [0, 0.2, 0.2, 0.4, 0.5, 0.6]]) {
+      const bad = { ...ok, layers: { ...ok.layers, diffuse: layer(edges) } };
+      expect(() => parseOrThrow(ModelV2FileSchema, bad, "model_v2")).toThrow(/strictly increasing/);
+    }
   });
 
   it("rejects a J-style model file (wrong model id)", () => {

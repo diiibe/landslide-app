@@ -1,6 +1,7 @@
 import { useAppStore } from "@/app/store";
 import type { V2Layer } from "@/app/types";
-import { V2_CLASS_COLORS } from "@/map/layers/modelV2";
+import { useModelV2 } from "@/lib/modelV2";
+import { v2ClassColor } from "@/map/layers/modelV2";
 import styles from "./Legend.module.css";
 
 /** What a red v2 cell means, per layer. Plain Italian on purpose: the
@@ -68,15 +69,23 @@ export function Legend() {
   );
 }
 
+const pct = (share: number) => `${Math.round(share * 100)}%`;
+
+/** Class swatches and shares come from `model_v2.json`: the pipeline may
+ *  have collapsed tied quantiles into fewer than five classes, and the
+ *  real share of cells per class is shown rather than an assumed 20%. */
 function V2LegendBody({ layer }: { layer: V2Layer }) {
   const { title, copy } = V2_LEGEND[layer];
+  const v2 = useModelV2();
+  const stats = v2.status === "ready" ? v2.data.layers[layer] : null;
+  const n = stats?.classes ?? 5;
   return (
     <section className={styles.v2} aria-label={title}>
       <h4 className={styles.title}>{title}</h4>
-      <ol className={styles.v2Classes}>
-        {V2_CLASS_COLORS.map((c, i) => (
-          <li key={c}>
-            <i style={{ background: c }} aria-hidden="true" />
+      <ol className={styles.v2Classes} style={{ gridTemplateColumns: `repeat(${n}, 1fr)` }}>
+        {Array.from({ length: n }, (_, i) => (
+          <li key={i}>
+            <i style={{ background: v2ClassColor(i + 1, n) }} aria-hidden="true" />
             <span>{i + 1}</span>
           </li>
         ))}
@@ -85,7 +94,11 @@ function V2LegendBody({ layer }: { layer: V2Layer }) {
         <span>meno simile</span><span>più simile</span>
       </div>
       <p className={styles.v2Copy}>{copy}</p>
-      <p className={styles.v2Note}>Classi: quintili delle celle del dominio, 20% ciascuna.</p>
+      {stats && (
+        <p className={styles.v2Note}>
+          Classi per quantili; quote effettive: {stats.shares.map(pct).join(", ")}.
+        </p>
+      )}
     </section>
   );
 }
