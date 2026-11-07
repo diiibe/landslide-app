@@ -162,6 +162,63 @@ export const CriticalPoiFeatureCollectionSchema = z.object({
 export type CriticalPoiFeatureCollection = z.infer<typeof CriticalPoiFeatureCollectionSchema>;
 
 /**
+ * Model v2 summary — produced by `pipelines/model_v2.py`.
+ *
+ * One entry per layer (bodies, diffuse), each with its own quantile
+ * class `edges` (`classes + 1` values: min, inner breaks, max). The class
+ * of a cell is baked into the tiles as `cls`; the edges here only label
+ * the legend. `metrics` is a free label → value map filled in by the
+ * model owner; it is empty until then and is never compared with J.x.
+ */
+const V2LayerStatsSchema = z.object({
+  n_cells: z.number().int().nonnegative(),
+  edges: z
+    .array(z.number())
+    .refine((e) => e.every((v, i) => i === 0 || v >= e[i - 1]!), {
+      message: "edges must be non-decreasing",
+    }),
+  sources: z.object({
+    oof: z.number().int().nonnegative(),
+    holdout: z.number().int().nonnegative(),
+    in_sample: z.number().int().nonnegative(),
+  }),
+  metrics: z.record(z.string(), z.number()),
+});
+
+export const ModelV2FileSchema = z
+  .object({
+    model: z.literal("v2"),
+    grid: z
+      .object({
+        crs: z.string(),
+        x0: z.number(),
+        y0: z.number(),
+        cell: z.number().positive(),
+        width: z.number().int().positive(),
+        height: z.number().int().positive(),
+      })
+      .optional(),
+    classes: z.number().int().min(2),
+    layers: z.object({
+      bodies: V2LayerStatsSchema,
+      diffuse: V2LayerStatsSchema,
+    }),
+  })
+  .superRefine((f, ctx) => {
+    for (const name of ["bodies", "diffuse"] as const) {
+      if (f.layers[name].edges.length !== f.classes + 1) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["layers", name, "edges"],
+          message: `edges must have classes + 1 = ${f.classes + 1} values`,
+        });
+      }
+    }
+  });
+
+export type ModelV2File = z.infer<typeof ModelV2FileSchema>;
+
+/**
  * Helper: parse with a schema and throw a descriptive error on failure.
  * The thrown message names the source (so the boundary point is obvious
  * in browser DevTools) and lists every zod issue path so a malformed

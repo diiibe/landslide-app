@@ -4,6 +4,7 @@ import {
   ComuneFeatureCollectionSchema,
   CriticalPoiFeatureCollectionSchema,
   RoadsFeatureCollectionSchema,
+  ModelV2FileSchema,
   TrailsFeatureCollectionSchema,
   parseOrThrow,
 } from "./schemas";
@@ -262,5 +263,56 @@ describe("parseOrThrow error format", () => {
     } catch (e) {
       expect((e as Error).message).toMatch(/roads_fvg\.geojson failed validation/);
     }
+  });
+});
+
+describe("ModelV2FileSchema", () => {
+  const layer = (edges: number[]) => ({
+    n_cells: 1000,
+    edges,
+    sources: { oof: 700, holdout: 250, in_sample: 50 },
+    metrics: {},
+  });
+  const ok = {
+    model: "v2",
+    grid: { crs: "EPSG:32633", x0: 282549.4208, y0: 5176239.1188, cell: 120, width: 1180, height: 1120 },
+    classes: 5,
+    layers: {
+      bodies: layer([0.01, 0.1, 0.2, 0.3, 0.4, 0.6]),
+      diffuse: layer([0.02, 0.05, 0.08, 0.2, 0.35, 0.59]),
+    },
+  };
+
+  it("accepts the pipeline output with empty metrics", () => {
+    expect(() => parseOrThrow(ModelV2FileSchema, ok, "model_v2")).not.toThrow();
+  });
+
+  it("accepts owner-provided numeric metrics", () => {
+    const withMetrics = {
+      ...ok,
+      layers: { ...ok.layers, bodies: { ...ok.layers.bodies, metrics: { "AUC holdout": 0.81 } } },
+    };
+    expect(() => parseOrThrow(ModelV2FileSchema, withMetrics, "model_v2")).not.toThrow();
+  });
+
+  it("rejects a payload without one of the two layers", () => {
+    const onlyBodies = { ...ok, layers: { bodies: ok.layers.bodies } };
+    expect(() => parseOrThrow(ModelV2FileSchema, onlyBodies, "model_v2")).toThrow(/diffuse/);
+  });
+
+  it("rejects edges that do not match the class count", () => {
+    const bad = { ...ok, layers: { ...ok.layers, bodies: layer([0, 0.5, 1]) } };
+    expect(() => parseOrThrow(ModelV2FileSchema, bad, "model_v2")).toThrow(/edges/);
+  });
+
+  it("rejects decreasing edges", () => {
+    const bad = { ...ok, layers: { ...ok.layers, diffuse: layer([0, 0.3, 0.2, 0.4, 0.5, 0.6]) } };
+    expect(() => parseOrThrow(ModelV2FileSchema, bad, "model_v2")).toThrow(/non-decreasing/);
+  });
+
+  it("rejects a J-style model file (wrong model id)", () => {
+    expect(() =>
+      parseOrThrow(ModelV2FileSchema, { ...ok, model: "j3" }, "model_v2"),
+    ).toThrow(/model/);
   });
 });
