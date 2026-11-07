@@ -3,7 +3,6 @@ from unittest import mock
 
 import pytest
 
-from pipelines import build_tiles
 from pipelines.build_tiles import parse_args, run_tippecanoe
 
 
