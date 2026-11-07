@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import maplibregl, { type RequestParameters, type ResourceType } from "maplibre-gl";
 import { useAppStore } from "@/app/store";
-import type { ModelId } from "@/app/types";
+import type { ModelId, V2Layer } from "@/app/types";
 import { BASEMAP_STYLE, FVG_BOUNDS, FVG_CENTER } from "./style";
 import { installPmtilesProtocol } from "./pmtiles-protocol";
 import {
@@ -20,6 +20,7 @@ import {
   setHistoricalFloodsVisible,
 } from "./layers/historicalFloods";
 import { addZoneBoundaries, setZoneBoundariesVisible, ZONE_LINE } from "./layers/zones";
+import { setModelV2Visible, V2_LAYER_ID } from "./layers/modelV2";
 import {
   addSmoothHeatmap,
   HEAT_LAYER,
@@ -217,6 +218,28 @@ function networkAnchor(m: maplibregl.Map): string | undefined {
   return candidates.find((id) => m.getLayer(id));
 }
 
+/** v2 cells sit where J cells sit: under the inventory/flood outlines and
+ *  under the road/trail network. */
+function v2BeforeId(m: maplibregl.Map): string | undefined {
+  return [IFFI_FILL, IFFI_LINE, HFLOOD_FILL, HFLOOD_LINE].find((id) => m.getLayer(id)) ??
+    networkAnchor(m);
+}
+
+const V2_LAYER_KEY: Record<V2Layer, "v2Bodies" | "v2Diffuse"> = {
+  bodies: "v2Bodies",
+  diffuse: "v2Diffuse",
+};
+
+function applyModelV2(m: maplibregl.Map, which: V2Layer): void {
+  const on = useAppStore.getState().layers[V2_LAYER_KEY[which]];
+  try {
+    setModelV2Visible(m, which, on, v2BeforeId(m));
+  } catch {
+    // Style still loading: the next `style.load` runs setupModelLayers,
+    // which applies the current toggle state.
+  }
+}
+
 function setupModelLayers(m: maplibregl.Map): void {
   const s = useAppStore.getState();
   if (m.getLayer(ZONE_LINE)) m.removeLayer(ZONE_LINE);
@@ -246,6 +269,8 @@ function setupModelLayers(m: maplibregl.Map): void {
   addHistoricalFloods(m, s.layers.floodHistorical);
   addZoneBoundaries(m, s.layers.zoneBoundaries);
   setSusceptibilityVisible(m, s.layers.susceptibility);
+  applyModelV2(m, "bodies");
+  applyModelV2(m, "diffuse");
 
   // Keep the network on top of the model data so roads + trails remain
   // visible across the comune choropleth (and any other coloured fill
@@ -254,7 +279,10 @@ function setupModelLayers(m: maplibregl.Map): void {
   // anchor (the bottom-most trail/road layer) after the fact.
   const anchor = networkAnchor(m);
   if (anchor) {
-    for (const id of [SUSCEPT_LAYER, HEAT_LAYER, IFFI_FILL, IFFI_LINE, HFLOOD_FILL, HFLOOD_LINE, ZONE_LINE]) {
+    for (const id of [
+      SUSCEPT_LAYER, HEAT_LAYER, V2_LAYER_ID.bodies, V2_LAYER_ID.diffuse,
+      IFFI_FILL, IFFI_LINE, HFLOOD_FILL, HFLOOD_LINE, ZONE_LINE,
+    ]) {
       if (m.getLayer(id)) m.moveLayer(id, anchor);
     }
   }
@@ -286,6 +314,8 @@ export function MapView() {
   const floodHistoricalOn = useAppStore((s) => s.layers.floodHistorical);
   const zoneBoundariesOn = useAppStore((s) => s.layers.zoneBoundaries);
   const heatOn = useAppStore((s) => s.layers.smoothHeatmap);
+  const v2BodiesOn = useAppStore((s) => s.layers.v2Bodies);
+  const v2DiffuseOn = useAppStore((s) => s.layers.v2Diffuse);
   const roadsOn = useAppStore((s) => s.layers.roads);
   const trailsOn = useAppStore((s) => s.layers.trails);
   const comuniOn = useAppStore((s) => s.layers.comuni);
@@ -431,6 +461,14 @@ export function MapView() {
   useEffect(() => {
     if (mapRef.current) setSmoothHeatmapVisible(mapRef.current, heatOn);
   }, [heatOn]);
+
+  useEffect(() => {
+    if (mapRef.current) applyModelV2(mapRef.current, "bodies");
+  }, [v2BodiesOn]);
+
+  useEffect(() => {
+    if (mapRef.current) applyModelV2(mapRef.current, "diffuse");
+  }, [v2DiffuseOn]);
 
   useEffect(() => {
     if (mapRef.current) setRoadsVisible(mapRef.current, roadsOn);

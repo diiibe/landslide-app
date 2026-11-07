@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildCellPopupNode, buildIffiPopupNode } from "./popups";
+import { buildCellPopupNode, buildIffiPopupNode, buildV2PopupNode } from "./popups";
 
 /**
  * P2.2: feature properties used to be interpolated into a template literal
@@ -57,5 +57,34 @@ describe("buildIffiPopupNode", () => {
     expect(text).toContain("F-001");
     expect(text).toContain("<script>alert('xss')</script>");
     expect(text).toContain("<b>UD</b>");
+  });
+});
+
+describe("buildV2PopupNode", () => {
+  it("names the layer, the class and explains a holdout source", () => {
+    const node = buildV2PopupNode({ layer: "bodies", cls: 4, source: "holdout" });
+    const text = node.textContent ?? "";
+    expect(text).toContain("corpi di frana");
+    expect(text).toContain("Classe 4 di 5");
+    expect(text).toMatch(/mai visto quest'area/);
+    expect(node.querySelector(".fvg-popup__warn")).toBeNull();
+  });
+
+  it("flags in-sample cells", () => {
+    const node = buildV2PopupNode({ layer: "diffuse", cls: 2, source: "in_sample" });
+    expect(node.textContent).toContain("zone diffuse");
+    const warn = node.querySelector(".fvg-popup__warn");
+    expect(warn?.textContent).toMatch(/in-sample/i);
+  });
+
+  it("never claims a landslide will happen", () => {
+    const node = buildV2PopupNode({ layer: "bodies", cls: 5, source: "oof" });
+    expect(node.textContent).toMatch(/non è una previsione/);
+  });
+
+  it("renders an unknown source string as text, not HTML", () => {
+    const node = buildV2PopupNode({ layer: "bodies", cls: 1, source: "<img src=x>" });
+    expect(node.querySelector("img")).toBeNull();
+    expect(node.textContent).toContain("<img src=x>");
   });
 });
