@@ -273,7 +273,6 @@ describe("ModelV2FileSchema", () => {
     edges,
     shares: shares ?? Array.from({ length: edges.length - 1 }, () => 1 / (edges.length - 1)),
     sources: { oof: 700, holdout: 250, in_sample: 50 },
-    metrics: {},
   });
   const ok = {
     model: "v2",
@@ -283,18 +282,42 @@ describe("ModelV2FileSchema", () => {
       bodies: layer([0.01, 0.1, 0.2, 0.3, 0.4, 0.6]),
       diffuse: layer([0.02, 0.05, 0.08, 0.2, 0.35, 0.59]),
     },
+    metrics: { groups: [], notes: [] },
   };
+  const group = (bodies: unknown[], diffuse: unknown[] = []) => ({
+    title: "Area di test",
+    layers: { bodies, diffuse },
+  });
 
   it("accepts the pipeline output with empty metrics", () => {
     expect(() => parseOrThrow(ModelV2FileSchema, ok, "model_v2")).not.toThrow();
   });
 
-  it("accepts owner-provided numeric metrics", () => {
+  it("accepts owner-provided metric groups with intervals, units and notes", () => {
     const withMetrics = {
       ...ok,
-      layers: { ...ok.layers, bodies: { ...ok.layers.bodies, metrics: { "AUC holdout": 0.81 } } },
+      metrics: {
+        groups: [
+          group(
+            [{ label: "ROC AUC", value: 0.887, ci: [0.827, 0.959] }],
+            [{ label: "Prevalenza", value: 10.43, unit: "%" }],
+          ),
+        ],
+        notes: ["Misurano l'accordo con l'inventario."],
+      },
     };
     expect(() => parseOrThrow(ModelV2FileSchema, withMetrics, "model_v2")).not.toThrow();
+  });
+
+  it("rejects a metric row with a non-numeric value or a broken interval", () => {
+    for (const row of [
+      { label: "ROC AUC", value: "0.887" },
+      { label: "ROC AUC", value: 0.887, ci: [0.8] },
+      { label: "ROC AUC", value: 0.887, unit: "kg" },
+    ]) {
+      const bad = { ...ok, metrics: { groups: [group([row])], notes: [] } };
+      expect(() => parseOrThrow(ModelV2FileSchema, bad, "model_v2")).toThrow(/metrics/);
+    }
   });
 
   it("rejects a payload without one of the two layers", () => {

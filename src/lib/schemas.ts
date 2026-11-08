@@ -169,9 +169,13 @@ export type CriticalPoiFeatureCollection = z.infer<typeof CriticalPoiFeatureColl
  * (at least 3), `edges` has `classes + 1` values (min, inner breaks, max)
  * and `shares` the real fraction of cells in each class. The class of a
  * cell is baked into the tiles as `cls` (with `ncls`); the legend reads
- * the shares from here. `metrics` is a free label → value map filled in
- * by the model owner; it is empty until then and is never compared with
- * J.x.
+ * the shares from here.
+ *
+ * `metrics` is copied verbatim from the owner's committed
+ * `pipelines/model_v2_metrics.json`: groups (e.g. test area, blocked
+ * cross-validation) with label/value rows per layer, optional 95 %
+ * interval `ci` and `unit`, plus free-text notes. Nothing is derived in
+ * the app, and these numbers are never shown next to J.x ones.
  */
 const V2LayerStatsSchema = z
   .object({
@@ -188,7 +192,6 @@ const V2LayerStatsSchema = z
       holdout: z.number().int().nonnegative(),
       in_sample: z.number().int().nonnegative(),
     }),
-    metrics: z.record(z.string(), z.number()),
   })
   .superRefine((l, ctx) => {
     if (l.edges.length !== l.classes + 1) {
@@ -207,6 +210,29 @@ const V2LayerStatsSchema = z
     }
   });
 
+const V2MetricRowSchema = z.object({
+  label: z.string(),
+  value: z.number(),
+  ci: z.tuple([z.number(), z.number()]).optional(),
+  unit: z.literal("%").optional(),
+});
+
+const V2MetricsSchema = z.object({
+  groups: z.array(
+    z.object({
+      title: z.string(),
+      detail: z.string().optional(),
+      layers: z.object({
+        bodies: z.array(V2MetricRowSchema),
+        diffuse: z.array(V2MetricRowSchema),
+      }),
+    }),
+  ),
+  notes: z.array(z.string()),
+});
+
+export type V2MetricRow = z.infer<typeof V2MetricRowSchema>;
+
 export const ModelV2FileSchema = z.object({
   model: z.literal("v2"),
   grid: z
@@ -224,6 +250,7 @@ export const ModelV2FileSchema = z.object({
     bodies: V2LayerStatsSchema,
     diffuse: V2LayerStatsSchema,
   }),
+  metrics: V2MetricsSchema,
 });
 
 export type ModelV2File = z.infer<typeof ModelV2FileSchema>;

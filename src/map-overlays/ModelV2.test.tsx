@@ -8,14 +8,15 @@ import { Legend } from "./Legend";
 import { ZonesPill } from "./ZonesPill";
 import { ThresholdControl } from "./ThresholdControl";
 
-const layer = (metrics: Record<string, number> = {}) => ({
+const layer = () => ({
   n_cells: 1000,
   classes: 5,
   edges: [0.01, 0.1, 0.2, 0.3, 0.4, 0.6],
   shares: [0.2, 0.2, 0.2, 0.2, 0.2],
   sources: { oof: 700, holdout: 250, in_sample: 50 },
-  metrics,
 });
+
+const NO_METRICS = { groups: [], notes: [] };
 
 /** A layer whose tied quantiles collapsed to three uneven classes. */
 const tiedLayer = {
@@ -33,7 +34,12 @@ function stubModelV2(payload: unknown | null) {
   );
 }
 
-const READY = { model: "v2", requested_classes: 5, layers: { bodies: layer(), diffuse: layer() } };
+const READY = {
+  model: "v2",
+  requested_classes: 5,
+  layers: { bodies: layer(), diffuse: layer() },
+  metrics: NO_METRICS,
+};
 
 beforeEach(() => {
   vi.restoreAllMocks();
@@ -164,17 +170,46 @@ describe("ModelV2Panel", () => {
     stubModelV2(READY);
     render(<ModelV2Panel />);
     expect(screen.getByText(/non confrontabili con quelle di J\.2\/J\.3/)).toBeInTheDocument();
-    expect(await screen.findAllByText("Metriche non ancora fornite.")).toHaveLength(2);
+    expect(await screen.findByText("Metriche non ancora fornite.")).toBeInTheDocument();
   });
 
-  it("shows only the metrics written into model_v2.json", async () => {
+  it("shows the owner's metric groups per layer, with intervals, units and notes", async () => {
     stubModelV2({
       ...READY,
-      layers: { bodies: layer({ "AUC holdout": 0.8123 }), diffuse: layer() },
+      metrics: {
+        groups: [
+          {
+            title: "Area di test (seconda apertura)",
+            detail: "Quadrati di 15 km esclusi.",
+            layers: {
+              bodies: [{ label: "ROC AUC", value: 0.887, ci: [0.827, 0.959] }],
+              diffuse: [{ label: "Prevalenza", value: 10.43, unit: "%" }],
+            },
+          },
+          {
+            title: "Validazione incrociata a blocchi",
+            layers: { bodies: [{ label: "PR AUC", value: 0.268 }], diffuse: [] },
+          },
+        ],
+        notes: ["Misurano l'accordo con l'inventario, non la capacità di prevedere frane."],
+      },
     });
     render(<ModelV2Panel />);
-    expect(await screen.findByText("AUC holdout")).toBeInTheDocument();
-    expect(screen.getByText("0.812")).toBeInTheDocument();
-    expect(screen.getAllByText("Metriche non ancora fornite.")).toHaveLength(1);
+    const test = await screen.findByRole("region", { name: "Area di test (seconda apertura)" });
+    expect(within(test).getByText("Quadrati di 15 km esclusi.")).toBeInTheDocument();
+    const bodies = within(test).getByRole("table", { name: "Corpi di frana" });
+    expect(within(bodies).getByText("ROC AUC")).toBeInTheDocument();
+    expect(within(bodies).getByText("0.887")).toBeInTheDocument();
+    expect(within(bodies).getByText("(0.827–0.959)")).toBeInTheDocument();
+    const diffuse = within(test).getByRole("table", { name: "Zone diffuse" });
+    expect(within(diffuse).getByText("10.43")).toBeInTheDocument();
+    expect(within(diffuse).getByText("%")).toBeInTheDocument();
+    const cv = screen.getByRole("region", { name: "Validazione incrociata a blocchi" });
+    expect(within(cv).getByText("0.268")).toBeInTheDocument();
+    expect(within(cv).queryByRole("table", { name: "Zone diffuse" })).toBeNull();
+    expect(screen.getByText(/non la capacità di prevedere frane/)).toBeInTheDocument();
+    // The J non-comparability note stays alongside the owner's notes.
+    expect(screen.getByText(/non confrontabili con quelle di J\.2\/J\.3/)).toBeInTheDocument();
+    expect(screen.queryByText("Metriche non ancora fornite.")).toBeNull();
   });
 });
