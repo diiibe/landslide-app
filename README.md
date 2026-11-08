@@ -14,12 +14,17 @@ make tiles-v2            # model v2 layers; requires sibling repo HazardFVG (see
 npm run dev
 ```
 
-## Digital twin demo
+## One regional map
 
-Open **Digital twin** for the Trieste–Monfalcone workspace: 19 grouped PCR observation variables, interactive station histories and
-radar, urban building extrusions and AIA sites. See [sources, update behaviour and
-verification](docs/digital-twin.md). The bounded demo extracts in `public/data/twin/`
-are tracked and do not need a data build step.
+**FVG · Territorio** puts landslides, floods, regional registries and observations
+on the same map. Open **Livelli e dati**, search a source or a datum and enable
+independent layers inside thematic folders. **Analisi** keeps the existing model
+and zone tools. No workspace switch resets the camera or the hazard layers.
+
+See [catalog, sources, automatic updates and limits](docs/digital-twin.md).
+Regional snapshots and PMTiles are tracked. Live PCR/OGS observations are read on
+demand; the scheduled pipeline refreshes registries and fallback data every six
+hours. Roads and trails are refreshed on the first deployment of each UTC day.
 
 ## Test
 
@@ -50,12 +55,10 @@ only script that hits the public Overpass API; Overpass is rate-limited,
 so the script falls back across a few mirrors with retry-and-backoff —
 expect occasional 429s and re-runs.
 
-Because of that flakiness and runtime, `build:roads` should be run
-**manually before each deploy**, not in CI. The resulting
-`roads_fvg.geojson` and `trails_fvg.geojson` should be uploaded as a
-GitHub release artifact (or committed to a `data-snapshots` branch and
-checked out by the deploy workflow) so the deploy job has them
-available without re-hitting Overpass.
+The deploy workflow builds roads and trails automatically and caches them for
+the current UTC day. An unsuccessful source fetch fails that deployment, keeping
+the previously published site available. The scheduled regional refresh triggers
+a new Pages deployment after its verified data commit.
 
 The non-Overpass scripts (`build:cell-grid`, `build:comuni`,
 `build:poi`, `build:icons`) are reproducible from local inputs and are

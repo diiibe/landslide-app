@@ -348,3 +348,13 @@
 .item[aria-disabled="true"] { cursor: default; opacity: .55; }
 .item[aria-disabled="true"]:hover { background: none; color: inherit; padding-left: 6px; }
 .bm[data-muted="true"] { opacity: .55; }
+
+.embedded { width:100%;border:0;border-radius:0;overflow:visible;background:transparent;box-shadow:none!important; }
+.embedded .wrap > .body { padding:0;overflow:visible; }
+.embedded .g { padding:4px 0 8px; }
+.embedded .gHead { min-height:44px; }
+.embedded .gHead .gTtl { text-transform:none;letter-spacing:0;font-size:14px;color:var(--c-text); }
+.embedded .item { min-height:44px; }
+.embedded .item input[type="checkbox"] { width:18px;height:18px;flex-shrink:0; }
+.activeOnly label:has(input[type="checkbox"]:not(:checked)),
+.activeOnly label[aria-disabled="true"] { display:none; }

@@ -1,0 +1,2691 @@
+{
+  "generatedAt": "2026-11-08T22:40:42.715141+00:00",
+  "layers": [
+    {
+      "id": "region-ris-energ-imp-ftv-agriftv",
+      "title": "Fotovoltaico e agrivoltaico · AUE",
+      "folder": "energia",
+      "description": "Perimetri reali dei siti AUE con proponente, potenza dichiarata e stato del procedimento o esercizio; filtri sulla mappa.",
+      "note": "174 geometrie di registro, non censimento di tutti i pannelli sui tetti. Autorizzato non equivale a costruito; potenza nominale non equivale a produzione misurata.",
+      "family": 7,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "RIS_ENERG:imp_ftv_agriftv",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=RIS_ENERG%3Aimp_ftv_agriftv&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#d5ae58",
+      "count": 173,
+      "sourceCount": 174,
+      "retrievedAt": "2026-11-08T21:53:08.950973+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.52249523,
+          45.61252788
+        ],
+        [
+          13.85417007,
+          46.42006758
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "gid",
+        "tipo",
+        "nome_progetto",
+        "potenza_elettrica_picco",
+        "fascicolo",
+        "decreto",
+        "stato",
+        "superficie_occupata",
+        "qualita_geometria",
+        "data_decreto",
+        "numero_decreto"
+      ],
+      "warnings": [
+        "1 record privi di geometria utilizzabile esclusi; gli attributi non sono stati geocodificati artificialmente.",
+        "8 geometrie non valide nella fonte riparate con make_valid per la visualizzazione; gli originali restano disponibili alla fonte."
+      ],
+      "status": "ready",
+      "kind": "geojson",
+      "file": "region-ris-energ-imp-ftv-agriftv.geojson"
+    },
+    {
+      "id": "region-ris-energ-prog-impaue-v-bess-public",
+      "title": "Accumuli elettrici BESS",
+      "folder": "energia",
+      "description": "Poligoni dei progetti di accumulo, scheda e stato; confronto con impianti rinnovabili e aree industriali.",
+      "note": "Conservare stato “in corso” / “autorizzato” ecc. La geometria non fornisce carica, scarica o stato della batteria.",
+      "family": 8,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "RIS_ENERG:prog_impaue_v_bess_public",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=RIS_ENERG%3Aprog_impaue_v_bess_public&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#d5ae58",
+      "count": 36,
+      "sourceCount": 36,
+      "retrievedAt": "2026-11-08T21:53:08.755903+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.65711886,
+          45.77178326
+        ],
+        [
+          13.4834447,
+          46.24612657
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "gid",
+        "tipo",
+        "nome_progetto",
+        "potenza_elettrica_picco",
+        "fascicolo",
+        "numero_decreto",
+        "decreto",
+        "stato",
+        "superficie_occupata",
+        "data_decreto",
+        "qualita_geometria"
+      ],
+      "warnings": [
+        "1 geometrie non valide nella fonte riparate con make_valid per la visualizzazione; gli originali restano disponibili alla fonte."
+      ],
+      "status": "ready",
+      "kind": "geojson",
+      "file": "region-ris-energ-prog-impaue-v-bess-public.geojson"
+    },
+    {
+      "id": "region-ris-energ-prog-impaue-v-biomasse-biometano-public",
+      "title": "Biomasse e biometano · AUE",
+      "folder": "energia",
+      "description": "Siti, fonti energetiche e stato dei progetti/impianti, con accesso ai provvedimenti disponibili.",
+      "note": "I dati sono autorizzativi; campi e unità di potenza vanno letti per tecnologia. Nessuna telemetria di produzione.",
+      "family": 9,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "RIS_ENERG:prog_impaue_v_biomasse_biometano_public",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=RIS_ENERG%3Aprog_impaue_v_biomasse_biometano_public&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#d5ae58",
+      "count": 22,
+      "sourceCount": 22,
+      "retrievedAt": "2026-11-08T21:53:08.750762+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.54079988,
+          45.77747641
+        ],
+        [
+          13.47122995,
+          46.12744357
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "gid",
+        "tipo",
+        "nome_progetto",
+        "potenza_elettrica_picco",
+        "fascicolo",
+        "numero_decreto",
+        "decreto",
+        "stato",
+        "superficie_occupata",
+        "qualita_geometria",
+        "data_decreto"
+      ],
+      "warnings": [
+        "1 geometrie non valide nella fonte riparate con make_valid per la visualizzazione; gli originali restano disponibili alla fonte."
+      ],
+      "status": "ready",
+      "kind": "geojson",
+      "file": "region-ris-energ-prog-impaue-v-biomasse-biometano-public.geojson"
+    },
+    {
+      "id": "region-ris-energ-prog-impaue-v-idroelettrici-public",
+      "title": "Idroelettrico · AUE",
+      "folder": "energia",
+      "description": "Siti, fonti energetiche e stato dei progetti/impianti, con accesso ai provvedimenti disponibili.",
+      "note": "I dati sono autorizzativi; campi e unità di potenza vanno letti per tecnologia. Nessuna telemetria di produzione.",
+      "family": 9,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "RIS_ENERG:prog_impaue_v_idroelettrici_public",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=RIS_ENERG%3Aprog_impaue_v_idroelettrici_public&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#d5ae58",
+      "count": 54,
+      "sourceCount": 54,
+      "retrievedAt": "2026-11-08T21:53:09.066334+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.50370183,
+          45.86893407
+        ],
+        [
+          13.67348556,
+          46.58668393
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "gid",
+        "tipo",
+        "nome_progetto",
+        "potenza_elettrica_picco",
+        "fascicolo",
+        "data_decreto",
+        "numero_decreto",
+        "decreto",
+        "stato",
+        "superficie_occupata",
+        "tipologia",
+        "potenza_complessiva_turbine_idrauliche",
+        "producibilita_elettrica",
+        "connessione_rete_distribuzione",
+        "qualita_geometria"
+      ],
+      "warnings": [
+        "1 geometrie non valide nella fonte riparate con make_valid per la visualizzazione; gli originali restano disponibili alla fonte."
+      ],
+      "status": "ready",
+      "kind": "geojson",
+      "file": "region-ris-energ-prog-impaue-v-idroelettrici-public.geojson"
+    },
+    {
+      "id": "region-cer-areeconvenzionali-cp",
+      "title": "Aree convenzionali cabine primarie",
+      "folder": "energia",
+      "description": "Aree convenzionali per ragionare su condivisione dell’energia e territorio servito.",
+      "note": "Non sono carichi di rete, capacità residua o potenza disponibile. Verificare versione rispetto a GSE e licenza della distribuzione.",
+      "family": 10,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "CER:AREECONVENZIONALI_CP",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=CER%3AAREECONVENZIONALI_CP&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#d5ae58",
+      "count": 57,
+      "sourceCount": 57,
+      "retrievedAt": "2026-11-08T21:53:09.898697+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "AC_CODICE",
+        "GESTORE",
+        "EXTRAFVG",
+        "ID1"
+      ],
+      "warnings": [],
+      "status": "ready",
+      "kind": "geojson",
+      "file": "region-cer-areeconvenzionali-cp.geojson"
+    },
+    {
+      "id": "region-cer-fotovoltaico-fvg",
+      "title": "Fotovoltaico per Comune · archivio",
+      "folder": "energia",
+      "description": "Mappa comunale dei campi NUMERO / POTENZA_KW per confronto territoriale.",
+      "note": "Sono poligoni comunali, non posizioni degli impianti. Anno del censimento non indicato nel campione: non presentarlo come capacità attuale.",
+      "family": 11,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "CER:FOTOVOLTAICO_FVG",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=CER%3AFOTOVOLTAICO_FVG&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#d5ae58",
+      "count": 215,
+      "sourceCount": 215,
+      "retrievedAt": "2026-11-08T21:53:17.809003+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "ID_OGG",
+        "NOME",
+        "COD_ISTAT",
+        "AREA_MQ",
+        "PERIM_ML",
+        "COD_CATAST",
+        "ID",
+        "POTENZA_KW",
+        "NUMERO",
+        "DENS_POT",
+        "DENS_NUM",
+        "ID1"
+      ],
+      "warnings": [
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "status": "ready",
+      "kind": "vector",
+      "file": "region-cer-fotovoltaico-fvg.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "region-industr-prog-masterplan-vm-siti-masterplan",
+      "title": "Aree industriali dismesse · Masterplan",
+      "folder": "trasformazioni",
+      "description": "Poligoni delle aree dismesse, stato di recupero, superfici, volumi e schede ufficiali: una vista concreta della rigenerazione.",
+      "note": "È il censimento del Masterplan approvato nel 2022, con stato in banca dati; non monitoraggio dell’avanzamento lavori in cantiere.",
+      "family": 12,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "INDUSTR:prog_masterplan_vm_siti_masterplan",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=INDUSTR%3Aprog_masterplan_vm_siti_masterplan&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#c58d69",
+      "count": 222,
+      "sourceCount": 222,
+      "retrievedAt": "2026-11-08T21:53:09.422925+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.34361246,
+          45.60743251
+        ],
+        [
+          13.82904187,
+          46.53184625
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "id",
+        "consorzio",
+        "denominaz",
+        "comune",
+        "indirizzo",
+        "sup_scop_m",
+        "sup_edif_m",
+        "vol_edif_m",
+        "stato_attu",
+        "pdf",
+        "html",
+        "area_mq",
+        "id1"
+      ],
+      "warnings": [
+        "1 geometrie non valide nella fonte riparate con make_valid per la visualizzazione; gli originali restano disponibili alla fonte."
+      ],
+      "status": "ready",
+      "kind": "geojson",
+      "file": "region-industr-prog-masterplan-vm-siti-masterplan.geojson"
+    },
+    {
+      "id": "region-industr-autorizzazione-unica-ambientale-aua",
+      "title": "Stabilimenti AUA",
+      "folder": "attivita",
+      "description": "Stabilimenti con attività ATECO, Comune e stato autorizzativo; estende gli impianti AIA già nella demo.",
+      "note": "Non è l’anagrafe di tutte le imprese e non misura emissioni o operatività istantanea. Usare solo i campi necessari alla scheda.",
+      "family": 13,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "INDUSTR:autorizzazione_unica_ambientale_aua",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=INDUSTR%3Aautorizzazione_unica_ambientale_aua&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#d3a26a",
+      "count": 3470,
+      "sourceCount": 3470,
+      "retrievedAt": "2026-11-08T21:53:09.974572+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.34440039,
+          45.58667002
+        ],
+        [
+          13.862635,
+          46.63821548
+        ]
+      ],
+      "geometryTypes": [
+        "Point"
+      ],
+      "fields": [
+        "id",
+        "ditta",
+        "indirizzo",
+        "comune",
+        "fascicolo",
+        "stato_attivita",
+        "attivita_ateco"
+      ],
+      "warnings": [],
+      "status": "ready",
+      "kind": "geojson",
+      "file": "region-industr-autorizzazione-unica-ambientale-aua.geojson"
+    },
+    {
+      "id": "region-industr-rischi-incidenti-rilevanti-rir",
+      "title": "Stabilimenti Seveso",
+      "folder": "attivita",
+      "description": "Siti Seveso con soglia, attività e collegamento alla scheda ISPRA.",
+      "note": "La soglia è una categoria amministrativa, non probabilità di incidente oggi. Nessun allarme dedotto dalla vicinanza.",
+      "family": 14,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "INDUSTR:rischi_incidenti_rilevanti_rir",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=INDUSTR%3Arischi_incidenti_rilevanti_rir&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#d3a26a",
+      "count": 29,
+      "sourceCount": 29,
+      "retrievedAt": "2026-11-08T21:53:10.487183+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.71766469,
+          45.6004063
+        ],
+        [
+          13.83777711,
+          46.23373285
+        ]
+      ],
+      "geometryTypes": [
+        "Point"
+      ],
+      "fields": [
+        "id",
+        "ragione_sociale",
+        "codiceministero",
+        "soglia",
+        "indirizzo",
+        "comune",
+        "cap",
+        "provincia",
+        "attivita_rir",
+        "html_ispra"
+      ],
+      "warnings": [],
+      "status": "ready",
+      "kind": "geojson",
+      "file": "region-industr-rischi-incidenti-rilevanti-rir.geojson"
+    },
+    {
+      "id": "region-util-ter-via-reg-loc-progetti",
+      "title": "Progetti VIA regionali",
+      "folder": "trasformazioni",
+      "description": "Geometrie, oggetto, proponente, stato della pratica e data del provvedimento; filtri temporali e scheda di progetto.",
+      "note": "Lo storico contiene atti dal 2002: filtrare per stato e data. Non tutti i progetti sono attuali, approvati o realizzati.",
+      "family": 15,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "UTIL_TER:VIA_REG_LOC_PROGETTI",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=UTIL_TER%3AVIA_REG_LOC_PROGETTI&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#c58d69",
+      "count": 331,
+      "sourceCount": 335,
+      "retrievedAt": "2026-11-08T21:53:10.994658+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.43370506,
+          45.58287916
+        ],
+        [
+          13.87648453,
+          46.64096461
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "UDOM_PROT_",
+        "COMUNE",
+        "PROPONENTE",
+        "OGGETTO",
+        "STATO_PRATICA",
+        "PROVVEDIMENTO_FINALE",
+        "DATA_PROVVEDIMENTO",
+        "ID",
+        "qualita_geometria"
+      ],
+      "warnings": [
+        "4 record privi di geometria utilizzabile esclusi; gli attributi non sono stati geocodificati artificialmente.",
+        "1 geometrie non valide nella fonte riparate con make_valid per la visualizzazione; gli originali restano disponibili alla fonte."
+      ],
+      "status": "ready",
+      "kind": "geojson",
+      "file": "region-util-ter-via-reg-loc-progetti.geojson"
+    },
+    {
+      "id": "region-util-ter-screening-via-reg",
+      "title": "Progetti di screening ambientale",
+      "folder": "trasformazioni",
+      "description": "Geometrie, oggetto, proponente, stato della pratica e data del provvedimento; filtri temporali e scheda di progetto.",
+      "note": "Lo storico contiene atti dal 2002: filtrare per stato e data. Non tutti i progetti sono attuali, approvati o realizzati.",
+      "family": 15,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "UTIL_TER:SCREENING_VIA_REG",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=UTIL_TER%3ASCREENING_VIA_REG&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#c58d69",
+      "count": 1888,
+      "sourceCount": 1888,
+      "retrievedAt": "2026-11-08T21:53:11.750017+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.37406956,
+          45.58287212
+        ],
+        [
+          13.86046359,
+          46.64096528
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "UDOM_PROT_",
+        "PROPONENTE",
+        "OGGETTO",
+        "STATO_PRATICA",
+        "PROVVEDIMENTO_FINALE",
+        "DATA_PROVVEDIMENTO",
+        "COMUNE",
+        "ID"
+      ],
+      "warnings": [
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "status": "ready",
+      "kind": "vector",
+      "file": "region-util-ter-screening-via-reg.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "region-cer-zone-industriali-artig-d",
+      "title": "Zone industriali e artigianali dei piani",
+      "folder": "trasformazioni",
+      "description": "Poligoni di destinazione urbanistica con norme e data di validità; contesto per energia, rigenerazione e attività.",
+      "note": "Campioni con DATA_VAL anche 2011/2018. Destinazione del piano diversa dall’uso effettivo; verificare la variante vigente.",
+      "family": 16,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "CER:ZONE_INDUSTRIALI_ARTIG_D",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=CER%3AZONE_INDUSTRIALI_ARTIG_D&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#c58d69",
+      "count": 4155,
+      "sourceCount": 4155,
+      "retrievedAt": "2026-11-08T21:53:13.343261+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.34351152,
+          45.58539741
+        ],
+        [
+          13.85654323,
+          46.60984793
+        ]
+      ],
+      "geometryTypes": [
+        "Polygon"
+      ],
+      "fields": [
+        "FID",
+        "COD_PROV",
+        "COD_COM",
+        "NOME_COM",
+        "IND_TER",
+        "IND_FOND",
+        "RAP_COP",
+        "ALT_MAX",
+        "MOD_ATT",
+        "PURG_ZONA",
+        "DEST_REG",
+        "ZONA_OMOGE",
+        "ZONA_DESC",
+        "SOTTOZONA",
+        "DEST_PREV",
+        "ART_NTA",
+        "VARIANTE",
+        "DATA_VAL",
+        "NOTE",
+        "SZONA",
+        "GID",
+        "SUPERFICIE",
+        "ID1",
+        "ALT_MAX_TX",
+        "COD_OGG",
+        "MOD_ED",
+        "NOTE_DES",
+        "POT_ED_PRO"
+      ],
+      "warnings": [
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "status": "ready",
+      "kind": "vector",
+      "file": "region-cer-zone-industriali-artig-d.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "region-cer-zone-commerciali-h",
+      "title": "Zone commerciali dei piani",
+      "folder": "trasformazioni",
+      "description": "Poligoni di destinazione urbanistica con norme e data di validità; contesto per energia, rigenerazione e attività.",
+      "note": "Campioni con DATA_VAL anche 2011/2018. Destinazione del piano diversa dall’uso effettivo; verificare la variante vigente.",
+      "family": 16,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "CER:ZONE_COMMERCIALI_H",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=CER%3AZONE_COMMERCIALI_H&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#c58d69",
+      "count": 1466,
+      "sourceCount": 1466,
+      "retrievedAt": "2026-11-08T21:53:13.904022+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.46204485,
+          45.58257387
+        ],
+        [
+          13.90243728,
+          46.55980892
+        ]
+      ],
+      "geometryTypes": [
+        "Polygon"
+      ],
+      "fields": [
+        "FID_1",
+        "COD_PROV",
+        "COD_COM",
+        "NOME_COM",
+        "IND_TER",
+        "IND_FOND",
+        "RAP_COP",
+        "ALT_MAX",
+        "ALT_MAX_TX",
+        "PURG_ZONA",
+        "DEST_REG",
+        "ZONA_OMOGE",
+        "SOTTOZONA",
+        "DEST_PREV",
+        "VARIANTE",
+        "DATA_VAL",
+        "SZONA",
+        "GID",
+        "SUPERFICIE",
+        "ID1",
+        "MOD_ATT",
+        "COD_OGG",
+        "ZONA_DESC",
+        "ART_NTA",
+        "NOTE",
+        "NOTE_DES",
+        "MOD_ED"
+      ],
+      "warnings": [],
+      "status": "ready",
+      "kind": "geojson",
+      "file": "region-cer-zone-commerciali-h.geojson"
+    },
+    {
+      "id": "region-ppr-v-aree-degradate",
+      "title": "Aree degradate",
+      "folder": "trasformazioni",
+      "description": "Poligoni classificati per tipologia e grado di compromissione, confronto con recupero e territorio.",
+      "note": "Non equivale a censimento aggiornato delle criticità ambientali né a elenco di siti contaminati.",
+      "family": 17,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "PPR:v_aree_degradate",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=PPR%3Av_aree_degradate&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#c58d69",
+      "count": 276,
+      "sourceCount": 276,
+      "retrievedAt": "2026-11-08T21:53:14.513182+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.42557821,
+          45.62694861
+        ],
+        [
+          13.85406681,
+          46.61712925
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "id",
+        "gid",
+        "provincia",
+        "comune",
+        "ambito",
+        "tipologia",
+        "grado_comp",
+        "tipo_alter",
+        "fonte",
+        "note",
+        "usosuolo",
+        "art_nta_ppr",
+        "stato",
+        "rif_rev"
+      ],
+      "warnings": [
+        "3 geometrie non valide nella fonte riparate con make_valid per la visualizzazione; gli originali restano disponibili alla fonte."
+      ],
+      "status": "ready",
+      "kind": "geojson",
+      "file": "region-ppr-v-aree-degradate.geojson"
+    },
+    {
+      "id": "region-rifiuti-mv-impianto",
+      "title": "Impianti di gestione rifiuti",
+      "folder": "ambiente",
+      "description": "Localizzazione, stato operativo e tipologia; selezione degli impianti attivi e schede di gestione.",
+      "note": "1.430 include inattivi: non usare il totale come numero di impianti in esercizio. I centri di raccolta sono uno strato distinto.",
+      "family": 19,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "RIFIUTI:MV_IMPIANTO",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=RIFIUTI%3AMV_IMPIANTO&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#b8a787",
+      "count": 1430,
+      "sourceCount": 1430,
+      "retrievedAt": "2026-11-08T21:53:14.901110+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.454609,
+          45.585688
+        ],
+        [
+          13.8517,
+          46.612984
+        ]
+      ],
+      "geometryTypes": [
+        "Point"
+      ],
+      "fields": [
+        "ID",
+        "ID_IMPIANTO",
+        "COD_IMPIANTO",
+        "DENOMINAZIONE",
+        "STATO_OPERATIVO",
+        "ISPRA",
+        "INQUADRAMENTI",
+        "TIPOLOGIEISPRA",
+        "OPERAZIONI",
+        "AMBITI",
+        "COD_AMBITI",
+        "INDIRIZZO",
+        "GESTORE",
+        "INDIRIZZO_GESTORE",
+        "IMP_MISCELAZIONE"
+      ],
+      "warnings": [],
+      "status": "ready",
+      "kind": "geojson",
+      "file": "region-rifiuti-mv-impianto.geojson"
+    },
+    {
+      "id": "region-rifiuti-centri-di-raccolta",
+      "title": "Centri di raccolta rifiuti",
+      "folder": "ambiente",
+      "description": "Localizzazione, stato operativo e tipologia; selezione degli impianti attivi e schede di gestione.",
+      "note": "1.430 include inattivi: non usare il totale come numero di impianti in esercizio. I centri di raccolta sono uno strato distinto.",
+      "family": 19,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "RIFIUTI:CENTRI_DI_RACCOLTA",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=RIFIUTI%3ACENTRI_DI_RACCOLTA&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#b8a787",
+      "count": 172,
+      "sourceCount": 172,
+      "retrievedAt": "2026-11-08T21:53:15.211577+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.437571,
+          45.58738904
+        ],
+        [
+          13.8551,
+          46.56588104
+        ]
+      ],
+      "geometryTypes": [
+        "Point"
+      ],
+      "fields": [
+        "FID",
+        "COMUNE",
+        "LOCALIZZAZIONE",
+        "BACINI_TARIFFARI_SERVITI"
+      ],
+      "warnings": [],
+      "status": "ready",
+      "kind": "geojson",
+      "file": "region-rifiuti-centri-di-raccolta.geojson"
+    },
+    {
+      "id": "region-rifiuti-discariche-2025",
+      "title": "Discariche · 2025",
+      "folder": "ambiente",
+      "description": "Siti con stato e scheda, distinguendo chiusura e altre condizioni disponibili.",
+      "note": "Storico amministrativo, non stato di riempimento o rilevamento di abbandoni in tempo reale.",
+      "family": 20,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "RIFIUTI:DISCARICHE_2025",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=RIFIUTI%3ADISCARICHE_2025&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#b8a787",
+      "count": 274,
+      "sourceCount": 274,
+      "retrievedAt": "2026-11-08T21:53:15.452506+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.45417733,
+          45.58634926
+        ],
+        [
+          13.84524223,
+          46.53294214
+        ]
+      ],
+      "geometryTypes": [
+        "Polygon"
+      ],
+      "fields": [
+        "CODICE",
+        "DESCRIZIONE",
+        "PROVINCIA",
+        "COMUNE",
+        "LOCALITA",
+        "STATO",
+        "INIZIO_AUT",
+        "FINE_AUT",
+        "ID1"
+      ],
+      "warnings": [],
+      "status": "ready",
+      "kind": "geojson",
+      "file": "region-rifiuti-discariche-2025.geojson"
+    },
+    {
+      "id": "region-idrograf-idr-gis-prese-sotterranee",
+      "title": "Prese d’acqua sotterranee",
+      "folder": "acqua",
+      "description": "Punti di prelievo e impianti con uso, concessione, stato e valori dichiarati; contesto per scarsità e risorsa idrica.",
+      "note": "11.049 prese sotterranee e 2.528 impianti sono record di registro, non sensori di portata. Non includono automaticamente tutta la rete di acquedotto.",
+      "family": 21,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "IDROGRAF:IDR_GIS_PRESE_SOTTERRANEE",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=IDROGRAF%3AIDR_GIS_PRESE_SOTTERRANEE&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#6cafd1",
+      "count": 11049,
+      "sourceCount": 11049,
+      "retrievedAt": "2026-11-08T21:53:16.084688+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.42864786,
+          45.60242202
+        ],
+        [
+          13.85888042,
+          46.56639111
+        ]
+      ],
+      "geometryTypes": [
+        "Point"
+      ],
+      "fields": [
+        "OBJECTID",
+        "CODICE_OPERA",
+        "COMUNE",
+        "FOGLIO_CATASTALE",
+        "PARTICELLA_CATASTALE",
+        "PROFONDITA",
+        "DIAMETRO_POZZO",
+        "UNITA_DIAMETRO",
+        "CODICE_EU_CD",
+        "CODICE_ACQUIFERO",
+        "STATO_OPERA",
+        "N_PRATICA",
+        "N_OPERA_PRATICA",
+        "CODICE_SISTEMA_DERIVATORIO",
+        "DECRETO_CONCESSIONE",
+        "TIPO_DECRETO_CONCESSIONE",
+        "DATA_SCADENZA_CONCESSIONE",
+        "USO",
+        "USO_SPECIFICO",
+        "PORTATA_MEDIA",
+        "PORTATA_MASSIMA",
+        "VOLUME_CONCESSO",
+        "POTABILE",
+        "CUP",
+        "NOME",
+        "DESCRIZIONE",
+        "QUOTA",
+        "N_FILTRI",
+        "POSIZIONE_FILTRI",
+        "STRATIGRAFIA",
+        "ANNO_REALIZZAZIONE"
+      ],
+      "warnings": [
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "status": "ready",
+      "kind": "vector",
+      "file": "region-idrograf-idr-gis-prese-sotterranee.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "region-idrograf-idr-gis-impianti",
+      "title": "Impianti delle utilizzazioni d’acqua",
+      "folder": "acqua",
+      "description": "Punti di prelievo e impianti con uso, concessione, stato e valori dichiarati; contesto per scarsità e risorsa idrica.",
+      "note": "11.049 prese sotterranee e 2.528 impianti sono record di registro, non sensori di portata. Non includono automaticamente tutta la rete di acquedotto.",
+      "family": 21,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "IDROGRAF:IDR_GIS_IMPIANTI",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=IDROGRAF%3AIDR_GIS_IMPIANTI&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#6cafd1",
+      "count": 2528,
+      "sourceCount": 2528,
+      "retrievedAt": "2026-11-08T21:53:16.107079+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.33314842,
+          45.6037388
+        ],
+        [
+          13.8501783,
+          46.62332187
+        ]
+      ],
+      "geometryTypes": [
+        "Point"
+      ],
+      "fields": [
+        "OBJECTID",
+        "CODICE_OPERA",
+        "TIPO_OPERA",
+        "POTABILE",
+        "PELO_MORTO_SUP",
+        "PELO_MORTO_INF",
+        "SALTO_CONCESSIONE",
+        "STATO_OPERA",
+        "N_PRATICA",
+        "N_OPERA_PRATICA",
+        "CODICE_SISTEMA_DERIVATORIO",
+        "DECRETO_CONCESSIONE",
+        "DATA_SCADENZA_CONCESSIONE",
+        "USO",
+        "USO_SPECIFICO",
+        "POTENZA_CONCESSIONE",
+        "VOLUME_CONCESSO",
+        "NOME",
+        "SALTO_IMPIANTO",
+        "QUOTA_PRELIEVO",
+        "QUOTA_RESTITUZIONE"
+      ],
+      "warnings": [],
+      "status": "ready",
+      "kind": "geojson",
+      "file": "region-idrograf-idr-gis-impianti.geojson"
+    },
+    {
+      "id": "region-idrograf-idr-gis-scarichi",
+      "title": "Scarichi delle derivazioni d’acqua",
+      "folder": "acqua",
+      "description": "Punti di restituzione/scarico collegati alle utilizzazioni d’acqua, usi e valori autorizzati.",
+      "note": "Non è l’inventario completo di scarichi fognari/industriali né una misura di inquinamento: rispettare il dominio del catasto derivazioni.",
+      "family": 22,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "IDROGRAF:IDR_GIS_SCARICHI",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=IDROGRAF%3AIDR_GIS_SCARICHI&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#6cafd1",
+      "count": 482,
+      "sourceCount": 482,
+      "retrievedAt": "2026-11-08T21:53:16.412789+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.47493381,
+          45.61249236
+        ],
+        [
+          13.85915595,
+          46.6232459
+        ]
+      ],
+      "geometryTypes": [
+        "Point"
+      ],
+      "fields": [
+        "OBJECTID",
+        "CODICE_OPERA",
+        "NOME",
+        "COMUNE",
+        "STATO_OPERA",
+        "N_PRATICA",
+        "N_OPERA_PRATICA",
+        "CODICE_SISTEMA_DERIVATORIO",
+        "DECRETO_CONCESSIONE",
+        "DATA_SCADENZA_CONCESSIONE",
+        "USO",
+        "USO_SPECIFICO",
+        "DESCRIZIONE",
+        "PORTATA_MEDIA",
+        "PORTATA_MASSIMA"
+      ],
+      "warnings": [],
+      "status": "ready",
+      "kind": "geojson",
+      "file": "region-idrograf-idr-gis-scarichi.geojson"
+    },
+    {
+      "id": "region-idrograf-ap-balneazione",
+      "title": "Punti delle aree di balneazione",
+      "folder": "mare",
+      "description": "Risultati Escherichia coli / enterococchi e storia di campionamento delle aree di balneazione.",
+      "note": "Ultimo campione Socrata 02/09/2026. La tabella non ha coordinate; collegare l’anagrafe ufficiale con controllo dei codici. I campioni “<10” restano censurati; non sono dati continui né un giudizio attuale di balneabilità.",
+      "family": 23,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "IDROGRAF:AP_BALNEAZIONE",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=IDROGRAF%3AAP_BALNEAZIONE&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#5ebfcc",
+      "count": 68,
+      "sourceCount": 68,
+      "retrievedAt": "2026-11-08T21:53:16.590557+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.72714904,
+          45.59634652
+        ],
+        [
+          13.76527458,
+          46.45193522
+        ]
+      ],
+      "geometryTypes": [
+        "Point"
+      ],
+      "fields": [
+        "OBJECTID",
+        "EUPACODE",
+        "PATYPE"
+      ],
+      "warnings": [],
+      "status": "ready",
+      "kind": "geojson",
+      "file": "region-idrograf-ap-balneazione.geojson"
+    },
+    {
+      "id": "region-siti-prot-parchi-comunali-rafvg",
+      "title": "Parchi comunali e intercomunali",
+      "folder": "verde",
+      "description": "Punti di parchi e giardini con scheda culturale; poligoni dei parchi comunali/intercomunali quando disponibili.",
+      "note": "226 punti non sono tutti gli spazi verdi urbani né misure di accessibilità o ombra. I 18 poligoni regionali di parco comunale/intercomunale sono una tipologia giuridica diversa.",
+      "family": 25,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "SITI_PROT:PARCHI_COMUNALI_RAFVG",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=SITI_PROT%3APARCHI_COMUNALI_RAFVG&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#86b381",
+      "count": 18,
+      "sourceCount": 18,
+      "retrievedAt": "2026-11-08T21:53:18.081295+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.6848218,
+          45.79579519
+        ],
+        [
+          13.58431059,
+          46.59644035
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "ID",
+        "N_ORDINE",
+        "DENOMINAZIONE",
+        "COMUNI_INTERESSATI",
+        "SUPERFICIE_GIS_HA",
+        "DPGR_DPREG",
+        "BUR"
+      ],
+      "warnings": [],
+      "status": "ready",
+      "kind": "geojson",
+      "file": "region-siti-prot-parchi-comunali-rafvg.geojson"
+    },
+    {
+      "id": "region-ppr-v-alberi-monumentali-e-notevoli",
+      "title": "Alberi monumentali e notevoli",
+      "folder": "verde",
+      "description": "Punti con specie, dimensioni, criteri di tutela e schede; esplorazione del patrimonio arboreo.",
+      "note": "840 record non sono il censimento di tutti gli alberi di strada. Non dedurre salute attuale, rischio di caduta o ombra corrente.",
+      "family": 26,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "PPR:v_alberi_monumentali_e_notevoli",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=PPR%3Av_alberi_monumentali_e_notevoli&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#86b381",
+      "count": 840,
+      "sourceCount": 840,
+      "retrievedAt": "2026-11-08T21:53:18.652647+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.33045,
+          45.58623104
+        ],
+        [
+          13.87234,
+          46.59360837
+        ]
+      ],
+      "geometryTypes": [
+        "Point"
+      ],
+      "fields": [
+        "id",
+        "gid",
+        "stato",
+        "id_punto",
+        "tipologia",
+        "regione",
+        "provincia",
+        "comune",
+        "localita",
+        "latitudine",
+        "longitudine",
+        "quota",
+        "genere",
+        "specie",
+        "nome_volgare",
+        "contesto",
+        "albero_isolato_altezza",
+        "albero_isolato_circonferenza",
+        "note",
+        "rif_rev",
+        "art_nta_ppr",
+        "criterio_eta",
+        "criterio_circonferenza",
+        "criterio_altezza",
+        "criterio_ampiezza_chioma",
+        "criterio_forma_o_portamento",
+        "criterio_valore_ecologico",
+        "criterio_rarita_botanica",
+        "criterio_architettura_vegetale",
+        "criterio_valore_paesaggistico",
+        "criterio_valore_storico",
+        "insieme_omogeneo_circonferenza_media",
+        "insieme_omogeneo_altezza_media",
+        "insieme_omogeneo_circonferenza_max",
+        "insieme_omogeneo_altezza_max",
+        "decreto_inserimento_in_elenco",
+        "decreto_modifica"
+      ],
+      "warnings": [],
+      "status": "ready",
+      "kind": "geojson",
+      "file": "region-ppr-v-alberi-monumentali-e-notevoli.geojson"
+    },
+    {
+      "id": "region-siti-prot-sic",
+      "title": "Natura 2000 · SIC e ZSC",
+      "folder": "verde",
+      "description": "Aree protette, habitat e prati stabili per leggere continuità ecologica e rapporto fra città e natura.",
+      "note": "Diverse fonti e revisioni: non confondere aree protette con parchi fruibili o accessibili; campioni dei prati hanno date di aggiornamento anche 2010/2013.",
+      "family": 27,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "SITI_PROT:SIC",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=SITI_PROT%3ASIC&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#86b381",
+      "count": 66,
+      "sourceCount": 66,
+      "retrievedAt": "2026-11-08T21:53:19.701538+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.32808671,
+          45.53248463
+        ],
+        [
+          13.91861801,
+          46.64795609
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "ID",
+        "REGIONE_BIOGEOGRAFICA",
+        "TIPO_SITO",
+        "NOME",
+        "CODICE_SITO",
+        "SUPERFICIE_GIS_HA",
+        "CARTOGRAFIA_DI_RIFERIMENTO",
+        "SCHEDA_DEL_SITO_LINK",
+        "MIS_GEN",
+        "MIS_LOC",
+        "MIS_TOT",
+        "NOTE"
+      ],
+      "warnings": [],
+      "status": "ready",
+      "kind": "geojson",
+      "file": "region-siti-prot-sic.geojson"
+    },
+    {
+      "id": "region-siti-prot-pratistabili",
+      "title": "Prati stabili",
+      "folder": "verde",
+      "description": "Aree protette, habitat e prati stabili per leggere continuità ecologica e rapporto fra città e natura.",
+      "note": "Diverse fonti e revisioni: non confondere aree protette con parchi fruibili o accessibili; campioni dei prati hanno date di aggiornamento anche 2010/2013.",
+      "family": 27,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "SITI_PROT:PRATISTABILI",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=SITI_PROT%3APRATISTABILI&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#86b381",
+      "count": 10486,
+      "sourceCount": 10486,
+      "retrievedAt": "2026-11-08T21:53:22.287762+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.42739491,
+          45.65329752
+        ],
+        [
+          13.63982607,
+          46.26851581
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "ID_2012",
+        "ID_2019",
+        "ID_PS",
+        "CTR10000",
+        "DATA_AGG",
+        "PRESORCHID",
+        "PRESINDICT",
+        "CONDIZIONI",
+        "ECCESSOCON",
+        "INTERVENTO",
+        "DANNI",
+        "ANNOINTERV",
+        "ANNOMANOM",
+        "DECESP",
+        "PENDENZA",
+        "ZONAURB",
+        "PRECCOLTIV",
+        "OPEREIDRA",
+        "ID_2021",
+        "ID_2022",
+        "ID_2023",
+        "NUMERO_APPEZZAMENTO",
+        "TIPOLOGIA_PRATIVA",
+        "HABITAT_NATURA_2000",
+        "SITO_NATURA_2000",
+        "PRATO_TUTELATO",
+        "ID_2025",
+        "GRADOABBAN",
+        "RIMBOSCHIM"
+      ],
+      "warnings": [
+        "14 geometrie non valide nella fonte riparate con make_valid per la visualizzazione; gli originali restano disponibili alla fonte.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "status": "ready",
+      "kind": "vector",
+      "file": "region-siti-prot-pratistabili.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "region-cart-nat-c-habitat-a-fvg-2017",
+      "title": "Habitat · Carta della Natura 2017",
+      "folder": "verde",
+      "description": "Aree protette, habitat e prati stabili per leggere continuità ecologica e rapporto fra città e natura.",
+      "note": "Diverse fonti e revisioni: non confondere aree protette con parchi fruibili o accessibili; campioni dei prati hanno date di aggiornamento anche 2010/2013.",
+      "family": 27,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "CART_NAT:C_HABITAT_A_FVG_2017",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=CART_NAT%3AC_HABITAT_A_FVG_2017&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#86b381",
+      "count": 52185,
+      "sourceCount": 52185,
+      "retrievedAt": "2026-11-08T21:53:30.416054+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.3212537,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "Polygon"
+      ],
+      "fields": [
+        "ID_POLY",
+        "CODICE_1",
+        "CLASSE_1",
+        "LEGENDA_1",
+        "CNAT_OLD_C",
+        "CNAT_OLD_D",
+        "CNAT_OLD_L",
+        "AREA",
+        "PERIMETRO",
+        "CODICE_2",
+        "CLASSE_2",
+        "LEGENDA_2"
+      ],
+      "warnings": [
+        "9 geometrie non valide nella fonte riparate con make_valid per la visualizzazione; gli originali restano disponibili alla fonte.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "status": "ready",
+      "kind": "vector",
+      "file": "region-cart-nat-c-habitat-a-fvg-2017.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "region-ppr-v-rete-ecologica-ecotopi",
+      "title": "Rete ecologica · ecotopi",
+      "folder": "verde",
+      "description": "Aree protette, habitat e prati stabili per leggere continuità ecologica e rapporto fra città e natura.",
+      "note": "Diverse fonti e revisioni: non confondere aree protette con parchi fruibili o accessibili; campioni dei prati hanno date di aggiornamento anche 2010/2013.",
+      "family": 27,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "PPR:v_rete_ecologica_ecotopi",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=PPR%3Av_rete_ecologica_ecotopi&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#86b381",
+      "count": 343,
+      "sourceCount": 343,
+      "retrievedAt": "2026-11-08T21:53:23.957784+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.32125369,
+          45.58093259
+        ],
+        [
+          13.91866746,
+          46.64795135
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "id",
+        "gid",
+        "codice",
+        "tipo_funz",
+        "superficie",
+        "nome",
+        "ambito",
+        "qualita_geometria",
+        "rif_rev"
+      ],
+      "warnings": [
+        "17 geometrie non valide nella fonte riparate con make_valid per la visualizzazione; gli originali restano disponibili alla fonte.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "status": "ready",
+      "kind": "vector",
+      "file": "region-ppr-v-rete-ecologica-ecotopi.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "region-pub-util-scuole-geo",
+      "title": "Scuole",
+      "folder": "servizi",
+      "description": "Sedi e tipologie scolastiche da selezionare e incrociare con misure, verde e urbanistica come analisi di prossimità.",
+      "note": "Il servizio espone 987 record. Presenza di una scuola non misura occupazione presente o esposizione personale; verificare anno e stato delle sedi.",
+      "family": 29,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "PUB_UTIL:SCUOLE_GEO",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=PUB_UTIL%3ASCUOLE_GEO&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#c58dba",
+      "count": 987,
+      "sourceCount": 987,
+      "retrievedAt": "2026-11-08T21:53:22.636002+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.372258,
+          45.59747405
+        ],
+        [
+          13.860248,
+          46.58688405
+        ]
+      ],
+      "geometryTypes": [
+        "Point"
+      ],
+      "fields": [
+        "CODCOMUNE_ISTAT",
+        "COMUNE",
+        "CODICESCUOLA",
+        "DENOMINAZIONESCUOLA",
+        "INDIRIZZOSCUOLA",
+        "CAPSCUOLA",
+        "LONGITUDINE",
+        "LATITUDINE",
+        "ID",
+        "TIPOLOGIA"
+      ],
+      "warnings": [],
+      "status": "ready",
+      "kind": "geojson",
+      "file": "region-pub-util-scuole-geo.geojson"
+    },
+    {
+      "id": "region-pub-util-impiantisportivifvg",
+      "title": "Impianti sportivi",
+      "folder": "servizi",
+      "description": "Punti degli impianti, strutture e campi di accessibilità per atleti/pubblico; scheda consultabile.",
+      "note": "Accessibilità è quella dichiarata nel registro: non disponibilità attuale, stato manutentivo corrente o verifica di ogni percorso.",
+      "family": 30,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "PUB_UTIL:ImpiantiSportiviFVG",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=PUB_UTIL%3AImpiantiSportiviFVG&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#c58dba",
+      "count": 1545,
+      "sourceCount": 1546,
+      "retrievedAt": "2026-11-08T21:53:23.229074+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.3707161,
+          45.61598943
+        ],
+        [
+          13.86545048,
+          46.58337578
+        ]
+      ],
+      "geometryTypes": [
+        "Point"
+      ],
+      "fields": [
+        "IDIMPIANTO",
+        "IDPOLISPORTIVO",
+        "QUALIFICAIMPIANTO",
+        "DENOMINAZIONE",
+        "INDIRIZZO",
+        "LOCALITA",
+        "CAP",
+        "COMUNE",
+        "PROVINCIA",
+        "ANNOCOSTRUZIONE",
+        "RISTRUTTURAZIONE",
+        "SUPERFICIEIMPIANTO",
+        "SUPERFICIECOPERTA",
+        "LUNGHEZZACAMPOGIOCO",
+        "LARGHEZZACAMPOGIOCO",
+        "LUNGHEZZACOPERTACAMPOGIOCO",
+        "LARGHEZZACOPERTACAMPOGIOCO",
+        "NUMEROPOSTISPETTATORI",
+        "CERTIFICAZPUBBLICOSPETTACOLO",
+        "UTILIZZAZIONE",
+        "SPOGLIATOIOATLETI",
+        "SPOGLIATOIOATLETIRISCALDAMENTO",
+        "SPOGLIATOIARBITRI",
+        "SPOGLIATOIARBITRIRISCALDAMENTO",
+        "DOCCE",
+        "DOCCERISCALDAMENTO",
+        "WC",
+        "WCRISCALDAMENTO",
+        "WCPUBBLICO",
+        "WCPUBBLICORISCALDAMENTO",
+        "PRONTOSOCCORSO",
+        "PRONTOSOCCORSORISCALDAMENTO",
+        "UFFICIAMMINISTRATIVI",
+        "UFFICIAMMINISTRATRISCALDAMENTO",
+        "IDIMPIANTOSPOGLIATOI",
+        "DISABILIATLETIACCESSIBILITA",
+        "DISABILIPUBBLICOACCESSIBILITA",
+        "DISABILIATLETIWC",
+        "DISABILIATLETIDOCCE",
+        "DISABILIPUBBLICOWC",
+        "PROPRIETAAREA",
+        "PROPIETAIMPIANTO",
+        "GESTIONEIMPIANTO",
+        "IDGESTORE",
+        "MANUTENZIONE",
+        "ADEGUAMENTO",
+        "IMPIANTISTICA",
+        "VALUTAZIONESPESA",
+        "SRISTRUTTURAZIONI",
+        "SERSUPVISIBILITA",
+        "ID1"
+      ],
+      "warnings": [
+        "1 record privi di geometria utilizzabile esclusi; gli attributi non sono stati geocodificati artificialmente.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "status": "ready",
+      "kind": "vector",
+      "file": "region-pub-util-impiantisportivifvg.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "region-reti-trasp-recir-2022",
+      "title": "Rete ciclabile RECIR · piano 2022",
+      "folder": "mobilita",
+      "description": "Linee ciclabili locali e regionali, filtro dello stato ove disponibile, raccordo con sentieri e servizi.",
+      "note": "1.174 segmenti del dataset 2020 e 486 locali: non chilometri né itinerari unici. RECIR 2022 dichiara che i percorsi non sono tutti realizzati/percorribili: niente navigazione garantita.",
+      "family": 33,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "RETI_TRASP:RECIR_2022",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=RETI_TRASP%3ARECIR_2022&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#b0b7b0",
+      "count": 124,
+      "sourceCount": 124,
+      "retrievedAt": "2026-11-08T21:53:24.724396+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.42613344,
+          45.58249875
+        ],
+        [
+          13.89782458,
+          46.58064193
+        ]
+      ],
+      "geometryTypes": [
+        "LineString"
+      ],
+      "fields": [
+        "FID",
+        "GID",
+        "CODICE",
+        "NOMERETE",
+        "BEGIN",
+        "END",
+        "LENGTH",
+        "CICLOVIA",
+        "ID1"
+      ],
+      "warnings": [],
+      "status": "ready",
+      "kind": "geojson",
+      "file": "region-reti-trasp-recir-2022.geojson"
+    },
+    {
+      "id": "region-reti-trasp-grafo-stradale-fvg",
+      "title": "Grafo stradale regionale",
+      "folder": "mobilita",
+      "description": "Assi e nodi della mobilità, collegamenti e supporto ad analisi di rete o prossimità.",
+      "note": "Strade/sentieri già presenti in parte nella piattaforma. Questi strati non attestano traffico, chiusure o transitabilità attuale; controllare sovrapposizioni e permessi.",
+      "family": 34,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "RETI_TRASP:GRAFO_STRADALE_FVG",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=RETI_TRASP%3AGRAFO_STRADALE_FVG&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#b0b7b0",
+      "count": 75546,
+      "sourceCount": 75546,
+      "retrievedAt": "2026-11-08T21:53:26.371351+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.32455777,
+          45.58166328
+        ],
+        [
+          13.91087681,
+          46.62362895
+        ]
+      ],
+      "geometryTypes": [
+        "LineString"
+      ],
+      "fields": [
+        "TRIM_SUSTAINER",
+        "TRIM_STR_CODE_1",
+        "DIR",
+        "ENTEXT",
+        "BEGIN",
+        "END",
+        "REGIONALCODEDESC",
+        "ORIG_LENGTH",
+        "CLASSE",
+        "ENTE_GESTORE",
+        "GEOMETRY_REVERSED",
+        "TRIM_USAGE_ALLOWANCE",
+        "TRIM_LANES",
+        "FONTE_INT",
+        "DATA_INIZIO",
+        "ID1",
+        "DBPRIOR_TIPO_TRATTO",
+        "DBPRIOR_STATO",
+        "DBPRIOR_ISTAT_GEST",
+        "DBPRIOR_TIPO_OGG",
+        "DBPRIOR_COD_CTRN",
+        "DBPRIOR_NOME_ELEM",
+        "GEOMETRY1_SK",
+        "TRIM_VALID_FROM",
+        "TRIM_STR_KAT_1"
+      ],
+      "warnings": [
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "status": "ready",
+      "kind": "vector",
+      "file": "region-reti-trasp-grafo-stradale-fvg.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "region-strat-pr-dbprior-0513-tratta-fer",
+      "title": "Rete ferroviaria regionale",
+      "folder": "mobilita",
+      "description": "Assi e nodi della mobilità, collegamenti e supporto ad analisi di rete o prossimità.",
+      "note": "Strade/sentieri già presenti in parte nella piattaforma. Questi strati non attestano traffico, chiusure o transitabilità attuale; controllare sovrapposizioni e permessi.",
+      "family": 34,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "STRAT_PR:DBPRIOR_0513_TRATTA_FER",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=STRAT_PR%3ADBPRIOR_0513_TRATTA_FER&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#b0b7b0",
+      "count": 9282,
+      "sourceCount": 9282,
+      "retrievedAt": "2026-11-08T21:53:26.250921+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.4649242,
+          45.59130611
+        ],
+        [
+          13.8544687,
+          46.53480177
+        ]
+      ],
+      "geometryTypes": [
+        "LineString",
+        "Point"
+      ],
+      "fields": [
+        "ID_OGG",
+        "ELETTRIFIC",
+        "NUM_BIN",
+        "STSV",
+        "ID_INIZIO",
+        "ID_FINE",
+        "LUNGHEZZA",
+        "COD_CTRN",
+        "TIPO_OGG",
+        "TIPO_OGG_ESTESO",
+        "TIPO_TRATTA",
+        "TIPO_TRATTA_ESTESO",
+        "SCARTAMENTO",
+        "SCARTAMENTO_ESTESO",
+        "SEDE",
+        "SEDE_ESTESO",
+        "STATO",
+        "STATO_ESTESO",
+        "ORIGINE",
+        "ID",
+        "qualita_geometria"
+      ],
+      "warnings": [
+        "12 geometrie non valide nella fonte riparate con make_valid per la visualizzazione; gli originali restano disponibili alla fonte.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "status": "ready",
+      "kind": "vector",
+      "file": "region-strat-pr-dbprior-0513-tratta-fer.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "region-reti-trasp-viabilitaforestalepubblica",
+      "title": "Viabilità forestale pubblica",
+      "folder": "mobilita",
+      "description": "Assi e nodi della mobilità, collegamenti e supporto ad analisi di rete o prossimità.",
+      "note": "Strade/sentieri già presenti in parte nella piattaforma. Questi strati non attestano traffico, chiusure o transitabilità attuale; controllare sovrapposizioni e permessi.",
+      "family": 34,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "RETI_TRASP:VIABILITAFORESTALEPUBBLICA",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=RETI_TRASP%3AVIABILITAFORESTALEPUBBLICA&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#b0b7b0",
+      "count": 540,
+      "sourceCount": 541,
+      "retrievedAt": "2026-11-08T21:53:31.681875+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.33379992,
+          45.97349899
+        ],
+        [
+          13.69214021,
+          46.61672408
+        ]
+      ],
+      "geometryTypes": [
+        "LineString",
+        "MultiLineString"
+      ],
+      "fields": [
+        "DB_ORIG",
+        "SV_TOT",
+        "NOM_STR",
+        "FIN_DES",
+        "CLASS",
+        "PERCORR",
+        "PREC_M",
+        "RILEVATORE",
+        "DATA_RILIEVO",
+        "NOTE",
+        "COD_STR",
+        "AIB",
+        "ID",
+        "PEND_MAX"
+      ],
+      "warnings": [
+        "1 record privi di geometria utilizzabile esclusi; gli attributi non sono stati geocodificati artificialmente."
+      ],
+      "status": "ready",
+      "kind": "geojson",
+      "file": "region-reti-trasp-viabilitaforestalepubblica.geojson"
+    },
+    {
+      "id": "region-ppr-v-beni-culturali",
+      "title": "Beni culturali",
+      "folder": "servizi",
+      "description": "Beni, aree e schede ufficiali per capire cosa è tutelato e contestualizzare progetti e trasformazioni.",
+      "note": "La mappa informativa non sostituisce la verifica del vincolo vigente. I 3.279 record si riferiscono al solo layer beni culturali campionato.",
+      "family": 41,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "PPR:v_beni_culturali",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=PPR%3Av_beni_culturali&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#c58dba",
+      "count": 3279,
+      "sourceCount": 3279,
+      "retrievedAt": "2026-11-08T21:53:30.953708+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.3291869,
+          45.58696014
+        ],
+        [
+          13.87624515,
+          46.60622788
+        ]
+      ],
+      "geometryTypes": [
+        "Point"
+      ],
+      "fields": [
+        "id",
+        "gid",
+        "id_bene",
+        "id_sito_sp",
+        "denominaz",
+        "ogtd",
+        "prov",
+        "comune",
+        "ambito",
+        "categori1",
+        "contesto",
+        "livello",
+        "loc_istat",
+        "categoria",
+        "rete_ppr",
+        "classe",
+        "id_arc_r_i",
+        "sch_tutel",
+        "frazione",
+        "consist",
+        "datainizio",
+        "datafine",
+        "cod_inc",
+        "categori2",
+        "localita"
+      ],
+      "warnings": [],
+      "status": "ready",
+      "kind": "geojson",
+      "file": "region-ppr-v-beni-culturali.geojson"
+    },
+    {
+      "id": "region-ppr-v-beni-immobili-interesse-storico-artistico-parte-ii",
+      "title": "Immobili di interesse storico e artistico",
+      "folder": "servizi",
+      "description": "Beni, aree e schede ufficiali per capire cosa è tutelato e contestualizzare progetti e trasformazioni.",
+      "note": "La mappa informativa non sostituisce la verifica del vincolo vigente. I 3.279 record si riferiscono al solo layer beni culturali campionato.",
+      "family": 41,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "PPR:v_beni_immobili_interesse_storico_artistico_parte_ii",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=PPR%3Av_beni_immobili_interesse_storico_artistico_parte_ii&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#c58dba",
+      "count": 5040,
+      "sourceCount": 5040,
+      "retrievedAt": "2026-11-08T21:53:32.094307+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.43298955,
+          45.6032476
+        ],
+        [
+          13.80759294,
+          46.55324979
+        ]
+      ],
+      "geometryTypes": [
+        "LineString",
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "id",
+        "gid",
+        "id_bene",
+        "comune",
+        "foglio_map",
+        "cod_com",
+        "sezione",
+        "foglio",
+        "mappale",
+        "tipo_dec",
+        "verificato",
+        "vinc_esist",
+        "id_decreto",
+        "data_dec",
+        "nome_file",
+        "interesse",
+        "rif_rev",
+        "subalterno"
+      ],
+      "warnings": [
+        "5 geometrie non valide nella fonte riparate con make_valid per la visualizzazione; gli originali restano disponibili alla fonte.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "status": "ready",
+      "kind": "vector",
+      "file": "region-ppr-v-beni-immobili-interesse-storico-artistico-parte-ii.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "region-ppr-v-zone-interesse-archeologico",
+      "title": "Zone di interesse archeologico",
+      "folder": "servizi",
+      "description": "Beni, aree e schede ufficiali per capire cosa è tutelato e contestualizzare progetti e trasformazioni.",
+      "note": "La mappa informativa non sostituisce la verifica del vincolo vigente. I 3.279 record si riferiscono al solo layer beni culturali campionato.",
+      "family": 41,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "PPR:v_zone_interesse_archeologico",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=PPR%3Av_zone_interesse_archeologico&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#c58dba",
+      "count": 1534,
+      "sourceCount": 1534,
+      "retrievedAt": "2026-11-08T21:53:33.007222+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.47911455,
+          45.58406489
+        ],
+        [
+          13.86830988,
+          46.46383571
+        ]
+      ],
+      "geometryTypes": [
+        "Polygon"
+      ],
+      "fields": [
+        "id",
+        "id_area",
+        "comune",
+        "foglio",
+        "mappale",
+        "tipo_area",
+        "frazione",
+        "toponimo",
+        "categoria",
+        "cronologia",
+        "gid",
+        "ogtd",
+        "ambito",
+        "rete_ppr",
+        "scheda",
+        "denominazione",
+        "legenda_ppr",
+        "rif_rev",
+        "art_nta_ppr",
+        "localita"
+      ],
+      "warnings": [],
+      "status": "ready",
+      "kind": "geojson",
+      "file": "region-ppr-v-zone-interesse-archeologico.geojson"
+    },
+    {
+      "id": "region-adspmao-aree-patrimoniali-t",
+      "title": "Porto di Trieste · aree patrimoniali",
+      "folder": "attivita",
+      "description": "Aree demaniali/patrimoniali e azzonamento funzionale portuale per leggere usi, logistica e città-porto.",
+      "note": "Porto: piani e perimetri, non movimenti nave/AIS, occupazione banchine o merci in tempo reale; verificare versione del piano.",
+      "family": 42,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "ADSPMAO:AREE_PATRIMONIALI_T",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ADSPMAO%3AAREE_PATRIMONIALI_T&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#d3a26a",
+      "count": 21,
+      "sourceCount": 21,
+      "retrievedAt": "2026-11-08T21:53:33.527198+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          13.74971318,
+          45.59450567
+        ],
+        [
+          13.80383892,
+          45.71697513
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "ID",
+        "ID1",
+        "qualita_geometria"
+      ],
+      "warnings": [
+        "1 geometrie non valide nella fonte riparate con make_valid per la visualizzazione; gli originali restano disponibili alla fonte."
+      ],
+      "status": "ready",
+      "kind": "geojson",
+      "file": "region-adspmao-aree-patrimoniali-t.geojson"
+    },
+    {
+      "id": "region-adspmao-aree-patrimoniali-m",
+      "title": "Porto di Monfalcone · aree patrimoniali",
+      "folder": "attivita",
+      "description": "Aree demaniali/patrimoniali e azzonamento funzionale portuale per leggere usi, logistica e città-porto.",
+      "note": "Porto: piani e perimetri, non movimenti nave/AIS, occupazione banchine o merci in tempo reale; verificare versione del piano.",
+      "family": 42,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "ADSPMAO:AREE_PATRIMONIALI_M",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ADSPMAO%3AAREE_PATRIMONIALI_M&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#d3a26a",
+      "count": 5,
+      "sourceCount": 5,
+      "retrievedAt": "2026-11-08T21:53:33.777647+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          13.54968361,
+          45.7865688
+        ],
+        [
+          13.56305013,
+          45.79625984
+        ]
+      ],
+      "geometryTypes": [
+        "Polygon"
+      ],
+      "fields": [
+        "FID",
+        "RWN",
+        "CNTGEOM",
+        "IDMAPPA",
+        "ID",
+        "FOGLIO_MAP",
+        "MAPPALEALI",
+        "ALLEGATOSV",
+        "CODFOGLIO",
+        "CODICEMAPP",
+        "DUPLICATI",
+        "NOME",
+        "SUPERFICIE",
+        "COMUNE",
+        "CODICE_COM",
+        "COMUNE_CEN",
+        "SEZIONE",
+        "FOGLIO",
+        "MAPPALE",
+        "TIPO_CATAS",
+        "CODICE_PAR",
+        "CODPARTICE",
+        "CODPARTI_1",
+        "CODICE_IMM",
+        "CODICE_I_1",
+        "REDDITO_AG",
+        "REDDITO_DO",
+        "SUPERFIC_1",
+        "SUPERFIC_2",
+        "SUPERFIC_3",
+        "CODICE_QUA",
+        "DESCRIZION",
+        "CLASSE",
+        "STADIO",
+        "DATA_VALID",
+        "DATA_ISCRI",
+        "TIPO_NOTA",
+        "DESCRIZI_1",
+        "NOTA",
+        "ANNOTAZION",
+        "ELENCO_DIR",
+        "ID1"
+      ],
+      "warnings": [],
+      "status": "ready",
+      "kind": "geojson",
+      "file": "region-adspmao-aree-patrimoniali-m.geojson"
+    },
+    {
+      "id": "region-aut-port-prp-trieste-azzonamento-funzionale-rdn2008",
+      "title": "Porto di Trieste · azzonamento funzionale",
+      "folder": "attivita",
+      "description": "Aree demaniali/patrimoniali e azzonamento funzionale portuale per leggere usi, logistica e città-porto.",
+      "note": "Porto: piani e perimetri, non movimenti nave/AIS, occupazione banchine o merci in tempo reale; verificare versione del piano.",
+      "family": 42,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "AUT_PORT:PRP_TRIESTE_AZZONAMENTO_FUNZIONALE_RDN2008",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=AUT_PORT%3APRP_TRIESTE_AZZONAMENTO_FUNZIONALE_RDN2008&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#d3a26a",
+      "count": 75,
+      "sourceCount": 75,
+      "retrievedAt": "2026-11-08T21:53:34.300460+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          13.73312064,
+          45.59764314
+        ],
+        [
+          13.81424468,
+          45.6782629
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "ZONA",
+        "SETTORE",
+        "MACROZONA",
+        "SOTTOZONA",
+        "FUNZIONE",
+        "SPECIFICA",
+        "NOTE",
+        "ID1"
+      ],
+      "warnings": [
+        "1 geometrie non valide nella fonte riparate con make_valid per la visualizzazione; gli originali restano disponibili alla fonte."
+      ],
+      "status": "ready",
+      "kind": "geojson",
+      "file": "region-aut-port-prp-trieste-azzonamento-funzionale-rdn2008.geojson"
+    },
+    {
+      "id": "region-zone-risc-v-incendi-puntoinizio",
+      "title": "Incendi boschivi · punti storici",
+      "folder": "ambiente",
+      "description": "Punti di origine e aree storicamente bruciate, con confronto temporale quando le date sono valorizzate.",
+      "note": "4.577 punti e 724 superfici boscate sono archivi, non incendi attivi. Un evento in corso richiede un’altra fonte operativa verificata.",
+      "family": 43,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "ZONE_RISC:V_INCENDI_PUNTOINIZIO",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ZONE_RISC%3AV_INCENDI_PUNTOINIZIO&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#b8a787",
+      "count": 4577,
+      "sourceCount": 4577,
+      "retrievedAt": "2026-11-08T21:53:34.823969+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.32353275,
+          45.58163384
+        ],
+        [
+          13.90641095,
+          46.61682695
+        ]
+      ],
+      "geometryTypes": [
+        "Point"
+      ],
+      "fields": [
+        "SIGLA_STAZ",
+        "ANNO_FNIB",
+        "NUM_FNIB",
+        "ID"
+      ],
+      "warnings": [],
+      "status": "ready",
+      "kind": "geojson",
+      "file": "region-zone-risc-v-incendi-puntoinizio.geojson"
+    },
+    {
+      "id": "region-zone-risc-superficie-boscata-bruciata",
+      "title": "Superfici boscate bruciate · archivio",
+      "folder": "ambiente",
+      "description": "Punti di origine e aree storicamente bruciate, con confronto temporale quando le date sono valorizzate.",
+      "note": "4.577 punti e 724 superfici boscate sono archivi, non incendi attivi. Un evento in corso richiede un’altra fonte operativa verificata.",
+      "family": 43,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "ZONE_RISC:SUPERFICIE_BOSCATA_BRUCIATA",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ZONE_RISC%3ASUPERFICIE_BOSCATA_BRUCIATA&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#b8a787",
+      "count": 724,
+      "sourceCount": 724,
+      "retrievedAt": "2026-11-08T21:53:35.819710+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.32326263,
+          45.58452502
+        ],
+        [
+          13.8959,
+          46.60935896
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "CODICE",
+        "SIGLA_STAZ",
+        "ANNO_FNIB",
+        "NUM_FNIB",
+        "ID"
+      ],
+      "warnings": [
+        "2 geometrie non valide nella fonte riparate con make_valid per la visualizzazione; gli originali restano disponibili alla fonte."
+      ],
+      "status": "ready",
+      "kind": "geojson",
+      "file": "region-zone-risc-superficie-boscata-bruciata.geojson"
+    },
+    {
+      "id": "region-ersa-awc-capacita-acqua-disp",
+      "title": "Capacità del suolo di trattenere acqua",
+      "folder": "verde",
+      "description": "Aree per capacità di trattenere acqua, carte dei suoli e contesto per agricoltura/verde.",
+      "note": "Le sei geometrie campionate sono classi estese, non sei sensori. Non equivalgono all’umidità del suolo misurata oggi, già presente nella demo PCR.",
+      "family": 44,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "ERSA:AWC_CAPACITA_ACQUA_DISP",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ERSA%3AAWC_CAPACITA_ACQUA_DISP&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#86b381",
+      "count": 6,
+      "sourceCount": 6,
+      "retrievedAt": "2026-11-08T21:53:36.450830+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.42292128,
+          45.58084995
+        ],
+        [
+          13.91862416,
+          46.31477728
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon"
+      ],
+      "fields": [
+        "AREA",
+        "PERIMETRO",
+        "AWC",
+        "ID1",
+        "qualita_geometria"
+      ],
+      "warnings": [
+        "1 geometrie non valide nella fonte riparate con make_valid per la visualizzazione; gli originali restano disponibili alla fonte.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "status": "ready",
+      "kind": "vector",
+      "file": "region-ersa-awc-capacita-acqua-disp.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "region-ersa-carta-suoli-go-ts",
+      "title": "Carta dei suoli · Gorizia e Trieste",
+      "folder": "verde",
+      "description": "Aree per capacità di trattenere acqua, carte dei suoli e contesto per agricoltura/verde.",
+      "note": "Le sei geometrie campionate sono classi estese, non sei sensori. Non equivalgono all’umidità del suolo misurata oggi, già presente nella demo PCR.",
+      "family": 44,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "ERSA:CARTA_SUOLI_GO_TS",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ERSA%3ACARTA_SUOLI_GO_TS&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#86b381",
+      "count": 76,
+      "sourceCount": 76,
+      "retrievedAt": "2026-11-08T21:53:37.214216+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          13.25102549,
+          45.58084995
+        ],
+        [
+          13.91862416,
+          46.0513771
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "CONTENITORE",
+        "AREA",
+        "PERIMETRO",
+        "UC",
+        "UC_NOME",
+        "UC_SUOLI",
+        "STS1_SIGLA",
+        "STS1_NOME",
+        "STS1_CLASSIFICAZIONE",
+        "STS1_DESCRIZIONE",
+        "STS2_SIGLA",
+        "STS2_NOME",
+        "STS2_CLASSIFICAZIONE",
+        "STS2_DESCRIZIONE",
+        "STS3_SIGLA",
+        "STS3_NOME",
+        "STS3_CLASSIFICAZIONE",
+        "STS3_DESCRIZIONE",
+        "DISTRIBUZIONE",
+        "FREQ_STS1",
+        "FREQ_STS2",
+        "FREQ_STS3",
+        "FREQ_DISS_NLIM",
+        "FREQ_DISS_LIM",
+        "ID"
+      ],
+      "warnings": [
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "status": "ready",
+      "kind": "vector",
+      "file": "region-ersa-carta-suoli-go-ts.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "region-unita-stat-sez-cens-2021",
+      "title": "Sezioni di censimento · 2021",
+      "folder": "servizi",
+      "description": "Poligoni delle sezioni 2021 da collegare alle tabelle ISTAT per confronti di quartiere e accesso ai servizi.",
+      "note": "18.960 geometrie non significano popolazione osservata; il layer di confine da solo non contiene necessariamente gli indicatori voluti. Servono join e anno esplicito.",
+      "family": 45,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "UNITA_STAT:SEZ_CENS_2021",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=UNITA_STAT%3ASEZ_CENS_2021&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+      "cadence": "Registro territoriale · non telemetria",
+      "color": "#c58dba",
+      "count": 18960,
+      "sourceCount": 18960,
+      "retrievedAt": "2026-11-08T21:53:41.196865+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.32093824,
+          45.58092711
+        ],
+        [
+          13.91885318,
+          46.64781004
+        ]
+      ],
+      "geometryTypes": [
+        "Polygon"
+      ],
+      "fields": [
+        "COD_REG",
+        "COD_UTS",
+        "PRO_COM",
+        "SEZ21",
+        "SEZ21_ID",
+        "COD_TIPO_S",
+        "TIPO_LOC",
+        "LOC21_ID",
+        "COD_ZIC",
+        "COD_ISAM",
+        "COD_ACQUE",
+        "COD_ISOLE",
+        "COD_MONT_D",
+        "COD_AREA_S",
+        "COM_ASC1",
+        "COM_ASC2",
+        "COM_ASC3",
+        "POP21",
+        "FAM21",
+        "ABI21",
+        "EDI21",
+        "SHAPE_LENG",
+        "SHAPE_AREA",
+        "ID1"
+      ],
+      "warnings": [
+        "42 geometrie non valide nella fonte riparate con make_valid per la visualizzazione; gli originali restano disponibili alla fonte.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "status": "ready",
+      "kind": "vector",
+      "file": "region-unita-stat-sez-cens-2021.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "region-grigliegeo-qu-las-lidar-fvg",
+      "title": "Rilievi LiDAR · quadro di copertura",
+      "folder": "contesto",
+      "description": "Copertura dei rilievi e riferimenti di consultazione/scarico. Non è una nuvola di punti caricata nel browser.",
+      "note": "Il quadro di unione descrive i lotti disponibili; consultare la scheda per il rilievo originale.",
+      "family": 48,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "GRIGLIEGEO:QU_LAS_LIDAR_FVG",
+      "sourceUrl": "https://irdat.regione.fvg.it/consultatore-dati-ambientali-territoriali/home?language=it",
+      "cadence": "Campagne di rilievo",
+      "color": "#a3b8b4",
+      "count": 38173,
+      "sourceCount": 38173,
+      "retrievedAt": "2026-11-08T21:53:38.813830+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.32,
+          45.57500005
+        ],
+        [
+          13.92,
+          46.65000005
+        ]
+      ],
+      "geometryTypes": [
+        "Polygon"
+      ],
+      "fields": [
+        "CODICE_LAS",
+        "CODICE_DTM",
+        "CODICE_CTRN",
+        "DATE_VOLO",
+        "ID"
+      ],
+      "warnings": [
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "status": "ready",
+      "kind": "vector",
+      "file": "region-grigliegeo-qu-las-lidar-fvg.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "region-grigliegeo-qu-dtm-lidar-fvg",
+      "title": "DTM LiDAR · quadro di copertura",
+      "folder": "contesto",
+      "description": "Copertura dei rilievi e riferimenti di consultazione/scarico. Non è una nuvola di punti caricata nel browser.",
+      "note": "Il quadro di unione descrive i lotti disponibili; consultare la scheda per il rilievo originale.",
+      "family": 48,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "GRIGLIEGEO:QU_DTM_LIDAR_FVG",
+      "sourceUrl": "https://irdat.regione.fvg.it/consultatore-dati-ambientali-territoriali/home?language=it",
+      "cadence": "Campagne di rilievo",
+      "color": "#a3b8b4",
+      "count": 14917,
+      "sourceCount": 14917,
+      "retrievedAt": "2026-11-08T21:53:52.639998+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.31083537,
+          45.57262702
+        ],
+        [
+          13.92659419,
+          46.65147134
+        ]
+      ],
+      "geometryTypes": [
+        "Polygon"
+      ],
+      "fields": [
+        "CODICE_DTM",
+        "CODICE_CTRN",
+        "CODICE_LAS",
+        "DATE_VOLO",
+        "ID"
+      ],
+      "warnings": [
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "status": "ready",
+      "kind": "vector",
+      "file": "region-grigliegeo-qu-dtm-lidar-fvg.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "region-grigliegeo-qu-agea2023",
+      "title": "Ortofoto AGEA 2023 · copertura",
+      "folder": "contesto",
+      "description": "Copertura dei rilievi e riferimenti di consultazione/scarico. Non è una nuvola di punti caricata nel browser.",
+      "note": "Il quadro di unione descrive i lotti disponibili; consultare la scheda per il rilievo originale.",
+      "family": 48,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "GRIGLIEGEO:QU_AGEA2023",
+      "sourceUrl": "https://irdat.regione.fvg.it/consultatore-dati-ambientali-territoriali/home?language=it",
+      "cadence": "Campagne di rilievo",
+      "color": "#a3b8b4",
+      "count": 15,
+      "sourceCount": 15,
+      "retrievedAt": "2026-11-08T21:54:03.954715+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.62138101,
+          46.4723997
+        ],
+        [
+          12.83562087,
+          46.57521601
+        ]
+      ],
+      "geometryTypes": [
+        "Polygon"
+      ],
+      "fields": [
+        "ID",
+        "REGIONE",
+        "ELEMENTI",
+        "DATE_VOLO"
+      ],
+      "warnings": [],
+      "status": "ready",
+      "kind": "geojson",
+      "file": "region-grigliegeo-qu-agea2023.geojson"
+    },
+    {
+      "id": "region-grigliegeo-qu-trueorto1720-fvg",
+      "title": "True ortofoto 2017–2020 · copertura",
+      "folder": "contesto",
+      "description": "Copertura dei rilievi e riferimenti di consultazione/scarico. Non è una nuvola di punti caricata nel browser.",
+      "note": "Il quadro di unione descrive i lotti disponibili; consultare la scheda per il rilievo originale.",
+      "family": 48,
+      "provider": "Regione autonoma Friuli Venezia Giulia / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "GRIGLIEGEO:QU_TRUEORTO1720_FVG",
+      "sourceUrl": "https://irdat.regione.fvg.it/consultatore-dati-ambientali-territoriali/home?language=it",
+      "cadence": "Campagne di rilievo",
+      "color": "#a3b8b4",
+      "count": 14917,
+      "sourceCount": 14917,
+      "retrievedAt": "2026-11-08T21:54:04.632308+00:00",
+      "generatedAt": "2026-11-08T21:58:40.741014+00:00",
+      "bounds": [
+        [
+          12.31083537,
+          45.57262702
+        ],
+        [
+          13.92659419,
+          46.65147134
+        ]
+      ],
+      "geometryTypes": [
+        "Polygon"
+      ],
+      "fields": [
+        "CODICE_ORTOF",
+        "CODICE_CTRN",
+        "CODICE_LAS",
+        "DATE_VOLO",
+        "ID"
+      ],
+      "warnings": [
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "status": "ready",
+      "kind": "vector",
+      "file": "region-grigliegeo-qu-trueorto1720-fvg.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "region-industr-autorizzazione-integrata-ambientale-aia",
+      "title": "Stabilimenti AIA",
+      "folder": "attivita",
+      "description": "Registro regionale delle autorizzazioni integrate ambientali.",
+      "note": "Stato amministrativo, non emissioni o operatività misurate in questo momento.",
+      "provider": "Regione FVG / IRDAT",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "sourceId": "INDUSTR:autorizzazione_integrata_ambientale_aia",
+      "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&request=GetCapabilities",
+      "cadence": "Sincronizzazione automatica ogni 6 ore",
+      "color": "#d3a26a",
+      "count": 234,
+      "sourceCount": 234,
+      "retrievedAt": "2026-11-08T22:40:42.899976+00:00",
+      "generatedAt": "2026-11-08T22:40:42.715141+00:00",
+      "bounds": [
+        [
+          12.45476919,
+          45.59583264
+        ],
+        [
+          13.82350687,
+          46.50391174
+        ]
+      ],
+      "geometryTypes": [
+        "Point"
+      ],
+      "fields": [
+        "id",
+        "codice_regionale_aia",
+        "ragione_sociale",
+        "comune",
+        "attivita_aia",
+        "stato",
+        "cat5_gestione_rifiuti",
+        "link_sito_reg"
+      ],
+      "warnings": [],
+      "status": "ready",
+      "kind": "geojson",
+      "file": "region-industr-autorizzazione-integrata-ambientale-aia.geojson"
+    }
+  ]
+}

@@ -397,6 +397,7 @@ export function sensorGeoJSON(
       properties: {
         stationId: m.stationId,
         sensorId: m.sensorId,
+        variable,
         name: m.name,
         value: m.value,
         scaleFraction: valueScaleFraction(m.value, variable),

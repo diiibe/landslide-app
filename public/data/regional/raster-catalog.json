@@ -1,0 +1,116 @@
+{
+  "generatedAt": "2026-11-08T22:45:04.173939+00:00",
+  "layers": [
+    {
+      "id": "raster-trueorto-fvg-1720",
+      "title": "True ortofoto regionali · 2017–2020",
+      "folder": "contesto",
+      "kind": "raster",
+      "status": "ready",
+      "provider": "Regione FVG / IRDAT · ortofoto e rilievi",
+      "sourceId": "WMS regionali",
+      "sourceUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA5/",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "description": "Immagini georeferenziate del servizio WMS regionale, rese disponibili in tile compatibili con la mappa web.",
+      "note": "Campagna 2017–2020. Piramide per visualizzazione regionale z5–11 (pixel di circa 27 m alla scala più dettagliata); per il rilievo originale ad alta risoluzione consultare la fonte. Non immagini di oggi.",
+      "cadence": "Verifica e sincronizzazione automatiche ogni 6 ore",
+      "color": "#9ba99b",
+      "dataDate": "2017–2020",
+      "bounds": [
+        [
+          12.25,
+          45.5
+        ],
+        [
+          14.0,
+          46.7
+        ]
+      ],
+      "minzoom": 5,
+      "maxzoom": 11,
+      "wmsLayer": "trueorto_FVG_1720",
+      "rasterDir": "raster-trueorto-fvg-1720",
+      "tiles": [
+        "data/regional/raster-trueorto-fvg-1720/{z}/{x}/{y}.png"
+      ],
+      "retrievedAt": "2026-11-08T22:45:04.768058+00:00",
+      "lastCheckedAt": "2026-11-08T22:45:04.768058+00:00",
+      "tileCount": 176
+    },
+    {
+      "id": "raster-ortofoto2012",
+      "title": "Ortofoto PCR · 2012",
+      "folder": "contesto",
+      "kind": "raster",
+      "status": "ready",
+      "provider": "Regione FVG / IRDAT · ortofoto e rilievi",
+      "sourceId": "WMS regionali",
+      "sourceUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA5/",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "description": "Immagini georeferenziate del servizio WMS regionale, rese disponibili in tile compatibili con la mappa web.",
+      "note": "Campagna 2012. Piramide per visualizzazione regionale z5–11 (pixel di circa 27 m alla scala più dettagliata); per il rilievo originale ad alta risoluzione consultare la fonte. Non immagini di oggi.",
+      "cadence": "Verifica e sincronizzazione automatiche ogni 6 ore",
+      "color": "#9ba99b",
+      "dataDate": "2012",
+      "bounds": [
+        [
+          12.25,
+          45.5
+        ],
+        [
+          14.0,
+          46.7
+        ]
+      ],
+      "minzoom": 5,
+      "maxzoom": 11,
+      "wmsLayer": "ortofoto2012",
+      "rasterDir": "raster-ortofoto2012",
+      "tiles": [
+        "data/regional/raster-ortofoto2012/{z}/{x}/{y}.png"
+      ],
+      "retrievedAt": "2026-11-08T22:45:43.800884+00:00",
+      "lastCheckedAt": "2026-11-08T22:45:43.800884+00:00",
+      "tileCount": 176
+    },
+    {
+      "id": "raster-hillshade",
+      "title": "Rilievo del terreno LiDAR · hillshade",
+      "folder": "contesto",
+      "kind": "raster",
+      "status": "ready",
+      "provider": "Regione FVG / IRDAT · ortofoto e rilievi",
+      "sourceId": "WMS regionali",
+      "sourceUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA5/",
+      "license": "IODL 2.0 · standard regionale",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "description": "Immagini georeferenziate del servizio WMS regionale, rese disponibili in tile compatibili con la mappa web.",
+      "note": "Campagna 2017–2020. Piramide per visualizzazione regionale z5–11 (pixel di circa 27 m alla scala più dettagliata); per il rilievo originale ad alta risoluzione consultare la fonte. Non immagini di oggi.",
+      "cadence": "Verifica e sincronizzazione automatiche ogni 6 ore",
+      "color": "#9ba99b",
+      "dataDate": "2017–2020",
+      "bounds": [
+        [
+          12.25,
+          45.5
+        ],
+        [
+          14.0,
+          46.7
+        ]
+      ],
+      "minzoom": 5,
+      "maxzoom": 11,
+      "wmsLayer": "Hillshade",
+      "rasterDir": "raster-hillshade",
+      "tiles": [
+        "data/regional/raster-hillshade/{z}/{x}/{y}.png"
+      ],
+      "retrievedAt": "2026-11-08T22:46:37.026279+00:00",
+      "lastCheckedAt": "2026-11-08T22:46:37.026279+00:00",
+      "tileCount": 176
+    }
+  ]
+}

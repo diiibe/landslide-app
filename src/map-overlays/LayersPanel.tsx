@@ -45,7 +45,7 @@ const MODELS: { id: ModelId; label: string }[] = [
   { id: "j3", label: "J.3" },
 ];
 
-export function LayersPanel() {
+export function LayersPanel({ embedded = false, contextExtra, contextStats, query = "", activeOnly = false }: { embedded?: boolean;contextExtra?:ReactNode;contextStats?:{active:number;total:number};query?:string;activeOnly?:boolean } = {}) {
   const open = useAppStore((s) => s.layersPanelOpen);
   const toggle = useAppStore((s) => s.toggleLayersPanel);
   const layers = useAppStore((s) => s.layers);
@@ -63,8 +63,8 @@ export function LayersPanel() {
   const setDiffOpacity = useAppStore((s) => s.setDiffOpacity);
 
   return (
-    <div className={styles.panel} data-open={open}>
-      <button
+    <div className={`${styles.panel} ${embedded ? styles.embedded : ""} ${activeOnly ? styles.activeOnly : ""}`} data-open={embedded || open}>
+      {!embedded && <button
         type="button"
         className={styles.head}
         aria-expanded={open}
@@ -74,10 +74,10 @@ export function LayersPanel() {
       >
         <span className={styles.ttl}>Layers</span>
         <span className={styles.caret} aria-hidden="true">▾</span>
-      </button>
+      </button>}
       <div className={styles.wrap} id="layers-panel-body">
         <div className={styles.body}>
-          <OverlaySection id="landslide">
+          <OverlaySection id="landslide" query={query} activeOnly={activeOnly}>
             {/* Model selector lives at the top of the Frane section so the
                 user picks J.2 vs J.3 in the same place they enable the
                 susceptibility cells / heatmap / IFFI that those models
@@ -143,7 +143,7 @@ export function LayersPanel() {
             </label>
             <ModelV2Block />
           </OverlaySection>
-          <OverlaySection id="flood">
+          <OverlaySection id="flood" query={query} activeOnly={activeOnly}>
             <label className={styles.item}>
               <input
                 type="checkbox"
@@ -266,7 +266,7 @@ export function LayersPanel() {
               <span className={styles.itemState}>{layers.floodHistorical ? "on" : "off"}</span>
             </label>
           </OverlaySection>
-          <OverlaySection id="context">
+          <OverlaySection id="context" query={query} activeOnly={activeOnly} extra={contextStats}>
             <label className={styles.item}>
               <input
                 type="checkbox"
@@ -324,6 +324,7 @@ export function LayersPanel() {
             {/* Roads + Trails sensitivity sliders live in the floating
                 SensitivityPanel (mounted in App.tsx) — see
                 src/map-overlays/SensitivityPanel.tsx. */}
+            {contextExtra}
           </OverlaySection>
           <UserLayersSection />
           <UserPolygonsSection />
@@ -387,13 +388,17 @@ function ModelV2Block() {
  *  enter/exit animation stays measurement-free (same trick the outer
  *  panel uses). A right-aligned count badge ("3/4") summarises active
  *  items so the user can read the panel state without expanding it. */
-function OverlaySection({ id, children }: { id: OverlayGroup; children: ReactNode }) {
-  const open = useAppStore((s) => s.overlayGroupOpen[id]);
+function OverlaySection({ id, children, query = "", extra, activeOnly=false }: { id: OverlayGroup; children: ReactNode;query?:string;activeOnly?:boolean;extra?:{active:number;total:number}|undefined }) {
+  const storedOpen = useAppStore((s) => s.overlayGroupOpen[id]);
+  const open = !!query || storedOpen;
   const toggle = useAppStore((s) => s.toggleOverlayGroup);
   const layers = useAppStore((s) => s.layers);
   const keys = OVERLAY_GROUP_KEYS[id];
-  const active = keys.reduce((n, k) => n + (layers[k] ? 1 : 0), 0);
-  const total = keys.length;
+  const active = keys.reduce((n, k) => n + (layers[k] ? 1 : 0), 0) + (extra?.active ?? 0);
+  if(activeOnly&&!active)return null;
+  const total = keys.length + (extra?.total ?? 0);
+  const terms = {landslide:"frane landslide suscettibilità susceptibility j.2 j.3 v2 corpi diffusa iffi heatmap kde zone",flood:"alluvioni alluvione flood pai differenza diff storico pericolosità",context:"contesto strade roads sentieri trails dtm comuni edifici ortofoto lidar cartografia rifugi huts strutture critiche"};
+  if(query && !terms[id].toLowerCase().includes(query.toLowerCase()) && !(id === "context" && extra?.total)) return null;
   const bodyId = `overlay-section-${id}`;
   return (
     <div className={styles.g} data-grp-open={open}>
@@ -415,7 +420,7 @@ function OverlaySection({ id, children }: { id: OverlayGroup; children: ReactNod
         <span className={styles.gCaret} aria-hidden="true">▾</span>
       </button>
       <div className={styles.gWrap} id={bodyId}>
-        <div className={styles.gBody}>{children}</div>
+        <div className={styles.gBody} aria-hidden={!open} {...(!open ? {inert:""} : {})}>{children}</div>
       </div>
     </div>
   );

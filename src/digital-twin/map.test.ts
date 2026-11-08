@@ -79,13 +79,13 @@ it("keeps activation and a requested city pending until the replacement style is
   h.emit("style.load");
   expect(h.jumpTo).toHaveBeenCalledWith(expect.objectContaining({ center: SCENES.monfalcone.center }));
 });
-it("frames the coast when activation occurs during a later style load", () => {
+it("preserves the current region when observations activate during a style load", () => {
   const h = harness();
   h.emit("style.load");
   h.emit("styledataloading");
   useTwinStore.setState({ active: true });
   h.emit("style.load");
-  expect(h.jumpTo).toHaveBeenCalledWith(expect.objectContaining({ center: SCENES.coast.center }));
+  expect(h.jumpTo).not.toHaveBeenCalled();
 });
 
 it("applies the closed sheet inset before flying or fitting, so a later layout frame cannot cancel navigation", () => {

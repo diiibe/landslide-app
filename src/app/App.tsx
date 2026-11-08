@@ -1,9 +1,8 @@
 import { lazy, Suspense, useEffect, useState, type ComponentType } from "react";
 import styles from "./App.module.css";
-import { TwinButton, TwinPanel } from "@/digital-twin/Panel";
-import { VARIABLES } from "@/digital-twin/data";
+import { RegionalPanel, LayerButton } from "@/regional/Panel";
+import { RegionalRuntime } from "@/regional/Runtime";
 import { TwinRuntime } from "@/digital-twin/Runtime";
-import { useTwinStore } from "@/digital-twin/store";
 import { parseUserFile } from "@/lib/upload";
 import { TopBar } from "@/topbar/TopBar";
 import { SearchLocality } from "@/topbar/SearchLocality";
@@ -23,7 +22,6 @@ const MapView: ComponentType = import.meta.env.MODE === "test"
       import("@/map/MapView").then((m) => ({ default: m.MapView })),
     );
 import { ZonesPill } from "@/map-overlays/ZonesPill";
-import { LayersPanel } from "@/map-overlays/LayersPanel";
 import { BasemapPanel } from "@/map-overlays/BasemapPanel";
 import { SensitivityPanel } from "@/map-overlays/SensitivityPanel";
 import { ComuneFilterPanel } from "@/map-overlays/ComuneFilterPanel";
@@ -42,8 +40,6 @@ import { JStatsNote } from "@/drawer/JStatsNote";
 import { useAppStore } from "@/app/store";
 
 export default function App() {
-  const twinActive = useTwinStore((s) => s.active);
-  const twinVariable = useTwinStore((s) => s.variable);
   const drawerOpen = useAppStore((s) => s.drawerOpen);
   const v2On = useAppStore((s) => s.layers.v2Bodies || s.layers.v2Diffuse);
   const addUserLayer = useAppStore((s) => s.addUserLayer);
@@ -118,43 +114,34 @@ export default function App() {
         </div>
       )}
       <TwinRuntime />
-      <TopBar tabs={<TwinButton />} search={<SearchLocality />} icons={<IconButtons />} />
-      <div className={styles.body} data-workspace={twinActive ? "twin" : "hazards"} data-drawer={drawerOpen ? "open" : "closed"}>
+      <RegionalRuntime />
+      <TopBar tabs={<LayerButton />} search={<SearchLocality />} icons={<IconButtons />} />
+      <div className={styles.body} data-workspace="unified" data-drawer={drawerOpen ? "open" : "closed"}>
         <div className={styles.map}>
           <Suspense fallback={<MapSkeleton />}>
             <MapView />
           </Suspense>
-          {!twinActive && <><ZonesPill /><ThresholdControl /></>}
+          <ZonesPill /><ThresholdControl />
           <div className={styles.rightStack}>
-            {!twinActive && <LayersPanel />}
             <BasemapPanel />
           </div>
-          {!twinActive && <div className={styles.rightOverlays}>
+          {<div className={styles.rightOverlays}>
             <SensitivityPanel />
             <ComuneFilterPanel />
             <PoiLegendPanel />
           </div>}
-          {!twinActive && <><Legend /><DrawingPanel /></>}
+          <Legend /><DrawingPanel />
         </div>
-        <Drawer
-          mobileSheet={twinActive}
-          label={twinActive ? "Livelli e dati" : "Analisi della mappa"}
-          triggerLabel={twinActive ? "Livelli" : "Analisi"}
-          summary={twinActive ? VARIABLES[twinVariable].shortLabel : undefined}
-        >
-          {/* J-only statistics never sit next to a v2 surface. */}
-          {twinActive ? <TwinPanel /> : v2On ? (
-            <JStatsNote />
-          ) : (
-            <>
+        <Drawer mobileSheet label="Livelli e analisi" triggerLabel="Livelli">
+          <RegionalPanel analysis={<>
+            {v2On ? <JStatsNote /> : <>
               <Group id="view" label="View"><ViewPanel /></Group>
               <Group id="monitoring" label="Monitoring"><MonitoringPanel /></Group>
               <Group id="analytics" label="Analytics"><AnalyticsPanel /></Group>
               <Group id="model" label="Model"><ModelPanel /></Group>
-            </>
-          )}
-          {/* Separate group: v2 metrics are not comparable with J.2/J.3. */}
-          {!twinActive && <Group id="modelV2" label="Metriche v2"><ModelV2Panel /></Group>}
+            </>}
+            <Group id="modelV2" label="Metriche v2"><ModelV2Panel /></Group>
+          </>} />
         </Drawer>
       </div>
     </div>

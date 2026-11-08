@@ -8,9 +8,11 @@ vi.mock("@/map/MapView", () => ({
 
 import App from "./App";
 import { useAppStore } from "./store";
+import {useRegionalStore} from "@/regional/store";
 
 beforeEach(() => {
   useAppStore.getState().reset();
+  useRegionalStore.setState({tab:"layers",query:"",activeOnly:false,enabled:{},selection:null,detailId:null});
   // Stub fetch for public/data/*.json so tests don't need a server.
   vi.spyOn(globalThis, "fetch").mockImplementation(async (input: RequestInfo | URL) => {
     const url = typeof input === "string" ? input : input.toString();
@@ -40,8 +42,9 @@ beforeEach(() => {
 describe("App integration", () => {
   it("renders brand, map stub and drawer groups", () => {
     render(<App />);
-    expect(screen.getByText("FVG Landslide")).toBeInTheDocument();
+    expect(screen.getByText("FVG · Territorio")).toBeInTheDocument();
     expect(screen.getByTestId("map-stub")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("tab",{name:"Analisi"}));
     expect(screen.getByRole("button", { name: /^view/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /^monitoring/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /^analytics/i })).toBeInTheDocument();
@@ -59,6 +62,7 @@ describe("App integration", () => {
   it("replaces the J statistics groups with one line while a v2 layer is on", () => {
     useAppStore.getState().toggleLayer("v2Diffuse");
     render(<App />);
+    fireEvent.click(screen.getByRole("tab",{name:"Analisi"}));
     expect(
       screen.getByText("Statistiche disponibili per J.2/J.3. Il modello v2 non ha zone."),
     ).toBeInTheDocument();
@@ -71,6 +75,7 @@ describe("App integration", () => {
   it("shows the J groups again when the v2 layer goes off", () => {
     useAppStore.getState().toggleLayer("v2Diffuse");
     const { rerender } = render(<App />);
+    fireEvent.click(screen.getByRole("tab",{name:"Analisi"}));
     act(() => useAppStore.getState().toggleLayer("v2Diffuse"));
     rerender(<App />);
     expect(screen.queryByText(/Il modello v2 non ha zone/)).toBeNull();
@@ -82,7 +87,7 @@ describe("App integration", () => {
   it("toggles drawer via the handle", () => {
     render(<App />);
     expect(useAppStore.getState().drawerOpen).toBe(true);
-    fireEvent.click(screen.getByRole("button", { name: /chiudi analisi della mappa/i }));
+    fireEvent.click(screen.getByRole("button", { name: /chiudi livelli e analisi/i }));
     expect(useAppStore.getState().drawerOpen).toBe(false);
   });
 });
