@@ -1,5 +1,8 @@
 import { lazy, Suspense, useEffect, useState, type ComponentType } from "react";
 import styles from "./App.module.css";
+import { TwinButton, TwinPanel } from "@/digital-twin/Panel";
+import { TwinRuntime } from "@/digital-twin/Runtime";
+import { useTwinStore } from "@/digital-twin/store";
 import { parseUserFile } from "@/lib/upload";
 import { TopBar } from "@/topbar/TopBar";
 import { SearchLocality } from "@/topbar/SearchLocality";
@@ -38,6 +41,7 @@ import { JStatsNote } from "@/drawer/JStatsNote";
 import { useAppStore } from "@/app/store";
 
 export default function App() {
+  const twinActive = useTwinStore((s) => s.active);
   const drawerOpen = useAppStore((s) => s.drawerOpen);
   const v2On = useAppStore((s) => s.layers.v2Bodies || s.layers.v2Diffuse);
   const addUserLayer = useAppStore((s) => s.addUserLayer);
@@ -111,29 +115,28 @@ export default function App() {
           <span>Drop GPX, GeoJSON, or KML to add as a layer</span>
         </div>
       )}
-      <TopBar tabs={null} search={<SearchLocality />} icons={<IconButtons />} />
+      <TwinRuntime />
+      <TopBar tabs={<TwinButton />} search={<SearchLocality />} icons={<IconButtons />} />
       <div className={styles.body} data-drawer={drawerOpen ? "open" : "closed"}>
         <div className={styles.map}>
           <Suspense fallback={<MapSkeleton />}>
             <MapView />
           </Suspense>
-          <ZonesPill />
-          <ThresholdControl />
+          {!twinActive && <><ZonesPill /><ThresholdControl /></>}
           <div className={styles.rightStack}>
-            <LayersPanel />
+            {!twinActive && <LayersPanel />}
             <BasemapPanel />
           </div>
-          <div className={styles.rightOverlays}>
+          {!twinActive && <div className={styles.rightOverlays}>
             <SensitivityPanel />
             <ComuneFilterPanel />
             <PoiLegendPanel />
-          </div>
-          <Legend />
-          <DrawingPanel />
+          </div>}
+          {!twinActive && <><Legend /><DrawingPanel /></>}
         </div>
         <Drawer>
           {/* J-only statistics never sit next to a v2 surface. */}
-          {v2On ? (
+          {twinActive ? <TwinPanel /> : v2On ? (
             <JStatsNote />
           ) : (
             <>
@@ -144,7 +147,7 @@ export default function App() {
             </>
           )}
           {/* Separate group: v2 metrics are not comparable with J.2/J.3. */}
-          <Group id="modelV2" label="Metriche v2"><ModelV2Panel /></Group>
+          {!twinActive && <Group id="modelV2" label="Metriche v2"><ModelV2Panel /></Group>}
         </Drawer>
       </div>
     </div>

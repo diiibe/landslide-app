@@ -1,4 +1,5 @@
 import { useAppStore } from "@/app/store";
+import { HAS_MAPBOX_TOKEN } from "@/map/style";
 import type { Basemap } from "@/app/types";
 import styles from "./LayersPanel.module.css";
 
@@ -22,12 +23,14 @@ export function BasemapPanel() {
   const basemap = useAppStore((s) => s.basemap);
   const setBasemap = useAppStore((s) => s.setBasemap);
 
-  const items: { id: Basemap; label: string }[] = [
-    { id: "outdoors", label: "Outdoors" },
-    { id: "light", label: "Light" },
-    { id: "satellite", label: "Satellite" },
-    { id: "dark", label: "Dark" },
-  ];
+  const items: { id: Basemap; label: string }[] = HAS_MAPBOX_TOKEN
+    ? [
+        { id: "outdoors", label: "Outdoors" },
+        { id: "light", label: "Light" },
+        { id: "satellite", label: "Satellite" },
+        { id: "dark", label: "Dark" },
+      ]
+    : [{ id: "outdoors", label: "OpenStreetMap" }];
 
   return (
     <div className={`${styles.panel} ${styles.panelInStack}`} data-open={open}>
@@ -40,7 +43,9 @@ export function BasemapPanel() {
         onClick={toggle}
       >
         <span className={styles.ttl}>Basemap</span>
-        <span className={styles.caret} aria-hidden="true">▾</span>
+        <span className={styles.caret} aria-hidden="true">
+          ▾
+        </span>
       </button>
       <div className={styles.wrap} id="basemap-panel-body">
         <div className={styles.body}>
@@ -52,8 +57,8 @@ export function BasemapPanel() {
                   type="button"
                   className={styles.bm}
                   data-kind={b.id}
-                  data-active={basemap === b.id}
-                  aria-pressed={basemap === b.id}
+                  data-active={!HAS_MAPBOX_TOKEN || basemap === b.id}
+                  aria-pressed={!HAS_MAPBOX_TOKEN || basemap === b.id}
                   title={`Use ${b.label} basemap`}
                   onClick={() => setBasemap(b.id)}
                 >

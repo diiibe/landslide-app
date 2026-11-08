@@ -20,7 +20,7 @@ export function TopBar({ tabs, search, icons }: Props) {
         </span>
       </div>
       {tabs}
-      {search}
+      <div className={styles.search}>{search}</div>
       <div className={styles.spacer}>{icons}</div>
     </header>
   );

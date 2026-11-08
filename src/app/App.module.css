@@ -142,3 +142,21 @@
     width: calc(100vw - 16px);
   }
 }
+
+/* The shared panel styles include mobile widths/offsets. Inside this stack,
+   the parent owns placement so Basemap cannot overflow a narrow viewport. */
+@media (max-width: 768px) {
+  .rightStack {
+    top: 60px;
+    right: 8px;
+    width: min(calc(100vw - 16px), 280px);
+  }
+  .rightStack > div {
+    top: auto;
+    right: auto;
+    width: 100%;
+  }
+}
+@media (max-width: 480px) {
+  .rightStack { width: calc(100vw - 16px); }
+}

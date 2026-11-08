@@ -42,3 +42,12 @@
   .brand { font-size: 13px; }
   .bar { padding: 0 8px; gap: 6px; }
 }
+
+.search { flex: 1; min-width: 120px; max-width: 240px; }
+@media (max-width: 768px) {
+  .bar { display: grid; grid-template-columns: minmax(120px, 1fr) auto; height: auto; min-height: var(--topbar-h); padding: 8px; gap: 6px 8px; }
+  .bar > button { justify-self: end; }
+  .search { width: 100%; max-width: none; }
+  .spacer { margin-left: 0; }
+}
+@media (max-width: 480px) { .spacer button, .spacer summary { min-width: 36px; min-height: 40px; } }

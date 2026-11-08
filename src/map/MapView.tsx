@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import maplibregl, { type RequestParameters, type ResourceType } from "maplibre-gl";
 import { useAppStore } from "@/app/store";
 import type { ModelId, V2Layer } from "@/app/types";
-import { BASEMAP_STYLE, FVG_BOUNDS, FVG_CENTER } from "./style";
+import { BASEMAP_STYLE, FVG_BOUNDS, FVG_CENTER, HAS_MAPBOX_TOKEN } from "./style";
 import { installPmtilesProtocol } from "./pmtiles-protocol";
 import {
   addSusceptibility,
@@ -98,6 +98,7 @@ import { startDrawing, stopDrawing } from "./drawing";
 import { registerPopups } from "./popups";
 import { setMap } from "./instance";
 import styles from "./MapView.module.css";
+import { mountTwinMap } from "@/digital-twin/map";
 
 const TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string | undefined;
 
@@ -379,7 +380,7 @@ export function MapView() {
       // Re-apply terrain after a basemap swap. setStyle wipes
       // everything including terrain bindings; without this the 3D
       // toggle would silently flatten on every basemap change.
-      if (useAppStore.getState().view3D && m.getSource(DEM_SOURCE)) {
+      if (useAppStore.getState().view3D && HAS_MAPBOX_TOKEN && m.getSource(DEM_SOURCE)) {
         try { m.setTerrain({ source: DEM_SOURCE, exaggeration: 1.5 }); } catch { /* ignore */ }
       }
       popupsUnsubRef.current?.();
@@ -392,9 +393,11 @@ export function MapView() {
         polygonUnsub();
       };
     });
+    const unmountTwin = mountTwinMap(m);
     mapRef.current = m;
     setMap(m);
     return () => {
+      unmountTwin();
       setMap(null);
       popupsUnsubRef.current?.();
       popupsUnsubRef.current = null;
@@ -764,7 +767,7 @@ export function MapView() {
     const m = mapRef.current;
     if (!m) return;
     m.setPitch(view3D ? 60 : 0);
-    const desiredTerrain = view3D
+    const desiredTerrain = view3D && HAS_MAPBOX_TOKEN
       ? { source: DEM_SOURCE, exaggeration: 1.5 }
       : null;
     try {
