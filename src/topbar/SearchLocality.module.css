@@ -113,7 +113,9 @@
 
 /* P2.16: WCAG 2.5.8 — pointer targets must be ≥ 24×24, recommended 44×44.
  * Desktop keeps the dense 32 px row; phones get the larger tap area. */
-@media (max-width: 768px) {
+@media (max-width: 768px), (max-height: 500px) and (pointer: coarse) {
+  .wrap { min-width: 0; max-width: none; height: 44px; }
+  .input { font-size: 16px; }
   .opt {
     min-height: 44px;
     padding: 10px 12px;

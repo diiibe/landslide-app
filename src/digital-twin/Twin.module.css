@@ -23,6 +23,7 @@
   color: var(--c-text);
   line-height: 1.5;
 }
+.mobileVariables { display: none; }
 .heading {
   padding: 14px 12px;
   border-bottom: 1px solid var(--c-border);
@@ -82,6 +83,7 @@
   min-height: 28px;
   cursor: pointer;
 }
+.layerToggles { display: flex; flex-direction: column; gap: 4px; }
 .check input {
   accent-color: var(--c-slate);
   margin: 0;
@@ -228,15 +230,52 @@
   stroke-width: 2;
   fill: none;
 }
-@media (max-width: 480px) {
+@media (max-width: 768px), (max-height: 500px) and (pointer: coarse) {
+  .heading,
+  .desktopVariable { display: none; }
+  .panel { font-size: 14px; }
+  .panel .caption,
+  .feed,
+  .freshness { font-size: 13px; }
+  .panel .section h3 { font-size: 14px; }
   .mode {
-    font-size: 11px;
-    padding: 6px;
+    font-size: 13px;
+    min-height: 44px;
+    padding: 8px 10px;
   }
   .section {
     padding: 12px;
   }
   .check {
-    min-height: 34px;
+    min-height: 44px;
+    gap: 10px;
   }
+  .check input { width: 20px; height: 20px; flex-shrink: 0; }
+  .scenes button,
+  .action,
+  .nearby button { min-height: 44px; }
+  .scenes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .field select { min-height: 48px; font-size: 16px; }
+  .mobileVariables { display: block; padding: 0; margin: 0; border: 0; min-width: 0; }
+  .mobileVariables legend { padding: 0 0 8px; font-weight: 600; }
+  .mobileVariables > div { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
+  .mobileVariables button {
+    grid-column: span 2;
+    min-height: 44px;
+    padding: 6px;
+    font: inherit;
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-sm);
+    background: var(--c-surface);
+    cursor: pointer;
+  }
+  .mobileVariables button:nth-child(n + 4) { grid-column: span 3; }
+  .mobileVariables button[aria-pressed="true"] {
+    color: var(--c-slate);
+    border-color: var(--c-slate);
+    background: var(--c-surface-2, var(--c-bg-linen));
+    font-weight: 700;
+  }
+  .legend { font-size: 12px; }
+  .panel summary { min-height: 44px; display: flex; align-items: center; }
 }

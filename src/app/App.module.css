@@ -97,7 +97,7 @@
  * On viewports ≤ 768 px the right-hand drawer becomes a full-screen overlay
  * sheet anchored to the right edge. The map gets the entire row when the
  * drawer is closed; the chevron handle floats on the right edge of the map. */
-@media (max-width: 768px) {
+@media (max-width: 768px), (max-height: 500px) and (pointer: coarse) {
   .body {
     /* Stack so the drawer can overlay without the flex row reserving space. */
     position: relative;
@@ -145,18 +145,72 @@
 
 /* The shared panel styles include mobile widths/offsets. Inside this stack,
    the parent owns placement so Basemap cannot overflow a narrow viewport. */
-@media (max-width: 768px) {
+@media (max-width: 768px), (max-height: 500px) and (pointer: coarse) {
   .rightStack {
     top: 60px;
     right: 8px;
     width: min(calc(100vw - 16px), 280px);
+    max-height: calc(100% - 68px);
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
   }
   .rightStack > div {
     top: auto;
     right: auto;
     width: 100%;
+    flex-shrink: 0;
+    max-height: none;
   }
 }
 @media (max-width: 480px) {
   .rightStack { width: calc(100vw - 16px); }
+}
+
+@media (max-width: 768px), (max-height: 500px) and (pointer: coarse) {
+  /* The twin keeps a usable map above its controls, including while picking
+     another observation. No full-screen scrim intercepts the map or topbar. */
+  .body[data-workspace="twin"] :global(.drawer) {
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    max-width: none;
+    height: 62%;
+    max-height: calc(100% - 64px);
+    border-top: 1px solid var(--c-border);
+    box-shadow: 0 -2px 8px rgb(0 0 0 / 0.12);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    scroll-padding-top: 68px;
+    overscroll-behavior-y: contain;
+    transition: none;
+  }
+  .body[data-workspace="twin"][data-drawer="closed"] :global(.drawer) {
+    height: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .body[data-workspace="twin"] .rightStack {
+    top: 8px;
+    right: 8px;
+    width: 156px;
+    max-height: calc(38% - 16px);
+    overflow-y: auto;
+  }
+}
+
+@media (max-height: 500px) and (pointer: coarse) and (min-width: 769px) {
+  .body[data-workspace="twin"] :global(.drawer) {
+    top: 0;
+    left: auto;
+    width: min(52%, 420px);
+    height: 100%;
+    max-height: 100%;
+    border-left: 1px solid var(--c-border);
+  }
+  .body[data-workspace="twin"] .rightStack {
+    left: 8px;
+    right: auto;
+    max-height: calc(100% - 16px);
+  }
 }

@@ -31,6 +31,8 @@
   transition: width .4s var(--e-expo), opacity .28s var(--e-quart);
   flex-shrink: 0;
 }
+.handleLabel,
+.mobileHeader { display: none; }
 
 /* Backdrop — purely decorative scrim that closes the drawer on tap.
    Hidden on desktop; only shown on mobile when drawer is open. */
@@ -52,7 +54,7 @@
 /* ───── Mobile / tablet ─────
  * Make the handle an honest 44 px tap target floating on the right edge,
  * and let the drawer overlay the map (positioning is owned by App.module.css). */
-@media (max-width: 768px) {
+@media (max-width: 768px), (max-height: 500px) and (pointer: coarse) {
   .handle {
     width: 44px;
     min-height: 44px;
@@ -87,4 +89,49 @@
     opacity: 1;
     pointer-events: auto;
   }
+
+  .handle {
+    width: auto;
+    padding: 0 12px;
+    gap: 8px;
+    font-size: 14px;
+  }
+  .handleLabel { display: inline; }
+  .handleLabel > span { font-weight: 400; }
+  .mobileHeader {
+    display: flex;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-height: 60px;
+    padding: 8px 12px;
+    background: var(--c-surface);
+    border-bottom: 1px solid var(--c-border);
+    font-size: 15px;
+  }
+  .mobileHeader button {
+    min-height: 44px;
+    padding: 0 10px;
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-sm);
+    background: var(--c-bg-linen);
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .mobileHeader button span { margin-left: 6px; font-size: 20px; }
+  .backdrop[data-sheet="true"] { display: none; }
+  .handle[data-sheet="true"] {
+    top: auto;
+    bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+    left: 12px;
+    right: auto;
+    max-width: calc(100% - 72px);
+    min-height: 48px;
+    font-weight: 600;
+  }
+  .handle[data-open="true"] { display: none; }
+  .handle[data-sheet="true"] svg { transform: rotate(-90deg); }
 }

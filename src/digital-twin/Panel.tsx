@@ -112,6 +112,22 @@ export function TwinPanel() {
         <p>Trieste–Monfalcone</p>
       </div>
       <div className={styles.section}>
+        <fieldset className={styles.mobileVariables}>
+          <legend>Dati sulla mappa</legend>
+          <div>
+            {Object.entries(VARIABLES).map(([id, variable]) => (
+              <button
+                key={id}
+                type="button"
+                aria-pressed={s.variable === id}
+                title={variable.label}
+                onClick={() => useTwinStore.setState({ variable: id as Variable })}
+              >
+                {variable.shortLabel}
+              </button>
+            ))}
+          </div>
+        </fieldset>
         <div
           className={styles.scenes}
           role="group"
@@ -127,17 +143,19 @@ export function TwinPanel() {
             <button
               key={id}
               type="button"
-              onClick={() =>
+              onClick={() => {
                 window.dispatchEvent(
                   new CustomEvent("fvg:twin-scene", { detail: id }),
-                )
-              }
+                );
+                if (window.matchMedia("(max-width: 768px), (max-height: 500px) and (pointer: coarse)").matches)
+                  useAppStore.setState({ drawerOpen: false });
+              }}
             >
               {label}
             </button>
           ))}
         </div>
-        <label className={styles.field}>
+        <label className={`${styles.field} ${styles.desktopVariable}`}>
           Osservazioni PCR
           <select
             aria-label="Osservazioni PCR"
@@ -153,6 +171,39 @@ export function TwinPanel() {
             ))}
           </select>
         </label>
+        <div className={styles.layerToggles} role="group" aria-label="Livelli aggiuntivi">
+          <label className={styles.check}>
+            <input
+              type="checkbox"
+              checked={s.radarOn}
+              onChange={(e) =>
+                useTwinStore.setState({ radarOn: e.target.checked })
+              }
+            />
+            Radar precipitazioni SRI · mm/h
+          </label>
+          <label className={styles.check}>
+            <input
+              type="checkbox"
+              checked={s.assetsOn}
+              onChange={(e) =>
+                useTwinStore.setState({ assetsOn: e.target.checked })
+              }
+            />
+            <i className={styles.assetDot} />
+            Stabilimenti AIA
+          </label>
+          <label className={styles.check}>
+            <input
+              type="checkbox"
+              checked={s.buildingsOn}
+              onChange={(e) =>
+                useTwinStore.setState({ buildingsOn: e.target.checked })
+              }
+            />
+            Edifici 2,5D · estratti urbani
+          </label>
+        </div>
         <p className={styles.caption}>
           {rows.length} stazioni per questa variabile in regione · {recent} con
           misura negli ultimi 45 minuti.
@@ -182,37 +233,6 @@ export function TwinPanel() {
             da verificare. Non è una quota di allagamento.
           </p>
         )}
-        <label className={styles.check}>
-          <input
-            type="checkbox"
-            checked={s.radarOn}
-            onChange={(e) =>
-              useTwinStore.setState({ radarOn: e.target.checked })
-            }
-          />
-          Radar precipitazioni SRI · mm/h
-        </label>
-        <label className={styles.check}>
-          <input
-            type="checkbox"
-            checked={s.assetsOn}
-            onChange={(e) =>
-              useTwinStore.setState({ assetsOn: e.target.checked })
-            }
-          />
-          <i className={styles.assetDot} />
-          Stabilimenti AIA
-        </label>
-        <label className={styles.check}>
-          <input
-            type="checkbox"
-            checked={s.buildingsOn}
-            onChange={(e) =>
-              useTwinStore.setState({ buildingsOn: e.target.checked })
-            }
-          />
-          Edifici 2,5D · estratti urbani
-        </label>
         <p className={styles.caption}>
           Edifici visibili da zoom 12. Usa Trieste o Monfalcone per esplorare
           l’estratto.
