@@ -2,6 +2,7 @@ import { useAppStore } from "@/app/store";
 import type { V2Layer } from "@/app/types";
 import { useModelV2 } from "@/lib/modelV2";
 import { v2ClassColor } from "@/map/layers/modelV2";
+import { V2_FULL_FIT_NOTE } from "@/map/popups";
 import styles from "./Legend.module.css";
 
 /** What a red v2 cell means, per layer. Plain Italian on purpose: the
@@ -94,6 +95,7 @@ function V2LegendBody({ layer }: { layer: V2Layer }) {
         <span>meno simile</span><span>più simile</span>
       </div>
       <p className={styles.v2Copy}>{copy}</p>
+      <p className={styles.v2Note}>{V2_FULL_FIT_NOTE}</p>
       {stats && (
         <p className={styles.v2Note}>
           Classi per quantili; quote effettive: {stats.shares.map(pct).join(", ")}.

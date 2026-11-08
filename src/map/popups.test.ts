@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { buildCellPopupNode, buildIffiPopupNode, buildV2PopupNode } from "./popups";
+import {
+  buildCellPopupNode,
+  buildIffiPopupNode,
+  buildV2PopupNode,
+  buildV2ZoomHintNode,
+  v2ZoomHintApplies,
+  V2_FULL_FIT_NOTE,
+} from "./popups";
 
 /**
  * P2.2: feature properties used to be interpolated into a template literal
@@ -61,31 +68,47 @@ describe("buildIffiPopupNode", () => {
 });
 
 describe("buildV2PopupNode", () => {
-  it("names the layer, the class and explains a holdout source", () => {
-    const node = buildV2PopupNode({ layer: "bodies", cls: 4, ncls: 5, source: "holdout" });
+  it("names the layer and the class, and says it is not a forecast", () => {
+    const node = buildV2PopupNode({ layer: "bodies", cls: 4, ncls: 5 });
     const text = node.textContent ?? "";
     expect(text).toContain("corpi di frana");
     expect(text).toContain("Classe 4 di 5");
-    expect(text).toMatch(/mai visto quest'area/);
-    expect(node.querySelector(".fvg-popup__warn")).toBeNull();
+    expect(text).toMatch(/Somiglianza all'inventario: non è una previsione/);
   });
 
-  it("flags in-sample cells", () => {
-    const node = buildV2PopupNode({ layer: "diffuse", cls: 2, ncls: 4, source: "in_sample" });
+  it("says the full-fit model is optimistic where the inventory already has landslides", () => {
+    const node = buildV2PopupNode({ layer: "diffuse", cls: 2, ncls: 4 });
     expect(node.textContent).toContain("zone diffuse");
     expect(node.textContent).toContain("Classe 2 di 4"); // collapsed classes
-    const warn = node.querySelector(".fvg-popup__warn");
-    expect(warn?.textContent).toMatch(/in-sample/i);
+    expect(node.textContent).toContain(V2_FULL_FIT_NOTE);
   });
 
-  it("never claims a landslide will happen", () => {
-    const node = buildV2PopupNode({ layer: "bodies", cls: 5, ncls: 5, source: "oof" });
-    expect(node.textContent).toMatch(/non è una previsione/);
+  it("no longer shows a per-cell score source", () => {
+    const text = buildV2PopupNode({ layer: "bodies", cls: 5, ncls: 5 }).textContent ?? "";
+    expect(text).not.toMatch(/oof|holdout|in-sample|fuori campione/i);
+    expect(buildV2PopupNode({ layer: "bodies", cls: 5, ncls: 5 }).querySelector(".fvg-popup__warn"))
+      .toBeNull();
+  });
+});
+
+describe("v2 zoom hint", () => {
+  const fake = (zoom: number, visible: Record<string, string>) => ({
+    getZoom: () => zoom,
+    getLayer: (id: string) => (id in visible ? ({ id } as never) : undefined),
+    getLayoutProperty: (id: string) => visible[id],
   });
 
-  it("renders an unknown source string as text, not HTML", () => {
-    const node = buildV2PopupNode({ layer: "bodies", cls: 1, ncls: 5, source: "<img src=x>" });
-    expect(node.querySelector("img")).toBeNull();
-    expect(node.textContent).toContain("<img src=x>");
+  it("applies below z10 while a v2 raster is visible", () => {
+    expect(v2ZoomHintApplies(fake(9.5, { "v2-bodies-raster": "visible" }))).toBe(true);
+  });
+
+  it("does not apply from z10, or when the v2 layers are hidden or absent", () => {
+    expect(v2ZoomHintApplies(fake(10, { "v2-bodies-raster": "visible" }))).toBe(false);
+    expect(v2ZoomHintApplies(fake(8, { "v2-diffuse-raster": "none" }))).toBe(false);
+    expect(v2ZoomHintApplies(fake(8, {}))).toBe(false);
+  });
+
+  it("reads 'Avvicinati per i dettagli della cella'", () => {
+    expect(buildV2ZoomHintNode().textContent).toBe("Avvicinati per i dettagli della cella");
   });
 });

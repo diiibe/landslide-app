@@ -293,6 +293,14 @@ describe("ModelV2FileSchema", () => {
     expect(() => parseOrThrow(ModelV2FileSchema, ok, "model_v2")).not.toThrow();
   });
 
+  it("accepts the full-fit export's single score source", () => {
+    const fullFit = {
+      ...ok,
+      layers: { ...ok.layers, bodies: { ...ok.layers.bodies, sources: { full_fit: 1000 } } },
+    };
+    expect(() => parseOrThrow(ModelV2FileSchema, fullFit, "model_v2")).not.toThrow();
+  });
+
   it("accepts owner-provided metric groups with intervals, units and notes", () => {
     const withMetrics = {
       ...ok,

@@ -187,11 +187,9 @@ const V2LayerStatsSchema = z
         message: "edges must be strictly increasing",
       }),
     shares: z.array(z.number().min(0).max(1)),
-    sources: z.object({
-      oof: z.number().int().nonnegative(),
-      holdout: z.number().int().nonnegative(),
-      in_sample: z.number().int().nonnegative(),
-    }),
+    /** Cell count per score source: `full_fit` for the map model, or
+     *  `oof` / `holdout` / `in_sample` from the earlier export. */
+    sources: z.record(z.string(), z.number().int().nonnegative()),
   })
   .superRefine((l, ctx) => {
     if (l.edges.length !== l.classes + 1) {

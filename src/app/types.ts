@@ -115,12 +115,6 @@ export const MODEL_ZONE_COUNT: Record<ModelId, number> = {
 export type V2Layer = "bodies" | "diffuse";
 export const V2_LAYERS: V2Layer[] = ["bodies", "diffuse"];
 
-/** How a v2 cell got its score.
- *  - `oof`: out-of-fold, scored by a fold model that did not train on it.
- *  - `holdout`: scored by a model that never saw its area.
- *  - `in_sample`: the model trained on this cell; flagged in the UI. */
-export type V2Source = "oof" | "holdout" | "in_sample";
-export const V2_SOURCES: V2Source[] = ["oof", "holdout", "in_sample"];
 
 export type Basemap = "outdoors" | "light" | "satellite" | "dark";
 export type Theme = "light" | "dark";

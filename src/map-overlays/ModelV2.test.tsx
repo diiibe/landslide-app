@@ -99,6 +99,7 @@ describe("Legend · Modello v2", () => {
     const section = screen.getByRole("region", { name: /corpi di frana/i });
     expect(section).toHaveTextContent(/l'inventario ha mappato corpi di frana/);
     expect(section).toHaveTextContent(/Non significa che qui avverrà una frana/);
+    expect(section).toHaveTextContent(/Modello addestrato su tutto il dominio/);
     expect(within(section).getAllByRole("listitem")).toHaveLength(5);
     expect(
       await within(section).findByText(/quote effettive: 20%, 20%, 20%, 20%, 20%/),
