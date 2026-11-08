@@ -6,17 +6,15 @@ afterEach(() => {
   useAppStore.getState().reset();
 });
 describe("digital twin workspace", () => {
-  it("restores the exact hazard configuration and 3D setting on exit", () => {
+  it("preserves hazards and 3D while observation layers are toggled", () => {
     useAppStore.getState().reset();
     useAppStore.setState({ view3D: false });
     useAppStore.getState().toggleLayer("flood");
     const before = { ...useAppStore.getState().layers };
     setTwinActive(true);
     expect(useTwinStore.getState().active).toBe(true);
-    expect(Object.values(useAppStore.getState().layers).every((v) => !v)).toBe(
-      true,
-    );
-    expect(useAppStore.getState().view3D).toBe(true);
+    expect(useAppStore.getState().layers).toEqual(before);
+    expect(useAppStore.getState().view3D).toBe(false);
     setTwinActive(false);
     expect(useAppStore.getState().layers).toEqual(before);
     expect(useAppStore.getState().view3D).toBe(false);

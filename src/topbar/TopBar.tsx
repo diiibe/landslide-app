@@ -34,7 +34,7 @@ export function TopBar({ tabs, search, icons }: Props) {
   return (
     <header className={styles.bar}>
       <div className={styles.brand}>
-        <span>FVG Landslide</span>
+        <span>FVG · Territorio</span>
         <span className={styles.version} title={`Build version ${APP_VERSION}`}>
           v{APP_VERSION}
         </span>

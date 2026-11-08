@@ -169,7 +169,7 @@
 @media (max-width: 768px), (max-height: 500px) and (pointer: coarse) {
   /* The twin keeps a usable map above its controls, including while picking
      another observation. No full-screen scrim intercepts the map or topbar. */
-  .body[data-workspace="twin"] :global(.drawer) {
+  .body[data-workspace="unified"] :global(.drawer) {
     top: auto;
     left: 0;
     right: 0;
@@ -185,12 +185,12 @@
     overscroll-behavior-y: contain;
     transition: none;
   }
-  .body[data-workspace="twin"][data-drawer="closed"] :global(.drawer) {
+  .body[data-workspace="unified"][data-drawer="closed"] :global(.drawer) {
     height: 0;
     visibility: hidden;
     pointer-events: none;
   }
-  .body[data-workspace="twin"] .rightStack {
+  .body[data-workspace="unified"] .rightStack {
     top: 8px;
     right: 8px;
     width: 156px;
@@ -200,7 +200,7 @@
 }
 
 @media (max-height: 500px) and (pointer: coarse) and (orientation: landscape) {
-  .body[data-workspace="twin"] :global(.drawer) {
+  .body[data-workspace="unified"] :global(.drawer) {
     top: 0;
     left: auto;
     width: min(52%, 420px);
@@ -208,9 +208,11 @@
     max-height: 100%;
     border-left: 1px solid var(--c-border);
   }
-  .body[data-workspace="twin"] .rightStack {
+  .body[data-workspace="unified"] .rightStack {
     left: 8px;
     right: auto;
     max-height: calc(100% - 16px);
   }
 }
+
+.body { --drawer-w: 340px; }

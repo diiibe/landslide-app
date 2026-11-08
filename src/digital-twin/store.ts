@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { useAppStore, type AppState } from "@/app/store";
 import type { Measure, RadarFrame, Variable } from "./data";
 export type TwinSelection =
   | { kind: "sensor"; stationId: number }
@@ -39,11 +38,11 @@ interface TwinState {
   selection: TwinSelection | null;
 }
 export const useTwinStore = create<TwinState>(() => ({
-  active: false,
+  active: true,
   variable: "wind",
-  radarOn: true,
-  buildingsOn: true,
-  assetsOn: true,
+  radarOn: false,
+  buildingsOn: false,
+  assetsOn: false,
   autoRefresh: true,
   refreshKey: 0,
   measures: [],
@@ -54,36 +53,7 @@ export const useTwinStore = create<TwinState>(() => ({
   buildingsError: null,
   selection: null,
 }));
-let previous: {
-  layers: AppState["layers"];
-  view3D: boolean;
-  layersPanelOpen: boolean;
-  basemapPanelOpen: boolean;
-} | null = null;
+/** Compatibility API: never changes hazard layers, terrain or the camera. */
 export function setTwinActive(active: boolean): void {
-  if (active === useTwinStore.getState().active) return;
-  const app = useAppStore.getState();
-  if (active) {
-    previous = {
-      layers: { ...app.layers },
-      view3D: app.view3D,
-      layersPanelOpen: app.layersPanelOpen,
-      basemapPanelOpen: app.basemapPanelOpen,
-    };
-    const layers = Object.fromEntries(
-      Object.keys(app.layers).map((k) => [k, false]),
-    ) as AppState["layers"];
-    useAppStore.setState({
-      layers,
-      view3D: true,
-      drawerOpen: true,
-      layersPanelOpen: false,
-      basemapPanelOpen: false,
-      drawingMode: false,
-    });
-  } else if (previous) {
-    useAppStore.setState(previous);
-    previous = null;
-  }
-  useTwinStore.setState({ active, selection: null });
+  useTwinStore.setState({ active });
 }

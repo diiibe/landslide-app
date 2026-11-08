@@ -1,0 +1,2093 @@
+{
+  "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+  "layers": [
+    {
+      "id": "twin-buildings",
+      "title": "Edifici · Trieste e Monfalcone",
+      "folder": "contesto",
+      "kind": "buildings",
+      "status": "ready",
+      "provider": "Regione FVG / IRDAT",
+      "sourceId": "EDIFICI:DBS_EDIFICATO",
+      "sourceUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "license": "IODL 2.0",
+      "licenseUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA4/",
+      "description": "Estratti urbani dell’edificato regionale DBS; le altezze misurate dalla fonte sono estruse dove disponibili.",
+      "note": "Campagna 2017–2020, non BIM o rilievo in tempo reale. Gli edifici senza altezza valida restano piatti.",
+      "cadence": "Sincronizzazione automatica ogni 6 ore; campagna di origine 2017–2020",
+      "color": "#a3b8b4",
+      "count": 8152,
+      "sourceCount": 8152,
+      "retrievedAt": "2026-11-08T22:40:08.470029+00:00",
+      "bounds": [
+        [
+          13.527,
+          45.635
+        ],
+        [
+          13.783,
+          45.813
+        ]
+      ],
+      "warnings": [
+        "1284 edifici senza altezza valida rappresentati piatti."
+      ]
+    },
+    {
+      "id": "soil-incremento-netto-2006-2012-ettari",
+      "title": "Incremento netto 2006-2012 [ettari]",
+      "folder": "trasformazioni",
+      "subfolder": "Consumo di suolo · indicatori ISPRA",
+      "description": "Indicatore comunale ufficiale ISPRA/SNPA. Ogni periodo mantiene il proprio intervallo e la propria unità.",
+      "note": "Elaborazione su base cartografica annuale; non avanzamento di cantieri o misura in tempo reale. I confronti tra intervalli di durata diversa non sono automaticamente tassi annui.",
+      "status": "ready",
+      "provider": "ISPRA / SNPA",
+      "sourceId": "ISPRA / SNPA",
+      "sourceUrl": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+      "license": "CC BY 4.0 · Data Policy ISPRA",
+      "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
+      "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
+      "color": "#be9b68",
+      "retrievedAt": "2026-11-08T22:40:12.254207+00:00",
+      "metric": {
+        "field": "__value",
+        "unit": "ha",
+        "min": -0.41,
+        "max": 81.45
+      },
+      "dataDate": "2012",
+      "count": 215,
+      "sourceCount": 215,
+      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "codice_istat",
+        "periodo"
+      ],
+      "warnings": [
+        "Collegamento per codice ISTAT a sei cifre; confini comunali regionali.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "kind": "vector",
+      "file": "soil-incremento-netto-2006-2012-ettari.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "soil-incremento-lordo-2006-2012-ettari",
+      "title": "Incremento lordo 2006-2012 [ettari]",
+      "folder": "trasformazioni",
+      "subfolder": "Consumo di suolo · indicatori ISPRA",
+      "description": "Indicatore comunale ufficiale ISPRA/SNPA. Ogni periodo mantiene il proprio intervallo e la propria unità.",
+      "note": "Elaborazione su base cartografica annuale; non avanzamento di cantieri o misura in tempo reale. I confronti tra intervalli di durata diversa non sono automaticamente tassi annui.",
+      "status": "ready",
+      "provider": "ISPRA / SNPA",
+      "sourceId": "ISPRA / SNPA",
+      "sourceUrl": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+      "license": "CC BY 4.0 · Data Policy ISPRA",
+      "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
+      "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
+      "color": "#be9b68",
+      "retrievedAt": "2026-11-08T22:40:15.720120+00:00",
+      "metric": {
+        "field": "__value",
+        "unit": "ha",
+        "min": 0,
+        "max": 81.45
+      },
+      "dataDate": "2012",
+      "count": 215,
+      "sourceCount": 215,
+      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "codice_istat",
+        "periodo"
+      ],
+      "warnings": [
+        "Collegamento per codice ISTAT a sei cifre; confini comunali regionali.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "kind": "vector",
+      "file": "soil-incremento-lordo-2006-2012-ettari.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "soil-ripristino-2006-2012-ettari",
+      "title": "Ripristino 2006-2012 [ettari]",
+      "folder": "trasformazioni",
+      "subfolder": "Consumo di suolo · indicatori ISPRA",
+      "description": "Indicatore comunale ufficiale ISPRA/SNPA. Ogni periodo mantiene il proprio intervallo e la propria unità.",
+      "note": "Elaborazione su base cartografica annuale; non avanzamento di cantieri o misura in tempo reale. I confronti tra intervalli di durata diversa non sono automaticamente tassi annui.",
+      "status": "ready",
+      "provider": "ISPRA / SNPA",
+      "sourceId": "ISPRA / SNPA",
+      "sourceUrl": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+      "license": "CC BY 4.0 · Data Policy ISPRA",
+      "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
+      "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
+      "color": "#be9b68",
+      "retrievedAt": "2026-11-08T22:40:19.188109+00:00",
+      "metric": {
+        "field": "__value",
+        "unit": "ha",
+        "min": 0,
+        "max": 1.58
+      },
+      "dataDate": "2012",
+      "count": 215,
+      "sourceCount": 215,
+      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "codice_istat",
+        "periodo"
+      ],
+      "warnings": [
+        "Collegamento per codice ISTAT a sei cifre; confini comunali regionali.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "kind": "vector",
+      "file": "soil-ripristino-2006-2012-ettari.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "soil-incremento-netto-2012-2015-ettari",
+      "title": "Incremento netto 2012-2015 [ettari]",
+      "folder": "trasformazioni",
+      "subfolder": "Consumo di suolo · indicatori ISPRA",
+      "description": "Indicatore comunale ufficiale ISPRA/SNPA. Ogni periodo mantiene il proprio intervallo e la propria unità.",
+      "note": "Elaborazione su base cartografica annuale; non avanzamento di cantieri o misura in tempo reale. I confronti tra intervalli di durata diversa non sono automaticamente tassi annui.",
+      "status": "ready",
+      "provider": "ISPRA / SNPA",
+      "sourceId": "ISPRA / SNPA",
+      "sourceUrl": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+      "license": "CC BY 4.0 · Data Policy ISPRA",
+      "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
+      "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
+      "color": "#be9b68",
+      "retrievedAt": "2026-11-08T22:40:22.585282+00:00",
+      "metric": {
+        "field": "__value",
+        "unit": "ha",
+        "min": -2.37,
+        "max": 25.51
+      },
+      "dataDate": "2015",
+      "count": 215,
+      "sourceCount": 215,
+      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "codice_istat",
+        "periodo"
+      ],
+      "warnings": [
+        "Collegamento per codice ISTAT a sei cifre; confini comunali regionali.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "kind": "vector",
+      "file": "soil-incremento-netto-2012-2015-ettari.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "soil-incremento-lordo-2012-2015-ettari",
+      "title": "Incremento lordo 2012-2015 [ettari]",
+      "folder": "trasformazioni",
+      "subfolder": "Consumo di suolo · indicatori ISPRA",
+      "description": "Indicatore comunale ufficiale ISPRA/SNPA. Ogni periodo mantiene il proprio intervallo e la propria unità.",
+      "note": "Elaborazione su base cartografica annuale; non avanzamento di cantieri o misura in tempo reale. I confronti tra intervalli di durata diversa non sono automaticamente tassi annui.",
+      "status": "ready",
+      "provider": "ISPRA / SNPA",
+      "sourceId": "ISPRA / SNPA",
+      "sourceUrl": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+      "license": "CC BY 4.0 · Data Policy ISPRA",
+      "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
+      "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
+      "color": "#be9b68",
+      "retrievedAt": "2026-11-08T22:40:26.052212+00:00",
+      "metric": {
+        "field": "__value",
+        "unit": "ha",
+        "min": 0,
+        "max": 25.51
+      },
+      "dataDate": "2015",
+      "count": 215,
+      "sourceCount": 215,
+      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "codice_istat",
+        "periodo"
+      ],
+      "warnings": [
+        "Collegamento per codice ISTAT a sei cifre; confini comunali regionali.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "kind": "vector",
+      "file": "soil-incremento-lordo-2012-2015-ettari.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "soil-ripristino-2012-2015-ettari",
+      "title": "Ripristino 2012-2015 [ettari]",
+      "folder": "trasformazioni",
+      "subfolder": "Consumo di suolo · indicatori ISPRA",
+      "description": "Indicatore comunale ufficiale ISPRA/SNPA. Ogni periodo mantiene il proprio intervallo e la propria unità.",
+      "note": "Elaborazione su base cartografica annuale; non avanzamento di cantieri o misura in tempo reale. I confronti tra intervalli di durata diversa non sono automaticamente tassi annui.",
+      "status": "ready",
+      "provider": "ISPRA / SNPA",
+      "sourceId": "ISPRA / SNPA",
+      "sourceUrl": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+      "license": "CC BY 4.0 · Data Policy ISPRA",
+      "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
+      "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
+      "color": "#be9b68",
+      "retrievedAt": "2026-11-08T22:40:29.679601+00:00",
+      "metric": {
+        "field": "__value",
+        "unit": "ha",
+        "min": 0,
+        "max": 2.44
+      },
+      "dataDate": "2015",
+      "count": 215,
+      "sourceCount": 215,
+      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "codice_istat",
+        "periodo"
+      ],
+      "warnings": [
+        "Collegamento per codice ISTAT a sei cifre; confini comunali regionali.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "kind": "vector",
+      "file": "soil-ripristino-2012-2015-ettari.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "soil-incremento-netto-2015-2016-ettari",
+      "title": "Incremento netto 2015-2016 [ettari]",
+      "folder": "trasformazioni",
+      "subfolder": "Consumo di suolo · indicatori ISPRA",
+      "description": "Indicatore comunale ufficiale ISPRA/SNPA. Ogni periodo mantiene il proprio intervallo e la propria unità.",
+      "note": "Elaborazione su base cartografica annuale; non avanzamento di cantieri o misura in tempo reale. I confronti tra intervalli di durata diversa non sono automaticamente tassi annui.",
+      "status": "ready",
+      "provider": "ISPRA / SNPA",
+      "sourceId": "ISPRA / SNPA",
+      "sourceUrl": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+      "license": "CC BY 4.0 · Data Policy ISPRA",
+      "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
+      "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
+      "color": "#be9b68",
+      "retrievedAt": "2026-11-08T22:40:33.711606+00:00",
+      "metric": {
+        "field": "__value",
+        "unit": "ha",
+        "min": -0.93,
+        "max": 8.36
+      },
+      "dataDate": "2016",
+      "count": 215,
+      "sourceCount": 215,
+      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "codice_istat",
+        "periodo"
+      ],
+      "warnings": [
+        "Collegamento per codice ISTAT a sei cifre; confini comunali regionali.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "kind": "vector",
+      "file": "soil-incremento-netto-2015-2016-ettari.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "soil-incremento-lordo-2015-2016-ettari",
+      "title": "Incremento lordo 2015-2016 [ettari]",
+      "folder": "trasformazioni",
+      "subfolder": "Consumo di suolo · indicatori ISPRA",
+      "description": "Indicatore comunale ufficiale ISPRA/SNPA. Ogni periodo mantiene il proprio intervallo e la propria unità.",
+      "note": "Elaborazione su base cartografica annuale; non avanzamento di cantieri o misura in tempo reale. I confronti tra intervalli di durata diversa non sono automaticamente tassi annui.",
+      "status": "ready",
+      "provider": "ISPRA / SNPA",
+      "sourceId": "ISPRA / SNPA",
+      "sourceUrl": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+      "license": "CC BY 4.0 · Data Policy ISPRA",
+      "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
+      "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
+      "color": "#be9b68",
+      "retrievedAt": "2026-11-08T22:40:37.360047+00:00",
+      "metric": {
+        "field": "__value",
+        "unit": "ha",
+        "min": 0,
+        "max": 8.37
+      },
+      "dataDate": "2016",
+      "count": 215,
+      "sourceCount": 215,
+      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "codice_istat",
+        "periodo"
+      ],
+      "warnings": [
+        "Collegamento per codice ISTAT a sei cifre; confini comunali regionali.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "kind": "vector",
+      "file": "soil-incremento-lordo-2015-2016-ettari.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "soil-ripristino-2015-2016-ettari",
+      "title": "Ripristino 2015-2016 [ettari]",
+      "folder": "trasformazioni",
+      "subfolder": "Consumo di suolo · indicatori ISPRA",
+      "description": "Indicatore comunale ufficiale ISPRA/SNPA. Ogni periodo mantiene il proprio intervallo e la propria unità.",
+      "note": "Elaborazione su base cartografica annuale; non avanzamento di cantieri o misura in tempo reale. I confronti tra intervalli di durata diversa non sono automaticamente tassi annui.",
+      "status": "ready",
+      "provider": "ISPRA / SNPA",
+      "sourceId": "ISPRA / SNPA",
+      "sourceUrl": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+      "license": "CC BY 4.0 · Data Policy ISPRA",
+      "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
+      "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
+      "color": "#be9b68",
+      "retrievedAt": "2026-11-08T22:40:40.923118+00:00",
+      "metric": {
+        "field": "__value",
+        "unit": "ha",
+        "min": 0,
+        "max": 0.93
+      },
+      "dataDate": "2016",
+      "count": 215,
+      "sourceCount": 215,
+      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "codice_istat",
+        "periodo"
+      ],
+      "warnings": [
+        "Collegamento per codice ISTAT a sei cifre; confini comunali regionali.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "kind": "vector",
+      "file": "soil-ripristino-2015-2016-ettari.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "soil-incremento-netto-2016-2017-ettari",
+      "title": "Incremento netto 2016-2017 [ettari]",
+      "folder": "trasformazioni",
+      "subfolder": "Consumo di suolo · indicatori ISPRA",
+      "description": "Indicatore comunale ufficiale ISPRA/SNPA. Ogni periodo mantiene il proprio intervallo e la propria unità.",
+      "note": "Elaborazione su base cartografica annuale; non avanzamento di cantieri o misura in tempo reale. I confronti tra intervalli di durata diversa non sono automaticamente tassi annui.",
+      "status": "ready",
+      "provider": "ISPRA / SNPA",
+      "sourceId": "ISPRA / SNPA",
+      "sourceUrl": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+      "license": "CC BY 4.0 · Data Policy ISPRA",
+      "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
+      "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
+      "color": "#be9b68",
+      "retrievedAt": "2026-11-08T22:40:44.725037+00:00",
+      "metric": {
+        "field": "__value",
+        "unit": "ha",
+        "min": -1.55,
+        "max": 20.22
+      },
+      "dataDate": "2017",
+      "count": 215,
+      "sourceCount": 215,
+      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "codice_istat",
+        "periodo"
+      ],
+      "warnings": [
+        "Collegamento per codice ISTAT a sei cifre; confini comunali regionali.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "kind": "vector",
+      "file": "soil-incremento-netto-2016-2017-ettari.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "soil-incremento-lordo-2016-2017-ettari",
+      "title": "Incremento lordo 2016-2017 [ettari]",
+      "folder": "trasformazioni",
+      "subfolder": "Consumo di suolo · indicatori ISPRA",
+      "description": "Indicatore comunale ufficiale ISPRA/SNPA. Ogni periodo mantiene il proprio intervallo e la propria unità.",
+      "note": "Elaborazione su base cartografica annuale; non avanzamento di cantieri o misura in tempo reale. I confronti tra intervalli di durata diversa non sono automaticamente tassi annui.",
+      "status": "ready",
+      "provider": "ISPRA / SNPA",
+      "sourceId": "ISPRA / SNPA",
+      "sourceUrl": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+      "license": "CC BY 4.0 · Data Policy ISPRA",
+      "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
+      "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
+      "color": "#be9b68",
+      "retrievedAt": "2026-11-08T22:40:48.468965+00:00",
+      "metric": {
+        "field": "__value",
+        "unit": "ha",
+        "min": 0,
+        "max": 20.22
+      },
+      "dataDate": "2017",
+      "count": 215,
+      "sourceCount": 215,
+      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "codice_istat",
+        "periodo"
+      ],
+      "warnings": [
+        "Collegamento per codice ISTAT a sei cifre; confini comunali regionali.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "kind": "vector",
+      "file": "soil-incremento-lordo-2016-2017-ettari.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "soil-ripristino-2016-2017-ettari",
+      "title": "Ripristino 2016-2017 [ettari]",
+      "folder": "trasformazioni",
+      "subfolder": "Consumo di suolo · indicatori ISPRA",
+      "description": "Indicatore comunale ufficiale ISPRA/SNPA. Ogni periodo mantiene il proprio intervallo e la propria unità.",
+      "note": "Elaborazione su base cartografica annuale; non avanzamento di cantieri o misura in tempo reale. I confronti tra intervalli di durata diversa non sono automaticamente tassi annui.",
+      "status": "ready",
+      "provider": "ISPRA / SNPA",
+      "sourceId": "ISPRA / SNPA",
+      "sourceUrl": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+      "license": "CC BY 4.0 · Data Policy ISPRA",
+      "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
+      "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
+      "color": "#be9b68",
+      "retrievedAt": "2026-11-08T22:40:52.009652+00:00",
+      "metric": {
+        "field": "__value",
+        "unit": "ha",
+        "min": 0,
+        "max": 3.48
+      },
+      "dataDate": "2017",
+      "count": 215,
+      "sourceCount": 215,
+      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "codice_istat",
+        "periodo"
+      ],
+      "warnings": [
+        "Collegamento per codice ISTAT a sei cifre; confini comunali regionali.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "kind": "vector",
+      "file": "soil-ripristino-2016-2017-ettari.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "soil-incremento-netto-2017-2018-ettari",
+      "title": "Incremento netto 2017-2018 [ettari]",
+      "folder": "trasformazioni",
+      "subfolder": "Consumo di suolo · indicatori ISPRA",
+      "description": "Indicatore comunale ufficiale ISPRA/SNPA. Ogni periodo mantiene il proprio intervallo e la propria unità.",
+      "note": "Elaborazione su base cartografica annuale; non avanzamento di cantieri o misura in tempo reale. I confronti tra intervalli di durata diversa non sono automaticamente tassi annui.",
+      "status": "ready",
+      "provider": "ISPRA / SNPA",
+      "sourceId": "ISPRA / SNPA",
+      "sourceUrl": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+      "license": "CC BY 4.0 · Data Policy ISPRA",
+      "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
+      "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
+      "color": "#be9b68",
+      "retrievedAt": "2026-11-08T22:40:55.496939+00:00",
+      "metric": {
+        "field": "__value",
+        "unit": "ha",
+        "min": -1.48,
+        "max": 27.05
+      },
+      "dataDate": "2018",
+      "count": 215,
+      "sourceCount": 215,
+      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "codice_istat",
+        "periodo"
+      ],
+      "warnings": [
+        "Collegamento per codice ISTAT a sei cifre; confini comunali regionali.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "kind": "vector",
+      "file": "soil-incremento-netto-2017-2018-ettari.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "soil-incremento-lordo-2017-2018-ettari",
+      "title": "Incremento lordo 2017-2018 [ettari]",
+      "folder": "trasformazioni",
+      "subfolder": "Consumo di suolo · indicatori ISPRA",
+      "description": "Indicatore comunale ufficiale ISPRA/SNPA. Ogni periodo mantiene il proprio intervallo e la propria unità.",
+      "note": "Elaborazione su base cartografica annuale; non avanzamento di cantieri o misura in tempo reale. I confronti tra intervalli di durata diversa non sono automaticamente tassi annui.",
+      "status": "ready",
+      "provider": "ISPRA / SNPA",
+      "sourceId": "ISPRA / SNPA",
+      "sourceUrl": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+      "license": "CC BY 4.0 · Data Policy ISPRA",
+      "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
+      "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
+      "color": "#be9b68",
+      "retrievedAt": "2026-11-08T22:40:59.043907+00:00",
+      "metric": {
+        "field": "__value",
+        "unit": "ha",
+        "min": 0,
+        "max": 27.05
+      },
+      "dataDate": "2018",
+      "count": 215,
+      "sourceCount": 215,
+      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "codice_istat",
+        "periodo"
+      ],
+      "warnings": [
+        "Collegamento per codice ISTAT a sei cifre; confini comunali regionali.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "kind": "vector",
+      "file": "soil-incremento-lordo-2017-2018-ettari.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "soil-ripristino-2017-2018-ettari",
+      "title": "Ripristino 2017-2018 [ettari]",
+      "folder": "trasformazioni",
+      "subfolder": "Consumo di suolo · indicatori ISPRA",
+      "description": "Indicatore comunale ufficiale ISPRA/SNPA. Ogni periodo mantiene il proprio intervallo e la propria unità.",
+      "note": "Elaborazione su base cartografica annuale; non avanzamento di cantieri o misura in tempo reale. I confronti tra intervalli di durata diversa non sono automaticamente tassi annui.",
+      "status": "ready",
+      "provider": "ISPRA / SNPA",
+      "sourceId": "ISPRA / SNPA",
+      "sourceUrl": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+      "license": "CC BY 4.0 · Data Policy ISPRA",
+      "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
+      "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
+      "color": "#be9b68",
+      "retrievedAt": "2026-11-08T22:41:02.564071+00:00",
+      "metric": {
+        "field": "__value",
+        "unit": "ha",
+        "min": 0,
+        "max": 5.11
+      },
+      "dataDate": "2018",
+      "count": 215,
+      "sourceCount": 215,
+      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "codice_istat",
+        "periodo"
+      ],
+      "warnings": [
+        "Collegamento per codice ISTAT a sei cifre; confini comunali regionali.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "kind": "vector",
+      "file": "soil-ripristino-2017-2018-ettari.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "soil-incremento-netto-2018-2019-ettari",
+      "title": "Incremento netto 2018-2019 [ettari]",
+      "folder": "trasformazioni",
+      "subfolder": "Consumo di suolo · indicatori ISPRA",
+      "description": "Indicatore comunale ufficiale ISPRA/SNPA. Ogni periodo mantiene il proprio intervallo e la propria unità.",
+      "note": "Elaborazione su base cartografica annuale; non avanzamento di cantieri o misura in tempo reale. I confronti tra intervalli di durata diversa non sono automaticamente tassi annui.",
+      "status": "ready",
+      "provider": "ISPRA / SNPA",
+      "sourceId": "ISPRA / SNPA",
+      "sourceUrl": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+      "license": "CC BY 4.0 · Data Policy ISPRA",
+      "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
+      "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
+      "color": "#be9b68",
+      "retrievedAt": "2026-11-08T22:41:06.159914+00:00",
+      "metric": {
+        "field": "__value",
+        "unit": "ha",
+        "min": -2.51,
+        "max": 15.95
+      },
+      "dataDate": "2019",
+      "count": 215,
+      "sourceCount": 215,
+      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "codice_istat",
+        "periodo"
+      ],
+      "warnings": [
+        "Collegamento per codice ISTAT a sei cifre; confini comunali regionali.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "kind": "vector",
+      "file": "soil-incremento-netto-2018-2019-ettari.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "soil-incremento-lordo-2018-2019-ettari",
+      "title": "Incremento lordo 2018-2019 [ettari]",
+      "folder": "trasformazioni",
+      "subfolder": "Consumo di suolo · indicatori ISPRA",
+      "description": "Indicatore comunale ufficiale ISPRA/SNPA. Ogni periodo mantiene il proprio intervallo e la propria unità.",
+      "note": "Elaborazione su base cartografica annuale; non avanzamento di cantieri o misura in tempo reale. I confronti tra intervalli di durata diversa non sono automaticamente tassi annui.",
+      "status": "ready",
+      "provider": "ISPRA / SNPA",
+      "sourceId": "ISPRA / SNPA",
+      "sourceUrl": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+      "license": "CC BY 4.0 · Data Policy ISPRA",
+      "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
+      "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
+      "color": "#be9b68",
+      "retrievedAt": "2026-11-08T22:41:09.773006+00:00",
+      "metric": {
+        "field": "__value",
+        "unit": "ha",
+        "min": 0,
+        "max": 16.69
+      },
+      "dataDate": "2019",
+      "count": 215,
+      "sourceCount": 215,
+      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "codice_istat",
+        "periodo"
+      ],
+      "warnings": [
+        "Collegamento per codice ISTAT a sei cifre; confini comunali regionali.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "kind": "vector",
+      "file": "soil-incremento-lordo-2018-2019-ettari.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "soil-ripristino-2018-2019-ettari",
+      "title": "Ripristino 2018-2019 [ettari]",
+      "folder": "trasformazioni",
+      "subfolder": "Consumo di suolo · indicatori ISPRA",
+      "description": "Indicatore comunale ufficiale ISPRA/SNPA. Ogni periodo mantiene il proprio intervallo e la propria unità.",
+      "note": "Elaborazione su base cartografica annuale; non avanzamento di cantieri o misura in tempo reale. I confronti tra intervalli di durata diversa non sono automaticamente tassi annui.",
+      "status": "ready",
+      "provider": "ISPRA / SNPA",
+      "sourceId": "ISPRA / SNPA",
+      "sourceUrl": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+      "license": "CC BY 4.0 · Data Policy ISPRA",
+      "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
+      "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
+      "color": "#be9b68",
+      "retrievedAt": "2026-11-08T22:41:13.327307+00:00",
+      "metric": {
+        "field": "__value",
+        "unit": "ha",
+        "min": 0,
+        "max": 4.07
+      },
+      "dataDate": "2019",
+      "count": 215,
+      "sourceCount": 215,
+      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "codice_istat",
+        "periodo"
+      ],
+      "warnings": [
+        "Collegamento per codice ISTAT a sei cifre; confini comunali regionali.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "kind": "vector",
+      "file": "soil-ripristino-2018-2019-ettari.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "soil-incremento-netto-2019-2020-ettari",
+      "title": "Incremento netto 2019-2020 [ettari]",
+      "folder": "trasformazioni",
+      "subfolder": "Consumo di suolo · indicatori ISPRA",
+      "description": "Indicatore comunale ufficiale ISPRA/SNPA. Ogni periodo mantiene il proprio intervallo e la propria unità.",
+      "note": "Elaborazione su base cartografica annuale; non avanzamento di cantieri o misura in tempo reale. I confronti tra intervalli di durata diversa non sono automaticamente tassi annui.",
+      "status": "ready",
+      "provider": "ISPRA / SNPA",
+      "sourceId": "ISPRA / SNPA",
+      "sourceUrl": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+      "license": "CC BY 4.0 · Data Policy ISPRA",
+      "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
+      "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
+      "color": "#be9b68",
+      "retrievedAt": "2026-11-08T22:41:16.927146+00:00",
+      "metric": {
+        "field": "__value",
+        "unit": "ha",
+        "min": -2.23,
+        "max": 5
+      },
+      "dataDate": "2020",
+      "count": 215,
+      "sourceCount": 215,
+      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "codice_istat",
+        "periodo"
+      ],
+      "warnings": [
+        "Collegamento per codice ISTAT a sei cifre; confini comunali regionali.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "kind": "vector",
+      "file": "soil-incremento-netto-2019-2020-ettari.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "soil-incremento-lordo-2019-2020-ettari",
+      "title": "Incremento lordo 2019-2020 [ettari]",
+      "folder": "trasformazioni",
+      "subfolder": "Consumo di suolo · indicatori ISPRA",
+      "description": "Indicatore comunale ufficiale ISPRA/SNPA. Ogni periodo mantiene il proprio intervallo e la propria unità.",
+      "note": "Elaborazione su base cartografica annuale; non avanzamento di cantieri o misura in tempo reale. I confronti tra intervalli di durata diversa non sono automaticamente tassi annui.",
+      "status": "ready",
+      "provider": "ISPRA / SNPA",
+      "sourceId": "ISPRA / SNPA",
+      "sourceUrl": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+      "license": "CC BY 4.0 · Data Policy ISPRA",
+      "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
+      "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
+      "color": "#be9b68",
+      "retrievedAt": "2026-11-08T22:41:20.663488+00:00",
+      "metric": {
+        "field": "__value",
+        "unit": "ha",
+        "min": 0,
+        "max": 5.13
+      },
+      "dataDate": "2020",
+      "count": 215,
+      "sourceCount": 215,
+      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "codice_istat",
+        "periodo"
+      ],
+      "warnings": [
+        "Collegamento per codice ISTAT a sei cifre; confini comunali regionali.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "kind": "vector",
+      "file": "soil-incremento-lordo-2019-2020-ettari.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "soil-ripristino-2019-2020-ettari",
+      "title": "Ripristino 2019-2020 [ettari]",
+      "folder": "trasformazioni",
+      "subfolder": "Consumo di suolo · indicatori ISPRA",
+      "description": "Indicatore comunale ufficiale ISPRA/SNPA. Ogni periodo mantiene il proprio intervallo e la propria unità.",
+      "note": "Elaborazione su base cartografica annuale; non avanzamento di cantieri o misura in tempo reale. I confronti tra intervalli di durata diversa non sono automaticamente tassi annui.",
+      "status": "ready",
+      "provider": "ISPRA / SNPA",
+      "sourceId": "ISPRA / SNPA",
+      "sourceUrl": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+      "license": "CC BY 4.0 · Data Policy ISPRA",
+      "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
+      "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
+      "color": "#be9b68",
+      "retrievedAt": "2026-11-08T22:41:24.307906+00:00",
+      "metric": {
+        "field": "__value",
+        "unit": "ha",
+        "min": 0,
+        "max": 2.58
+      },
+      "dataDate": "2020",
+      "count": 215,
+      "sourceCount": 215,
+      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "codice_istat",
+        "periodo"
+      ],
+      "warnings": [
+        "Collegamento per codice ISTAT a sei cifre; confini comunali regionali.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "kind": "vector",
+      "file": "soil-ripristino-2019-2020-ettari.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "soil-incremento-netto-2020-2021-ettari",
+      "title": "Incremento netto 2020-2021 [ettari]",
+      "folder": "trasformazioni",
+      "subfolder": "Consumo di suolo · indicatori ISPRA",
+      "description": "Indicatore comunale ufficiale ISPRA/SNPA. Ogni periodo mantiene il proprio intervallo e la propria unità.",
+      "note": "Elaborazione su base cartografica annuale; non avanzamento di cantieri o misura in tempo reale. I confronti tra intervalli di durata diversa non sono automaticamente tassi annui.",
+      "status": "ready",
+      "provider": "ISPRA / SNPA",
+      "sourceId": "ISPRA / SNPA",
+      "sourceUrl": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+      "license": "CC BY 4.0 · Data Policy ISPRA",
+      "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
+      "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
+      "color": "#be9b68",
+      "retrievedAt": "2026-11-08T22:41:28.101788+00:00",
+      "metric": {
+        "field": "__value",
+        "unit": "ha",
+        "min": -1.64,
+        "max": 11.59
+      },
+      "dataDate": "2021",
+      "count": 215,
+      "sourceCount": 215,
+      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "codice_istat",
+        "periodo"
+      ],
+      "warnings": [
+        "Collegamento per codice ISTAT a sei cifre; confini comunali regionali.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "kind": "vector",
+      "file": "soil-incremento-netto-2020-2021-ettari.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "soil-incremento-lordo-2020-2021-ettari",
+      "title": "Incremento lordo 2020-2021 [ettari]",
+      "folder": "trasformazioni",
+      "subfolder": "Consumo di suolo · indicatori ISPRA",
+      "description": "Indicatore comunale ufficiale ISPRA/SNPA. Ogni periodo mantiene il proprio intervallo e la propria unità.",
+      "note": "Elaborazione su base cartografica annuale; non avanzamento di cantieri o misura in tempo reale. I confronti tra intervalli di durata diversa non sono automaticamente tassi annui.",
+      "status": "ready",
+      "provider": "ISPRA / SNPA",
+      "sourceId": "ISPRA / SNPA",
+      "sourceUrl": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+      "license": "CC BY 4.0 · Data Policy ISPRA",
+      "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
+      "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
+      "color": "#be9b68",
+      "retrievedAt": "2026-11-08T22:41:31.700799+00:00",
+      "metric": {
+        "field": "__value",
+        "unit": "ha",
+        "min": 0,
+        "max": 11.59
+      },
+      "dataDate": "2021",
+      "count": 215,
+      "sourceCount": 215,
+      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "codice_istat",
+        "periodo"
+      ],
+      "warnings": [
+        "Collegamento per codice ISTAT a sei cifre; confini comunali regionali.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "kind": "vector",
+      "file": "soil-incremento-lordo-2020-2021-ettari.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "soil-ripristino-2020-2021-ettari",
+      "title": "Ripristino 2020-2021 [ettari]",
+      "folder": "trasformazioni",
+      "subfolder": "Consumo di suolo · indicatori ISPRA",
+      "description": "Indicatore comunale ufficiale ISPRA/SNPA. Ogni periodo mantiene il proprio intervallo e la propria unità.",
+      "note": "Elaborazione su base cartografica annuale; non avanzamento di cantieri o misura in tempo reale. I confronti tra intervalli di durata diversa non sono automaticamente tassi annui.",
+      "status": "ready",
+      "provider": "ISPRA / SNPA",
+      "sourceId": "ISPRA / SNPA",
+      "sourceUrl": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+      "license": "CC BY 4.0 · Data Policy ISPRA",
+      "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
+      "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
+      "color": "#be9b68",
+      "retrievedAt": "2026-11-08T22:41:35.238648+00:00",
+      "metric": {
+        "field": "__value",
+        "unit": "ha",
+        "min": 0,
+        "max": 1.75
+      },
+      "dataDate": "2021",
+      "count": 215,
+      "sourceCount": 215,
+      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "codice_istat",
+        "periodo"
+      ],
+      "warnings": [
+        "Collegamento per codice ISTAT a sei cifre; confini comunali regionali.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "kind": "vector",
+      "file": "soil-ripristino-2020-2021-ettari.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "soil-incremento-netto-2021-2022-ettari",
+      "title": "Incremento netto 2021-2022 [ettari]",
+      "folder": "trasformazioni",
+      "subfolder": "Consumo di suolo · indicatori ISPRA",
+      "description": "Indicatore comunale ufficiale ISPRA/SNPA. Ogni periodo mantiene il proprio intervallo e la propria unità.",
+      "note": "Elaborazione su base cartografica annuale; non avanzamento di cantieri o misura in tempo reale. I confronti tra intervalli di durata diversa non sono automaticamente tassi annui.",
+      "status": "ready",
+      "provider": "ISPRA / SNPA",
+      "sourceId": "ISPRA / SNPA",
+      "sourceUrl": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+      "license": "CC BY 4.0 · Data Policy ISPRA",
+      "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
+      "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
+      "color": "#be9b68",
+      "retrievedAt": "2026-11-08T22:41:38.721189+00:00",
+      "metric": {
+        "field": "__value",
+        "unit": "ha",
+        "min": -10.99,
+        "max": 9.43
+      },
+      "dataDate": "2022",
+      "count": 215,
+      "sourceCount": 215,
+      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "codice_istat",
+        "periodo"
+      ],
+      "warnings": [
+        "Collegamento per codice ISTAT a sei cifre; confini comunali regionali.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "kind": "vector",
+      "file": "soil-incremento-netto-2021-2022-ettari.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "soil-incremento-lordo-2021-2022-ettari",
+      "title": "Incremento lordo 2021-2022 [ettari]",
+      "folder": "trasformazioni",
+      "subfolder": "Consumo di suolo · indicatori ISPRA",
+      "description": "Indicatore comunale ufficiale ISPRA/SNPA. Ogni periodo mantiene il proprio intervallo e la propria unità.",
+      "note": "Elaborazione su base cartografica annuale; non avanzamento di cantieri o misura in tempo reale. I confronti tra intervalli di durata diversa non sono automaticamente tassi annui.",
+      "status": "ready",
+      "provider": "ISPRA / SNPA",
+      "sourceId": "ISPRA / SNPA",
+      "sourceUrl": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+      "license": "CC BY 4.0 · Data Policy ISPRA",
+      "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
+      "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
+      "color": "#be9b68",
+      "retrievedAt": "2026-11-08T22:41:42.277883+00:00",
+      "metric": {
+        "field": "__value",
+        "unit": "ha",
+        "min": 0,
+        "max": 9.43
+      },
+      "dataDate": "2022",
+      "count": 215,
+      "sourceCount": 215,
+      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "codice_istat",
+        "periodo"
+      ],
+      "warnings": [
+        "Collegamento per codice ISTAT a sei cifre; confini comunali regionali.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "kind": "vector",
+      "file": "soil-incremento-lordo-2021-2022-ettari.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "soil-ripristino-2021-2022-ettari",
+      "title": "Ripristino 2021-2022 [ettari]",
+      "folder": "trasformazioni",
+      "subfolder": "Consumo di suolo · indicatori ISPRA",
+      "description": "Indicatore comunale ufficiale ISPRA/SNPA. Ogni periodo mantiene il proprio intervallo e la propria unità.",
+      "note": "Elaborazione su base cartografica annuale; non avanzamento di cantieri o misura in tempo reale. I confronti tra intervalli di durata diversa non sono automaticamente tassi annui.",
+      "status": "ready",
+      "provider": "ISPRA / SNPA",
+      "sourceId": "ISPRA / SNPA",
+      "sourceUrl": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+      "license": "CC BY 4.0 · Data Policy ISPRA",
+      "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
+      "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
+      "color": "#be9b68",
+      "retrievedAt": "2026-11-08T22:41:45.871751+00:00",
+      "metric": {
+        "field": "__value",
+        "unit": "ha",
+        "min": 0,
+        "max": 11.54
+      },
+      "dataDate": "2022",
+      "count": 215,
+      "sourceCount": 215,
+      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "codice_istat",
+        "periodo"
+      ],
+      "warnings": [
+        "Collegamento per codice ISTAT a sei cifre; confini comunali regionali.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "kind": "vector",
+      "file": "soil-ripristino-2021-2022-ettari.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "soil-incremento-netto-2022-2023-ettari",
+      "title": "Incremento netto 2022-2023 [ettari]",
+      "folder": "trasformazioni",
+      "subfolder": "Consumo di suolo · indicatori ISPRA",
+      "description": "Indicatore comunale ufficiale ISPRA/SNPA. Ogni periodo mantiene il proprio intervallo e la propria unità.",
+      "note": "Elaborazione su base cartografica annuale; non avanzamento di cantieri o misura in tempo reale. I confronti tra intervalli di durata diversa non sono automaticamente tassi annui.",
+      "status": "ready",
+      "provider": "ISPRA / SNPA",
+      "sourceId": "ISPRA / SNPA",
+      "sourceUrl": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+      "license": "CC BY 4.0 · Data Policy ISPRA",
+      "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
+      "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
+      "color": "#be9b68",
+      "retrievedAt": "2026-11-08T22:41:49.426073+00:00",
+      "metric": {
+        "field": "__value",
+        "unit": "ha",
+        "min": -5.05,
+        "max": 26.58
+      },
+      "dataDate": "2023",
+      "count": 215,
+      "sourceCount": 215,
+      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "codice_istat",
+        "periodo"
+      ],
+      "warnings": [
+        "Collegamento per codice ISTAT a sei cifre; confini comunali regionali.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "kind": "vector",
+      "file": "soil-incremento-netto-2022-2023-ettari.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "soil-incremento-lordo-2022-2023-ettari",
+      "title": "Incremento lordo 2022-2023 [ettari]",
+      "folder": "trasformazioni",
+      "subfolder": "Consumo di suolo · indicatori ISPRA",
+      "description": "Indicatore comunale ufficiale ISPRA/SNPA. Ogni periodo mantiene il proprio intervallo e la propria unità.",
+      "note": "Elaborazione su base cartografica annuale; non avanzamento di cantieri o misura in tempo reale. I confronti tra intervalli di durata diversa non sono automaticamente tassi annui.",
+      "status": "ready",
+      "provider": "ISPRA / SNPA",
+      "sourceId": "ISPRA / SNPA",
+      "sourceUrl": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+      "license": "CC BY 4.0 · Data Policy ISPRA",
+      "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
+      "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
+      "color": "#be9b68",
+      "retrievedAt": "2026-11-08T22:41:52.929341+00:00",
+      "metric": {
+        "field": "__value",
+        "unit": "ha",
+        "min": 0,
+        "max": 26.58
+      },
+      "dataDate": "2023",
+      "count": 215,
+      "sourceCount": 215,
+      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "codice_istat",
+        "periodo"
+      ],
+      "warnings": [
+        "Collegamento per codice ISTAT a sei cifre; confini comunali regionali.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "kind": "vector",
+      "file": "soil-incremento-lordo-2022-2023-ettari.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "soil-ripristino-2022-2023-ettari",
+      "title": "Ripristino 2022-2023 [ettari]",
+      "folder": "trasformazioni",
+      "subfolder": "Consumo di suolo · indicatori ISPRA",
+      "description": "Indicatore comunale ufficiale ISPRA/SNPA. Ogni periodo mantiene il proprio intervallo e la propria unità.",
+      "note": "Elaborazione su base cartografica annuale; non avanzamento di cantieri o misura in tempo reale. I confronti tra intervalli di durata diversa non sono automaticamente tassi annui.",
+      "status": "ready",
+      "provider": "ISPRA / SNPA",
+      "sourceId": "ISPRA / SNPA",
+      "sourceUrl": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+      "license": "CC BY 4.0 · Data Policy ISPRA",
+      "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
+      "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
+      "color": "#be9b68",
+      "retrievedAt": "2026-11-08T22:41:56.483483+00:00",
+      "metric": {
+        "field": "__value",
+        "unit": "ha",
+        "min": 0,
+        "max": 5.83
+      },
+      "dataDate": "2023",
+      "count": 215,
+      "sourceCount": 215,
+      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "codice_istat",
+        "periodo"
+      ],
+      "warnings": [
+        "Collegamento per codice ISTAT a sei cifre; confini comunali regionali.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "kind": "vector",
+      "file": "soil-ripristino-2022-2023-ettari.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "soil-incremento-netto-2023-2024-ettari",
+      "title": "Incremento netto 2023-2024 [ettari]",
+      "folder": "trasformazioni",
+      "subfolder": "Consumo di suolo · indicatori ISPRA",
+      "description": "Indicatore comunale ufficiale ISPRA/SNPA. Ogni periodo mantiene il proprio intervallo e la propria unità.",
+      "note": "Elaborazione su base cartografica annuale; non avanzamento di cantieri o misura in tempo reale. I confronti tra intervalli di durata diversa non sono automaticamente tassi annui.",
+      "status": "ready",
+      "provider": "ISPRA / SNPA",
+      "sourceId": "ISPRA / SNPA",
+      "sourceUrl": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+      "license": "CC BY 4.0 · Data Policy ISPRA",
+      "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
+      "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
+      "color": "#be9b68",
+      "retrievedAt": "2026-11-08T22:42:00.055939+00:00",
+      "metric": {
+        "field": "__value",
+        "unit": "ha",
+        "min": -0.57,
+        "max": 15.59
+      },
+      "dataDate": "2024",
+      "count": 215,
+      "sourceCount": 215,
+      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "codice_istat",
+        "periodo"
+      ],
+      "warnings": [
+        "Collegamento per codice ISTAT a sei cifre; confini comunali regionali.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "kind": "vector",
+      "file": "soil-incremento-netto-2023-2024-ettari.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "soil-incremento-lordo-2023-2024-ettari",
+      "title": "Incremento lordo 2023-2024 [ettari]",
+      "folder": "trasformazioni",
+      "subfolder": "Consumo di suolo · indicatori ISPRA",
+      "description": "Indicatore comunale ufficiale ISPRA/SNPA. Ogni periodo mantiene il proprio intervallo e la propria unità.",
+      "note": "Elaborazione su base cartografica annuale; non avanzamento di cantieri o misura in tempo reale. I confronti tra intervalli di durata diversa non sono automaticamente tassi annui.",
+      "status": "ready",
+      "provider": "ISPRA / SNPA",
+      "sourceId": "ISPRA / SNPA",
+      "sourceUrl": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+      "license": "CC BY 4.0 · Data Policy ISPRA",
+      "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
+      "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
+      "color": "#be9b68",
+      "retrievedAt": "2026-11-08T22:42:03.577398+00:00",
+      "metric": {
+        "field": "__value",
+        "unit": "ha",
+        "min": 0,
+        "max": 15.59
+      },
+      "dataDate": "2024",
+      "count": 215,
+      "sourceCount": 215,
+      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "codice_istat",
+        "periodo"
+      ],
+      "warnings": [
+        "Collegamento per codice ISTAT a sei cifre; confini comunali regionali.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "kind": "vector",
+      "file": "soil-incremento-lordo-2023-2024-ettari.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "soil-ripristino-2023-2024-ettari",
+      "title": "Ripristino 2023-2024 [ettari]",
+      "folder": "trasformazioni",
+      "subfolder": "Consumo di suolo · indicatori ISPRA",
+      "description": "Indicatore comunale ufficiale ISPRA/SNPA. Ogni periodo mantiene il proprio intervallo e la propria unità.",
+      "note": "Elaborazione su base cartografica annuale; non avanzamento di cantieri o misura in tempo reale. I confronti tra intervalli di durata diversa non sono automaticamente tassi annui.",
+      "status": "ready",
+      "provider": "ISPRA / SNPA",
+      "sourceId": "ISPRA / SNPA",
+      "sourceUrl": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+      "license": "CC BY 4.0 · Data Policy ISPRA",
+      "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
+      "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
+      "color": "#be9b68",
+      "retrievedAt": "2026-11-08T22:42:07.247177+00:00",
+      "metric": {
+        "field": "__value",
+        "unit": "ha",
+        "min": 0,
+        "max": 2.57
+      },
+      "dataDate": "2024",
+      "count": 215,
+      "sourceCount": 215,
+      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "codice_istat",
+        "periodo"
+      ],
+      "warnings": [
+        "Collegamento per codice ISTAT a sei cifre; confini comunali regionali.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "kind": "vector",
+      "file": "soil-ripristino-2023-2024-ettari.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "soil-incremento-netto-2024-2025-ettari",
+      "title": "Incremento netto 2024-2025 [ettari]",
+      "folder": "trasformazioni",
+      "subfolder": "Consumo di suolo · indicatori ISPRA",
+      "description": "Indicatore comunale ufficiale ISPRA/SNPA. Ogni periodo mantiene il proprio intervallo e la propria unità.",
+      "note": "Elaborazione su base cartografica annuale; non avanzamento di cantieri o misura in tempo reale. I confronti tra intervalli di durata diversa non sono automaticamente tassi annui.",
+      "status": "ready",
+      "provider": "ISPRA / SNPA",
+      "sourceId": "ISPRA / SNPA",
+      "sourceUrl": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+      "license": "CC BY 4.0 · Data Policy ISPRA",
+      "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
+      "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
+      "color": "#be9b68",
+      "retrievedAt": "2026-11-08T22:42:10.997766+00:00",
+      "metric": {
+        "field": "__value",
+        "unit": "ha",
+        "min": -0.11,
+        "max": 59.15
+      },
+      "dataDate": "2025",
+      "count": 215,
+      "sourceCount": 215,
+      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "codice_istat",
+        "periodo"
+      ],
+      "warnings": [
+        "Collegamento per codice ISTAT a sei cifre; confini comunali regionali.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "kind": "vector",
+      "file": "soil-incremento-netto-2024-2025-ettari.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "soil-incremento-lordo-2024-2025-ettari",
+      "title": "Incremento lordo 2024-2025 [ettari]",
+      "folder": "trasformazioni",
+      "subfolder": "Consumo di suolo · indicatori ISPRA",
+      "description": "Indicatore comunale ufficiale ISPRA/SNPA. Ogni periodo mantiene il proprio intervallo e la propria unità.",
+      "note": "Elaborazione su base cartografica annuale; non avanzamento di cantieri o misura in tempo reale. I confronti tra intervalli di durata diversa non sono automaticamente tassi annui.",
+      "status": "ready",
+      "provider": "ISPRA / SNPA",
+      "sourceId": "ISPRA / SNPA",
+      "sourceUrl": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+      "license": "CC BY 4.0 · Data Policy ISPRA",
+      "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
+      "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
+      "color": "#be9b68",
+      "retrievedAt": "2026-11-08T22:42:14.731339+00:00",
+      "metric": {
+        "field": "__value",
+        "unit": "ha",
+        "min": 0,
+        "max": 59.15
+      },
+      "dataDate": "2025",
+      "count": 215,
+      "sourceCount": 215,
+      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "codice_istat",
+        "periodo"
+      ],
+      "warnings": [
+        "Collegamento per codice ISTAT a sei cifre; confini comunali regionali.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "kind": "vector",
+      "file": "soil-incremento-lordo-2024-2025-ettari.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "soil-ripristino-2024-2025-ettari",
+      "title": "Ripristino 2024-2025 [ettari]",
+      "folder": "trasformazioni",
+      "subfolder": "Consumo di suolo · indicatori ISPRA",
+      "description": "Indicatore comunale ufficiale ISPRA/SNPA. Ogni periodo mantiene il proprio intervallo e la propria unità.",
+      "note": "Elaborazione su base cartografica annuale; non avanzamento di cantieri o misura in tempo reale. I confronti tra intervalli di durata diversa non sono automaticamente tassi annui.",
+      "status": "ready",
+      "provider": "ISPRA / SNPA",
+      "sourceId": "ISPRA / SNPA",
+      "sourceUrl": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+      "license": "CC BY 4.0 · Data Policy ISPRA",
+      "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
+      "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
+      "color": "#be9b68",
+      "retrievedAt": "2026-11-08T22:42:18.309141+00:00",
+      "metric": {
+        "field": "__value",
+        "unit": "ha",
+        "min": 0,
+        "max": 1.75
+      },
+      "dataDate": "2025",
+      "count": 215,
+      "sourceCount": 215,
+      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "codice_istat",
+        "periodo"
+      ],
+      "warnings": [
+        "Collegamento per codice ISTAT a sei cifre; confini comunali regionali.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "kind": "vector",
+      "file": "soil-ripristino-2024-2025-ettari.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "soil-suolo-consumato-2025-ettari",
+      "title": "Suolo consumato 2025 [ettari]",
+      "folder": "trasformazioni",
+      "subfolder": "Consumo di suolo · indicatori ISPRA",
+      "description": "Indicatore comunale ufficiale ISPRA/SNPA. Ogni periodo mantiene il proprio intervallo e la propria unità.",
+      "note": "Elaborazione su base cartografica annuale; non avanzamento di cantieri o misura in tempo reale. I confronti tra intervalli di durata diversa non sono automaticamente tassi annui.",
+      "status": "ready",
+      "provider": "ISPRA / SNPA",
+      "sourceId": "ISPRA / SNPA",
+      "sourceUrl": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+      "license": "CC BY 4.0 · Data Policy ISPRA",
+      "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
+      "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
+      "color": "#be9b68",
+      "retrievedAt": "2026-11-08T22:42:21.874267+00:00",
+      "metric": {
+        "field": "__value",
+        "unit": "ha",
+        "min": 28.48,
+        "max": 2759.92
+      },
+      "dataDate": "2025",
+      "count": 215,
+      "sourceCount": 215,
+      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "codice_istat",
+        "periodo"
+      ],
+      "warnings": [
+        "Collegamento per codice ISTAT a sei cifre; confini comunali regionali.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "kind": "vector",
+      "file": "soil-suolo-consumato-2025-ettari.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "soil-suolo-consumato-2025",
+      "title": "Suolo consumato 2025 [%]",
+      "folder": "trasformazioni",
+      "subfolder": "Consumo di suolo · indicatori ISPRA",
+      "description": "Indicatore comunale ufficiale ISPRA/SNPA. Ogni periodo mantiene il proprio intervallo e la propria unità.",
+      "note": "Elaborazione su base cartografica annuale; non avanzamento di cantieri o misura in tempo reale. I confronti tra intervalli di durata diversa non sono automaticamente tassi annui.",
+      "status": "ready",
+      "provider": "ISPRA / SNPA",
+      "sourceId": "ISPRA / SNPA",
+      "sourceUrl": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+      "license": "CC BY 4.0 · Data Policy ISPRA",
+      "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
+      "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
+      "color": "#be9b68",
+      "retrievedAt": "2026-11-08T22:42:25.488790+00:00",
+      "metric": {
+        "field": "__value",
+        "unit": "%",
+        "min": 0.528,
+        "max": 46.167
+      },
+      "dataDate": "2025",
+      "count": 215,
+      "sourceCount": 215,
+      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "bounds": [
+        [
+          12.32138347,
+          45.58088488
+        ],
+        [
+          13.91865598,
+          46.64795875
+        ]
+      ],
+      "geometryTypes": [
+        "MultiPolygon",
+        "Polygon"
+      ],
+      "fields": [
+        "codice_istat",
+        "periodo"
+      ],
+      "warnings": [
+        "Collegamento per codice ISTAT a sei cifre; confini comunali regionali.",
+        "Geometrie generalizzate in tile vettoriali; gli elementi piccoli/densi si leggono aumentando lo zoom."
+      ],
+      "kind": "vector",
+      "file": "soil-suolo-consumato-2025.pmtiles",
+      "sourceLayer": "data"
+    },
+    {
+      "id": "review-inemar",
+      "title": "Emissioni stimate INEMAR 2023",
+      "folder": "aria",
+      "status": "blocked",
+      "provider": "INEMAR 2023",
+      "sourceId": "INEMAR 2023",
+      "sourceUrl": "https://www.arpa.fvg.it/temi/temi/sviluppo-sostenibile/sezioni-principali/inventario-regionale-emissioni-in-atmosfera/catasto-emissioni-2023/",
+      "license": "Da chiarire",
+      "licenseUrl": "https://www.arpa.fvg.it/temi/temi/sviluppo-sostenibile/sezioni-principali/inventario-regionale-emissioni-in-atmosfera/catasto-emissioni-2023/",
+      "description": "Emissioni stimate INEMAR 2023",
+      "note": "Da sottoporre alla revisione finale.",
+      "cadence": "Non attivato",
+      "color": "#a58bc1",
+      "problem": "Le note ARPA associano CC BY a condizioni aggiuntive non commerciali e di notifica: serve chiarire il riuso della distribuzione prima della pubblicazione."
+    },
+    {
+      "id": "review-bus",
+      "title": "Posizioni GPS autobus TPL FVG",
+      "folder": "mobilita",
+      "status": "blocked",
+      "provider": "BusOne",
+      "sourceId": "BusOne",
+      "sourceUrl": "https://proxy.busone.app/TPLFVG/readme",
+      "license": "Da chiarire",
+      "licenseUrl": "https://proxy.busone.app/TPLFVG/readme",
+      "description": "Posizioni GPS autobus TPL FVG",
+      "note": "Da sottoporre alla revisione finale.",
+      "cadence": "Non attivato",
+      "color": "#b0b7b0",
+      "problem": "Il fornitore richiede consenso scritto per organizzazioni e uso commerciale, oltre a intestazioni identificative del client."
+    },
+    {
+      "id": "review-parking",
+      "title": "Posti disponibili nei parcheggi di Udine",
+      "folder": "mobilita",
+      "status": "blocked",
+      "provider": "SSM",
+      "sourceId": "SSM",
+      "sourceUrl": "https://www.ssm.it/mappa-interattiva-real-time-parking",
+      "license": "Da chiarire",
+      "licenseUrl": "https://www.ssm.it/mappa-interattiva-real-time-parking",
+      "description": "Posti disponibili nei parcheggi di Udine",
+      "note": "Da sottoporre alla revisione finale.",
+      "cadence": "Non attivato",
+      "color": "#b0b7b0",
+      "problem": "Feed tecnico individuato, condizioni di riutilizzo non confermate; nessun feed equivalente verificato per Trieste–Monfalcone."
+    },
+    {
+      "id": "review-rf-coordinates",
+      "title": "Posizioni dei rilievi RF da confermare",
+      "folder": "infrastrutture",
+      "status": "blocked",
+      "provider": "g844-avf4",
+      "sourceId": "g844-avf4",
+      "sourceUrl": "https://www.dati.friuliveneziagiulia.it/d/g844-avf4",
+      "license": "Da chiarire",
+      "licenseUrl": "https://www.dati.friuliveneziagiulia.it/d/g844-avf4",
+      "description": "Posizioni dei rilievi RF da confermare",
+      "note": "Da sottoporre alla revisione finale.",
+      "cadence": "Non attivato",
+      "color": "#9ba8ca",
+      "problem": "La tabella è importata per Comune, ma i campi gauss_boaga_* hanno valori che richiedono conferma del CRS prima di posizionare i singoli rilievi."
+    },
+    {
+      "id": "review-bathing-join",
+      "title": "Aree di balneazione senza corrispondenza geografica",
+      "folder": "mare",
+      "status": "blocked",
+      "provider": "fpj6-y9vk",
+      "sourceId": "fpj6-y9vk",
+      "sourceUrl": "https://www.dati.friuliveneziagiulia.it/d/fpj6-y9vk",
+      "license": "Da chiarire",
+      "licenseUrl": "https://www.dati.friuliveneziagiulia.it/d/fpj6-y9vk",
+      "description": "Aree di balneazione senza corrispondenza geografica",
+      "note": "Da sottoporre alla revisione finale.",
+      "cadence": "Non attivato",
+      "color": "#5ebfcc",
+      "problem": "Le aree con codice geografico associabile sono importate. Per le altre occorre una corrispondenza ufficiale fra i codici delle due anagrafi, senza inventare punti."
+    }
+  ]
+}

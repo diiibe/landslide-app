@@ -19,6 +19,7 @@ import {
 } from "./data";
 import styles from "./Twin.module.css";
 import { ObservedSeriesChart } from "./ObservedSeriesChart";
+import { setRegionalEnabled } from "@/regional/store";
 
 const GROUPS = VARIABLE_GROUPS;
 const variableEntries = Object.entries(VARIABLES) as [Variable, (typeof VARIABLES)[Variable]][];
@@ -62,7 +63,7 @@ function Feed({
         {feed.loading
           ? "Verifica della fonte…"
           : feed.snapshot
-            ? "Snapshot salvato · 8/11/2026"
+            ? "Snapshot salvato · verifica la data dell’osservazione"
             : feed.receivedAt
               ? "Fonte raggiunta alle " +
                 new Date(feed.receivedAt).toLocaleTimeString("it-IT")
@@ -85,7 +86,7 @@ function Feed({
     </div>
   );
 }
-export function TwinPanel() {
+export function TwinPanel({ inspectorOnly = false }: { inspectorOnly?: boolean } = {}) {
   const inspector = useRef<HTMLDivElement>(null);
   const s = useTwinStore(),
     [now, setNow] = useState(() => Date.now());
@@ -115,7 +116,8 @@ export function TwinPanel() {
   const request = () =>
     useTwinStore.setState((state) => ({ refreshKey: state.refreshKey + 1 }));
   return (
-    <section className={styles.panel} aria-label="Digital twin regionale">
+    <section className={styles.panel} aria-label={inspectorOnly ? "Dettaglio osservazioni PCR" : "Digital twin regionale"}>
+      {inspectorOnly ? s.selection?.kind!=="building" && <label className={styles.field}>Variabile della stazione<select aria-label="Variabile della stazione" value={s.variable} onChange={e => useTwinStore.setState({ variable: e.target.value as Variable })}>{variableEntries.map(([id, v]) => <option key={id} value={id}>{v.label} · {v.unit}</option>)}</select></label> : <>
       <div className={styles.heading}>
         <h2>Città, costa e attività</h2>
         <p>Trieste–Monfalcone</p>
@@ -231,6 +233,7 @@ export function TwinPanel() {
           </p>
         )}
       </div>
+      </>}
       <div ref={inspector} className={styles.section}>
         <div className={styles.inspectorHeading}>
           <h3>{s.selection ? "Dettaglio selezionato" : "Esplora un oggetto"}</h3>
@@ -239,7 +242,7 @@ export function TwinPanel() {
         <p className={styles.caption}>
           Tocca un sensore, uno stabilimento o un edificio sulla mappa.
         </p>
-        <label className={styles.field}>
+        {s.selection?.kind!=="building" && <label className={styles.field}>
           Stazione
           <select
             aria-label="Stazione"
@@ -264,7 +267,7 @@ export function TwinPanel() {
               </option>
             ))}
           </select>
-        </label>
+        </label>}
         {sensor && (
           <div className={styles.observation} key={`${sensor.stationId}:${s.variable}:${sensor.time}`}>
             <h3>{sensor.name}</h3>
@@ -275,6 +278,7 @@ export function TwinPanel() {
             <p className={styles.caption}>{formatTime(sensor.ms)}</p>
             <Freshness ms={sensor.ms} now={now} />
             <button type="button" className={styles.action} onClick={() => {
+              setRegionalEnabled("pcr-" + s.variable, true);
               window.dispatchEvent(new CustomEvent("fvg:twin-station", { detail: sensor.stationId }));
               if (window.matchMedia("(max-width: 768px), (max-height: 500px) and (pointer: coarse)").matches)
                 useAppStore.setState({ drawerOpen: false });
@@ -441,7 +445,7 @@ export function TwinPanel() {
           </>
         )}
       </details>
-      <details className={styles.section}>
+      {!inspectorOnly && <details className={styles.section}>
         <summary>Fonti, copertura e limiti</summary>
         <p className={styles.caption}>
           Fonte: Protezione Civile della Regione Friuli Venezia Giulia ·{" "}
@@ -473,23 +477,12 @@ export function TwinPanel() {
         >
           Provenienza degli estratti ↗
         </a>
-      </details>
-      <div className={styles.section}>
-        <button
-          type="button"
-          className={styles.action}
-          onClick={() => {
-            setTwinActive(false);
-            useAppStore.setState({ drawerOpen: true });
-          }}
-        >
-          Torna alla mappa frane
-        </button>
-      </div>
+      </details>}
+
     </section>
   );
 }
-function Series({ measure }: { measure: Measure }) {
+export function Series({ measure, unitOverride }: { measure: Measure; unitOverride?: string }) {
   const refreshKey = useTwinStore((s) => s.refreshKey);
   const [state, setState] = useState<{
     key: string;
@@ -550,5 +543,5 @@ function Series({ measure }: { measure: Measure }) {
       </p>
     );
   const definition = variableEntries.find(([, variable]) => variable.id === measure.sensorId)?.[1];
-  return <ObservedSeriesChart key={key} rows={state.rows} unit={definition?.unit ?? ""} />;
+  return <ObservedSeriesChart key={key} rows={state.rows} unit={unitOverride ?? definition?.unit ?? ""} />;
 }

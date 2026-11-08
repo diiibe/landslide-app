@@ -100,6 +100,7 @@ import { setMap } from "./instance";
 import { rewriteMapboxUrl } from "./mapboxUrl";
 import styles from "./MapView.module.css";
 import { mountTwinMap } from "@/digital-twin/map";
+import { mountRegionalMap } from "@/regional/map";
 
 const TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string | undefined;
 
@@ -379,9 +380,11 @@ export function MapView() {
       };
     });
     const unmountTwin = mountTwinMap(m);
+    const unmountRegional = mountRegionalMap(m);
     mapRef.current = m;
     setMap(m);
     return () => {
+      unmountRegional();
       unmountTwin();
       setMap(null);
       popupsUnsubRef.current?.();

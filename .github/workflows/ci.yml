@@ -41,3 +41,16 @@ jobs:
             public/icons/
           if-no-files-found: ignore
           retention-days: 7
+
+  regional-data:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: scripts/regional-requirements.txt
+      - run: python -m pip install -r scripts/regional-requirements.txt
+      - run: python scripts/test_regional_pipeline.py
+      - run: python scripts/validate-regional-data.py

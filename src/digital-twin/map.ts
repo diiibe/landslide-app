@@ -1,4 +1,9 @@
-import type { Map as MLMap, GeoJSONSource, ImageSource } from "maplibre-gl";
+import type {
+  Map as MLMap,
+  GeoJSONSource,
+  ImageSource,
+  ExpressionSpecification,
+} from "maplibre-gl";
 import {
   getJSON,
   sensorGeoJSON,
@@ -6,24 +11,18 @@ import {
   variableMeasures,
   TWIN_DATA,
   VARIABLES,
+  type Variable,
 } from "./data";
 import { mountTwinInteractions } from "./mapInteractions";
 import { useTwinStore } from "./store";
 import { useAppStore } from "@/app/store";
+import { isPCREnabled, PCR_VARIABLES } from "@/regional/builtins";
+import { useRegionalStore } from "@/regional/store";
 const SENSOR = "twin-sensors",
   WIND = "twin-wind",
   AIA = "twin-aia",
   BUILDINGS = "twin-buildings",
   RADAR = "twin-radar";
-const ids = [
-  RADAR,
-  BUILDINGS,
-  `${BUILDINGS}-3d`,
-  AIA,
-  WIND,
-  SENSOR,
-  `${SENSOR}-labels`,
-];
 const empty: GeoJSON.FeatureCollection = {
   type: "FeatureCollection",
   features: [],
@@ -41,85 +40,272 @@ export const SCENES = {
     pitch: 55,
   },
 };
-/** Owns only the twin layers. Basemap replacement replays cached sources. */
+/** Observations share the same map and camera as every hazard/context layer. */
 export function mountTwinMap(map: MLMap): () => void {
   let ready = false,
     disposed = false,
-    lastActive = false,
-    lastKey = -1,
     radarKey = "",
-    assets: GeoJSON.FeatureCollection | null = null,
-    buildings: GeoJSON.FeatureCollection | null = null;
-  let pendingScene: keyof typeof SCENES | null = null;
-  let pendingStation: number | null = null, pendingFit = false, navigationFrame = 0;
+    lastMinute = -1,
+    lastMeasures: ReturnType<typeof useTwinStore.getState>["measures"] | null =
+      null;
+  let assets: GeoJSON.FeatureCollection | null = null,
+    buildings: GeoJSON.FeatureCollection | null = null,
+    buildingsVersion = "";
+  function buildingVersion() {
+    const s = useRegionalStore.getState();
+    return (
+      (s.catalog?.layers.find((l) => l.id === "twin-buildings")?.retrievedAt ??
+        "initial") +
+      ":" +
+      s.refreshKey
+    );
+  }
+  let pendingScene: keyof typeof SCENES | null = null,
+    pendingStation: number | null = null,
+    pendingFit = false;
+  let pendingBounds: [[number, number], [number, number]] | null = null,
+    navigationFrame = 0,
+    layoutFrame = 0;
+  const ac = new AbortController(),
+    loading = new Set<string>(),
+    sourceData = new Map<string, GeoJSON.FeatureCollection>();
+  const observations = new Map<Variable, GeoJSON.FeatureCollection>();
+  let windData: GeoJSON.FeatureCollection = empty;
   const interactions = mountTwinInteractions(map, () => ready && !disposed);
-  const sourceData = new Map<string, GeoJSON.FeatureCollection>();
-  let lastMeasures: ReturnType<typeof useTwinStore.getState>["measures"] | null = null;
-  let lastVariable = "", lastMinute = -1;
-  let sensorData: GeoJSON.FeatureCollection = empty, windData: GeoJSON.FeatureCollection = empty;
-  const loading = new Set<string>();
-  const ac = new AbortController();
-  let previousCamera: {
-    center: [number, number];
-    zoom: number;
-    pitch: number;
-    bearing: number;
-    padding: ReturnType<MLMap["getPadding"]>;
-  } | null = null;
-  let layoutFrame = 0;
   function applyPadding() {
-    if (!ready || disposed || !useTwinStore.getState().active) return;
-    const panel = document.getElementById("drawer-panel");
-    const container = map.getContainer().getBoundingClientRect();
+    if (!ready || disposed) return;
+    const containerElement = map.getContainer();
+    // MapLibre listens to window resizing, while flex/sheet layout can resize
+    // its container independently (notably during Safari's first layout).
+    if (containerElement.clientWidth > 0 && containerElement.clientHeight > 0) {
+      const canvas = map.getCanvas();
+      if (
+        canvas.clientWidth !== containerElement.clientWidth ||
+        canvas.clientHeight !== containerElement.clientHeight
+      )
+        map.resize();
+    }
+    const panel = document.getElementById("drawer-panel"),
+      container = map.getContainer().getBoundingClientRect();
     const padding = { top: 0, bottom: 0, left: 0, right: 0 };
-    if (panel && useAppStore.getState().drawerOpen && getComputedStyle(panel).position === "absolute") {
-      const rect = panel.getBoundingClientRect();
-      if (rect.width >= container.width - 1)
-        padding.bottom = Math.max(0, container.bottom - rect.top);
-      else
-        padding.right = Math.max(0, container.right - rect.left);
+    if (
+      panel &&
+      useAppStore.getState().drawerOpen &&
+      getComputedStyle(panel).position === "absolute"
+    ) {
+      const r = panel.getBoundingClientRect();
+      if (r.width >= container.width - 1)
+        padding.bottom = Math.max(0, container.bottom - r.top);
+      else padding.right = Math.max(0, container.right - r.left);
     }
     const current = map.getPadding();
-    if (Object.entries(padding).some(([key, value]) => current[key as keyof typeof current] !== value))
+    if (
+      Object.entries(padding).some(
+        ([k, v]) => current[k as keyof typeof current] !== v,
+      )
+    )
       map.setPadding(padding);
   }
   function layout() {
     cancelAnimationFrame(layoutFrame);
     layoutFrame = requestAnimationFrame(applyPadding);
   }
-  // Keep the observed location in the part of the map not covered by the
-  // mobile sheet. This also follows rotation and dynamic browser toolbars.
-  const layoutObserver = new ResizeObserver(layout);
-  layoutObserver.observe(map.getContainer());
+  const observer = new ResizeObserver(layout);
+  observer.observe(map.getContainer());
   const panel = document.getElementById("drawer-panel");
-  if (panel) layoutObserver.observe(panel);
+  if (panel) observer.observe(panel);
   function source(id: string, data: GeoJSON.FeatureCollection) {
     if (!map.getSource(id)) map.addSource(id, { type: "geojson", data });
-    else if (sourceData.get(id) !== data) (map.getSource(id) as GeoJSONSource).setData(data);
+    else if (sourceData.get(id) !== data)
+      (map.getSource(id) as GeoJSONSource).setData(data);
     sourceData.set(id, data);
+  }
+  function visible(id: string, on: boolean) {
+    if (map.getLayer(id))
+      map.setLayoutProperty(id, "visibility", on ? "visible" : "none");
   }
   function sync() {
     if (!ready || disposed) return;
-    const s = useTwinStore.getState();
-    if (!s.active) {
-      for (const id of ids)
-        if (map.getLayer(id)) map.setLayoutProperty(id, "visibility", "none");
-      interactions.sync();
-      return;
-    }
-    const minute = Math.floor(Date.now() / 60000);
-    if (lastMeasures !== s.measures || lastVariable !== s.variable || lastMinute !== minute) {
+    const s = useTwinStore.getState(),
+      minute = Math.floor(Date.now() / 60000);
+    if (s.measures !== lastMeasures || minute !== lastMinute) {
+      observations.clear();
+      windData = windGeoJSON(s.measures, "wind");
+      lastMeasures = s.measures;
+      lastMinute = minute;
       interactions.invalidateHover();
-      sensorData = sensorGeoJSON(s.measures, s.variable);
-      windData = windGeoJSON(s.measures, s.variable);
-      lastMeasures = s.measures; lastVariable = s.variable; lastMinute = minute;
     }
-    source(SENSOR, sensorData);
-    source(WIND, windData);
-    source(AIA, assets ?? empty);
-    source(BUILDINGS, buildings ?? empty);
-    // Put precipitation below context, buildings and measured point observations.
-    if (s.radar && s.radarOn) {
+    const fontLayer = map
+      .getStyle()
+      .layers.find(
+        (l) =>
+          l.type === "symbol" &&
+          Array.isArray(l.layout?.["text-font"]) &&
+          l.layout["text-font"].every((x) => typeof x === "string"),
+      );
+    const fonts =
+      fontLayer?.type === "symbol"
+        ? (fontLayer.layout?.["text-font"] as string[])
+        : ["Open Sans Semibold"];
+    for (const variable of PCR_VARIABLES) {
+      const id = `${SENSOR}-${variable}`,
+        on = s.active && isPCREnabled(variable),
+        v = VARIABLES[variable];
+      if (on) {
+        if (!observations.has(variable))
+          observations.set(variable, sensorGeoJSON(s.measures, variable));
+        source(id, observations.get(variable)!);
+        const color: string | ExpressionSpecification = [
+          "case",
+          ["get", "stale"],
+          "#888888",
+          v.comparable
+            ? [
+                "interpolate",
+                ["linear"],
+                ["get", "value"],
+                v.min,
+                v.colors[0],
+                (v.min + v.max) / 2,
+                v.colors[1],
+                v.max,
+                v.colors[2],
+              ]
+            : "#5ebfcc",
+        ];
+        if (!map.getLayer(id))
+          map.addLayer({
+            id,
+            type: "circle",
+            source: id,
+            paint: {
+              "circle-radius": [
+                "interpolate",
+                ["linear"],
+                ["get", "scaleFraction"],
+                0,
+                5,
+                1,
+                11,
+              ],
+              "circle-color": color,
+              "circle-stroke-color": "#172624",
+              "circle-stroke-width": 1.5,
+            },
+          });
+        if (!map.getLayer(id + "-labels"))
+          map.addLayer({
+            id: id + "-labels",
+            type: "symbol",
+            source: id,
+            minzoom: 11,
+            layout: {
+              "text-field": ["get", "label"],
+              "text-font": fonts ?? ["Open Sans Semibold"],
+              "text-size": 12,
+              "text-offset": [0, 1.4],
+              "text-anchor": "top",
+            },
+            paint: {
+              "text-color": "#172624",
+              "text-halo-color": "#f6f5ec",
+              "text-halo-width": 1.5,
+            },
+          });
+        const opacity =
+          useRegionalStore.getState().opacity["pcr-" + variable] ?? 1;
+        map.setPaintProperty(id, "circle-opacity", opacity);
+        map.setPaintProperty(id + "-labels", "text-opacity", opacity);
+      }
+      visible(id, on);
+      visible(id + "-labels", on);
+    }
+    const windOn = s.active && isPCREnabled("wind");
+    if (windOn) {
+      source(WIND, windData);
+      if (!map.getLayer(WIND))
+        map.addLayer({
+          id: WIND,
+          type: "line",
+          source: WIND,
+          paint: {
+            "line-color": ["case", ["get", "stale"], "#888888", "#5ebfcc"],
+            "line-width": 2,
+          },
+        });
+    }
+    visible(WIND, windOn);
+    if (map.getLayer(WIND))
+      map.setPaintProperty(
+        WIND,
+        "line-opacity",
+        useRegionalStore.getState().opacity["pcr-wind"] ?? 1,
+      );
+    if (s.active && s.buildingsOn) {
+      source(BUILDINGS, buildings ?? empty);
+      if (!map.getLayer(BUILDINGS))
+        map.addLayer({
+          id: BUILDINGS,
+          type: "fill",
+          source: BUILDINGS,
+          minzoom: 12,
+          paint: {
+            "fill-color": [
+              "case",
+              ["get", "heightKnown"],
+              "#9caca7",
+              "#777777",
+            ],
+            "fill-opacity": 0.7,
+          },
+        });
+      if (!map.getLayer(BUILDINGS + "-3d"))
+        map.addLayer({
+          id: BUILDINGS + "-3d",
+          type: "fill-extrusion",
+          source: BUILDINGS,
+          minzoom: 12,
+          filter: ["==", ["get", "heightKnown"], true],
+          paint: {
+            "fill-extrusion-height": ["get", "height"],
+            "fill-extrusion-color": "#a3b8b4",
+            "fill-extrusion-opacity": 0.9,
+            "fill-extrusion-base": 0,
+          },
+        });
+    }
+    const buildingOpacity =
+      useRegionalStore.getState().opacity["twin-buildings"] ?? 0.7;
+    if (map.getLayer(BUILDINGS))
+      map.setPaintProperty(BUILDINGS, "fill-opacity", buildingOpacity);
+    if (map.getLayer(BUILDINGS + "-3d"))
+      map.setPaintProperty(
+        BUILDINGS + "-3d",
+        "fill-extrusion-opacity",
+        buildingOpacity,
+      );
+    visible(BUILDINGS, s.active && s.buildingsOn);
+    visible(
+      BUILDINGS + "-3d",
+      s.active && s.buildingsOn && useAppStore.getState().view3D,
+    );
+    if (s.active && s.assetsOn) {
+      source(AIA, assets ?? empty);
+      if (!map.getLayer(AIA))
+        map.addLayer({
+          id: AIA,
+          type: "circle",
+          source: AIA,
+          paint: {
+            "circle-radius": ["interpolate", ["linear"], ["zoom"], 8, 4, 15, 8],
+            "circle-color": "#e0b361",
+            "circle-stroke-width": 1.5,
+            "circle-stroke-color": "#322c20",
+          },
+        });
+    }
+    visible(AIA, s.active && s.assetsOn);
+    if (s.active && s.radar && s.radarOn) {
       if (!map.getSource(RADAR)) {
         map.addSource(RADAR, {
           type: "image",
@@ -145,140 +331,32 @@ export function mountTwinMap(map: MLMap): () => void {
           map.getLayer(BUILDINGS) ? BUILDINGS : undefined,
         );
     }
-    if (!map.getLayer(BUILDINGS))
-      map.addLayer({
-        id: BUILDINGS,
-        type: "fill",
-        source: BUILDINGS,
-        minzoom: 12,
-        paint: {
-          "fill-color": ["case", ["get", "heightKnown"], "#9caca7", "#777777"],
-          "fill-opacity": 0.7,
-        },
-      });
-    if (!map.getLayer(`${BUILDINGS}-3d`))
-      map.addLayer({
-        id: `${BUILDINGS}-3d`,
-        type: "fill-extrusion",
-        source: BUILDINGS,
-        minzoom: 12,
-        filter: ["==", ["get", "heightKnown"], true],
-        paint: {
-          "fill-extrusion-height": ["get", "height"],
-          "fill-extrusion-color": "#a3b8b4",
-          "fill-extrusion-opacity": 0.9,
-          "fill-extrusion-base": 0,
-        },
-      });
-    if (!map.getLayer(AIA))
-      map.addLayer({
-        id: AIA,
-        type: "circle",
-        source: AIA,
-        paint: {
-          "circle-radius": ["interpolate", ["linear"], ["zoom"], 8, 4, 15, 8],
-          "circle-color": "#e0b361",
-          "circle-stroke-width": 1.5,
-          "circle-stroke-color": "#322c20",
-        },
-      });
-    if (!map.getLayer(WIND))
-      map.addLayer({
-        id: WIND,
-        type: "line",
-        source: WIND,
-        paint: {
-          "line-color": ["case", ["get", "stale"], "#888888", "#5ebfcc"],
-          "line-width": 2,
-        },
-      });
-    if (!map.getLayer(SENSOR))
-      map.addLayer({
-        id: SENSOR,
-        type: "circle",
-        source: SENSOR,
-        paint: {
-          "circle-radius": ["interpolate", ["linear"], ["get", "scaleFraction"], 0, 5, 1, 11],
-          "circle-stroke-color": "#172624",
-          "circle-stroke-width": 1.5,
-        },
-      });
-    const fontLayer = map
-      .getStyle()
-      .layers.find(
-        (layer) =>
-          layer.type === "symbol" &&
-          Array.isArray(layer.layout?.["text-font"]) &&
-          layer.layout["text-font"].every((value) => typeof value === "string"),
+    if (map.getLayer(RADAR))
+      map.setPaintProperty(
+        RADAR,
+        "raster-opacity",
+        useRegionalStore.getState().opacity["pcr-radar"] ?? 0.65,
       );
-    const fonts =
-      fontLayer?.type === "symbol"
-        ? (fontLayer.layout?.["text-font"] as string[])
-        : ["Open Sans Semibold"];
-    if (!map.getLayer(`${SENSOR}-labels`))
-      map.addLayer({
-        id: `${SENSOR}-labels`,
-        type: "symbol",
-        source: SENSOR,
-        minzoom: 10,
-        layout: {
-          "text-field": ["get", "label"],
-          "text-font": fonts ?? ["Open Sans Semibold"],
-          "text-size": 12,
-          "text-offset": [0, 1.4],
-          "text-anchor": "top",
-        },
-        paint: {
-          "text-color": "#172624",
-          "text-halo-color": "#f6f5ec",
-          "text-halo-width": 1.5,
-        },
-      });
-    const v = VARIABLES[s.variable];
-    map.setPaintProperty(SENSOR, "circle-color", [
-      "case",
-      ["get", "stale"],
-      "#888888",
-      v.comparable ? [
-        "interpolate",
-        ["linear"],
-        ["get", "value"],
-        v.min,
-        v.colors[0],
-        (v.min + v.max) / 2,
-        v.colors[1],
-        v.max,
-        v.colors[2],
-      ] : "#5ebfcc",
-    ]);
-    for (const id of ids)
-      if (map.getLayer(id))
-        map.setLayoutProperty(
-          id,
-          "visibility",
-          (id === RADAR && !s.radarOn) ||
-            (id === AIA && !s.assetsOn) ||
-            ((id === BUILDINGS || id === `${BUILDINGS}-3d`) &&
-              !s.buildingsOn) ||
-            (id === `${BUILDINGS}-3d` && !useAppStore.getState().view3D)
-            ? "none"
-            : "visible",
-        );
+    visible(RADAR, s.active && s.radarOn);
     interactions.sync();
   }
   async function load(kind: "assets" | "buildings") {
     if (loading.has(kind)) return;
     loading.add(kind);
+    const version = buildingVersion();
     try {
-      const data = (await getJSON(
-        `${TWIN_DATA}${kind === "assets" ? "aia" : "buildings"}.geojson`,
+      const d = (await getJSON(
+        `${TWIN_DATA}${kind === "assets" ? "aia" : "buildings"}.geojson?v=${encodeURIComponent(version)}`,
         ac.signal,
       )) as GeoJSON.FeatureCollection;
-      if (data.type !== "FeatureCollection" || !Array.isArray(data.features))
-        throw new Error("Geometrie non valide");
+      if (d.type !== "FeatureCollection" || !Array.isArray(d.features))
+        throw Error("Geometrie non valide");
       if (disposed) return;
-      if (kind === "assets") assets = data;
-      else buildings = data;
+      if (kind === "assets") assets = d;
+      else {
+        buildings = d;
+        buildingsVersion = version;
+      }
       useTwinStore.setState(
         kind === "assets" ? { assetsError: null } : { buildingsError: null },
       );
@@ -287,48 +365,83 @@ export function mountTwinMap(map: MLMap): () => void {
       if (!disposed)
         useTwinStore.setState(
           kind === "assets"
-            ? {
-                assetsError:
-                  e instanceof Error ? e.message : "Impianti non disponibili",
-              }
-            : {
-                buildingsError:
-                  e instanceof Error ? e.message : "Edifici non disponibili",
-              },
+            ? { assetsError: String(e) }
+            : { buildingsError: String(e) },
         );
-    } finally { loading.delete(kind); }
+    } finally {
+      loading.delete(kind);
+    }
   }
   function changed() {
     const s = useTwinStore.getState();
-    const started = s.active && !lastActive,
-      stopped = !s.active && lastActive,
-      key = s.refreshKey !== lastKey;
-    if (started) {
-      pendingScene = "coast";
-      const center = map.getCenter();
-      previousCamera = {
-        center: [center.lng, center.lat],
-        zoom: map.getZoom(),
-        pitch: map.getPitch(),
-        bearing: map.getBearing(),
-        padding: map.getPadding(),
-      };
-    }
-    if (stopped) {
-      pendingScene = null;
-      pendingStation = null; pendingFit = false;
-      if (previousCamera) map.jumpTo(previousCamera);
-    }
-    lastActive = s.active;
-    lastKey = s.refreshKey;
-    if (s.active && (started || key)) {
-      if (!assets) void load("assets");
-      if (!buildings) void load("buildings");
-      if (started && ready) scene("coast");
-    }
+    if (s.active && s.assetsOn && !assets) void load("assets");
+    if (
+      s.active &&
+      s.buildingsOn &&
+      (!buildings || buildingsVersion !== buildingVersion())
+    )
+      void load("buildings");
     sync();
     layout();
     navigation();
+  }
+  function scene(name: keyof typeof SCENES) {
+    pendingScene = null;
+    applyPadding();
+    map.jumpTo({
+      ...SCENES[name],
+      pitch: useAppStore.getState().view3D ? SCENES[name].pitch : 0,
+    });
+  }
+  function navigation() {
+    if (pendingStation === null && !pendingFit && !pendingBounds) return;
+    cancelAnimationFrame(navigationFrame);
+    navigationFrame = requestAnimationFrame(() => {
+      if (!ready || disposed) return;
+      applyPadding();
+      const s = useTwinStore.getState(),
+        rows = variableMeasures(s.measures, s.variable);
+      const duration = window.matchMedia?.("(prefers-reduced-motion: reduce)")
+        .matches
+        ? 0
+        : 420;
+      if (pendingBounds) {
+        const bounds = pendingBounds;
+        pendingBounds = null;
+        map.fitBounds(bounds, { padding: 24, maxZoom: 15, pitch: 0, duration });
+      } else if (pendingStation !== null) {
+        if (!rows.length) return;
+        const m = rows.find((x) => x.stationId === pendingStation);
+        pendingStation = null;
+        if (m)
+          map.flyTo({
+            center: [m.lon, m.lat],
+            zoom: Math.max(12.6, Math.min(map.getZoom(), 15)),
+            duration,
+            essential: false,
+          });
+      } else if (pendingFit && rows.length) {
+        pendingFit = false;
+        if (rows.length === 1)
+          map.flyTo({
+            center: [rows[0]!.lon, rows[0]!.lat],
+            zoom: 12.6,
+            duration,
+            essential: false,
+          });
+        else {
+          const x = rows.map((m) => m.lon),
+            y = rows.map((m) => m.lat);
+          map.fitBounds(
+            [
+              [Math.min(...x), Math.min(...y)],
+              [Math.max(...x), Math.max(...y)],
+            ],
+            { padding: 24, maxZoom: 13.2, pitch: 0, duration },
+          );
+        }
+      }
+    });
   }
   function style() {
     ready = true;
@@ -336,68 +449,55 @@ export function mountTwinMap(map: MLMap): () => void {
     radarKey = "";
     sync();
     layout();
-    if (pendingScene && useTwinStore.getState().active) scene(pendingScene);
+    if (pendingScene) scene(pendingScene);
     navigation();
   }
   function styleLoading() {
     interactions.reset();
     ready = false;
   }
-  function scene(name: keyof typeof SCENES) {
-    pendingScene = null;
-    map.jumpTo({
-      ...SCENES[name],
-      pitch: useAppStore.getState().view3D ? SCENES[name].pitch : 0,
-    });
-  }
-  function navigation() {
-    if (pendingStation === null && !pendingFit) return;
-    cancelAnimationFrame(navigationFrame);
-    navigationFrame = requestAnimationFrame(() => {
-      if (!ready || disposed || !useTwinStore.getState().active) return;
-      // Closing the sheet can requeue layout after this RAF. Apply the final
-      // inset first: setPadding calls jumpTo and would otherwise stop flyTo.
-      applyPadding();
-      const state = useTwinStore.getState();
-      const rows = variableMeasures(state.measures, state.variable);
-      if (!rows.length) return; // Retry when observations arrive.
-      const duration = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ? 0 : 420;
-      if (pendingStation !== null) {
-        const measure = rows.find(m => m.stationId === pendingStation);
-        pendingStation = null;
-        if (measure) map.flyTo({ center: [measure.lon, measure.lat], zoom: Math.max(12.6, Math.min(map.getZoom(), 15)), duration, essential: false });
-      } else if (pendingFit) {
-        pendingFit = false;
-        if (rows.length === 1) {
-          map.flyTo({ center: [rows[0]!.lon, rows[0]!.lat], zoom: 12.6, duration, essential: false });
-        } else {
-          const lons = rows.map(m => m.lon), lats = rows.map(m => m.lat);
-          map.fitBounds([[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]], {
-            // MapLibre already accounts for the current transform padding.
-            padding: 24,
-            maxZoom: 13.2, pitch: 0, duration,
-          });
-        }
-      }
-    });
-  }
-  const onStation = (event: Event) => {
-    const stationId = (event as CustomEvent<unknown>).detail;
-    if (!Number.isInteger(stationId) || !useTwinStore.getState().active) return;
-    pendingStation = stationId as number; pendingFit = false; pendingScene = null;
-    layout(); navigation();
+  const onScene = (e: Event) => {
+    const n = (e as CustomEvent<string>).detail;
+    if (n in SCENES) {
+      pendingStation = null;
+      pendingFit = false;
+      pendingBounds = null;
+      if (ready) scene(n as keyof typeof SCENES);
+      else pendingScene = n as keyof typeof SCENES;
+    }
+  };
+  const onStation = (e: Event) => {
+    const n = (e as CustomEvent<unknown>).detail;
+    if (Number.isInteger(n)) {
+      pendingStation = n as number;
+      pendingFit = false;
+      pendingScene = null;
+      layout();
+      navigation();
+    }
   };
   const onFit = () => {
-    if (!useTwinStore.getState().active) return;
-    pendingFit = true; pendingStation = null; pendingScene = null;
-    layout(); navigation();
+    pendingFit = true;
+    pendingStation = null;
+    pendingScene = null;
+    layout();
+    navigation();
   };
-  const onScene = (event: Event) => {
-    const name = (event as CustomEvent<string>).detail;
-    if (name in SCENES && useTwinStore.getState().active) {
-      pendingStation = null; pendingFit = false;
-      if (ready) scene(name as keyof typeof SCENES);
-      else pendingScene = name as keyof typeof SCENES;
+  const onBounds = (e: Event) => {
+    const b = (e as CustomEvent<unknown>).detail;
+    if (
+      Array.isArray(b) &&
+      b.length === 2 &&
+      b.every(
+        (p) => Array.isArray(p) && p.length === 2 && p.every(Number.isFinite),
+      )
+    ) {
+      pendingBounds = b as [[number, number], [number, number]];
+      pendingStation = null;
+      pendingFit = false;
+      pendingScene = null;
+      layout();
+      navigation();
     }
   };
   map.on("style.load", style);
@@ -406,30 +506,42 @@ export function mountTwinMap(map: MLMap): () => void {
   window.addEventListener("fvg:twin-scene", onScene);
   window.addEventListener("fvg:twin-station", onStation);
   window.addEventListener("fvg:twin-fit", onFit);
+  window.addEventListener("fvg:regional-fit", onBounds);
   const unsub = useTwinStore.subscribe(changed),
-    unsubApp = useAppStore.subscribe((s, p) => {
+    unsubR = useRegionalStore.subscribe((s, p) => {
+      if (
+        s.enabled !== p.enabled ||
+        s.opacity !== p.opacity ||
+        s.catalog !== p.catalog ||
+        s.refreshKey !== p.refreshKey
+      )
+        changed();
+    }),
+    unsubA = useAppStore.subscribe((s, p) => {
       if (s.view3D !== p.view3D) sync();
       if (s.drawerOpen !== p.drawerOpen) layout();
     });
-  const ageTimer = setInterval(() => {
-    if (useTwinStore.getState().active) sync();
+  const timer = setInterval(() => {
+    if (!document.hidden) sync();
   }, 60000);
   changed();
   return () => {
     disposed = true;
-    cancelAnimationFrame(navigationFrame);
-    interactions.dispose();
-    cancelAnimationFrame(layoutFrame);
-    layoutObserver.disconnect();
     ac.abort();
-    clearInterval(ageTimer);
+    interactions.dispose();
+    observer.disconnect();
+    cancelAnimationFrame(navigationFrame);
+    cancelAnimationFrame(layoutFrame);
+    clearInterval(timer);
     unsub();
-    unsubApp();
+    unsubR();
+    unsubA();
     map.off("style.load", style);
     map.off("styledataloading", styleLoading);
     map.off("resize", layout);
     window.removeEventListener("fvg:twin-scene", onScene);
     window.removeEventListener("fvg:twin-station", onStation);
     window.removeEventListener("fvg:twin-fit", onFit);
+    window.removeEventListener("fvg:regional-fit", onBounds);
   };
 }

@@ -1,0 +1,104 @@
+{
+  "generatedAt": "2026-11-08T23:07:20.630573+00:00",
+  "layers": [
+    {
+      "id": "pcr-earthquakes",
+      "title": "Eventi sismici · feed corrente PCR",
+      "folder": "ambiente",
+      "description": "Localizzazioni degli eventi sismici pubblicati nel feed corrente PCR.",
+      "note": "Il feed corrente può avere una finestra limitata: non è l’intero catalogo sismico. La magnitudo non misura danni o stato strutturale degli edifici.",
+      "status": "ready",
+      "kind": "geojson",
+      "liveKind": "earthquakes",
+      "pollUrl": "https://monitor.protezionecivile.fvg.it/api/earthquakes",
+      "provider": "Protezione Civile della Regione Friuli Venezia Giulia",
+      "sourceId": "PCR:earthquakes",
+      "sourceUrl": "https://monitor.protezionecivile.fvg.it/",
+      "license": "CC BY 4.0 · metadati PCR",
+      "licenseUrl": "https://www.protezionecivile.fvg.it/note-legali",
+      "cadence": "Verifica automatica ogni minuto",
+      "color": "#d7a96b",
+      "metric": {
+        "field": "__value",
+        "unit": "M"
+      },
+      "count": 1,
+      "sourceCount": 1,
+      "retrievedAt": "2026-11-08T23:07:20.630573+00:00",
+      "generatedAt": "2026-11-08T23:07:20.630573+00:00",
+      "bounds": [
+        [
+          12.783,
+          46.3732
+        ],
+        [
+          12.783,
+          46.3732
+        ]
+      ],
+      "geometryTypes": [
+        "Point"
+      ],
+      "fields": [
+        "source",
+        "source_id",
+        "loc_type",
+        "description",
+        "dt",
+        "lat",
+        "lon",
+        "magnitudo",
+        "depth",
+        "profondita_km"
+      ],
+      "warnings": [],
+      "file": "pcr-earthquakes.geojson"
+    },
+    {
+      "id": "pcr-webcams",
+      "title": "Punti webcam della rete PCR",
+      "folder": "contesto",
+      "description": "Posizioni e metadati delle webcam pubblicate dalla rete PCR. Per le immagini consulta il sito ufficiale.",
+      "note": "Il codice di stato della fonte è conservato senza tradurlo in una garanzia di disponibilità. Le immagini non sono ripubblicate, perché le loro condizioni possono essere diverse da quelle dei metadati.",
+      "status": "ready",
+      "kind": "geojson",
+      "liveKind": "webcams",
+      "pollUrl": "https://monitor.protezionecivile.fvg.it/api/webcams",
+      "provider": "Protezione Civile della Regione Friuli Venezia Giulia",
+      "sourceId": "PCR:webcams",
+      "sourceUrl": "https://monitor.protezionecivile.fvg.it/",
+      "license": "CC BY 4.0 · metadati PCR",
+      "licenseUrl": "https://www.protezionecivile.fvg.it/note-legali",
+      "cadence": "Verifica automatica ogni minuto",
+      "color": "#9fb5b1",
+      "count": 64,
+      "sourceCount": 64,
+      "retrievedAt": "2026-11-08T23:07:20.630573+00:00",
+      "generatedAt": "2026-11-08T23:07:20.630573+00:00",
+      "bounds": [
+        [
+          12.39437,
+          45.6436
+        ],
+        [
+          13.8056,
+          46.59503
+        ]
+      ],
+      "geometryTypes": [
+        "Point"
+      ],
+      "fields": [
+        "id",
+        "name",
+        "istat",
+        "lat",
+        "lon",
+        "status",
+        "category"
+      ],
+      "warnings": [],
+      "file": "pcr-webcams.geojson"
+    }
+  ]
+}

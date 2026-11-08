@@ -1,0 +1,1259 @@
+{
+  "families": [
+    {
+      "title": "Qualità del mare — OGS MAMBO3",
+      "group": "Mare",
+      "cadence": "Minuti",
+      "priority": 1,
+      "status": "Importabile",
+      "what": "Salinità, ossigeno disciolto, clorofilla a, torbidità e temperatura. Punto nel golfo con storico e selezione della profondità.",
+      "limit": "Feed locale: conservare profondità e QC. QC=0 significa controllo non eseguito. Non mescolare i sensori e le profondità del dataset.",
+      "sources": [
+        {
+          "id": "MAMBO3_TS",
+          "url": "https://nodc.ogs.it/erddap/info/MAMBO3_TS/index.html",
+          "api": "https://nodc.ogs.it/erddap/tabledap/MAMBO3_TS.json?time,latitude,longitude,depth,sensor_id,TEMP,TEMP_QC,PSAL,PSAL_QC,DOXY,DOXY_QC,CPWC,CPWC_QC,TUR4,TUR4_QC&time%3E=now-2hour",
+          "kind": "ERDDAP JSON",
+          "license": "CC BY 4.0 verificata nei metadati OGS",
+          "checked": true
+        }
+      ],
+      "count": "5 variabili dalla sonda a 10 m",
+      "proof": "GET 200, CORS *, nessuna chiave; verifica 21:29 UTC. Passo osservato circa 10 minuti, senza SLA."
+    },
+    {
+      "title": "Onde del golfo — OGS DWRG",
+      "group": "Mare",
+      "cadence": "Variabile",
+      "priority": 2,
+      "status": "Preparazione",
+      "what": "Altezza significativa, periodo e direzione osservati alle boe; storico delle mareggiate e confronto fra punti.",
+      "limit": "Ogni boa conserva il proprio orario, QC e convenzione direzionale. La disponibilità può variare: mostrare il ritardo senza dichiarare tutte le osservazioni correnti.",
+      "sources": [
+        {
+          "id": "DWRG1_TS",
+          "url": "https://nodc.ogs.it/erddap/info/DWRG1_TS/index.html",
+          "kind": "ERDDAP",
+          "license": "CC BY 4.0, verifica precedente dello stesso giorno",
+          "checked": false
+        },
+        {
+          "id": "DWRG2_TS",
+          "url": "https://nodc.ogs.it/erddap/info/DWRG2_TS/index.html",
+          "kind": "ERDDAP",
+          "license": "CC BY 4.0, verifica precedente dello stesso giorno",
+          "checked": false
+        },
+        {
+          "id": "DWRG3_TS",
+          "url": "https://nodc.ogs.it/erddap/info/DWRG3_TS/index.html",
+          "kind": "ERDDAP",
+          "license": "CC BY 4.0, verifica precedente dello stesso giorno",
+          "checked": false
+        }
+      ],
+      "count": "",
+      "proof": "Endpoint, CORS * e CC BY 4.0 verificati nella ricerca delle 18:40–18:56 UTC; non ricontrollati in questo passaggio."
+    },
+    {
+      "title": "Profilo delle correnti — OGS MAMBO3",
+      "group": "Mare",
+      "cadence": "Minuti",
+      "priority": 2,
+      "status": "Preparazione",
+      "what": "Componenti est–ovest e nord–sud delle correnti misurate per profondità; profilo interattivo nel punto della boa.",
+      "limit": "Verificare il riferimento della profondità e QC prima dei vettori. Non ricavare una mappa delle correnti dell’intero golfo da una sola boa.",
+      "sources": [
+        {
+          "id": "MAMBO3_PR",
+          "url": "https://nodc.ogs.it/erddap/info/MAMBO3_PR/index.html",
+          "kind": "ERDDAP",
+          "license": "CC BY 4.0, verifica precedente dello stesso giorno",
+          "checked": false
+        }
+      ],
+      "count": "",
+      "proof": "Ricerca precedente dello stesso giorno: GET 200, CORS *, CC BY 4.0; ultimo allora 18:30 UTC."
+    },
+    {
+      "title": "Qualità dell’aria — PM10 e PM2.5",
+      "group": "Aria",
+      "cadence": "Giorni",
+      "priority": 1,
+      "status": "Importabile",
+      "what": "Punti delle centraline, concentrazione media giornaliera, serie temporale e confronto fra stazioni.",
+      "limit": "Osservazioni giornaliere: verificare la data effettiva del dato nella scheda, distinta dall’aggiornamento del catalogo. Non interpolare valori in ogni quartiere.",
+      "sources": [
+        {
+          "id": "qp5k-6pvm",
+          "url": "https://www.dati.friuliveneziagiulia.it/Ambiente/Aria-Particelle-Sospese-PM10/qp5k-6pvm",
+          "api": "https://www.dati.friuliveneziagiulia.it/resource/qp5k-6pvm.json",
+          "kind": "Socrata JSON / CSV / GeoJSON se geometria disponibile",
+          "license": "Italian Open Data License 2.0",
+          "checked": true
+        },
+        {
+          "id": "d63p-pqpr",
+          "url": "https://www.dati.friuliveneziagiulia.it/Ambiente/Aria-Particelle-Sospese-PM2-5/d63p-pqpr",
+          "api": "https://www.dati.friuliveneziagiulia.it/resource/d63p-pqpr.json",
+          "kind": "Socrata JSON / CSV / GeoJSON se geometria disponibile",
+          "license": "Italian Open Data License 2.0",
+          "checked": true
+        }
+      ],
+      "count": "195.613 e 102.689 righe storiche; non numero di stazioni",
+      "proof": "8 novembre 2026: metadati e campione GET verificati."
+    },
+    {
+      "title": "Qualità dell’aria — NO₂, O₃ e SO₂",
+      "group": "Aria",
+      "cadence": "Giorni",
+      "priority": 1,
+      "status": "Importabile",
+      "what": "Confronto di massimi orari giornalieri, medie giornaliere e massimi su 8 ore secondo il parametro.",
+      "limit": "Un massimo orario della giornata non è un flusso aggiornato ogni ora. Tenere separati indicatore, unità e periodo; leggere la data effettiva del dato.",
+      "sources": [
+        {
+          "id": "ke9b-p6z2",
+          "url": "https://www.dati.friuliveneziagiulia.it/Ambiente/Aria-Biossido-d-Azoto/ke9b-p6z2",
+          "api": "https://www.dati.friuliveneziagiulia.it/resource/ke9b-p6z2.json",
+          "kind": "Socrata JSON / CSV / GeoJSON se geometria disponibile",
+          "license": "Italian Open Data License 2.0",
+          "checked": true
+        },
+        {
+          "id": "7vnx-28uy",
+          "url": "https://www.dati.friuliveneziagiulia.it/Ambiente/Aria-Ozono/7vnx-28uy",
+          "api": "https://www.dati.friuliveneziagiulia.it/resource/7vnx-28uy.json",
+          "kind": "Socrata JSON / CSV / GeoJSON se geometria disponibile",
+          "license": "Italian Open Data License 2.0",
+          "checked": true
+        },
+        {
+          "id": "2zdv-x7g2",
+          "url": "https://www.dati.friuliveneziagiulia.it/Ambiente/Aria-Biossido-di-Zolfo/2zdv-x7g2",
+          "api": "https://www.dati.friuliveneziagiulia.it/resource/2zdv-x7g2.json",
+          "kind": "Socrata JSON / CSV / GeoJSON se geometria disponibile",
+          "license": "Italian Open Data License 2.0",
+          "checked": true
+        }
+      ],
+      "count": "",
+      "proof": "8 novembre 2026: metadati e campione GET verificati."
+    },
+    {
+      "title": "Pollini e spore monitorati",
+      "group": "Aria",
+      "cadence": "Settimane",
+      "priority": 2,
+      "status": "Importabile",
+      "what": "Stazioni e concentrazioni per famiglia/genere con linea temporale stagionale e filtro.",
+      "limit": "Mostrare il periodo di campionamento. La presenza di zero non certifica assenza di allergeni ovunque.",
+      "sources": [
+        {
+          "id": "rnci-smsu",
+          "url": "https://www.dati.friuliveneziagiulia.it/Ambiente/Aria-Pollini/rnci-smsu",
+          "api": "https://www.dati.friuliveneziagiulia.it/resource/rnci-smsu.json",
+          "kind": "Socrata JSON / CSV / GeoJSON se geometria disponibile",
+          "license": "Italian Open Data License 2.0",
+          "checked": true
+        }
+      ],
+      "count": "137.349 righe storiche",
+      "proof": "8 novembre 2026: metadati e campione GET verificati."
+    },
+    {
+      "title": "Monossido di carbonio e particolato storico",
+      "group": "Aria",
+      "cadence": "Archivio",
+      "priority": 3,
+      "status": "Preparazione",
+      "what": "Archivio per analisi e confronti storici.",
+      "limit": "Archivi con coperture temporali diverse: non considerarli automaticamente misure correnti. Leggere la data effettiva nella scheda.",
+      "sources": [
+        {
+          "id": "t274-vki6",
+          "url": "https://www.dati.friuliveneziagiulia.it/Ambiente/Aria-Monossido-di-Carbonio/t274-vki6",
+          "api": "https://www.dati.friuliveneziagiulia.it/resource/t274-vki6.json",
+          "kind": "Socrata JSON / CSV / GeoJSON se geometria disponibile",
+          "license": "Italian Open Data License 2.0",
+          "checked": true
+        },
+        {
+          "id": "dayp-qnyx",
+          "url": "https://www.dati.friuliveneziagiulia.it/Ambiente/Aria-Particolato-Totale-Sospeso/dayp-qnyx",
+          "api": "https://www.dati.friuliveneziagiulia.it/resource/dayp-qnyx.json",
+          "kind": "Socrata JSON / CSV / GeoJSON se geometria disponibile",
+          "license": "Italian Open Data License 2.0",
+          "checked": false
+        }
+      ],
+      "count": "",
+      "proof": "8 novembre 2026: metadati e campione GET verificati."
+    },
+    {
+      "title": "Impianti fotovoltaici e agrivoltaici",
+      "group": "Energia",
+      "cadence": "Registro",
+      "priority": 1,
+      "status": "Pronto tecnicamente",
+      "what": "Perimetri reali dei siti AUE con proponente, potenza dichiarata e stato del procedimento o esercizio; filtri sulla mappa.",
+      "limit": "Geometrie di registro, non censimento di tutti i pannelli sui tetti. Autorizzato non equivale a costruito; potenza nominale non equivale a produzione misurata.",
+      "sources": [
+        {
+          "id": "RIS_ENERG:imp_ftv_agriftv",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=RIS_ENERG%3Aimp_ftv_agriftv&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": true
+        }
+      ],
+      "count": "174 record regionali",
+      "proof": "8 novembre 2026: metadati e campione GET verificati."
+    },
+    {
+      "title": "Accumuli elettrici BESS",
+      "group": "Energia",
+      "cadence": "Registro",
+      "priority": 1,
+      "status": "Pronto tecnicamente",
+      "what": "Poligoni dei progetti di accumulo, scheda e stato; confronto con impianti rinnovabili e aree industriali.",
+      "limit": "Conservare stato “in corso” / “autorizzato” ecc. La geometria non fornisce carica, scarica o stato della batteria.",
+      "sources": [
+        {
+          "id": "RIS_ENERG:prog_impaue_v_bess_public",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=RIS_ENERG%3Aprog_impaue_v_bess_public&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": true
+        }
+      ],
+      "count": "36 record regionali",
+      "proof": "8 novembre 2026: metadati e campione GET verificati."
+    },
+    {
+      "title": "Biomasse, biometano e idroelettrico AUE",
+      "group": "Energia",
+      "cadence": "Registro",
+      "priority": 2,
+      "status": "Pronto tecnicamente",
+      "what": "Siti, fonti energetiche e stato dei progetti/impianti, con accesso ai provvedimenti disponibili.",
+      "limit": "I dati sono autorizzativi; campi e unità di potenza vanno letti per tecnologia. Nessuna telemetria di produzione.",
+      "sources": [
+        {
+          "id": "RIS_ENERG:prog_impaue_v_biomasse_biometano_public",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=RIS_ENERG%3Aprog_impaue_v_biomasse_biometano_public&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": true
+        },
+        {
+          "id": "RIS_ENERG:prog_impaue_v_idroelettrici_public",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=RIS_ENERG%3Aprog_impaue_v_idroelettrici_public&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": true
+        }
+      ],
+      "count": "22 biomasse/biometano; 54 idroelettrici",
+      "proof": "8 novembre 2026: metadati e campione GET verificati."
+    },
+    {
+      "title": "Aree delle cabine primarie e comunità energetiche",
+      "group": "Energia",
+      "cadence": "Territorio",
+      "priority": 2,
+      "status": "Verifica",
+      "what": "Aree convenzionali per ragionare su condivisione dell’energia e territorio servito.",
+      "limit": "Non sono carichi di rete, capacità residua o potenza disponibile. Verificare versione rispetto a GSE e licenza della distribuzione.",
+      "sources": [
+        {
+          "id": "CER:AREECONVENZIONALI_CP",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=CER%3AAREECONVENZIONALI_CP&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": false
+        }
+      ],
+      "count": "",
+      "proof": "Layer presente nel GetCapabilities attuale; campione non scaricato in questo passaggio."
+    },
+    {
+      "title": "Fotovoltaico aggregato per Comune",
+      "group": "Energia",
+      "cadence": "Archivio",
+      "priority": 3,
+      "status": "Pronto tecnicamente",
+      "what": "Mappa comunale dei campi NUMERO / POTENZA_KW per confronto territoriale.",
+      "limit": "Sono poligoni comunali, non posizioni degli impianti. Anno del censimento non indicato nel campione: non presentarlo come capacità attuale.",
+      "sources": [
+        {
+          "id": "CER:FOTOVOLTAICO_FVG",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=CER%3AFOTOVOLTAICO_FVG&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": true
+        }
+      ],
+      "count": "215 poligoni",
+      "proof": "8 novembre 2026: metadati e campione GET verificati."
+    },
+    {
+      "title": "Aree industriali dismesse — Masterplan",
+      "group": "Trasformazioni",
+      "cadence": "Registro",
+      "priority": 1,
+      "status": "Pronto tecnicamente",
+      "what": "Poligoni delle aree dismesse, stato di recupero, superfici, volumi e schede ufficiali: una vista concreta della rigenerazione.",
+      "limit": "È il censimento del Masterplan approvato nel 2022, con stato in banca dati; non monitoraggio dell’avanzamento lavori in cantiere.",
+      "sources": [
+        {
+          "id": "INDUSTR:prog_masterplan_vm_siti_masterplan",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=INDUSTR%3Aprog_masterplan_vm_siti_masterplan&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": true
+        }
+      ],
+      "count": "222 record regionali",
+      "proof": "8 novembre 2026: metadati e campione GET verificati."
+    },
+    {
+      "title": "Autorizzazioni ambientali AUA",
+      "group": "Attività",
+      "cadence": "Registro",
+      "priority": 1,
+      "status": "Pronto tecnicamente",
+      "what": "Stabilimenti con attività ATECO, Comune e stato autorizzativo; estende gli impianti AIA già nella demo.",
+      "limit": "Non è l’anagrafe di tutte le imprese e non misura emissioni o operatività istantanea. Usare solo i campi necessari alla scheda.",
+      "sources": [
+        {
+          "id": "INDUSTR:autorizzazione_unica_ambientale_aua",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=INDUSTR%3Aautorizzazione_unica_ambientale_aua&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": true
+        }
+      ],
+      "count": "3.470 record regionali",
+      "proof": "8 novembre 2026: metadati e campione GET verificati."
+    },
+    {
+      "title": "Stabilimenti a rischio di incidente rilevante",
+      "group": "Attività",
+      "cadence": "Registro",
+      "priority": 1,
+      "status": "Pronto tecnicamente",
+      "what": "Siti Seveso con soglia, attività e collegamento alla scheda ISPRA.",
+      "limit": "La soglia è una categoria amministrativa, non probabilità di incidente oggi. Nessun allarme dedotto dalla vicinanza.",
+      "sources": [
+        {
+          "id": "INDUSTR:rischi_incidenti_rilevanti_rir",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=INDUSTR%3Arischi_incidenti_rilevanti_rir&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": true
+        }
+      ],
+      "count": "29 record regionali",
+      "proof": "8 novembre 2026: metadati e campione GET verificati."
+    },
+    {
+      "title": "Progetti VIA e screening ambientale",
+      "group": "Trasformazioni",
+      "cadence": "Registro",
+      "priority": 1,
+      "status": "Pronto tecnicamente",
+      "what": "Geometrie, oggetto, proponente, stato della pratica e data del provvedimento; filtri temporali e scheda di progetto.",
+      "limit": "Lo storico contiene atti dal 2002: filtrare per stato e data. Non tutti i progetti sono attuali, approvati o realizzati.",
+      "sources": [
+        {
+          "id": "UTIL_TER:VIA_REG_LOC_PROGETTI",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=UTIL_TER%3AVIA_REG_LOC_PROGETTI&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": true
+        },
+        {
+          "id": "UTIL_TER:SCREENING_VIA_REG",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=UTIL_TER%3ASCREENING_VIA_REG&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": true
+        }
+      ],
+      "count": "335 VIA; 1.888 screening",
+      "proof": "8 novembre 2026: metadati e campione GET verificati."
+    },
+    {
+      "title": "Zone industriali e commerciali dei piani",
+      "group": "Trasformazioni",
+      "cadence": "Pianificazione",
+      "priority": 2,
+      "status": "Pronto tecnicamente",
+      "what": "Poligoni di destinazione urbanistica con norme e data di validità; contesto per energia, rigenerazione e attività.",
+      "limit": "Destinazione del piano diversa dall’uso effettivo: verificare data di validità e variante vigente nelle proprietà della fonte.",
+      "sources": [
+        {
+          "id": "CER:ZONE_INDUSTRIALI_ARTIG_D",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=CER%3AZONE_INDUSTRIALI_ARTIG_D&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": true
+        },
+        {
+          "id": "CER:ZONE_COMMERCIALI_H",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=CER%3AZONE_COMMERCIALI_H&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": true
+        }
+      ],
+      "count": "4.155 industriali; 1.466 commerciali",
+      "proof": "8 novembre 2026: metadati e campione GET verificati."
+    },
+    {
+      "title": "Aree degradate del paesaggio",
+      "group": "Trasformazioni",
+      "cadence": "Pianificazione",
+      "priority": 2,
+      "status": "Pronto tecnicamente",
+      "what": "Poligoni classificati per tipologia e grado di compromissione, confronto con recupero e territorio.",
+      "limit": "Non equivale a censimento aggiornato delle criticità ambientali né a elenco di siti contaminati.",
+      "sources": [
+        {
+          "id": "PPR:v_aree_degradate",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=PPR%3Av_aree_degradate&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": true
+        }
+      ],
+      "count": "276 record regionali",
+      "proof": "8 novembre 2026: metadati e campione GET verificati."
+    },
+    {
+      "title": "Siti inquinati e stato delle bonifiche",
+      "group": "Ambiente",
+      "cadence": "Anni",
+      "priority": 2,
+      "status": "Preparazione",
+      "what": "Censimento 2025 per Comune, categoria, stato della pratica e fase: mappa comunale o collegamento a geometrie ufficiali.",
+      "limit": "La tabella non espone coordinate utilizzabili: aggregazione per Comune. Per il singolo sito occorre una geometria attendibile. “Archiviata” non equivale a sito contaminato attivo.",
+      "sources": [
+        {
+          "id": "ti84-itu7",
+          "url": "https://www.dati.friuliveneziagiulia.it/Ambiente/Censimento-dei-siti-inquinati-2025/ti84-itu7",
+          "api": "https://www.dati.friuliveneziagiulia.it/resource/ti84-itu7.json",
+          "kind": "Socrata JSON / CSV / GeoJSON se geometria disponibile",
+          "license": "Italian Open Data License 2.0",
+          "checked": true
+        }
+      ],
+      "count": "1.659 record senza geometria",
+      "proof": "8 novembre 2026: metadati e campione GET verificati."
+    },
+    {
+      "title": "Impianti rifiuti e centri di raccolta",
+      "group": "Ambiente",
+      "cadence": "Registro",
+      "priority": 2,
+      "status": "Pronto tecnicamente",
+      "what": "Localizzazione, stato operativo e tipologia; selezione degli impianti attivi e schede di gestione.",
+      "limit": "Il registro include anche impianti inattivi: non usare il totale come numero di impianti in esercizio. I centri di raccolta sono uno strato distinto.",
+      "sources": [
+        {
+          "id": "RIFIUTI:MV_IMPIANTO",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=RIFIUTI%3AMV_IMPIANTO&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": true
+        },
+        {
+          "id": "RIFIUTI:CENTRI_DI_RACCOLTA",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=RIFIUTI%3ACENTRI_DI_RACCOLTA&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": true
+        }
+      ],
+      "count": "1.430 impianti; 172 centri",
+      "proof": "8 novembre 2026: metadati e campione GET verificati."
+    },
+    {
+      "title": "Discariche — archivio 2025",
+      "group": "Ambiente",
+      "cadence": "Anni",
+      "priority": 2,
+      "status": "Pronto tecnicamente",
+      "what": "Siti con stato e scheda, distinguendo chiusura e altre condizioni disponibili.",
+      "limit": "Storico amministrativo, non stato di riempimento o rilevamento di abbandoni in tempo reale.",
+      "sources": [
+        {
+          "id": "RIFIUTI:DISCARICHE_2025",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=RIFIUTI%3ADISCARICHE_2025&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": true
+        }
+      ],
+      "count": "274 record regionali",
+      "proof": "8 novembre 2026: metadati e campione GET verificati."
+    },
+    {
+      "title": "Prese, pozzi e utilizzazioni dell’acqua",
+      "group": "Acqua",
+      "cadence": "Registro",
+      "priority": 2,
+      "status": "Pronto tecnicamente",
+      "what": "Punti di prelievo e impianti con uso, concessione, stato e valori dichiarati; contesto per scarsità e risorsa idrica.",
+      "limit": "Record di registro, non sensori di portata. Non descrivono automaticamente tutta la rete di acquedotto.",
+      "sources": [
+        {
+          "id": "IDROGRAF:IDR_GIS_PRESE_SOTTERRANEE",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=IDROGRAF%3AIDR_GIS_PRESE_SOTTERRANEE&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": true
+        },
+        {
+          "id": "IDROGRAF:IDR_GIS_IMPIANTI",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=IDROGRAF%3AIDR_GIS_IMPIANTI&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": true
+        }
+      ],
+      "count": "11.049 prese; 2.528 impianti",
+      "proof": "8 novembre 2026: metadati e campione GET verificati."
+    },
+    {
+      "title": "Restituzioni e scarichi delle derivazioni",
+      "group": "Acqua",
+      "cadence": "Registro",
+      "priority": 2,
+      "status": "Pronto tecnicamente",
+      "what": "Punti di restituzione/scarico collegati alle utilizzazioni d’acqua, usi e valori autorizzati.",
+      "limit": "Non è l’inventario completo di scarichi fognari/industriali né una misura di inquinamento: rispettare il dominio del catasto derivazioni.",
+      "sources": [
+        {
+          "id": "IDROGRAF:IDR_GIS_SCARICHI",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=IDROGRAF%3AIDR_GIS_SCARICHI&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": true
+        }
+      ],
+      "count": "482 record regionali",
+      "proof": "8 novembre 2026: metadati e campione GET verificati."
+    },
+    {
+      "title": "Balneazione e campionamenti microbiologici",
+      "group": "Mare",
+      "cadence": "Stagionale",
+      "priority": 2,
+      "status": "Preparazione",
+      "what": "Risultati Escherichia coli / enterococchi e storia di campionamento delle aree di balneazione.",
+      "limit": "Campioni stagionali collegati ai soli codici geografici verificati. I valori censurati mantengono il limite analitico. Non è un giudizio attuale di balneabilità.",
+      "sources": [
+        {
+          "id": "fpj6-y9vk",
+          "url": "https://www.dati.friuliveneziagiulia.it/Ambiente/Acqua-Acque-di-Balneazione/fpj6-y9vk",
+          "api": "https://www.dati.friuliveneziagiulia.it/resource/fpj6-y9vk.json",
+          "kind": "Socrata JSON / CSV / GeoJSON se geometria disponibile",
+          "license": "Italian Open Data License 2.0",
+          "checked": true
+        },
+        {
+          "id": "IDROGRAF:AP_BALNEAZIONE",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=IDROGRAF%3AAP_BALNEAZIONE&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": false
+        }
+      ],
+      "count": "6.826 campioni storici",
+      "proof": "Tabella Socrata e campione WFS punti di balneazione GET 200; join dei codici non ancora validato."
+    },
+    {
+      "title": "Qualità delle acque interne, marine e sotterranee",
+      "group": "Acqua",
+      "cadence": "Campagne",
+      "priority": 2,
+      "status": "Preparazione",
+      "what": "Parametri chimici, fisici ed ecologici delle campagne; punti o corpi idrici con storico e filtri.",
+      "limit": "Accorpare record per stazione/campagna e parametro, preservare limiti analitici e unità; freschezza da verificare per ogni serie.",
+      "sources": [
+        {
+          "id": "wthn-aebz",
+          "url": "https://www.dati.friuliveneziagiulia.it/Ambiente/Acqua-Acque-di-classificazione-Sotterranee/wthn-aebz",
+          "api": "https://www.dati.friuliveneziagiulia.it/resource/wthn-aebz.json",
+          "kind": "Socrata JSON / CSV / GeoJSON se geometria disponibile",
+          "license": "Italian Open Data License 2.0",
+          "checked": false
+        },
+        {
+          "id": "q8d6-8b5n",
+          "url": "https://www.dati.friuliveneziagiulia.it/Ambiente/Acqua-Acque-di-classificazione-Superficiali-intern/q8d6-8b5n",
+          "api": "https://www.dati.friuliveneziagiulia.it/resource/q8d6-8b5n.json",
+          "kind": "Socrata JSON / CSV / GeoJSON se geometria disponibile",
+          "license": "Italian Open Data License 2.0",
+          "checked": false
+        },
+        {
+          "id": "qcsf-bwk5",
+          "url": "https://www.dati.friuliveneziagiulia.it/Ambiente/Acqua-Acque-di-classificazione-Superficiali-marino/qcsf-bwk5",
+          "api": "https://www.dati.friuliveneziagiulia.it/resource/qcsf-bwk5.json",
+          "kind": "Socrata JSON / CSV / GeoJSON se geometria disponibile",
+          "license": "Italian Open Data License 2.0",
+          "checked": false
+        },
+        {
+          "id": "7wmi-havi",
+          "url": "https://www.dati.friuliveneziagiulia.it/Ambiente/Acqua-Acque-Marino-costiere-e-di-transizione-Param/7wmi-havi",
+          "api": "https://www.dati.friuliveneziagiulia.it/resource/7wmi-havi.json",
+          "kind": "Socrata JSON / CSV / GeoJSON se geometria disponibile",
+          "license": "Da verificare",
+          "checked": false
+        },
+        {
+          "id": "f68q-kif9",
+          "url": "https://www.dati.friuliveneziagiulia.it/Ambiente/Acqua-Acque-di-classificazione-Sedimenti/f68q-kif9",
+          "api": "https://www.dati.friuliveneziagiulia.it/resource/f68q-kif9.json",
+          "kind": "Socrata JSON / CSV / GeoJSON se geometria disponibile",
+          "license": "Italian Open Data License 2.0",
+          "checked": false
+        }
+      ],
+      "count": "",
+      "proof": "Metadati del catalogo ricensiti; campioni di questi cinque dataset non richiesti in questo passaggio."
+    },
+    {
+      "title": "Parchi e giardini catalogati",
+      "group": "Verde",
+      "cadence": "Catalogo",
+      "priority": 1,
+      "status": "Importabile",
+      "what": "Punti di parchi e giardini con scheda culturale; poligoni dei parchi comunali/intercomunali quando disponibili.",
+      "limit": "Il catalogo non censisce tutti gli spazi verdi urbani e non misura accessibilità o ombra. I parchi comunali/intercomunali regionali sono una tipologia giuridica distinta.",
+      "sources": [
+        {
+          "id": "efx9-g469",
+          "url": "https://www.dati.friuliveneziagiulia.it/Ambiente/Parchi-e-Giardini/efx9-g469",
+          "api": "https://www.dati.friuliveneziagiulia.it/resource/efx9-g469.json",
+          "kind": "Socrata JSON / CSV / GeoJSON se geometria disponibile",
+          "license": "Italian Open Data License 2.0",
+          "checked": true
+        },
+        {
+          "id": "SITI_PROT:PARCHI_COMUNALI_RAFVG",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=SITI_PROT%3APARCHI_COMUNALI_RAFVG&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": true
+        }
+      ],
+      "count": "226 punti; 18 poligoni in un registro distinto",
+      "proof": "8 novembre 2026: metadati e campione GET verificati."
+    },
+    {
+      "title": "Alberi monumentali e notevoli",
+      "group": "Verde",
+      "cadence": "Catalogo",
+      "priority": 1,
+      "status": "Pronto tecnicamente",
+      "what": "Punti con specie, dimensioni, criteri di tutela e schede; esplorazione del patrimonio arboreo.",
+      "limit": "Il registro non è il censimento di tutti gli alberi di strada. Non dedurre salute attuale, rischio di caduta o ombra corrente.",
+      "sources": [
+        {
+          "id": "PPR:v_alberi_monumentali_e_notevoli",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=PPR%3Av_alberi_monumentali_e_notevoli&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": true
+        }
+      ],
+      "count": "840 record regionali",
+      "proof": "8 novembre 2026: metadati e campione GET verificati."
+    },
+    {
+      "title": "Biodiversità, habitat, Natura 2000 e prati stabili",
+      "group": "Verde",
+      "cadence": "Territorio",
+      "priority": 2,
+      "status": "Pronto tecnicamente",
+      "what": "Aree protette, habitat e prati stabili per leggere continuità ecologica e rapporto fra città e natura.",
+      "limit": "Fonti e revisioni diverse: verificare gli attributi di validità. Non confondere tutela ambientale con fruibilità o accessibilità.",
+      "sources": [
+        {
+          "id": "SITI_PROT:SIC",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=SITI_PROT%3ASIC&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": true
+        },
+        {
+          "id": "SITI_PROT:PRATISTABILI",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=SITI_PROT%3APRATISTABILI&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": true
+        },
+        {
+          "id": "CART_NAT:C_HABITAT_A_FVG_2017",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=CART_NAT%3AC_HABITAT_A_FVG_2017&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": false
+        },
+        {
+          "id": "PPR:v_rete_ecologica_ecotopi",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=PPR%3Av_rete_ecologica_ecotopi&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": false
+        }
+      ],
+      "count": "66 SIC/ZSC e 10.486 prati nel servizio",
+      "proof": "SIC e prati: GET 200; habitat e rete ecologica ricensiti nel GetCapabilities, non campionati ora."
+    },
+    {
+      "title": "Alberi di Villa Manin",
+      "group": "Verde",
+      "cadence": "Archivio",
+      "priority": 3,
+      "status": "Importabile",
+      "what": "Caso pilota molto dettagliato sulle alberature: specie, posizione e rilievi disponibili.",
+      "limit": "Copertura locale di Codroipo e rilievi storici: non rappresenta le condizioni attuali degli alberi o la copertura di Trieste.",
+      "sources": [
+        {
+          "id": "uqpq-dr8x",
+          "url": "https://www.dati.friuliveneziagiulia.it/Ambiente/Alberi-di-Villa-Manin/uqpq-dr8x",
+          "api": "https://www.dati.friuliveneziagiulia.it/resource/uqpq-dr8x.json",
+          "kind": "Socrata JSON / CSV / GeoJSON se geometria disponibile",
+          "license": "Italian Open Data License 2.0",
+          "checked": true
+        }
+      ],
+      "count": "1.242 righe",
+      "proof": "8 novembre 2026: metadati e campione GET verificati."
+    },
+    {
+      "title": "Scuole georeferenziate",
+      "group": "Città",
+      "cadence": "Anagrafe",
+      "priority": 1,
+      "status": "Pronto tecnicamente",
+      "what": "Sedi e tipologie scolastiche da selezionare e incrociare con misure, verde e urbanistica come analisi di prossimità.",
+      "limit": "La presenza di una scuola non misura occupazione presente o esposizione personale: verificare anno e stato delle sedi.",
+      "sources": [
+        {
+          "id": "PUB_UTIL:SCUOLE_GEO",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=PUB_UTIL%3ASCUOLE_GEO&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": true
+        }
+      ],
+      "count": "987 record regionali",
+      "proof": "8 novembre 2026: metadati e campione GET verificati."
+    },
+    {
+      "title": "Impianti sportivi",
+      "group": "Città",
+      "cadence": "Anagrafe",
+      "priority": 2,
+      "status": "Pronto tecnicamente",
+      "what": "Punti degli impianti, strutture e campi di accessibilità per atleti/pubblico; scheda consultabile.",
+      "limit": "Accessibilità è quella dichiarata nel registro: non disponibilità attuale, stato manutentivo corrente o verifica di ogni percorso.",
+      "sources": [
+        {
+          "id": "PUB_UTIL:ImpiantiSportiviFVG",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=PUB_UTIL%3AImpiantiSportiviFVG&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": true
+        }
+      ],
+      "count": "1.546 record regionali",
+      "proof": "8 novembre 2026: metadati e campione GET verificati."
+    },
+    {
+      "title": "Residenze per anziani autorizzate",
+      "group": "Città",
+      "cadence": "Anagrafe",
+      "priority": 2,
+      "status": "Importabile",
+      "what": "169 strutture georeferenziate e capacità autorizzata, utili nel quadro dei servizi e del territorio.",
+      "limit": "Posti autorizzati non sono disponibilità di letti o occupazione in tempo reale. Analisi territoriali aggregate, senza dedurre condizioni delle persone.",
+      "sources": [
+        {
+          "id": "vw6s-ayge",
+          "url": "https://www.dati.friuliveneziagiulia.it/Salute/Elenco-strutture-residenziali-per-anziani/vw6s-ayge",
+          "api": "https://www.dati.friuliveneziagiulia.it/resource/vw6s-ayge.json",
+          "kind": "Socrata JSON / CSV / GeoJSON se geometria disponibile",
+          "license": "Italian Open Data License 2.0",
+          "checked": true
+        }
+      ],
+      "count": "169 strutture",
+      "proof": "8 novembre 2026: metadati e campione GET verificati."
+    },
+    {
+      "title": "Rete Wi-Fi pubblica",
+      "group": "Città",
+      "cadence": "Anagrafe",
+      "priority": 3,
+      "status": "Importabile",
+      "what": "Punti di connettività negli spazi pubblici.",
+      "limit": "I campi ok/problem/critical non hanno un timestamp di osservazione verificato. Il livello mostra posizioni e attributi della fonte, senza garantire disponibilità live.",
+      "sources": [
+        {
+          "id": "53ur-f9mj",
+          "url": "https://www.dati.friuliveneziagiulia.it/Governo-e-settore-pubblico/Punti-WIFI-regione-Friuli-Venezia-Giulia/53ur-f9mj",
+          "api": "https://www.dati.friuliveneziagiulia.it/resource/53ur-f9mj.json",
+          "kind": "Socrata JSON / CSV / GeoJSON se geometria disponibile",
+          "license": "Italian Open Data License 2.0",
+          "checked": true
+        }
+      ],
+      "count": "749 righe / 746 nomi distinti",
+      "proof": "8 novembre 2026: metadati e campione GET verificati."
+    },
+    {
+      "title": "Ciclovie e mobilità lenta",
+      "group": "Mobilità",
+      "cadence": "Pianificazione",
+      "priority": 1,
+      "status": "Importabile",
+      "what": "Linee ciclabili locali e regionali, filtro dello stato ove disponibile, raccordo con sentieri e servizi.",
+      "limit": "Segmenti, non chilometri o itinerari unici. Il piano RECIR include percorsi non necessariamente realizzati o percorribili: nessuna navigazione garantita.",
+      "sources": [
+        {
+          "id": "38yx-qk7a",
+          "url": "https://www.dati.friuliveneziagiulia.it/Trasporti/Ciclovie-2020/38yx-qk7a",
+          "api": "https://www.dati.friuliveneziagiulia.it/resource/38yx-qk7a.json",
+          "kind": "Socrata JSON / CSV / GeoJSON se geometria disponibile",
+          "license": "Italian Open Data License 2.0",
+          "checked": true
+        },
+        {
+          "id": "7eat-pecq",
+          "url": "https://www.dati.friuliveneziagiulia.it/Trasporti/Piste-Ciclabili/7eat-pecq",
+          "api": "https://www.dati.friuliveneziagiulia.it/resource/7eat-pecq.json",
+          "kind": "Socrata JSON / CSV / GeoJSON se geometria disponibile",
+          "license": "Italian Open Data License 2.0",
+          "checked": true
+        },
+        {
+          "id": "RETI_TRASP:RECIR_2022",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=RETI_TRASP%3ARECIR_2022&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": true
+        }
+      ],
+      "count": "1.174 + 486 segmenti in due dataset; RECIR 124 elementi",
+      "proof": "8 novembre 2026: metadati e campione GET verificati."
+    },
+    {
+      "title": "Rete viaria, ferrovie e viabilità forestale",
+      "group": "Mobilità",
+      "cadence": "Territorio",
+      "priority": 2,
+      "status": "Preparazione",
+      "what": "Assi e nodi della mobilità, collegamenti e supporto ad analisi di rete o prossimità.",
+      "limit": "Strade/sentieri già presenti in parte nella piattaforma. Questi strati non attestano traffico, chiusure o transitabilità attuale; controllare sovrapposizioni e permessi.",
+      "sources": [
+        {
+          "id": "RETI_TRASP:GRAFO_STRADALE_FVG",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=RETI_TRASP%3AGRAFO_STRADALE_FVG&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": false
+        },
+        {
+          "id": "STRAT_PR:DBPRIOR_0513_TRATTA_FER",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=STRAT_PR%3ADBPRIOR_0513_TRATTA_FER&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": false
+        },
+        {
+          "id": "RETI_TRASP:VIABILITAFORESTALEPUBBLICA",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=RETI_TRASP%3AVIABILITAFORESTALEPUBBLICA&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": false
+        }
+      ],
+      "count": "",
+      "proof": "Presenza verificata nelle capacità WFS; campioni non scaricati ora."
+    },
+    {
+      "title": "Numeri civici e accessi",
+      "group": "Città",
+      "cadence": "Anagrafe",
+      "priority": 2,
+      "status": "Importabile",
+      "what": "Base per cercare indirizzi e collegare registri con una posizione attendibile; query spaziali per quartiere.",
+      "limit": "Numeri civici della distribuzione regionale: copertura ed eventuali duplicati vanno verificati. I tile caricano solo il dettaglio necessario alla vista.",
+      "sources": [
+        {
+          "id": "fcre-uegn",
+          "url": "https://www.dati.friuliveneziagiulia.it/Regioni-e-città/Numeri-Civici-Ascot-2024/fcre-uegn",
+          "api": "https://www.dati.friuliveneziagiulia.it/resource/fcre-uegn.json",
+          "kind": "Socrata JSON / CSV / GeoJSON se geometria disponibile",
+          "license": "Italian Open Data License 2.0",
+          "checked": true
+        },
+        {
+          "id": "d28y-fjtt",
+          "url": "https://www.dati.friuliveneziagiulia.it/Regioni-e-città/Numeri-Civici-Non-ASCOT-2024/d28y-fjtt",
+          "api": "https://www.dati.friuliveneziagiulia.it/resource/d28y-fjtt.json",
+          "kind": "Socrata JSON / CSV / GeoJSON se geometria disponibile",
+          "license": "Italian Open Data License 2.0",
+          "checked": true
+        }
+      ],
+      "count": "372.811 ASCOT; 24.910 non ASCOT",
+      "proof": "8 novembre 2026: metadati e campione GET verificati."
+    },
+    {
+      "title": "Commercio e strutture ricettive",
+      "group": "Attività",
+      "cadence": "Registro",
+      "priority": 2,
+      "status": "Preparazione",
+      "what": "Attività per indirizzo nei Comuni coperti; strutture ricettive e andamento del tessuto economico.",
+      "limit": "Copertura non uniforme e dichiarazioni storiche: i record non equivalgono automaticamente a negozi attivi unici. Le strutture prive di coordinate sono aggregate per Comune.",
+      "sources": [
+        {
+          "id": "nqb3-7fg7",
+          "url": "https://www.dati.friuliveneziagiulia.it/Economia-e-Finanze/Commercio-in-Sede-Fissa-Comune-di-Udine-2022-2024/nqb3-7fg7",
+          "api": "https://www.dati.friuliveneziagiulia.it/resource/nqb3-7fg7.json",
+          "kind": "Socrata JSON / CSV / GeoJSON se geometria disponibile",
+          "license": "Italian Open Data License 2.0",
+          "checked": true
+        },
+        {
+          "id": "fiiw-i5su",
+          "url": "https://www.dati.friuliveneziagiulia.it/Istruzione-cultura-e-sport/Strutture-Alberghiere-e-RTA/fiiw-i5su",
+          "api": "https://www.dati.friuliveneziagiulia.it/resource/fiiw-i5su.json",
+          "kind": "Socrata JSON / CSV / GeoJSON se geometria disponibile",
+          "license": "Italian Open Data License 2.0",
+          "checked": true
+        }
+      ],
+      "count": "",
+      "proof": "8 novembre 2026: metadati e campione GET verificati."
+    },
+    {
+      "title": "Presenze turistiche per Comune",
+      "group": "Attività",
+      "cadence": "Mesi",
+      "priority": 3,
+      "status": "Importabile",
+      "what": "Mappa comunale e confronto temporale di arrivi/presenze, per analizzare stagionalità.",
+      "limit": "Arrivi e presenze del periodo dichiarato dalla fonte, non persone presenti ora o flusso pedonale osservato. Collegamento prioritario per codice ISTAT normalizzato.",
+      "sources": [
+        {
+          "id": "7eps-cpgr",
+          "url": "https://www.dati.friuliveneziagiulia.it/Istruzione-cultura-e-sport/Flussi-turistici-dei-Comuni-della-Regione-dal-2022/7eps-cpgr",
+          "api": "https://www.dati.friuliveneziagiulia.it/resource/7eps-cpgr.json",
+          "kind": "Socrata JSON / CSV / GeoJSON se geometria disponibile",
+          "license": "Italian Open Data License 2.0",
+          "checked": true
+        }
+      ],
+      "count": "41.664 righe aggregate",
+      "proof": "8 novembre 2026: metadati e campione GET verificati."
+    },
+    {
+      "title": "Antenne di telefonia mobile",
+      "group": "Infrastrutture",
+      "cadence": "Registro",
+      "priority": 2,
+      "status": "Preparazione",
+      "what": "Localizzazione e gestore delle stazioni radio base, stato amministrativo e storia.",
+      "limit": "Dichiarazioni consolidate per impianto e gestore; coordinate ETRS89/UTM33N convertite in WGS84. Non descrive copertura radio o traffico utenti.",
+      "sources": [
+        {
+          "id": "28hy-b3b2",
+          "url": "https://www.dati.friuliveneziagiulia.it/Ambiente/Radiazioni-Impianti-di-telefonia-mobile/28hy-b3b2",
+          "api": "https://www.dati.friuliveneziagiulia.it/resource/28hy-b3b2.json",
+          "kind": "Socrata JSON / CSV / GeoJSON se geometria disponibile",
+          "license": "Italian Open Data License 2.0",
+          "checked": true
+        }
+      ],
+      "count": "3.961 identificativi distinti; ultima data valorizzata 04/11/2026",
+      "proof": "8 novembre 2026: metadati e campione GET verificati."
+    },
+    {
+      "title": "Misure dei campi elettromagnetici",
+      "group": "Ambiente",
+      "cadence": "Campagne",
+      "priority": 2,
+      "status": "Preparazione",
+      "what": "Punti di misura con V/m, altezza e data della campagna; lettura separata dalle antenne.",
+      "limit": "Rilievi puntuali e campagne datate. Le coordinate gauss_boaga attendono conferma del CRS: il livello attuale è aggregato per Comune. Non è un campo continuo fra i punti.",
+      "sources": [
+        {
+          "id": "g844-avf4",
+          "url": "https://www.dati.friuliveneziagiulia.it/Ambiente/Radiazioni-Monitoraggio-Campo-Elettrico-a-Radiofre/g844-avf4",
+          "api": "https://www.dati.friuliveneziagiulia.it/resource/g844-avf4.json",
+          "kind": "Socrata JSON / CSV / GeoJSON se geometria disponibile",
+          "license": "Italian Open Data License 2.0",
+          "checked": true
+        }
+      ],
+      "count": "52.565 misurazioni storiche",
+      "proof": "8 novembre 2026: metadati e campione GET verificati."
+    },
+    {
+      "title": "Radon — rilievi storici",
+      "group": "Ambiente",
+      "cadence": "Archivio",
+      "priority": 3,
+      "status": "Importabile",
+      "what": "Punti e classificazioni dei rilievi in edifici o siti campionati.",
+      "limit": "Catalogo datato 2016; i record non sono valori odierni né una classificazione di ogni edificio. Evitare giudizi di sicurezza derivati dal punto vicino.",
+      "sources": [
+        {
+          "id": "k8yw-gcpj",
+          "url": "https://www.dati.friuliveneziagiulia.it/Ambiente/Radiazioni-Radon/k8yw-gcpj",
+          "api": "https://www.dati.friuliveneziagiulia.it/resource/k8yw-gcpj.json",
+          "kind": "Socrata JSON / CSV / GeoJSON se geometria disponibile",
+          "license": "Italian Open Data License 2.0",
+          "checked": true
+        }
+      ],
+      "count": "1.394 record storici",
+      "proof": "8 novembre 2026: metadati e campione GET verificati."
+    },
+    {
+      "title": "Patrimonio culturale e vincoli paesaggistici",
+      "group": "Città",
+      "cadence": "Territorio",
+      "priority": 2,
+      "status": "Pronto tecnicamente",
+      "what": "Beni, aree e schede ufficiali per capire cosa è tutelato e contestualizzare progetti e trasformazioni.",
+      "limit": "La mappa informativa non sostituisce la verifica del vincolo vigente. Ogni tipologia mantiene il proprio registro e la propria copertura.",
+      "sources": [
+        {
+          "id": "PPR:v_beni_culturali",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=PPR%3Av_beni_culturali&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": true
+        },
+        {
+          "id": "PPR:v_beni_immobili_interesse_storico_artistico_parte_ii",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=PPR%3Av_beni_immobili_interesse_storico_artistico_parte_ii&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": false
+        },
+        {
+          "id": "PPR:v_zone_interesse_archeologico",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=PPR%3Av_zone_interesse_archeologico&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": false
+        }
+      ],
+      "count": "3.279 beni nel layer campionato",
+      "proof": "Beni culturali GET 200; gli altri due layer ricensiti nelle capacità, non campionati ora."
+    },
+    {
+      "title": "Porto di Trieste e Monfalcone",
+      "group": "Attività",
+      "cadence": "Pianificazione",
+      "priority": 2,
+      "status": "Pronto tecnicamente",
+      "what": "Aree demaniali/patrimoniali e azzonamento funzionale portuale per leggere usi, logistica e città-porto.",
+      "limit": "Porto: piani e perimetri, non movimenti nave/AIS, occupazione banchine o merci in tempo reale; verificare versione del piano.",
+      "sources": [
+        {
+          "id": "ADSPMAO:AREE_PATRIMONIALI_T",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ADSPMAO%3AAREE_PATRIMONIALI_T&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": true
+        },
+        {
+          "id": "ADSPMAO:AREE_PATRIMONIALI_M",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ADSPMAO%3AAREE_PATRIMONIALI_M&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": false
+        },
+        {
+          "id": "AUT_PORT:PRP_TRIESTE_AZZONAMENTO_FUNZIONALE_RDN2008",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=AUT_PORT%3APRP_TRIESTE_AZZONAMENTO_FUNZIONALE_RDN2008&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": true
+        }
+      ],
+      "count": "21 aree patrimoniali Trieste; 75 elementi di azzonamento",
+      "proof": "Due layer Trieste GET 200; layer Monfalcone ricensito, non campionato ora."
+    },
+    {
+      "title": "Incendi boschivi e superfici percorse dal fuoco",
+      "group": "Ambiente",
+      "cadence": "Archivio",
+      "priority": 2,
+      "status": "Pronto tecnicamente",
+      "what": "Punti di origine e aree storicamente bruciate, con confronto temporale quando le date sono valorizzate.",
+      "limit": "Archivi di eventi e superfici percorse dal fuoco, non incendi attivi. Un evento in corso richiede una fonte operativa verificata.",
+      "sources": [
+        {
+          "id": "ZONE_RISC:V_INCENDI_PUNTOINIZIO",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ZONE_RISC%3AV_INCENDI_PUNTOINIZIO&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": true
+        },
+        {
+          "id": "ZONE_RISC:SUPERFICIE_BOSCATA_BRUCIATA",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ZONE_RISC%3ASUPERFICIE_BOSCATA_BRUCIATA&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": true
+        }
+      ],
+      "count": "4.577 punti; 724 superfici",
+      "proof": "8 novembre 2026: metadati e campione GET verificati."
+    },
+    {
+      "title": "Capacità del suolo e risorsa idrica",
+      "group": "Verde",
+      "cadence": "Territorio",
+      "priority": 2,
+      "status": "Pronto tecnicamente",
+      "what": "Aree per capacità di trattenere acqua, carte dei suoli e contesto per agricoltura/verde.",
+      "limit": "Le sei geometrie campionate sono classi estese, non sei sensori. Non equivalgono all’umidità del suolo misurata oggi, già presente nella demo PCR.",
+      "sources": [
+        {
+          "id": "ERSA:AWC_CAPACITA_ACQUA_DISP",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ERSA%3AAWC_CAPACITA_ACQUA_DISP&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": true
+        },
+        {
+          "id": "ERSA:CARTA_SUOLI_GO_TS",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ERSA%3ACARTA_SUOLI_GO_TS&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": false
+        }
+      ],
+      "count": "6 geometrie nella carta AWC",
+      "proof": "AWC GET 200; carta suoli GO/TS ricensita nelle capacità, non campionata ora."
+    },
+    {
+      "title": "Sezioni di censimento e contesto demografico",
+      "group": "Città",
+      "cadence": "Censimento",
+      "priority": 2,
+      "status": "Preparazione",
+      "what": "Poligoni delle sezioni 2021 da collegare alle tabelle ISTAT per confronti di quartiere e accesso ai servizi.",
+      "limit": "Geometrie di confine, non popolazione osservata. Gli indicatori demografici richiedono una fonte e un anno espliciti; non si deducono dal solo perimetro.",
+      "sources": [
+        {
+          "id": "UNITA_STAT:SEZ_CENS_2021",
+          "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=UNITA_STAT%3ASEZ_CENS_2021&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
+          "kind": "WFS → GeoJSON",
+          "license": "Scheda del singolo dataset da associare; IODL 2.0 è lo standard IRDAT, non una certificazione ricavata dal GetCapabilities.",
+          "checked": true
+        }
+      ],
+      "count": "18.960 sezioni",
+      "proof": "8 novembre 2026: metadati e campione GET verificati."
+    },
+    {
+      "title": "Consumo di suolo e trasformazioni negli anni",
+      "group": "Trasformazioni",
+      "cadence": "Anni",
+      "priority": 1,
+      "status": "Preparazione",
+      "what": "Raster e indicatori ISPRA/SNPA per confrontare anni, superficie impermeabilizzata e recupero; slider prima/dopo.",
+      "limit": "Dato annuale, non cantiere rilevato oggi. Il repository ufficiale offre serie storiche e indicatori comunali: selezionare edizione, risoluzione e licenza della distribuzione.",
+      "sources": [
+        {
+          "id": "ISPRA / SNPA",
+          "url": "https://www.isprambiente.gov.it/it/attivita/suolo-e-territorio/suolo/il-consumo-di-suolo/i-dati-sul-consumo-di-suolo",
+          "kind": "Raster / SHP / tabelle",
+          "license": "Verificare la distribuzione selezionata",
+          "checked": false
+        }
+      ],
+      "count": "",
+      "proof": "Pagina ufficiale ISPRA verificata: rapporto 2026 e accesso ai dati/serie storiche; nessun nuovo raster scaricato ora."
+    },
+    {
+      "title": "Inventario delle emissioni INEMAR",
+      "group": "Aria",
+      "cadence": "Anni",
+      "priority": 2,
+      "status": "Preparazione",
+      "what": "Mappe comunali delle emissioni stimate per inquinante e settore, per leggere pressioni territoriali.",
+      "limit": "Anno di riferimento 2023, versione pubblicata con revisione pubblica: non concentrazione misurata o emissioni istantanee del singolo impianto. Licenza distribuzione e versione da fissare.",
+      "sources": [
+        {
+          "id": "INEMAR 2023",
+          "url": "https://www.arpa.fvg.it/temi/temi/sviluppo-sostenibile/sezioni-principali/inventario-regionale-emissioni-in-atmosfera/catasto-emissioni-2023/",
+          "kind": "Indicatori aggregati",
+          "license": "Da verificare sulla distribuzione; note ARPA con condizioni da chiarire",
+          "checked": false
+        }
+      ],
+      "count": "",
+      "proof": "Pagina ufficiale ARPA verificata nel passaggio corrente; nessun nuovo export scaricato."
+    },
+    {
+      "title": "Ortofoto, rilievo LiDAR e modello del terreno",
+      "group": "Base 3D",
+      "cadence": "Campagne",
+      "priority": 2,
+      "status": "Preparazione",
+      "what": "Basi fotografiche, rilievo del terreno e confronto storico; estensione degli edifici 3D oltre Trieste–Monfalcone dove i dati lo consentono.",
+      "limit": "Le immagini regionali documentate includono campagne 2012 e 2017–2020: non fotografia di oggi. Il servizio WMS dà immagini, non necessariamente oggetti interrogabili.",
+      "sources": [
+        {
+          "id": "WMS regionali",
+          "url": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA5/",
+          "kind": "WMS / dati di rilievo",
+          "license": "Controllare la scheda della campagna selezionata",
+          "checked": false
+        }
+      ],
+      "count": "",
+      "proof": "Pagina regionale dei servizi WMS verificata; capacità WMS ricensite, nessun rilievo completo scaricato."
+    },
+    {
+      "title": "Albo pretorio e atti localizzabili",
+      "group": "Trasformazioni",
+      "cadence": "Giorni",
+      "priority": 3,
+      "status": "Preparazione",
+      "what": "Segnalare atti relativi a progetti territoriali solo quando una localizzazione è esplicita e verificabile, con link all’atto.",
+      "limit": "Atti privi di geometria aggregati per Comune. Il punto di un cantiere non viene inventato dal testo; non è una fonte certificata di cantieri attivi.",
+      "sources": [
+        {
+          "id": "vny3-2fkg",
+          "url": "https://www.dati.friuliveneziagiulia.it/Governo-e-settore-pubblico/Albo-Pretorio/vny3-2fkg",
+          "api": "https://www.dati.friuliveneziagiulia.it/resource/vny3-2fkg.json",
+          "kind": "Socrata JSON / CSV / GeoJSON se geometria disponibile",
+          "license": "Italian Open Data License 2.0",
+          "checked": true
+        }
+      ],
+      "count": "11.599 atti",
+      "proof": "8 novembre 2026: metadati e campione GET verificati."
+    }
+  ]
+}

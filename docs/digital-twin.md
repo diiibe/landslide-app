@@ -1,116 +1,146 @@
-# Digital twin: Trieste–Monfalcone demo
+# FVG · Territorio: one map, independent layers
 
-Open **Digital twin** in the top bar. The workspace hides the hazard overlays,
-opens the observations drawer and frames the coast. Trieste and Monfalcone
-buttons frame the two building extracts. Leaving the workspace restores the
-previous hazard layers, 3D setting and camera. Existing uploads are preserved.
-The selected object scrolls into view in the drawer. A street-level OpenStreetMap
-raster is used if no Mapbox token is configured; satellite and other Mapbox styles
-are offered only with a configured token.
+The Digital Twin and landslide workspaces are now one application. Open **Livelli
+e dati** for a searchable layer tree. Frane, Alluvioni and Contesto coexist with
+13 thematic folders (the cartographic sources are inside Contesto). A datum with
+a different parameter or unit has its own switch. Several variables and hazard
+layers can remain visible together. Layer choices, opacity and open folders are
+saved locally. **Analisi** preserves the existing model tools.
 
-The drawer offers 19 observation variables in three groups:
+On phones the panel opens as a bottom sheet, in touch landscape as a side sheet.
+The search, layer switches and Info buttons have touch targets of at least 44px.
+“Inquadra il livello” closes the mobile sheet before navigation. Point selection
+uses a 44px picking area without enlarging polygon hit areas. Container resizing keeps the MapLibre canvas aligned after flex/sheet changes,
+including Safari. Coincident point records have a separate inspector selector.
+Selection and new
+PCR samples can trigger a brief feedback ring; there is no simulated continuous
+movement. Reduced motion is respected. Source attributes are rendered as text.
 
-- **Meteo**: wind, gusts, air temperature, relative humidity, 5-minute/60-minute/24-hour precipitation and global radiation.
-- **Acqua e costa**: IGM42 marine level, hydrometric levels, river flow, total Isonzo-mouth flow, mean/upper/lower Isonzo-mouth current and water temperature.
-- **Suolo e verde**: volumetric soil moisture at −10, −20 and −40 cm.
+## Catalog and coverage
 
-These are PCR channels, including derived accumulations and profiles: they are not
-19 different physical devices or a continuous field across the region. Hydrometric
-references differ between stations (including local zeros and elevations), so
-this variable uses uniform circles and no common quantitative colour scale.
-Compare its time series within one station. The PCR channel named “Temperatura
-mare” also appears at river sites; the UI calls it water temperature.
+`public/data/regional/catalog.json` is the machine-readable inventory: each layer
+records provider, source URL, licence, acquisition date, source data date where
+available, extent, coverage, warnings and update errors. Its `families` array
+maps all 50 selected Open Data families to their imported or blocked entries.
+It is not a claim that the entire regional Open Data portal has been imported.
 
-Click a sensor for its value, timestamp, other available variables at that site
-and the last 24 hours of observations. The chart slider inspects recorded samples
-without changing the latest observations shown on the map. Gaps over 45 minutes
-remain disconnected. Click an AIA site for administrative attributes and the three
-nearest stations for the selected variable, with their distances. These describe
-the stations, not conditions measured at the site; no exposure, dispersion or
-damage model is inferred.
+The first release contains 1,456 catalog entries: 1,451 ready and 5 requiring
+external review, plus 19 original PCR variables and radar in the app. “Ready” is
+an available distribution or sensor-channel definition: 71 extra PCR channels
+currently have no observations and are explicitly labelled, without fake zeroes.
+Counts can change as the public sources change. The UI loads only enabled data.
+Large distributions use PMTiles; low zooms generalize dense features, with details
+available by zooming. Display geometries are simplified by roughly 1–2m; repaired
+invalid geometries are marked and counted. Originals remain at the linked source.
 
-On phones, **Livelli** opens the bottom sheet with a grouped native selector and
-radar/AIA/building switches. **Mostra mappa** closes it and Livelli reopens the
-controls at the top. Touch landscape uses a side sheet. **Inquadra stazioni** fits
-the available points and **Mostra sulla mappa** locates the selected station; both
-close the mobile sheet and apply its final camera padding before moving.
-Secondary topbar actions remain under **Strumenti**.
+The sources cover weather, precipitation, marine conditions and waves, measured
+currents by depth, daily air quality and pollens, water sampling and sediments,
+energy installations, permits and industrial areas, ports, waste, soil consumption,
+habitats and protected areas, schools, care facilities, sport, cultural assets,
+transport networks, telecom registries, address points, seismic events and webcam
+metadata. An authorisation is not actual industrial output, a public Wi-Fi site
+is not live availability, and an antenna is not a coverage or traffic measurement.
 
-Comparable variables encode the numeric value in colour and circle size, with
-clamped display scales rather than danger thresholds. Grey indicates an older or
-invalid observation time. A contrasting ring identifies a selected sensor or AIA
-point; a brief 420 ms ring marks a selection or a new sample at that selected
-sensor. There is no continuous pulsing or simulated transport. Reduced motion
-and hidden tabs disable that feedback. Mouse hover shows escaped text with value,
-observation time and freshness. Touch point picking uses a 44 px target and
-chooses the closest point without expanding building hit areas.
+## Updates that run automatically
 
-The map caches static GeoJSON references: changing a variable or inspecting a
-station does not reprocess the 8,152 buildings and 234 AIA sites. Basemap style
-replacement replays cached sources, visibility and selection. Initial source
-loading is guarded and explicit scene/station requests made before style readiness
-are applied when it becomes available.
+- PCR latest observations, radar, current seismic events and webcam metadata:
+  serial checks every 60 seconds after the previous request completes.
+- OGS ERDDAP observations: same serial browser checks, requests deduplicated
+  across variables sharing a dataset. Measurement frequency and QC come from OGS.
+- Regional WFS, Socrata tables, ISPRA soil indicators, building extracts, raster
+  cartography and fallback snapshots: GitHub Actions `Aggiorna dati regionali`
+  at minute 17 every six hours, or manual workflow dispatch.
+- Roads and trails from OSM: first Pages deployment of each UTC day refreshes
+  Overpass, later deployments reuse that day's cache.
+- An open app checks the local catalog every five minutes and replaces updated
+  enabled sources without resetting other layers or the camera.
 
-## Sources and refresh
+Hidden browser tabs pause live polling; visibility resumes checks. Requests have
+bounded timeouts and are aborted on cleanup. Checking a source every minute does
+not make an annual map realtime. `generatedAt` describes catalog generation;
+`retrievedAt` is source acquisition, and observations keep their own times (UTC,
+displayed in Europe/Rome). There is no promised provider SLA. Historical model
+outputs and survey campaigns remain dated scientific products, not sensors.
 
-PCR's public JSON API and SRI PNG products are read directly from the browser.
-No account, API key, proxy or new deployment service is required. Attribution:
-**Fonte: Protezione Civile della Regione Friuli Venezia Giulia**, CC BY 4.0.
-The source is https://monitor.protezionecivile.fvg.it/ and its API documentation
-is https://monitor.protezionecivile.fvg.it/api/apidocs/index.html.
+The scheduled job validates pagination, identities, counts, geometries and assets
+before committing data. Failures keep the previous good layer with its acquisition
+date and an explicit `refreshError`. Successful parameters from a partially failed
+distribution keep their new metadata; only missing parameters recover previous
+versions. An uncaught failure or failed validator prevents the publish commit.
+The Pages workflow listens for a successful refresh because a GITHUB_TOKEN push
+does not itself trigger another push workflow. Schedules follow GitHub's execution
+availability and can run late; the last verification is visible in metadata.
 
-Each feed performs a serial check every 60 seconds after the previous request
-completes. Checks pause in hidden tabs, resume on visibility and abort when the
-workspace closes. Automatic checks can be disabled; “Aggiorna adesso” requests
-another read. Polling is not the measurement frequency. Observations preserve
-UTC timestamps from PCR, displayed in Europe/Rome with a timezone label.
-“Recent” means at most 45 minutes old; 45–120 minutes is delayed. Older or
-invalid/future observations are grey. These are display freshness categories,
-not hazard thresholds or a provider SLA.
+## Measurement integrity
 
-On failure, the last successful response remains visible with an error. If no
-response has ever arrived, explicitly labelled research snapshots are loaded.
-Snapshot times remain those of 8 November 2026. No current values are generated.
-The selected station's series is fetched independently, with explicit UTC
-bounds and up to 1,000 observations. Gaps longer than 45 minutes are not joined.
+Water measurements are keyed by site, parameter, unit and sampling dimensions;
+all samples tied at the latest date are preserved. Native WGS84 coordinates are
+used where available. Values such as `<0.01` remain censored bounds, not zeroes or
+exact measured concentrations. Several analytical units therefore produce separate
+layers. Data without point coordinates are aggregated by municipality with an
+explicit record-count label. Tourism uses separate arrivals and overnight-stay
+metrics and joins boundaries by ISTAT code before names.
 
-Radar uses Fossalon's SRI PNG, delivered with bounding extent in its metadata.
-Image bytes are verified and cached in memory as a data URL; MapLibre reuses
-them after style changes. CSP therefore allows PCR in connect-src and data:
-for the renderer's image fetch. Frame metadata, time and access errors appear
-in the drawer. Dry or transparent images are not evidence that the entire
-territory has zero precipitation. The official PCR legend remains linked.
+OGS observations retain unit, depth and QC: QC0 means no quality control performed,
+QC1 is the source's good flag, and questionable/bad flags remain visible. Current
+profiles use one coherent latest observation time, not a mixture of old depth
+bins. They describe a local measured profile, not currents everywhere in the gulf.
+PCR hydrometric references vary by station: there is no misleading common scale.
+The 19 original PCR channels retain an interactive 24h observed-history inspector.
+Historical chart exploration does not change the latest data on the map.
+Radar Info shows product time, live errors and snapshot status.
 
-DPC's national SRI metadata indicated a nominal five-minute interval in research.
-However its WMS and presigned TIFF downloads did not provide CORS headers in
-checks, so it is not the browser-native default. A future DPC adapter needs a
-permitted distribution/proxy path and must retain DPC's separate licence.
+## Cartography and urban extracts
 
-## Physical assets
+The 8,152 building footprints cover the two existing Trieste/Monfalcone boxes,
+not all FVG. The source campaign is 2017–2020. Unusable heights remain flat.
+AIA now uses the automatically refreshed regional registry. Neither represents
+instantaneous activity, exposure, structural health or a BIM model.
 
-`public/data/twin/sources.json` records provenance, bounds, dates and counts.
-Assets are bounded static extracts served relative to Vite's BASE_URL, including
-GitHub Pages subpaths. They are intentionally tracked in Git, not rebuilt from
-external WFS in CI. The complete research inventory remains a separate artifact.
+Regional WMS lacks browser CORS, so a verified tile mirror supplies three raster
+layers: true orthophotos 2017–2020, orthophotos 2012 and LiDAR hillshade. The pyramid
+is z5–11 with 512px tiles, about 27m pixels at its finest scale. It is a regional
+visualization, not the original high-resolution imagery. Coverage layers link to
+original LiDAR/DTM/orthophoto resources; raw point clouds are not loaded in-browser.
 
-AIA has 234 regional records from the regional WFS. Administrative authorisation
-is not operational status or instantaneous industrial emissions. Building
-extracts from `EDIFICI:DBS_EDIFICATO` contain 3,303 Trieste geometries and 4,849
-Monfalcone geometries, from the 2017–2020 Trueortho base. Of these, 1,284 lack a
-usable height and stay flat and grey. Heights are not invented. Buildings appear
-from zoom 12. This is a 2.5D flat-roof visualisation, not a BIM or current survey.
-Regione FVG/IRDAT's standard IODL 2.0 conditions and resource metadata apply.
+## External review still needed
 
-Extrusions work without Mapbox credentials. Terrain/hillshade requires the
-existing valid public Mapbox token; no invalid mapbox:// source is created when
-using the public basemap fallback.
+1. INEMAR estimated emissions: ARPA legal text combines CC BY with additional
+   noncommercial/notification terms. Clarify reuse permission.
+2. BusOne real GPS: written organisational/commercial consent and identifying
+   client headers required. No automatic integration without that permission.
+3. SSM available parking in Udine: reuse licence unconfirmed; no verified
+   equivalent feed for Trieste–Monfalcone.
+4. Precise RF sampling positions: source projected CRS needs confirmation.
+   Municipal record counts and observed maxima remain available and qualified.
+5. Bathing areas not matched to official geographic codes: only unambiguous
+   matches are plotted. The others require a verified official crosswalk.
 
-## Verification
+These are also listed under **Da revisionare** in the app. Missing points are not
+geocoded by guesses. Bathing samples are historical sampling, not an assertion of
+current bathing safety. Webcam images are not republished with metadata rights.
 
-Build with `npm run build`, lint with `npm run lint`, and run
-`npm run test:run -- --pool=forks --maxWorkers=1`. The explicit pool/worker limit
-avoids a locally observed hang during the default concurrent test startup.
-New tests cover UTC parsing, missing values, observation freshness, georeferencing,
-wind direction pairing, serial polling/cancellation and hazard state restoration.
-Browser checks additionally exercise actual PCR requests, station series,
-building extrusion, style changes, mobile layout and offline fallbacks.
+## Reproduce and verify
+
+Install Python dependencies from `scripts/regional-requirements.txt` and
+Tippecanoe 2.79.0, commit `68ab8dcc229f95b8b25877697d5e8d66783af503`.
+Run, in order:
+
+```sh
+python scripts/build-regional-data.py --workers 3
+python scripts/build-regional-tables.py
+python scripts/build-regional-observations.py
+python scripts/build-regional-products.py
+python scripts/build-regional-supplement.py
+python scripts/build-regional-raster.py
+python scripts/assemble-regional-catalog.py
+python scripts/validate-regional-data.py
+python scripts/test_regional_pipeline.py
+npm run test:run
+npm run build
+```
+
+Local JSON caches have a one-hour TTL. Set `FVG_DATA_REFRESH=1` to bypass it;
+the scheduled workflow does so. Raster conditional requests can return 304 and
+preserve original acquisition dates. Raw response caches stay outside the repo.
+Source overrides (`--source`) support targeted WFS/table rebuilds.

@@ -2,6 +2,9 @@ name: Deploy
 on:
   push: { branches: [main] }
   workflow_dispatch:
+  workflow_run:
+    workflows: ["Aggiorna dati regionali"]
+    types: [completed]
 
 permissions:
   contents: read
@@ -12,9 +15,12 @@ concurrency: { group: pages, cancel-in-progress: true }
 
 jobs:
   build:
+    if: github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
       - uses: actions/setup-node@v4
         with: { node-version: 20, cache: npm }
       - run: npm ci
@@ -23,15 +29,18 @@ jobs:
       # each, OSM-derived). Every other static asset lives in the repo.
       # We bake them at deploy time so first-time visitors see road and
       # trail overlays without anyone running `npm run build:roads`
-      # locally. Cache keyed on the script's content + lockfile — when
-      # the script genuinely changes, Overpass gets re-queried.
+      # locally. Cache by UTC day, script and lockfile: scheduled deployments
+      # refresh these source geometries daily without querying on every deploy.
+      - id: roads-day
+        run: echo "day=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+
       - id: roads-cache
         uses: actions/cache@v4
         with:
           path: |
             public/data/roads_fvg.geojson
             public/data/trails_fvg.geojson
-          key: roads-v1-${{ hashFiles('scripts/build-roads.mjs', 'package-lock.json') }}
+          key: roads-v2-${{ steps.roads-day.outputs.day }}-${{ hashFiles('scripts/build-roads.mjs', 'package-lock.json') }}
 
       # Overpass is rate-limited and flaky; the script retries across 3
       # mirrors. If all 3 are down the deploy fails fast — preferable

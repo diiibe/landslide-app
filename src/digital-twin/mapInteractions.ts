@@ -1,7 +1,10 @@
 import { Popup, type Map as MLMap, type MapGeoJSONFeature, type MapMouseEvent, type GeoJSONSource } from "maplibre-gl";
 import { useAppStore } from "@/app/store";
 import { useTwinStore } from "./store";
-import { variableMeasures } from "./data";
+import { variableMeasures, VARIABLES, type Variable } from "./data";
+import { isPCREnabled } from "@/regional/builtins";
+import { useRegionalStore } from "@/regional/store";
+import { pickDataFeature } from "@/regional/mapPicking";
 
 const SENSOR = "twin-sensors", AIA = "twin-aia";
 const FOCUS = "twin-selection", OUTLINE = "twin-selection-outline", PULSE = "twin-selection-feedback";
@@ -69,7 +72,7 @@ export function mountTwinInteractions(map: MLMap, isReady: () => boolean) {
     if (!isReady()) return;
     const state = useTwinStore.getState(), selected = state.selection;
     let coordinates: [number, number] | null = null, key = "", color = "#5ebfcc";
-    if (state.active && selected?.kind === "sensor") {
+    if (state.active && selected?.kind === "sensor" && isPCREnabled(state.variable)) {
       const measure = variableMeasures(state.measures, state.variable).find(m => m.stationId === selected.stationId);
       if (measure) {
         coordinates = [measure.lon, measure.lat];
@@ -108,7 +111,8 @@ export function mountTwinInteractions(map: MLMap, isReady: () => boolean) {
     if (map.isMoving()) { clearHover(); return; }
     if (performance.now() - lastHoverTime < 32) return;
     lastHoverTime = performance.now();
-    const feature = pickTwinFeature(map, event.point, 8);
+    const hit = pickDataFeature(map, event.point, 8);
+    const feature = hit && !hit.layer.id.startsWith("regional-") ? hit : undefined;
     if (!feature) { clearHover(); return; }
     map.getCanvas().style.cursor = "pointer"; ownsCursor = true;
     const p = feature.properties ?? {}, node = document.createElement("div");
@@ -130,17 +134,21 @@ export function mountTwinInteractions(map: MLMap, isReady: () => boolean) {
     } else popup.setLngLat(event.lngLat).setDOMContent(node);
   }
   function click(event: MapMouseEvent) {
-    if (!isReady() || !useTwinStore.getState().active) return;
+    if (!isReady() || !useTwinStore.getState().active || useAppStore.getState().drawingMode) return;
     const touch = window.matchMedia?.("(pointer: coarse)").matches ?? false;
-    const feature = pickTwinFeature(map, event.point, touch ? 22 : 8);
+    const hit = pickDataFeature(map, event.point, touch ? 22 : 8);
+    const feature = hit && !hit.layer.id.startsWith("regional-") ? hit : undefined;
     if (!feature) return;
     clearHover();
     const p = feature.properties ?? {};
-    if (feature.layer.id.startsWith(SENSOR))
-      useTwinStore.setState({ selection: { kind: "sensor", stationId: Number(p.stationId) } });
+    if (feature.layer.id.startsWith(SENSOR)) {
+      const variable = typeof p.variable === "string" && p.variable in VARIABLES ? p.variable as Variable : useTwinStore.getState().variable;
+      useTwinStore.setState({ variable, selection: { kind: "sensor", stationId: Number(p.stationId) } });
+    }
     else if (feature.layer.id === AIA && feature.geometry.type === "Point")
       useTwinStore.setState({ selection: { kind: "asset", name: String(p.name || p.ragione_sociale), coordinates: feature.geometry.coordinates.slice(0, 2) as [number, number], properties: p } });
     else useTwinStore.setState({ selection: { kind: "building", properties: p } });
+    useRegionalStore.setState({ selection: null, detailId: null, tab: "layers" });
     useAppStore.setState({ drawerOpen: true });
   }
   function visibility() { if (document.hidden) { clearHover(); stopFeedback(); } }

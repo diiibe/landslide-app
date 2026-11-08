@@ -1,0 +1,109 @@
+import { describe, it, expect, vi, afterEach } from "vitest";
+import { erddapData, pcrProductData } from "./data";
+import { parseCatalog, useRegionalStore } from "./store";
+import { enableLayer, BUILTIN_LAYERS } from "./builtins";
+import { useAppStore } from "@/app/store";
+afterEach(() => {
+  vi.useRealTimers();
+  useAppStore.getState().reset();
+  useRegionalStore.setState({ enabled: {} });
+});
+const raw = {
+  table: {
+    columnNames: ["time", "latitude", "longitude", "depth", "TEMP", "TEMP_QC"],
+    columnUnits: ["UTC", "degrees_north", "degrees_east", "m", "degree_C", ""],
+    rows: [
+      ["2026-11-08T12:00:00Z", 45.6, 13.5, 10, 14, 0],
+      ["2026-11-08T12:10:00Z", 45.6, 13.5, 10, 15, 1],
+      ["2026-11-08T12:10:00Z", 45.6, 13.5, 20, null, 9],
+      ["2026-11-09T12:10:00Z", 45.6, 13.5, 10, 999, 1],
+    ],
+  },
+};
+describe("regional observations", () => {
+  it("keeps latest real observations, units, depth and QC without inventing missing values", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-11-08T13:00:00Z"));
+    const d = erddapData(raw, "TEMP");
+    expect(d.features).toHaveLength(1);
+    expect(d.features[0]?.properties).toMatchObject({
+      __value: 15,
+      __unit: "degree_C",
+      profondita_m: 10,
+      qualita_qc: 1,
+    });
+  });
+  it("keeps a coherent latest profile even when depth drifts between profiles", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-11-08T13:00:00Z"));
+    const d = erddapData(
+      {
+        ...raw,
+        table: {
+          ...raw.table,
+          rows: [
+            ...raw.table.rows,
+            ["2026-11-08T12:00:00Z", 45.6, 13.5, 10.1, 14, 0],
+            ["2026-11-08T12:10:00Z", 45.6, 13.5, 20.2, 13, 4],
+          ],
+        },
+      },
+      "TEMP",
+      { profile: true },
+    );
+    expect(d.features).toHaveLength(2);
+    expect(
+      d.features.every(
+        (f) => f.properties?.__observedAt === "2026-11-08T12:10:00Z",
+      ),
+    ).toBe(true);
+  });
+  it("accepts an empty current earthquake feed and preserves magnitude zero", () => {
+    expect(
+      pcrProductData({ result: "OK", earthquakes: [] }, "earthquakes").features,
+    ).toHaveLength(0);
+    expect(
+      pcrProductData(
+        {
+          result: "OK",
+          earthquakes: [
+            {
+              id: 1,
+              lon: 13,
+              lat: 46,
+              dt: "2026-01-01 12:00:00",
+              magnitudo: 0,
+            },
+          ],
+        },
+        "earthquakes",
+      ).features[0]?.properties?.__value,
+    ).toBe(0);
+  });
+  it("rejects duplicated ids and traversal in generated catalogs", () => {
+    expect(() =>
+      parseCatalog({
+        generatedAt: new Date().toISOString(),
+        layers: [
+          {
+            id: "x",
+            title: "x",
+            status: "ready",
+            folder: "acqua",
+            file: "../x.geojson",
+          },
+        ],
+      }),
+    ).toThrow();
+  });
+  it("toggles distinct variables together without changing hazard surfaces or terrain", () => {
+    const before = useAppStore.getState().layers;
+    for (const id of ["pcr-temperature", "pcr-rain"])
+      enableLayer(BUILTIN_LAYERS.find((l) => l.id === id)!, true);
+    expect(useRegionalStore.getState().enabled).toMatchObject({
+      "pcr-temperature": true,
+      "pcr-rain": true,
+    });
+    expect(useAppStore.getState().layers).toBe(before);
+  });
+});
