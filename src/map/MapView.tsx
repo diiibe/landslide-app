@@ -283,6 +283,7 @@ export function MapView() {
   const prevModelForTrails = useRef<ModelId | null>(null);
 
   const basemap = useAppStore((s) => s.basemap);
+  const appliedBasemap = useRef(basemap);
   const model = useAppStore((s) => s.model);
   const threshold = useAppStore((s) => s.threshold);
   const selectedZones = useAppStore((s) => s.selectedZones);
@@ -385,7 +386,10 @@ export function MapView() {
 
   useEffect(() => {
     const m = mapRef.current;
-    if (!m) return;
+    // The constructor already starts loading this style. Replacing it again
+    // on mount can race projection initialisation, especially on Safari.
+    if (!m || appliedBasemap.current === basemap) return;
+    appliedBasemap.current = basemap;
     m.setStyle(BASEMAP_STYLE[basemap]);
   }, [basemap]);
 

@@ -48,6 +48,7 @@ export function mountTwinMap(map: MLMap): () => void {
     radarKey = "",
     assets: GeoJSON.FeatureCollection | null = null,
     buildings: GeoJSON.FeatureCollection | null = null;
+  let pendingScene: keyof typeof SCENES | null = null;
   const ac = new AbortController();
   let previousCamera: {
     center: [number, number];
@@ -60,7 +61,7 @@ export function mountTwinMap(map: MLMap): () => void {
   function layout() {
     cancelAnimationFrame(layoutFrame);
     layoutFrame = requestAnimationFrame(() => {
-      if (disposed || !useTwinStore.getState().active) return;
+      if (!ready || disposed || !useTwinStore.getState().active) return;
       const panel = document.getElementById("drawer-panel");
       const container = map.getContainer().getBoundingClientRect();
       const padding = { top: 0, bottom: 0, left: 0, right: 0 };
@@ -281,6 +282,7 @@ export function mountTwinMap(map: MLMap): () => void {
       stopped = !s.active && lastActive,
       key = s.refreshKey !== lastKey;
     if (started) {
+      pendingScene = "coast";
       const center = map.getCenter();
       previousCamera = {
         center: [center.lng, center.lat],
@@ -290,7 +292,10 @@ export function mountTwinMap(map: MLMap): () => void {
         padding: map.getPadding(),
       };
     }
-    if (stopped && previousCamera) map.jumpTo(previousCamera);
+    if (stopped) {
+      pendingScene = null;
+      if (previousCamera) map.jumpTo(previousCamera);
+    }
     lastActive = s.active;
     lastKey = s.refreshKey;
     if (s.active && (started || key)) {
@@ -302,13 +307,17 @@ export function mountTwinMap(map: MLMap): () => void {
     layout();
   }
   function style() {
-    const first = !ready;
     ready = true;
     radarKey = "";
     sync();
-    if (first && useTwinStore.getState().active) scene("coast");
+    layout();
+    if (pendingScene && useTwinStore.getState().active) scene(pendingScene);
+  }
+  function styleLoading() {
+    ready = false;
   }
   function scene(name: keyof typeof SCENES) {
+    pendingScene = null;
     map.jumpTo({
       ...SCENES[name],
       pitch: useAppStore.getState().view3D ? SCENES[name].pitch : 0,
@@ -316,7 +325,10 @@ export function mountTwinMap(map: MLMap): () => void {
   }
   const onScene = (event: Event) => {
     const name = (event as CustomEvent<string>).detail;
-    if (name in SCENES && ready) scene(name as keyof typeof SCENES);
+    if (name in SCENES && useTwinStore.getState().active) {
+      if (ready) scene(name as keyof typeof SCENES);
+      else pendingScene = name as keyof typeof SCENES;
+    }
   };
   const click = (event: { point: { x: number; y: number } }) => {
     if (!useTwinStore.getState().active) return;
@@ -351,6 +363,7 @@ export function mountTwinMap(map: MLMap): () => void {
     useAppStore.setState({ drawerOpen: true });
   };
   map.on("style.load", style);
+  map.on("styledataloading", styleLoading);
   map.on("click", click);
   map.on("resize", layout);
   window.addEventListener("fvg:twin-scene", onScene);
@@ -372,6 +385,7 @@ export function mountTwinMap(map: MLMap): () => void {
     unsub();
     unsubApp();
     map.off("style.load", style);
+    map.off("styledataloading", styleLoading);
     map.off("click", click);
     map.off("resize", layout);
     window.removeEventListener("fvg:twin-scene", onScene);
