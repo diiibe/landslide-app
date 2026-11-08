@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useState, type ComponentType } from "react";
 import styles from "./App.module.css";
 import { TwinButton, TwinPanel } from "@/digital-twin/Panel";
+import { VARIABLES } from "@/digital-twin/data";
 import { TwinRuntime } from "@/digital-twin/Runtime";
 import { useTwinStore } from "@/digital-twin/store";
 import { parseUserFile } from "@/lib/upload";
@@ -42,6 +43,7 @@ import { useAppStore } from "@/app/store";
 
 export default function App() {
   const twinActive = useTwinStore((s) => s.active);
+  const twinVariable = useTwinStore((s) => s.variable);
   const drawerOpen = useAppStore((s) => s.drawerOpen);
   const v2On = useAppStore((s) => s.layers.v2Bodies || s.layers.v2Diffuse);
   const addUserLayer = useAppStore((s) => s.addUserLayer);
@@ -117,7 +119,7 @@ export default function App() {
       )}
       <TwinRuntime />
       <TopBar tabs={<TwinButton />} search={<SearchLocality />} icons={<IconButtons />} />
-      <div className={styles.body} data-drawer={drawerOpen ? "open" : "closed"}>
+      <div className={styles.body} data-workspace={twinActive ? "twin" : "hazards"} data-drawer={drawerOpen ? "open" : "closed"}>
         <div className={styles.map}>
           <Suspense fallback={<MapSkeleton />}>
             <MapView />
@@ -134,7 +136,12 @@ export default function App() {
           </div>}
           {!twinActive && <><Legend /><DrawingPanel /></>}
         </div>
-        <Drawer>
+        <Drawer
+          mobileSheet={twinActive}
+          label={twinActive ? "Livelli e dati" : "Analisi della mappa"}
+          triggerLabel={twinActive ? "Livelli" : "Analisi"}
+          summary={twinActive ? VARIABLES[twinVariable].shortLabel : undefined}
+        >
           {/* J-only statistics never sit next to a v2 surface. */}
           {twinActive ? <TwinPanel /> : v2On ? (
             <JStatsNote />

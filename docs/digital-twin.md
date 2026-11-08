@@ -15,6 +15,13 @@ and the three nearest stations for the selected variable, with their distances.
 These measurements describe the stations, not conditions measured at the site;
 no exposure, dispersion or damage model is inferred.
 
+On phones, **Livelli** opens a bottom sheet with five directly tappable
+observation buttons and the radar, AIA and building switches. **Mostra mappa**
+closes it; the Livelli button shows the selected observation and reopens the
+controls at the top. Selecting a city closes the sheet to reveal the map.
+Touch landscape uses a side sheet so the map remains usable. Secondary topbar
+actions are under **Strumenti**; desktop controls keep their existing layout.
+
 ## Sources and refresh
 
 PCR's public JSON API and SRI PNG products are read directly from the browser.

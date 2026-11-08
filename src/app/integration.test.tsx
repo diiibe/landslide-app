@@ -82,7 +82,7 @@ describe("App integration", () => {
   it("toggles drawer via the handle", () => {
     render(<App />);
     expect(useAppStore.getState().drawerOpen).toBe(true);
-    fireEvent.click(screen.getByRole("button", { name: /toggle side panel/i }));
+    fireEvent.click(screen.getByRole("button", { name: /chiudi analisi della mappa/i }));
     expect(useAppStore.getState().drawerOpen).toBe(false);
   });
 });

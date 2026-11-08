@@ -5,6 +5,7 @@ export const VARIABLES = {
   wind: {
     id: 6,
     label: "Vento",
+    shortLabel: "Vento",
     unit: "m/s",
     min: 0,
     max: 25,
@@ -13,6 +14,7 @@ export const VARIABLES = {
   temperature: {
     id: 2,
     label: "Temperatura",
+    shortLabel: "Temperatura",
     unit: "°C",
     min: -10,
     max: 35,
@@ -21,6 +23,7 @@ export const VARIABLES = {
   rain: {
     id: 57,
     label: "Pioggia nelle ultime 24 ore",
+    shortLabel: "Pioggia 24 h",
     unit: "mm",
     min: 0,
     max: 100,
@@ -29,6 +32,7 @@ export const VARIABLES = {
   sea: {
     id: 86,
     label: "Livello marino IGM42",
+    shortLabel: "Livello mare",
     unit: "m",
     min: -1,
     max: 2,
@@ -37,6 +41,7 @@ export const VARIABLES = {
   radiation: {
     id: 18,
     label: "Radiazione globale",
+    shortLabel: "Radiazione",
     unit: "W/m²",
     min: 0,
     max: 1000,
