@@ -54,7 +54,34 @@ export function mountTwinMap(map: MLMap): () => void {
     zoom: number;
     pitch: number;
     bearing: number;
+    padding: ReturnType<MLMap["getPadding"]>;
   } | null = null;
+  let layoutFrame = 0;
+  function layout() {
+    cancelAnimationFrame(layoutFrame);
+    layoutFrame = requestAnimationFrame(() => {
+      if (disposed || !useTwinStore.getState().active) return;
+      const panel = document.getElementById("drawer-panel");
+      const container = map.getContainer().getBoundingClientRect();
+      const padding = { top: 0, bottom: 0, left: 0, right: 0 };
+      if (panel && useAppStore.getState().drawerOpen && getComputedStyle(panel).position === "absolute") {
+        const rect = panel.getBoundingClientRect();
+        if (rect.width >= container.width - 1)
+          padding.bottom = Math.max(0, container.bottom - rect.top);
+        else
+          padding.right = Math.max(0, container.right - rect.left);
+      }
+      const current = map.getPadding();
+      if (Object.entries(padding).some(([key, value]) => current[key as keyof typeof current] !== value))
+        map.setPadding(padding);
+    });
+  }
+  // Keep the observed location in the part of the map not covered by the
+  // mobile sheet. This also follows rotation and dynamic browser toolbars.
+  const layoutObserver = new ResizeObserver(layout);
+  layoutObserver.observe(map.getContainer());
+  const panel = document.getElementById("drawer-panel");
+  if (panel) layoutObserver.observe(panel);
   function source(id: string, data: GeoJSON.FeatureCollection) {
     if (!map.getSource(id)) map.addSource(id, { type: "geojson", data });
     else (map.getSource(id) as GeoJSONSource).setData(data);
@@ -260,6 +287,7 @@ export function mountTwinMap(map: MLMap): () => void {
         zoom: map.getZoom(),
         pitch: map.getPitch(),
         bearing: map.getBearing(),
+        padding: map.getPadding(),
       };
     }
     if (stopped && previousCamera) map.jumpTo(previousCamera);
@@ -271,6 +299,7 @@ export function mountTwinMap(map: MLMap): () => void {
       if (started && ready) scene("coast");
     }
     sync();
+    layout();
   }
   function style() {
     const first = !ready;
@@ -323,10 +352,12 @@ export function mountTwinMap(map: MLMap): () => void {
   };
   map.on("style.load", style);
   map.on("click", click);
+  map.on("resize", layout);
   window.addEventListener("fvg:twin-scene", onScene);
   const unsub = useTwinStore.subscribe(changed),
     unsubApp = useAppStore.subscribe((s, p) => {
       if (s.view3D !== p.view3D) sync();
+      if (s.drawerOpen !== p.drawerOpen) layout();
     });
   const ageTimer = setInterval(() => {
     if (useTwinStore.getState().active) sync();
@@ -334,12 +365,15 @@ export function mountTwinMap(map: MLMap): () => void {
   changed();
   return () => {
     disposed = true;
+    cancelAnimationFrame(layoutFrame);
+    layoutObserver.disconnect();
     ac.abort();
     clearInterval(ageTimer);
     unsub();
     unsubApp();
     map.off("style.load", style);
     map.off("click", click);
+    map.off("resize", layout);
     window.removeEventListener("fvg:twin-scene", onScene);
   };
 }
