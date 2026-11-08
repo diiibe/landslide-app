@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import maplibregl, { type RequestParameters, type ResourceType } from "maplibre-gl";
+import maplibregl from "maplibre-gl";
 import { useAppStore } from "@/app/store";
 import type { ModelId, V2Layer } from "@/app/types";
 import { BASEMAP_STYLE, FVG_BOUNDS, FVG_CENTER, HAS_MAPBOX_TOKEN } from "./style";
@@ -97,36 +97,12 @@ import {
 import { startDrawing, stopDrawing } from "./drawing";
 import { registerPopups } from "./popups";
 import { setMap } from "./instance";
+import { rewriteMapboxUrl } from "./mapboxUrl";
 import styles from "./MapView.module.css";
 import { mountTwinMap } from "@/digital-twin/map";
 
 const TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string | undefined;
 
-function rewriteMapboxUrl(url: string, resourceType: ResourceType | undefined): RequestParameters {
-  if (!url.startsWith("mapbox://") || !TOKEN) return { url };
-  const tail = url.slice("mapbox://".length);
-  const sep = (u: string) => (u.includes("?") ? "&" : "?") + `access_token=${TOKEN}`;
-  let target: string;
-  if (tail.startsWith("sprites/")) {
-    const m = tail.match(/^sprites\/([^?]+?)(@\dx)?(\.\w+)?(\?.*)?$/);
-    if (!m) return { url };
-    const [, path, ratio = "", ext = "", query = ""] = m;
-    target = `https://api.mapbox.com/styles/v1/${path}/sprite${ratio}${ext}${query}`;
-  } else if (tail.startsWith("fonts/")) {
-    target = `https://api.mapbox.com/${tail}`;
-  } else if (
-    resourceType === "Source" ||
-    /^[a-z0-9._-]+(\.[a-z0-9._-]+)*(,[a-z0-9._-]+)*(\?|$)/i.test(tail)
-  ) {
-    const [path, query = ""] = tail.split("?", 2);
-    target = `https://api.mapbox.com/v4/${path}.json?secure${query ? "&" + query : ""}`;
-  } else if (tail.startsWith("tiles/")) {
-    target = `https://api.mapbox.com/v4/${tail.slice("tiles/".length)}`;
-  } else {
-    target = `https://api.mapbox.com/v4/${tail}`;
-  }
-  return { url: target + sep(target) };
-}
 
 /**
  * Static layers — added once per `style.load` and not torn down by model
@@ -358,7 +334,7 @@ export function MapView() {
         [FVG_BOUNDS[1][0] + 0.5, FVG_BOUNDS[1][1] + 0.5],
       ],
       validateStyle: false,
-      transformRequest: rewriteMapboxUrl,
+      transformRequest: (url, resourceType) => rewriteMapboxUrl(url, resourceType, TOKEN),
     });
     m.addControl(new maplibregl.NavigationControl({ showCompass: false }), "bottom-right");
     // Single style.load handler. Every basemap switch re-emits style.load
