@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { act, render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 
 // Stub the MapView — jsdom has no WebGL, and we're only testing the chrome here.
@@ -54,6 +54,29 @@ describe("App integration", () => {
     const j3 = screen.getAllByRole("button", { name: /^J\.3$/ })[0]!;
     fireEvent.click(j3);
     expect(useAppStore.getState().model).toBe("j3");
+  });
+
+  it("replaces the J statistics groups with one line while a v2 layer is on", () => {
+    useAppStore.getState().toggleLayer("v2Diffuse");
+    render(<App />);
+    expect(
+      screen.getByText("Statistiche disponibili per J.2/J.3. Il modello v2 non ha zone."),
+    ).toBeInTheDocument();
+    for (const name of [/^view/i, /^monitoring/i, /^analytics/i, /^model$/i]) {
+      expect(screen.queryByRole("button", { name })).toBeNull();
+    }
+    expect(screen.getByRole("button", { name: /^metriche v2/i })).toBeInTheDocument();
+  });
+
+  it("shows the J groups again when the v2 layer goes off", () => {
+    useAppStore.getState().toggleLayer("v2Diffuse");
+    const { rerender } = render(<App />);
+    act(() => useAppStore.getState().toggleLayer("v2Diffuse"));
+    rerender(<App />);
+    expect(screen.queryByText(/Il modello v2 non ha zone/)).toBeNull();
+    for (const name of [/^view/i, /^monitoring/i, /^analytics/i, /^model$/i]) {
+      expect(screen.getByRole("button", { name })).toBeInTheDocument();
+    }
   });
 
   it("toggles drawer via the handle", () => {

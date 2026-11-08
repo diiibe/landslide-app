@@ -12,7 +12,7 @@ import {
   type Zone,
 } from "./types";
 
-export type GroupId = "view" | "monitoring" | "analytics" | "model";
+export type GroupId = "view" | "monitoring" | "analytics" | "model" | "modelV2";
 
 /** Collapsible sections inside the LayersPanel's overlay list. Names
  *  map to the user-facing labels (Italian) but the ids stay English-
@@ -20,6 +20,21 @@ export type GroupId = "view" | "monitoring" | "analytics" | "model";
  *  persists via the existing localStorage user-data key so the panel
  *  reopens in the same shape across sessions. */
 export type OverlayGroup = "landslide" | "flood" | "context";
+
+type LayerKey = keyof AppState["layers"];
+
+/** Only one susceptibility surface may be visible at a time, otherwise
+ *  stacked cells read as a combined map. Switching a surface on switches
+ *  off the ones listed here. The two v2 layers exclude each other and the
+ *  J.2/J.3 surfaces (cells + KDE); a J surface excludes both v2 layers.
+ *  J cells and KDE stay compatible with each other, as before. Inventory,
+ *  flood and context overlays are not surfaces and never listed. */
+const SURFACE_EXCLUDES: Partial<Record<LayerKey, readonly LayerKey[]>> = {
+  v2Bodies: ["v2Diffuse", "susceptibility", "smoothHeatmap"],
+  v2Diffuse: ["v2Bodies", "susceptibility", "smoothHeatmap"],
+  susceptibility: ["v2Bodies", "v2Diffuse"],
+  smoothHeatmap: ["v2Bodies", "v2Diffuse"],
+};
 
 const THEME_KEY = "fvg:theme";
 const SENS_DEFAULTS_KEY = "fvg:sensitivity-defaults";
@@ -323,6 +338,10 @@ export interface AppState {
     pai: boolean;
     diff: boolean;
     floodHistorical: boolean;
+    /** Model v2 layers. Exclusive with each other and with the J surfaces
+     *  (`susceptibility`, `smoothHeatmap`) — see `SURFACE_EXCLUDES`. */
+    v2Bodies: boolean;
+    v2Diffuse: boolean;
   };
   /** Which flood overlay variant to render when `layers.flood` is on.
    *  See `src/map/layers/floodSusceptibility.ts` for the semantics of
@@ -478,6 +497,8 @@ const initial: Omit<
     pai: false,
     diff: false,
     floodHistorical: false,
+    v2Bodies: false,
+    v2Diffuse: false,
   },
   floodView: "combined",
   floodOpacity: 0.85,
@@ -516,7 +537,7 @@ const initial: Omit<
     }
     return base;
   })(),
-  groupOpen: { view: true, monitoring: true, analytics: true, model: true },
+  groupOpen: { view: true, monitoring: true, analytics: true, model: true, modelV2: true },
   overlayGroupOpen: { landslide: true, flood: false, context: false },
   search: { query: "", placeName: null },
 };
@@ -536,7 +557,13 @@ export const useAppStore = create<AppState>((set) => ({
         ? { selectedZones: s.selectedZones.filter((x) => x !== z) }
         : { selectedZones: [...s.selectedZones, z] },
     ),
-  toggleLayer: (k) => set((s) => ({ layers: { ...s.layers, [k]: !s.layers[k] } })),
+  toggleLayer: (k) =>
+    set((s) => {
+      const on = !s.layers[k];
+      const next = { ...s.layers, [k]: on };
+      if (on) for (const other of SURFACE_EXCLUDES[k] ?? []) next[other] = false;
+      return { layers: next };
+    }),
   setFloodView: (v) => set({ floodView: v }),
   setFloodOpacity: (o) => set({ floodOpacity: Math.max(0, Math.min(1, o)) }),
   setPaiOpacity: (o) => set({ paiOpacity: Math.max(0, Math.min(1, o)) }),

@@ -10,6 +10,7 @@ IFFI catalogued landslides as ground truth.
 cp .env.example .env    # paste your Mapbox public token
 npm install
 make tiles               # requires tippecanoe + sibling repo ml-landslide-mapping-audit
+make tiles-v2            # model v2 layers; requires sibling repo HazardFVG (see pipelines/README.md)
 npm run dev
 ```
 

@@ -1,9 +1,9 @@
 """Build PMTiles for J.2, J.3 or IFFI from the ml-landslide-mapping-audit repo.
 
-Usage:
-    python -m pipelines.build_tiles j2  --src-dir ../ml-landslide-mapping-audit --out-dir public/tiles
-    python -m pipelines.build_tiles j3  --src-dir ../ml-landslide-mapping-audit --out-dir public/tiles
-    python -m pipelines.build_tiles iffi --src-dir ../ml-landslide-mapping-audit --out-dir public/tiles
+Usage (SRC = ../ml-landslide-mapping-audit):
+    python -m pipelines.build_tiles j2   --src-dir $SRC --out-dir public/tiles
+    python -m pipelines.build_tiles j3   --src-dir $SRC --out-dir public/tiles
+    python -m pipelines.build_tiles iffi --src-dir $SRC --out-dir public/tiles
 
 Pipeline:
     1. Load `.gpkg` cells (J.2 / J.3) or IFFI GeoJSON.
@@ -16,7 +16,6 @@ Pipeline:
 from __future__ import annotations
 
 import argparse
-import functools
 import shutil
 import subprocess
 from pathlib import Path

@@ -109,6 +109,13 @@ export const MODEL_ZONE_COUNT: Record<ModelId, number> = {
   j2: 5,
   j3: 5,
 };
+/* ───── Model v2 (HazardFVG) ───── */
+
+/** The two v2 layers. Read apart: never merged into one map. */
+export type V2Layer = "bodies" | "diffuse";
+export const V2_LAYERS: V2Layer[] = ["bodies", "diffuse"];
+
+
 export type Basemap = "outdoors" | "light" | "satellite" | "dark";
 export type Theme = "light" | "dark";
 

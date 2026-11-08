@@ -2,6 +2,13 @@ import maplibregl, { type Map as MLMap, type MapMouseEvent } from "maplibre-gl";
 import { SUSCEPT_LAYER } from "./layers/susceptibility";
 import { IFFI_FILL } from "./layers/iffi";
 import { HFLOOD_FILL } from "./layers/historicalFloods";
+import {
+  v2ClassColor,
+  V2_LAYER_ID,
+  V2_RASTER_LAYER_ID,
+  V2_VECTOR_MIN_ZOOM,
+} from "./layers/modelV2";
+import type { V2Layer } from "@/app/types";
 
 export interface CellPopupProps {
   cell_id: number | string;
@@ -185,6 +192,80 @@ export function buildHFloodPopupNode(p: HFloodPopupProps): HTMLElement {
   return root;
 }
 
+export interface V2PopupProps {
+  layer: V2Layer;
+  cls: number;
+  /** The layer's class count (5 unless tied quantiles collapsed). */
+  ncls: number;
+}
+
+export const V2_LAYER_LABEL: Record<V2Layer, string> = {
+  bodies: "corpi di frana",
+  diffuse: "zone diffuse",
+};
+
+/** One model fitted on every domain cell draws the map, so a cell that
+ *  is already in the inventory scores optimistically. Shared with the
+ *  legend so the two say the same thing. */
+export const V2_FULL_FIT_NOTE =
+  "Modello addestrato su tutto il dominio: dove l'inventario ha già frane " +
+  "mappate il valore è ottimistico.";
+
+/** Popup for a v2 cell: layer, quantile class and how to read it. No
+ *  score number on purpose — the class is what the map shows. */
+export function buildV2PopupNode(p: V2PopupProps): HTMLElement {
+  const root = document.createElement("div");
+  root.className = "fvg-popup";
+  root.style.minWidth = "200px";
+
+  const title = document.createElement("div");
+  title.className = "fvg-popup__title";
+  title.textContent = `Modello v2 · ${V2_LAYER_LABEL[p.layer]}`;
+  root.appendChild(title);
+
+  const cls = document.createElement("div");
+  cls.className = "fvg-popup__strong";
+  const swatch = document.createElement("span");
+  swatch.style.cssText =
+    "display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;" +
+    "vertical-align:-1px;border:1px solid var(--c-border)";
+  swatch.style.background = v2ClassColor(p.cls, p.ncls);
+  cls.append(swatch, `Classe ${p.cls} di ${p.ncls}`);
+  root.appendChild(cls);
+
+  const what = document.createElement("div");
+  what.className = "fvg-popup__muted";
+  what.textContent = "Somiglianza all'inventario: non è una previsione.";
+  root.appendChild(what);
+
+  const fit = document.createElement("div");
+  fit.className = "fvg-popup__muted";
+  fit.style.marginTop = "4px";
+  fit.textContent = V2_FULL_FIT_NOTE;
+  root.appendChild(fit);
+  return root;
+}
+
+/** Below V2_VECTOR_MIN_ZOOM the v2 layer is a raster with nothing to
+ *  query, so a click there gets this hint instead of cell details. */
+export function buildV2ZoomHintNode(): HTMLElement {
+  const root = document.createElement("div");
+  root.className = "fvg-popup fvg-popup__muted";
+  root.textContent = "Avvicinati per i dettagli della cella";
+  return root;
+}
+
+/** True when a v2 raster half is on screen, i.e. a v2 layer is visible
+ *  below the zoom where its cells become clickable. */
+export function v2ZoomHintApplies(
+  m: Pick<MLMap, "getLayer" | "getLayoutProperty" | "getZoom">,
+): boolean {
+  if (m.getZoom() >= V2_VECTOR_MIN_ZOOM) return false;
+  return Object.values(V2_RASTER_LAYER_ID).some(
+    (id) => m.getLayer(id) && m.getLayoutProperty(id, "visibility") !== "none",
+  );
+}
+
 /**
  * Build a single combined popup node when the click lands on more than
  * one interactive layer at the same point. The sections sit one above
@@ -196,11 +277,15 @@ function buildCombinedNode(
   cell: CellPopupProps | null,
   iffi: IffiPopupProps | null,
   hflood: HFloodPopupProps | null,
+  v2: V2PopupProps | null = null,
+  v2Hint = false,
 ): HTMLElement {
   const root = document.createElement("div");
   root.className = "fvg-popup fvg-popup--stack";
   const sections: HTMLElement[] = [];
   if (cell) sections.push(buildCellPopupNode(cell));
+  if (v2) sections.push(buildV2PopupNode(v2));
+  if (v2Hint) sections.push(buildV2ZoomHintNode());
   if (iffi) sections.push(buildIffiPopupNode(iffi));
   if (hflood) sections.push(buildHFloodPopupNode(hflood));
   sections.forEach((node, i) => {
@@ -222,17 +307,27 @@ function buildCombinedNode(
  * Hover is still per-layer so the cursor only changes over actually
  * interactive geometry.
  */
+const V2_IDS: string[] = [V2_LAYER_ID.bodies, V2_LAYER_ID.diffuse];
+
 export function registerPopups(m: MLMap): () => void {
   const onClick = (e: MapMouseEvent) => {
-    const layers = [SUSCEPT_LAYER, IFFI_FILL, HFLOOD_FILL].filter((id) =>
+    const layers = [SUSCEPT_LAYER, ...V2_IDS, IFFI_FILL, HFLOOD_FILL].filter((id) =>
       m.getLayer(id),
     );
-    if (layers.length === 0) return;
-    const feats = m.queryRenderedFeatures(e.point, { layers });
+    const feats = layers.length ? m.queryRenderedFeatures(e.point, { layers }) : [];
     const cellFeat = feats.find((f) => f.layer.id === SUSCEPT_LAYER);
+    const v2Feat = feats.find((f) => V2_IDS.includes(f.layer.id));
     const iffiFeat = feats.find((f) => f.layer.id === IFFI_FILL);
     const hfloodFeat = feats.find((f) => f.layer.id === HFLOOD_FILL);
-    if (!cellFeat && !iffiFeat && !hfloodFeat) return;
+    const v2Hint = v2ZoomHintApplies(m);
+    if (!cellFeat && !v2Feat && !iffiFeat && !hfloodFeat && !v2Hint) return;
+    const v2: V2PopupProps | null = v2Feat
+      ? {
+          layer: v2Feat.layer.id === V2_LAYER_ID.diffuse ? "diffuse" : "bodies",
+          cls: Number(v2Feat.properties?.cls ?? 0),
+          ncls: Number(v2Feat.properties?.ncls ?? 5),
+        }
+      : null;
     const cell: CellPopupProps | null = cellFeat
       ? {
           cell_id:
@@ -269,7 +364,7 @@ export function registerPopups(m: MLMap): () => void {
       maxWidth: "260px",
     })
       .setLngLat(e.lngLat)
-      .setDOMContent(buildCombinedNode(cell, iffi, hflood))
+      .setDOMContent(buildCombinedNode(cell, iffi, hflood, v2, v2Hint))
       .addTo(m);
   };
 
@@ -283,6 +378,10 @@ export function registerPopups(m: MLMap): () => void {
   m.on("click", onClick);
   m.on("mouseenter", SUSCEPT_LAYER, cellEnter);
   m.on("mouseleave", SUSCEPT_LAYER, cellLeave);
+  for (const id of V2_IDS) {
+    m.on("mouseenter", id, cellEnter);
+    m.on("mouseleave", id, cellLeave);
+  }
   m.on("mouseenter", IFFI_FILL, cellEnter);
   m.on("mouseleave", IFFI_FILL, cellLeave);
   m.on("mouseenter", HFLOOD_FILL, cellEnter);
@@ -292,6 +391,10 @@ export function registerPopups(m: MLMap): () => void {
     m.off("click", onClick);
     m.off("mouseenter", SUSCEPT_LAYER, cellEnter);
     m.off("mouseleave", SUSCEPT_LAYER, cellLeave);
+    for (const id of V2_IDS) {
+      m.off("mouseenter", id, cellEnter);
+      m.off("mouseleave", id, cellLeave);
+    }
     m.off("mouseenter", IFFI_FILL, cellEnter);
     m.off("mouseleave", IFFI_FILL, cellLeave);
     m.off("mouseenter", HFLOOD_FILL, cellEnter);

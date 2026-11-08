@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { useAppStore } from "@/app/store";
 import type { AppState, OverlayGroup } from "@/app/store";
 import type { ModelId } from "@/app/types";
+import { useModelV2 } from "@/lib/modelV2";
 import { ColorButton } from "./ColorButton";
 import styles from "./LayersPanel.module.css";
 
@@ -9,7 +10,7 @@ import styles from "./LayersPanel.module.css";
  *  the active items so the group header can display a "n / total on"
  *  badge even while collapsed. */
 const OVERLAY_GROUP_KEYS: Record<OverlayGroup, readonly (keyof AppState["layers"])[]> = {
-  landslide: ["susceptibility", "smoothHeatmap", "iffi", "zoneBoundaries"],
+  landslide: ["susceptibility", "smoothHeatmap", "iffi", "zoneBoundaries", "v2Bodies", "v2Diffuse"],
   flood: ["flood", "pai", "diff", "floodHistorical"],
   context: ["dtm", "roads", "trails", "comuni", "poiCritical", "poiHuts"],
 };
@@ -51,6 +52,7 @@ export function LayersPanel() {
   const toggleLayer = useAppStore((s) => s.toggleLayer);
   const model = useAppStore((s) => s.model);
   const setModel = useAppStore((s) => s.setModel);
+  const v2On = layers.v2Bodies || layers.v2Diffuse;
   const floodView = useAppStore((s) => s.floodView);
   const setFloodView = useAppStore((s) => s.setFloodView);
   const floodOpacity = useAppStore((s) => s.floodOpacity);
@@ -82,6 +84,9 @@ export function LayersPanel() {
                 feed. Mutually exclusive — single `state.model` drives
                 every dependent layer (susceptibility, KDE, IFFI overlap,
                 zone bars, analytics drawer). */}
+            {/* While a v2 layer is the visible surface no J model is shown,
+                so the pills read unselected (dimmed); picking one brings
+                the J cells back, which switches v2 off in the store. */}
             <div className={styles.modelRow}>
               {MODELS.map((m) => (
                 <button
@@ -89,10 +94,14 @@ export function LayersPanel() {
                   type="button"
                   className={styles.bm}
                   data-kind={m.id}
-                  data-active={model === m.id}
-                  aria-pressed={model === m.id}
-                  title={`Use model ${m.label}`}
-                  onClick={() => setModel(m.id)}
+                  data-active={!v2On && model === m.id}
+                  data-muted={v2On}
+                  aria-pressed={!v2On && model === m.id}
+                  title={v2On ? `Use model ${m.label} (turns model v2 off)` : `Use model ${m.label}`}
+                  onClick={() => {
+                    setModel(m.id);
+                    if (v2On) toggleLayer("susceptibility");
+                  }}
                 >
                   {m.label}
                 </button>
@@ -132,6 +141,7 @@ export function LayersPanel() {
               <span className={styles.itemName}>Zone boundaries</span>
               <span className={styles.itemState}>{layers.zoneBoundaries ? "on" : "off"}</span>
             </label>
+            <ModelV2Block />
           </OverlaySection>
           <OverlaySection id="flood">
             <label className={styles.item}>
@@ -319,6 +329,55 @@ export function LayersPanel() {
           <UserPolygonsSection />
         </div>
       </div>
+    </div>
+  );
+}
+
+const V2_TOGGLES: { key: "v2Bodies" | "v2Diffuse"; label: string; hint: string }[] = [
+  {
+    key: "v2Bodies",
+    label: "Corpi di frana",
+    hint: "Le singole frane mappate nel Catasto",
+  },
+  {
+    key: "v2Diffuse",
+    label: "Zone diffuse",
+    hint: "Zone diffuse di crollo e di frane superficiali",
+  },
+];
+
+/** Model v2 (HazardFVG): two layers read apart. The store keeps at most
+ *  one of them on and switches the J.2/J.3 surfaces off when one is
+ *  enabled, so only one susceptibility surface is ever visible. The
+ *  toggles stay disabled until `model_v2.json` (and so the tiles) exist. */
+function ModelV2Block() {
+  const layers = useAppStore((s) => s.layers);
+  const toggleLayer = useAppStore((s) => s.toggleLayer);
+  const v2 = useModelV2();
+  const ready = v2.status === "ready";
+  return (
+    <div className={styles.v2Block} role="group" aria-labelledby="v2-block-title">
+      <div className={styles.v2Head}>
+        <span id="v2-block-title">Modello v2</span>
+        <span className={styles.v2Tag}>senza zone</span>
+      </div>
+      <p className={styles.v2Hint}>
+        {v2.status === "missing"
+          ? "Dati non ancora disponibili."
+          : "Un livello alla volta, separato da J.2/J.3."}
+      </p>
+      {V2_TOGGLES.map((t) => (
+        <label key={t.key} className={styles.item} aria-disabled={!ready} title={t.hint}>
+          <input
+            type="checkbox"
+            checked={layers[t.key]}
+            disabled={!ready}
+            onChange={() => toggleLayer(t.key)}
+          />
+          <span className={styles.itemName}>{t.label}</span>
+          <span className={styles.itemState}>{layers[t.key] ? "on" : "off"}</span>
+        </label>
+      ))}
     </div>
   );
 }

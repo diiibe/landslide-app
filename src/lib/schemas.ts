@@ -162,6 +162,98 @@ export const CriticalPoiFeatureCollectionSchema = z.object({
 export type CriticalPoiFeatureCollection = z.infer<typeof CriticalPoiFeatureCollectionSchema>;
 
 /**
+ * Model v2 summary — produced by `pipelines/model_v2.py`.
+ *
+ * One entry per layer (bodies, diffuse). Each layer has its own quantile
+ * classes: `classes` is how many survived after tied quantiles collapsed
+ * (at least 3), `edges` has `classes + 1` values (min, inner breaks, max)
+ * and `shares` the real fraction of cells in each class. The class of a
+ * cell is baked into the tiles as `cls` (with `ncls`); the legend reads
+ * the shares from here.
+ *
+ * `metrics` is copied verbatim from the owner's committed
+ * `pipelines/model_v2_metrics.json`: groups (e.g. test area, blocked
+ * cross-validation) with label/value rows per layer, optional 95 %
+ * interval `ci` and `unit`, plus free-text notes. Nothing is derived in
+ * the app, and these numbers are never shown next to J.x ones.
+ */
+const V2LayerStatsSchema = z
+  .object({
+    n_cells: z.number().int().nonnegative(),
+    classes: z.number().int().min(3, { message: "classes must be at least 3" }),
+    edges: z
+      .array(z.number())
+      .refine((e) => e.every((v, i) => i === 0 || v > e[i - 1]!), {
+        message: "edges must be strictly increasing",
+      }),
+    shares: z.array(z.number().min(0).max(1)),
+    /** Cell count per score source: `full_fit` for the map model, or
+     *  `oof` / `holdout` / `in_sample` from the earlier export. */
+    sources: z.record(z.string(), z.number().int().nonnegative()),
+  })
+  .superRefine((l, ctx) => {
+    if (l.edges.length !== l.classes + 1) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["edges"],
+        message: `edges must have classes + 1 = ${l.classes + 1} values`,
+      });
+    }
+    if (l.shares.length !== l.classes) {
+      ctx.addIssue({ code: "custom", path: ["shares"], message: "one share per class" });
+    }
+    const total = l.shares.reduce((a, b) => a + b, 0);
+    if (Math.abs(total - 1) > 0.01) {
+      ctx.addIssue({ code: "custom", path: ["shares"], message: "shares must sum to 1" });
+    }
+  });
+
+const V2MetricRowSchema = z.object({
+  label: z.string(),
+  value: z.number(),
+  ci: z.tuple([z.number(), z.number()]).optional(),
+  unit: z.literal("%").optional(),
+});
+
+const V2MetricsSchema = z.object({
+  groups: z.array(
+    z.object({
+      title: z.string(),
+      detail: z.string().optional(),
+      layers: z.object({
+        bodies: z.array(V2MetricRowSchema),
+        diffuse: z.array(V2MetricRowSchema),
+      }),
+    }),
+  ),
+  notes: z.array(z.string()),
+});
+
+export type V2MetricRow = z.infer<typeof V2MetricRowSchema>;
+
+export const ModelV2FileSchema = z.object({
+  model: z.literal("v2"),
+  grid: z
+    .object({
+      crs: z.string(),
+      x0: z.number(),
+      y0: z.number(),
+      cell: z.number().positive(),
+      width: z.number().int().positive(),
+      height: z.number().int().positive(),
+    })
+    .optional(),
+  requested_classes: z.number().int().positive(),
+  layers: z.object({
+    bodies: V2LayerStatsSchema,
+    diffuse: V2LayerStatsSchema,
+  }),
+  metrics: V2MetricsSchema,
+});
+
+export type ModelV2File = z.infer<typeof ModelV2FileSchema>;
+
+/**
  * Helper: parse with a schema and throw a descriptive error on failure.
  * The thrown message names the source (so the boundary point is obvious
  * in browser DevTools) and lists every zod issue path so a malformed

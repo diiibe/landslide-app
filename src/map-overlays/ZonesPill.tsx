@@ -14,9 +14,13 @@ const J3_ZONES: Zone[] = [
 export function ZonesPill() {
   const model = useAppStore((s) => s.model);
   const selected = useAppStore((s) => s.selectedZones);
+  const v2On = useAppStore((s) => s.layers.v2Bodies || s.layers.v2Diffuse);
   const all = model === "j2" ? J2_ZONES : J3_ZONES;
   const label =
     selected.length === 0 ? `All (${all.length})` : selected.join(" · ");
+  // Zones belong to J.2/J.3; model v2 has none, so hide the control
+  // while a v2 layer is the visible surface.
+  if (v2On) return null;
   return (
     <button
       type="button"

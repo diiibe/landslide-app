@@ -4,6 +4,7 @@ import {
   ComuneFeatureCollectionSchema,
   CriticalPoiFeatureCollectionSchema,
   RoadsFeatureCollectionSchema,
+  ModelV2FileSchema,
   TrailsFeatureCollectionSchema,
   parseOrThrow,
 } from "./schemas";
@@ -262,5 +263,106 @@ describe("parseOrThrow error format", () => {
     } catch (e) {
       expect((e as Error).message).toMatch(/roads_fvg\.geojson failed validation/);
     }
+  });
+});
+
+describe("ModelV2FileSchema", () => {
+  const layer = (edges: number[], shares?: number[]) => ({
+    n_cells: 1000,
+    classes: edges.length - 1,
+    edges,
+    shares: shares ?? Array.from({ length: edges.length - 1 }, () => 1 / (edges.length - 1)),
+    sources: { oof: 700, holdout: 250, in_sample: 50 },
+  });
+  const ok = {
+    model: "v2",
+    grid: { crs: "EPSG:32633", x0: 282549.4208, y0: 5176239.1188, cell: 120, width: 1180, height: 1120 },
+    requested_classes: 5,
+    layers: {
+      bodies: layer([0.01, 0.1, 0.2, 0.3, 0.4, 0.6]),
+      diffuse: layer([0.02, 0.05, 0.08, 0.2, 0.35, 0.59]),
+    },
+    metrics: { groups: [], notes: [] },
+  };
+  const group = (bodies: unknown[], diffuse: unknown[] = []) => ({
+    title: "Area di test",
+    layers: { bodies, diffuse },
+  });
+
+  it("accepts the pipeline output with empty metrics", () => {
+    expect(() => parseOrThrow(ModelV2FileSchema, ok, "model_v2")).not.toThrow();
+  });
+
+  it("accepts the full-fit export's single score source", () => {
+    const fullFit = {
+      ...ok,
+      layers: { ...ok.layers, bodies: { ...ok.layers.bodies, sources: { full_fit: 1000 } } },
+    };
+    expect(() => parseOrThrow(ModelV2FileSchema, fullFit, "model_v2")).not.toThrow();
+  });
+
+  it("accepts owner-provided metric groups with intervals, units and notes", () => {
+    const withMetrics = {
+      ...ok,
+      metrics: {
+        groups: [
+          group(
+            [{ label: "ROC AUC", value: 0.887, ci: [0.827, 0.959] }],
+            [{ label: "Prevalenza", value: 10.43, unit: "%" }],
+          ),
+        ],
+        notes: ["Misurano l'accordo con l'inventario."],
+      },
+    };
+    expect(() => parseOrThrow(ModelV2FileSchema, withMetrics, "model_v2")).not.toThrow();
+  });
+
+  it("rejects a metric row with a non-numeric value or a broken interval", () => {
+    for (const row of [
+      { label: "ROC AUC", value: "0.887" },
+      { label: "ROC AUC", value: 0.887, ci: [0.8] },
+      { label: "ROC AUC", value: 0.887, unit: "kg" },
+    ]) {
+      const bad = { ...ok, metrics: { groups: [group([row])], notes: [] } };
+      expect(() => parseOrThrow(ModelV2FileSchema, bad, "model_v2")).toThrow(/metrics/);
+    }
+  });
+
+  it("rejects a payload without one of the two layers", () => {
+    const onlyBodies = { ...ok, layers: { bodies: ok.layers.bodies } };
+    expect(() => parseOrThrow(ModelV2FileSchema, onlyBodies, "model_v2")).toThrow(/diffuse/);
+  });
+
+  it("accepts a layer whose tied quantiles collapsed to fewer classes", () => {
+    const tied = { ...ok, layers: { ...ok.layers, diffuse: layer([0, 0.1, 0.4, 1], [0.55, 0.25, 0.2]) } };
+    expect(() => parseOrThrow(ModelV2FileSchema, tied, "model_v2")).not.toThrow();
+  });
+
+  it("rejects edges that do not match the layer's class count", () => {
+    const bad = { ...ok, layers: { ...ok.layers, bodies: { ...layer([0, 0.5, 0.7, 1]), classes: 5 } } };
+    expect(() => parseOrThrow(ModelV2FileSchema, bad, "model_v2")).toThrow(/edges/);
+  });
+
+  it("rejects shares that do not sum to 1", () => {
+    const bad = { ...ok, layers: { ...ok.layers, bodies: layer([0, 0.2, 0.5, 1], [0.5, 0.2, 0.1]) } };
+    expect(() => parseOrThrow(ModelV2FileSchema, bad, "model_v2")).toThrow(/shares/);
+  });
+
+  it("rejects fewer than 3 classes", () => {
+    const bad = { ...ok, layers: { ...ok.layers, bodies: layer([0, 0.5, 1]) } };
+    expect(() => parseOrThrow(ModelV2FileSchema, bad, "model_v2")).toThrow(/classes/);
+  });
+
+  it("rejects decreasing or repeated edges", () => {
+    for (const edges of [[0, 0.3, 0.2, 0.4, 0.5, 0.6], [0, 0.2, 0.2, 0.4, 0.5, 0.6]]) {
+      const bad = { ...ok, layers: { ...ok.layers, diffuse: layer(edges) } };
+      expect(() => parseOrThrow(ModelV2FileSchema, bad, "model_v2")).toThrow(/strictly increasing/);
+    }
+  });
+
+  it("rejects a J-style model file (wrong model id)", () => {
+    expect(() =>
+      parseOrThrow(ModelV2FileSchema, { ...ok, model: "j3" }, "model_v2"),
+    ).toThrow(/model/);
   });
 });

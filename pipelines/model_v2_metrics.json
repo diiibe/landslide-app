@@ -1,0 +1,45 @@
+{
+  "groups": [
+    {
+      "title": "Area di test (seconda apertura)",
+      "detail": "Quadrati di 15 km esclusi dall'addestramento; medie su 3 semi, intervalli al 95 % a blocchi.",
+      "layers": {
+        "bodies": [
+          { "label": "ROC AUC", "value": 0.887, "ci": [0.827, 0.959] },
+          { "label": "PR AUC", "value": 0.384, "ci": [0.294, 0.614] },
+          { "label": "Celle di frana nel 10 % più alto dei punteggi", "value": 0.564 },
+          { "label": "Errore di calibrazione", "value": 0.006 },
+          { "label": "Prevalenza", "value": 5.27, "unit": "%" }
+        ],
+        "diffuse": [
+          { "label": "ROC AUC", "value": 0.907, "ci": [0.872, 0.948] },
+          { "label": "PR AUC", "value": 0.626, "ci": [0.477, 0.762] },
+          { "label": "Celle di zone diffuse nel 10 % più alto dei punteggi", "value": 0.573 },
+          { "label": "Errore di calibrazione", "value": 0.007 },
+          { "label": "Prevalenza", "value": 10.43, "unit": "%" }
+        ]
+      }
+    },
+    {
+      "title": "Validazione incrociata a blocchi",
+      "detail": "Blocchi dal lato di addestramento, fase B (Tuned).",
+      "layers": {
+        "bodies": [
+          { "label": "ROC AUC", "value": 0.848 },
+          { "label": "PR AUC", "value": 0.268 },
+          { "label": "Prevalenza", "value": 3.27, "unit": "%" }
+        ],
+        "diffuse": [
+          { "label": "ROC AUC", "value": 0.886 },
+          { "label": "PR AUC", "value": 0.483 },
+          { "label": "Prevalenza", "value": 8.6, "unit": "%" }
+        ]
+      }
+    }
+  ],
+  "notes": [
+    "Misurano l'accordo con l'inventario, non la capacità di prevedere frane.",
+    "PR AUC dipende dalla prevalenza, che nell'area di test è più alta.",
+    "Area di test aperta per la seconda volta: il primo controllo, sul modello precedente, aveva dato PR AUC 0.380 e 0.607."
+  ]
+}

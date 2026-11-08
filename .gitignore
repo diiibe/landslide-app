@@ -49,3 +49,5 @@ vite.config.d.ts
 vite.config.js
 yarn-debug.log*
 yarn-error.log*
+# Throwaway scripts, debug output, review screenshots
+scratch/
