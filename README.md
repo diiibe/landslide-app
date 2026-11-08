@@ -16,7 +16,7 @@ npm run dev
 
 ## Digital twin demo
 
-Open **Digital twin** for the Trieste–Monfalcone workspace: PCR observations and
+Open **Digital twin** for the Trieste–Monfalcone workspace: 19 grouped PCR observation variables, interactive station histories and
 radar, urban building extrusions and AIA sites. See [sources, update behaviour and
 verification](docs/digital-twin.md). The bounded demo extracts in `public/data/twin/`
 are tracked and do not need a data build step.

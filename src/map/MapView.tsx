@@ -273,6 +273,8 @@ const REBAKE_DEBOUNCE_MS = 120;
 export function MapView() {
   const ref = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
+  const styleReady = useRef(false);
+  const styleFailed = useRef(false);
   const popupsUnsubRef = useRef<(() => void) | null>(null);
   // P1.10 — `model` changes trigger both the model effect (which rebakes)
   // and the param effects (because the selectors return new values for
@@ -343,7 +345,13 @@ export function MapView() {
     // the new layer instances. We tear down the previous popup
     // subscription first (P1.1) — otherwise hover handlers from the old
     // style would dangle on a defunct map state.
+    m.on("styledataloading", () => { styleReady.current = false; styleFailed.current = false; });
+    m.on("error", (event) => {
+      if (!styleReady.current && !("sourceId" in event)) styleFailed.current = true;
+    });
     m.on("style.load", () => {
+      styleReady.current = true;
+      styleFailed.current = false;
       setupStaticLayers(m);
       applyThemeToLayers(m);
       setupModelLayers(m);
@@ -380,6 +388,8 @@ export function MapView() {
       popupsUnsubRef.current = null;
       m.remove();
       mapRef.current = null;
+      styleReady.current = false;
+      styleFailed.current = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -390,7 +400,24 @@ export function MapView() {
     // on mount can race projection initialisation, especially on Safari.
     if (!m || appliedBasemap.current === basemap) return;
     appliedBasemap.current = basemap;
-    m.setStyle(BASEMAP_STYLE[basemap]);
+    const recover = () => { if (styleFailed.current) apply(); };
+    const apply = () => {
+      m.off("style.load", apply); m.off("error", recover);
+      // An initial failed style has no usable previous projection. Let the
+      // SDK recover directly instead of waiting on an event that cannot fire.
+      if (!styleReady.current) { m.setStyle(BASEMAP_STYLE[basemap]); return; }
+      m.setStyle(BASEMAP_STYLE[basemap], {
+        // Run after JSON arrives and before replacing the old projection.
+        // A failed download leaves the current terrain untouched.
+        transformStyle: (_previous, next) => {
+          if (m.getTerrain()) m.setTerrain(null);
+          return next;
+        },
+      });
+    };
+    if (styleReady.current || styleFailed.current) apply();
+    else { m.once("style.load", apply); m.on("error", recover); }
+    return () => { m.off("style.load", apply); m.off("error", recover); };
   }, [basemap]);
 
   // Model change: rebuild only the susceptibility/heatmap/IFFI/zone-boundaries

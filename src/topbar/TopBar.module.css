@@ -56,3 +56,9 @@
   .spacer[data-open="true"] { display: flex; }
   .spacer button, .spacer summary { min-width: 44px; min-height: 44px; }
 }
+
+@media (max-height: 500px) and (pointer: coarse) and (orientation: landscape) {
+  .bar { display: flex; height: 60px; min-height: 60px; }
+  .search { flex: 1; min-width: 0; }
+  .tools { flex-shrink: 0; }
+}

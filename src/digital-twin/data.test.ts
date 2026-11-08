@@ -125,3 +125,24 @@ describe("PCR image georeferencing", () => {
     ).toThrow();
   });
 });
+
+describe("observation display scales", () => {
+  it("keeps local hydrometric references uniform instead of ranking unrelated elevations", async () => {
+    const { valueScaleFraction } = await import("./data");
+    expect(valueScaleFraction(-2.43, "hydro")).toBe(0.5);
+    expect(valueScaleFraction(565.98, "hydro")).toBe(0.5);
+    const points = sensorGeoJSON(parseMeasures({ measures: [
+      { ...row, sensor_id: 24, value: -2.43 },
+      { ...row, station_id: 213, sensor_id: 24, value: 565.98 },
+    ] }), "hydro");
+    expect(points.features.map(p => p.properties?.scaleFraction)).toEqual([0.5, 0.5]);
+  });
+  it("clamps only the visual scale while preserving the measured value and timestamp", async () => {
+    const { valueScaleFraction } = await import("./data");
+    expect(valueScaleFraction(100, "humidity")).toBe(1);
+    expect(valueScaleFraction(1000, "rainHour")).toBe(1);
+    const point = sensorGeoJSON(parseMeasures({ measures: [{ ...row, sensor_id: 53, value: 1000 }] }), "rainHour").features[0]!;
+    expect(point.properties?.value).toBe(1000);
+    expect(point.properties?.observedAt).toContain("Roma");
+  });
+});

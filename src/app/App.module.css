@@ -199,7 +199,7 @@
   }
 }
 
-@media (max-height: 500px) and (pointer: coarse) and (min-width: 769px) {
+@media (max-height: 500px) and (pointer: coarse) and (orientation: landscape) {
   .body[data-workspace="twin"] :global(.drawer) {
     top: 0;
     left: auto;

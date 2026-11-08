@@ -2,6 +2,7 @@ import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import type { Map as MLMap } from "maplibre-gl";
 import { mountTwinMap, SCENES } from "./map";
 import { useTwinStore } from "./store";
+import { useAppStore } from "@/app/store";
 
 let dispose: (() => void) | undefined;
 beforeEach(() => {
@@ -14,22 +15,35 @@ beforeEach(() => {
 afterEach(() => {
   dispose?.();
   useTwinStore.setState({ active: false });
+  document.getElementById("drawer-panel")?.remove();
+  useAppStore.getState().reset();
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
 });
 function harness() {
+  const frames = new Map<number, FrameRequestCallback>();
+  let frameId = 0, flying = false;
+  let padding = { top: 0, right: 0, bottom: 0, left: 0 };
+  vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) => { frames.set(++frameId, callback); return frameId; });
+  vi.stubGlobal("cancelAnimationFrame", (id: number) => frames.delete(id));
+  const container = document.createElement("div");
+  container.getBoundingClientRect = () => ({ x: 0, y: 0, width: 390, height: 700, top: 0, bottom: 700, left: 0, right: 390, toJSON: () => ({}) });
   const handlers = new Map<string, () => void>();
   const sources = new Map<string, { setData: ReturnType<typeof vi.fn> }>();
   const layers = new Map<string, unknown>();
   const paint = vi.fn(), jumpTo = vi.fn();
+  const flyTo = vi.fn(() => { flying = true; });
+  const fitBounds = vi.fn(() => { flying = true; });
   const map = {
-    getContainer: () => document.createElement("div"),
+    getContainer: () => container,
     getStyle: () => ({ layers: [] }),
     on: (event: string, handler: () => void) => handlers.set(event, handler),
     off: (event: string) => handlers.delete(event),
     getCenter: () => ({ lng: 13.15, lat: 46.35 }),
     getZoom: () => 10, getPitch: () => 0, getBearing: () => 0,
-    getPadding: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
+    getPadding: () => padding,
+    setPadding: (next: typeof padding) => { padding = next; flying = false; },
+    flyTo, fitBounds,
     jumpTo, setPaintProperty: paint, setLayoutProperty: vi.fn(),
     getSource: (id: string) => sources.get(id),
     addSource: (id: string) => sources.set(id, { setData: vi.fn() }),
@@ -37,7 +51,9 @@ function harness() {
     addLayer: (layer: { id: string }) => layers.set(layer.id, layer),
   };
   dispose = mountTwinMap(map as unknown as MLMap);
-  return { paint, jumpTo, emit: (event: string) => handlers.get(event)?.() };
+  return { paint, jumpTo, flyTo, fitBounds, isFlying: () => flying, getPadding: () => padding,
+    drain: () => { for (let n = 0; frames.size && n < 20; n++) { const batch = [...frames]; frames.clear(); for (const [, callback] of batch) callback(n * 16); } },
+    emit: (event: string) => handlers.get(event)?.() };
 }
 it("suspends twin writes during style replacement and resumes without resetting the scene", () => {
   const h = harness();
@@ -70,4 +86,27 @@ it("frames the coast when activation occurs during a later style load", () => {
   useTwinStore.setState({ active: true });
   h.emit("style.load");
   expect(h.jumpTo).toHaveBeenCalledWith(expect.objectContaining({ center: SCENES.coast.center }));
+});
+
+it("applies the closed sheet inset before flying or fitting, so a later layout frame cannot cancel navigation", () => {
+  const panel = document.createElement("aside"); panel.id = "drawer-panel"; panel.style.position = "absolute";
+  panel.getBoundingClientRect = () => ({ x: 0, y: 266, width: 390, height: 434, top: 266, bottom: 700, left: 0, right: 390, toJSON: () => ({}) });
+  document.body.append(panel);
+  const h = harness();
+  h.emit("style.load");
+  const sample = { stationId: 212, sensorId: 6, name: "Trieste", lon: 13.75, lat: 45.65, value: 3, time: "2026-11-08 18:00:00", ms: Date.UTC(2026, 10, 8, 18) };
+  useAppStore.setState({ drawerOpen: true });
+  useTwinStore.setState({ active: true, measures: [sample, { ...sample, stationId: 213, lon: 13.5 }] });
+  h.drain(); expect(h.getPadding().bottom).toBe(434);
+  window.dispatchEvent(new CustomEvent("fvg:twin-station", { detail: 212 }));
+  useAppStore.setState({ drawerOpen: false });
+  h.drain();
+  expect(h.flyTo).toHaveBeenCalledWith(expect.objectContaining({ center: [13.75, 45.65] }));
+  expect(h.getPadding().bottom).toBe(0);
+  expect(h.isFlying()).toBe(true);
+  useAppStore.setState({ drawerOpen: true }); h.drain();
+  window.dispatchEvent(new CustomEvent("fvg:twin-fit"));
+  useAppStore.setState({ drawerOpen: false }); h.drain();
+  expect(h.fitBounds).toHaveBeenCalledWith(expect.any(Array), expect.objectContaining({ padding: 24 }));
+  expect(h.isFlying()).toBe(true);
 });
