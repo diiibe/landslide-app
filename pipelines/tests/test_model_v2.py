@@ -25,7 +25,9 @@ EDGES5 = [0, 0.2, 0.4, 0.6, 0.8, 1]
 
 
 def synthetic_layer(n: int = 500, seed: int = 0) -> pd.DataFrame:
-    """Same schema as HazardFVG data/processed/model/map/<layer>.parquet."""
+    """Same schema as HazardFVG data/processed/model/map/<layer>.parquet
+    (full-fit export: one model on every domain cell, `holdout` marks the
+    cells of the evaluation squares)."""
     rng = np.random.default_rng(seed)
     flat = rng.choice(GRID.width * GRID.height, size=n, replace=False)
     return pd.DataFrame(
@@ -33,10 +35,19 @@ def synthetic_layer(n: int = 500, seed: int = 0) -> pd.DataFrame:
             "i": (flat // GRID.width).astype("int32"),
             "j": (flat % GRID.width).astype("int32"),
             "score": rng.beta(0.8, 6.0, size=n),
-            "source": rng.choice(["oof", "holdout", "in_sample"], size=n, p=[0.7, 0.2, 0.1]),
+            "source": "full_fit",
+            "holdout": rng.uniform(size=n) < 0.2,
             "seed_spread": rng.uniform(0, 0.05, size=n),
         }
     )
+
+
+def oof_layer(n: int = 500, seed: int = 0) -> pd.DataFrame:
+    """The earlier export (map/oof/): per-cell source, no holdout column."""
+    rng = np.random.default_rng(seed)
+    df = synthetic_layer(n, seed).drop(columns=["holdout"])
+    df["source"] = rng.choice(["oof", "holdout", "in_sample"], size=n, p=[0.7, 0.2, 0.1])
+    return df
 
 
 @pytest.fixture
@@ -46,6 +57,20 @@ def map_dir(tmp_path: Path) -> Path:
     synthetic_layer(seed=1).to_parquet(d / "bodies.parquet")
     synthetic_layer(seed=2).to_parquet(d / "diffuse.parquet")
     return d
+
+
+def test_load_layer_accepts_the_full_fit_and_the_oof_exports(tmp_path: Path):
+    for df in (synthetic_layer(), oof_layer()):
+        path = tmp_path / "layer.parquet"
+        df.to_parquet(path)
+        assert len(load_layer(path)) == len(df)
+
+
+def test_load_layer_rejects_a_non_boolean_holdout_column(tmp_path: Path):
+    path = tmp_path / "bad.parquet"
+    synthetic_layer().assign(holdout="yes").to_parquet(path)
+    with pytest.raises(ValueError, match="holdout"):
+        load_layer(path)
 
 
 def test_load_layer_rejects_missing_columns(tmp_path: Path):
@@ -217,7 +242,7 @@ def test_build_writes_tiles_and_model_json(map_dir: Path, tmp_path: Path):
         assert sum(layer["shares"]) == pytest.approx(1, abs=1e-3)
         assert layer["edges"] == sorted(layer["edges"])
         assert layer["n_cells"] == 500
-        assert sum(layer["sources"].values()) == 500
+        assert layer["sources"] == {"full_fit": 500}
         assert "metrics" not in layer
     # Owner metrics are copied verbatim from the committed input file.
     assert model["metrics"] == METRICS
@@ -292,7 +317,7 @@ def test_tile_layer_tiles_each_class_and_source_apart_then_joins(tmp_path: Path)
 
 def test_tile_layer_doubles_the_part_limit_when_a_part_is_too_dense(tmp_path: Path):
     gdf = cells_to_geodataframe(synthetic_layer(100).assign(score=0.1), edges=EDGES5)
-    gdf = gdf[gdf["source"] == "oof"]  # one (cls, source) group
+    assert gdf.groupby(["cls", "source"]).ngroups == 1  # one (cls, source) group
     tried: list[str | None] = []
 
     def run(cmd: list[str], check: bool) -> None:

@@ -5,7 +5,10 @@ Usage (or `make tiles-v2`):
         --tiles-dir public/tiles --data-dir public/data
 
 Input: one parquet per layer (`bodies.parquet`, `diffuse.parquet`) with
-columns `i, j, score, source, seed_spread`. `i, j` index the HazardFVG
+columns `i, j, score, source, seed_spread` and, in the full-fit export, a
+boolean `holdout` (cells of the evaluation squares; validated, not drawn).
+`source` is `full_fit` for one model fitted on every domain cell; the
+earlier export used `oof` / `holdout` / `in_sample`. `i, j` index the HazardFVG
 120 m grid in EPSG:32633 (`scripts/build/feature_grid.py`, `GRID`): row
 `i` counts down from `y0`, column `j` counts right from `x0`.
 
@@ -61,7 +64,7 @@ LAYERS = ("bodies", "diffuse")
 RASTER_ZOOMS = (6, 9)
 VECTOR_ZOOMS = (10, 14)
 METRICS_PATH = Path(__file__).with_name("model_v2_metrics.json")
-SOURCES = ("oof", "holdout", "in_sample")
+SOURCES = ("full_fit", "oof", "holdout", "in_sample")
 COLUMNS = ("i", "j", "score", "source", "seed_spread")
 N_CLASSES = 5
 MIN_CLASSES = 3
@@ -96,6 +99,8 @@ def load_layer(path: str | Path) -> pd.DataFrame:
         raise ValueError(f"{path.name}: duplicate (i, j) cells")
     if df["score"].isna().any():
         raise ValueError(f"{path.name}: NaN scores")
+    if "holdout" in df.columns and not pd.api.types.is_bool_dtype(df["holdout"]):
+        raise ValueError(f"{path.name}: holdout must be a boolean column")
     return df.reset_index(drop=True)
 
 
@@ -246,7 +251,7 @@ def build_layer(
         "classes": len(edges) - 1,
         "edges": [round(e, 6) for e in edges],
         "shares": class_shares(scores, edges),
-        "sources": {s: int(counts.get(s, 0)) for s in SOURCES},
+        "sources": {s: int(counts[s]) for s in SOURCES if s in counts},
     }
 
 
