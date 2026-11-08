@@ -17,6 +17,7 @@ from pipelines.model_v2 import (
     class_edges,
     class_shares,
     load_layer,
+    load_metrics,
     tile_layer,
 )
 
@@ -165,10 +166,31 @@ class FakeRunner:
         out.write_bytes(b"pmtiles")
 
 
+METRICS = {
+    "groups": [
+        {
+            "title": "Area di test",
+            "detail": "Quadrati esclusi.",
+            "layers": {
+                "bodies": [{"label": "ROC AUC", "value": 0.887, "ci": [0.827, 0.959]}],
+                "diffuse": [{"label": "Prevalenza", "value": 10.43, "unit": "%"}],
+            },
+        }
+    ],
+    "notes": ["Misurano l'accordo con l'inventario."],
+}
+
+
+def write_metrics(tmp_path: Path, payload: object) -> Path:
+    path = tmp_path / "metrics.json"
+    path.write_text(json.dumps(payload))
+    return path
+
+
 def test_build_writes_tiles_and_model_json(map_dir: Path, tmp_path: Path):
     tiles, data = tmp_path / "tiles", tmp_path / "data"
     run = FakeRunner()
-    build(map_dir, tiles, data, run=run)
+    build(map_dir, tiles, data, run=run, metrics_path=write_metrics(tmp_path, METRICS))
 
     assert sorted(p.name for p in tiles.iterdir()) == ["v2_bodies.pmtiles", "v2_diffuse.pmtiles"]
     tips = [c for c in run.cmds if c[0] == "tippecanoe"]
@@ -190,9 +212,46 @@ def test_build_writes_tiles_and_model_json(map_dir: Path, tmp_path: Path):
         assert layer["edges"] == sorted(layer["edges"])
         assert layer["n_cells"] == 500
         assert sum(layer["sources"].values()) == 500
-        assert layer["metrics"] == {}
+        assert "metrics" not in layer
+    # Owner metrics are copied verbatim from the committed input file.
+    assert model["metrics"] == METRICS
     # Breaks are per layer: two different synthetic draws give two sets.
     assert model["layers"]["bodies"]["edges"] != model["layers"]["diffuse"]["edges"]
+
+
+def test_build_without_a_metrics_file_writes_empty_metrics(map_dir: Path, tmp_path: Path):
+    build(map_dir, tmp_path / "tiles", tmp_path / "data", run=FakeRunner(),
+          metrics_path=tmp_path / "absent.json")
+    model = json.loads((tmp_path / "data" / "model_v2.json").read_text())
+    assert model["metrics"] == {"groups": [], "notes": []}
+
+
+def test_committed_metrics_file_is_valid():
+    metrics = load_metrics(Path(__file__).parents[1] / "model_v2_metrics.json")
+    assert [g["title"] for g in metrics["groups"]] == [
+        "Area di test (seconda apertura)", "Validazione incrociata a blocchi"
+    ]
+    assert len(metrics["notes"]) == 3
+
+
+@pytest.mark.parametrize(
+    "payload, match",
+    [
+        ({"groups": [], "notes": "x"}, "notes"),
+        ({"groups": [{"title": "t", "layers": {"bodies": []}}], "notes": []}, "diffuse"),
+        ({"groups": [{"title": "t", "layers": {"bodies": [{"label": "a", "value": "0.8"}],
+                                               "diffuse": []}}], "notes": []}, "value"),
+        ({"groups": [{"title": "t", "layers": {"bodies": [{"label": "a", "value": 0.8,
+                                                           "ci": [0.9]}],
+                                               "diffuse": []}}], "notes": []}, "ci"),
+        ({"groups": [{"title": "t", "layers": {"bodies": [{"label": "a", "value": 0.8,
+                                                           "unit": "kg"}],
+                                               "diffuse": []}}], "notes": []}, "unit"),
+    ],
+)
+def test_load_metrics_rejects_malformed_files(tmp_path: Path, payload: object, match: str):
+    with pytest.raises(ValueError, match=match):
+        load_metrics(write_metrics(tmp_path, payload))
 
 
 def test_build_fails_clearly_when_a_parquet_is_missing(tmp_path: Path):

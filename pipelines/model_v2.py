@@ -27,7 +27,9 @@ Pipeline, per layer:
        coalesced feature is the mean of the merged cells. GeoJSON
        intermediates live in a temporary directory and are deleted.
 Then `model_v2.json` collects the per-layer edges, shares and source
-counts, with empty `metrics` until the owner provides them.
+counts, plus the owner's metrics copied from the committed
+`pipelines/model_v2_metrics.json` (groups of label/value rows per layer,
+and notes). Nothing is computed here: missing file = empty metrics.
 
 The two layers are never merged: each gets its own tiles and its own edges.
 """
@@ -64,6 +66,7 @@ class Grid:
 GRID = Grid(crs="EPSG:32633", x0=282549.4208, y0=5176239.1188, cell=120.0, width=1180, height=1120)
 
 LAYERS = ("bodies", "diffuse")
+METRICS_PATH = Path(__file__).with_name("model_v2_metrics.json")
 SOURCES = ("oof", "holdout", "in_sample")
 COLUMNS = ("i", "j", "score", "source", "seed_spread")
 N_CLASSES = 5
@@ -238,16 +241,63 @@ def build_layer(
         "edges": [round(e, 6) for e in edges],
         "shares": class_shares(scores, edges),
         "sources": {s: int(counts.get(s, 0)) for s in SOURCES},
-        "metrics": {},
     }
 
 
+def load_metrics(path: Path) -> dict[str, object]:
+    """Owner-provided metrics, validated so a typo fails the build instead
+    of the drawer. Shape: {"groups": [{"title", "detail"?, "layers":
+    {"bodies": [row], "diffuse": [row]}}], "notes": [str]}, where a row is
+    {"label", "value", "ci"?: [lo, hi], "unit"?: "%"}. Absent file → empty."""
+    if not path.exists():
+        return {"groups": [], "notes": []}
+    data = json.loads(path.read_text())
+
+    def fail(msg: str) -> None:
+        raise ValueError(f"{path.name}: {msg}")
+
+    if not isinstance(data.get("notes"), list) or not all(
+        isinstance(n, str) for n in data["notes"]
+    ):
+        fail("notes must be a list of strings")
+    if not isinstance(data.get("groups"), list):
+        fail("groups must be a list")
+    for g in data["groups"]:
+        if not isinstance(g.get("title"), str):
+            fail("every group needs a title")
+        layers = g.get("layers", {})
+        for name in LAYERS:
+            rows = layers.get(name)
+            if not isinstance(rows, list):
+                fail(f"group {g['title']!r}: missing {name} rows")
+            for r in rows:
+                where = f"group {g['title']!r}, {name}, row {r.get('label')!r}"
+                if not isinstance(r.get("label"), str):
+                    fail(f"{where}: label must be a string")
+                if isinstance(r.get("value"), bool) or not isinstance(r.get("value"), int | float):
+                    fail(f"{where}: value must be a number")
+                ci = r.get("ci")
+                if ci is not None and not (
+                    isinstance(ci, list) and len(ci) == 2
+                    and all(isinstance(v, int | float) for v in ci)
+                ):
+                    fail(f"{where}: ci must be [low, high]")
+                if r.get("unit") not in (None, "%"):
+                    fail(f"{where}: unit must be '%' or absent")
+    return {"groups": data["groups"], "notes": data["notes"]}
+
+
 def build(
-    map_dir: Path, tiles_dir: Path, data_dir: Path, run: Runner = subprocess.run
+    map_dir: Path,
+    tiles_dir: Path,
+    data_dir: Path,
+    run: Runner = subprocess.run,
+    metrics_path: Path = METRICS_PATH,
 ) -> Path:
     for name in LAYERS:
         if not (map_dir / f"{name}.parquet").exists():
             raise FileNotFoundError(f"{map_dir / f'{name}.parquet'} not found")
+    metrics = load_metrics(metrics_path)  # validate before the slow part
     tiles_dir.mkdir(parents=True, exist_ok=True)
     data_dir.mkdir(parents=True, exist_ok=True)
 
@@ -257,6 +307,7 @@ def build(
         "grid": asdict(GRID),
         "requested_classes": N_CLASSES,
         "layers": layers,
+        "metrics": metrics,
     }
     out = data_dir / "model_v2.json"
     out.write_text(json.dumps(model, indent=2) + "\n")
@@ -268,6 +319,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument("--map-dir", required=True, help="Folder with bodies.parquet, diffuse.parquet")
     p.add_argument("--tiles-dir", required=True, help="Path to public/tiles")
     p.add_argument("--data-dir", required=True, help="Path to public/data")
+    p.add_argument("--metrics", default=str(METRICS_PATH), help="Owner metrics JSON")
     return p.parse_args(argv)
 
 
@@ -277,6 +329,7 @@ def main(argv: list[str] | None = None) -> None:
         Path(ns.map_dir).expanduser(),
         Path(ns.tiles_dir).expanduser(),
         Path(ns.data_dir).expanduser(),
+        metrics_path=Path(ns.metrics).expanduser(),
     )
     print(f"Wrote {out}")
 
