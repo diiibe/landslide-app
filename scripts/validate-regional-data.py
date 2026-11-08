@@ -7,6 +7,11 @@ ROOT=pathlib.Path(__file__).resolve().parents[1];OUT=ROOT/'public/data/regional'
 def validate():
  catalog=json.loads((OUT/'catalog.json').read_text());ids=set();counts={'geojson':0,'vector':0,'raster':0,'features':0,'blocked':0}
  now=dt.datetime.now(dt.timezone.utc)
+ public=ROOT/'public';network_files=[public/'data/roads_fvg.geojson',public/'data/trails_fvg.geojson']
+ network_bytes=sum(f.stat().st_size for f in network_files if f.exists())
+ estimated=sum(f.stat().st_size for f in public.rglob('*')if f.is_file())-network_bytes+max(network_bytes,80_000_000)
+ assert estimated<985_000_000,'Published assets approach the GitHub Pages 1GB limit; partition or optimize before publishing'
+ assert all(f.stat().st_size<100_000_000 for f in OUT.rglob('*')if f.is_file()),'A generated file exceeds the Git file limit'
  assert len(catalog['families'])==len(json.loads((ROOT/'scripts/regional-sources.json').read_text())['families'])
  for layer in catalog['layers']:
   lid=layer['id'];assert re.fullmatch('[-a-z0-9]+',lid)and lid not in ids,lid;ids.add(lid)

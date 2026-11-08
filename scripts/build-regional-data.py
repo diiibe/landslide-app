@@ -90,7 +90,7 @@ def save_layer(definition, features, raw_count=None, warnings=()):
     stage=CACHE/'generated';stage.mkdir(exist_ok=True,parents=True)
     fc={'type':'FeatureCollection','features':features};file=stage/(definition['id']+'.geojson');file.write_text(json.dumps(fc,ensure_ascii=False,separators=(',',':')))
     b=[shape(f['geometry']).bounds for f in features];bounds=[[min(v[0]for v in b),min(v[1]for v in b)],[max(v[2]for v in b),max(v[3]for v in b)]]
-    acquired=[v for u,v in FETCH_TIMES.items() if definition.get('sourceId','!missing!') in requests.utils.unquote(u)]
+    acquired=[v for u,v in list(FETCH_TIMES.items()) if definition.get('sourceId','!missing!') in requests.utils.unquote(u)]
     definition.update({'count':count,'sourceCount':raw_count if raw_count is not None else count,'retrievedAt':definition.get('retrievedAt')or(min(acquired)if acquired else NOW),'generatedAt':NOW,'bounds':bounds,'geometryTypes':sorted({f['geometry']['type']for f in features}),'fields':list(dict.fromkeys(k for f in features[:50]for k in f['properties'] if not k.startswith('__'))),'warnings':list(warnings),'status':'ready','kind':'geojson','file':file.name})
     repaired=sum(bool(f['properties'].get('__geometryRepaired'))for f in features)
     if repaired:definition['warnings'].append(f'{repaired} geometrie non valide nella fonte riparate con make_valid per la visualizzazione; gli originali restano disponibili alla fonte.')
