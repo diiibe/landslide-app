@@ -20,7 +20,7 @@ import {
   setHistoricalFloodsVisible,
 } from "./layers/historicalFloods";
 import { addZoneBoundaries, setZoneBoundariesVisible, ZONE_LINE } from "./layers/zones";
-import { setModelV2Visible, V2_LAYER_ID } from "./layers/modelV2";
+import { setModelV2Visible, v2LayerIds } from "./layers/modelV2";
 import {
   addSmoothHeatmap,
   HEAT_LAYER,
@@ -280,7 +280,7 @@ function setupModelLayers(m: maplibregl.Map): void {
   const anchor = networkAnchor(m);
   if (anchor) {
     for (const id of [
-      SUSCEPT_LAYER, HEAT_LAYER, V2_LAYER_ID.bodies, V2_LAYER_ID.diffuse,
+      SUSCEPT_LAYER, HEAT_LAYER, ...v2LayerIds("bodies"), ...v2LayerIds("diffuse"),
       IFFI_FILL, IFFI_LINE, HFLOOD_FILL, HFLOOD_LINE, ZONE_LINE,
     ]) {
       if (m.getLayer(id)) m.moveLayer(id, anchor);
