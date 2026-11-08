@@ -8,19 +8,48 @@ The selected object scrolls into view in the drawer. A street-level OpenStreetMa
 raster is used if no Mapbox token is configured; satellite and other Mapbox styles
 are offered only with a configured token.
 
-The drawer selects wind, temperature, 24-hour precipitation, marine level
-(IGM42) or global radiation. Click a sensor for its value, timestamp and the
-last 24 hours of observations. Click an AIA site for administrative attributes
-and the three nearest stations for the selected variable, with their distances.
-These measurements describe the stations, not conditions measured at the site;
-no exposure, dispersion or damage model is inferred.
+The drawer offers 19 observation variables in three groups:
 
-On phones, **Livelli** opens a bottom sheet with five directly tappable
-observation buttons and the radar, AIA and building switches. **Mostra mappa**
-closes it; the Livelli button shows the selected observation and reopens the
-controls at the top. Selecting a city closes the sheet to reveal the map.
-Touch landscape uses a side sheet so the map remains usable. Secondary topbar
-actions are under **Strumenti**; desktop controls keep their existing layout.
+- **Meteo**: wind, gusts, air temperature, relative humidity, 5-minute/60-minute/24-hour precipitation and global radiation.
+- **Acqua e costa**: IGM42 marine level, hydrometric levels, river flow, total Isonzo-mouth flow, mean/upper/lower Isonzo-mouth current and water temperature.
+- **Suolo e verde**: volumetric soil moisture at −10, −20 and −40 cm.
+
+These are PCR channels, including derived accumulations and profiles: they are not
+19 different physical devices or a continuous field across the region. Hydrometric
+references differ between stations (including local zeros and elevations), so
+this variable uses uniform circles and no common quantitative colour scale.
+Compare its time series within one station. The PCR channel named “Temperatura
+mare” also appears at river sites; the UI calls it water temperature.
+
+Click a sensor for its value, timestamp, other available variables at that site
+and the last 24 hours of observations. The chart slider inspects recorded samples
+without changing the latest observations shown on the map. Gaps over 45 minutes
+remain disconnected. Click an AIA site for administrative attributes and the three
+nearest stations for the selected variable, with their distances. These describe
+the stations, not conditions measured at the site; no exposure, dispersion or
+damage model is inferred.
+
+On phones, **Livelli** opens the bottom sheet with a grouped native selector and
+radar/AIA/building switches. **Mostra mappa** closes it and Livelli reopens the
+controls at the top. Touch landscape uses a side sheet. **Inquadra stazioni** fits
+the available points and **Mostra sulla mappa** locates the selected station; both
+close the mobile sheet and apply its final camera padding before moving.
+Secondary topbar actions remain under **Strumenti**.
+
+Comparable variables encode the numeric value in colour and circle size, with
+clamped display scales rather than danger thresholds. Grey indicates an older or
+invalid observation time. A contrasting ring identifies a selected sensor or AIA
+point; a brief 420 ms ring marks a selection or a new sample at that selected
+sensor. There is no continuous pulsing or simulated transport. Reduced motion
+and hidden tabs disable that feedback. Mouse hover shows escaped text with value,
+observation time and freshness. Touch point picking uses a 44 px target and
+chooses the closest point without expanding building hit areas.
+
+The map caches static GeoJSON references: changing a variable or inspecting a
+station does not reprocess the 8,152 buildings and 234 AIA sites. Basemap style
+replacement replays cached sources, visibility and selection. Initial source
+loading is guarded and explicit scene/station requests made before style readiness
+are applied when it becomes available.
 
 ## Sources and refresh
 

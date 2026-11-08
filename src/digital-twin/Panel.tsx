@@ -12,11 +12,16 @@ import {
   parseMeasures,
   PCR_API,
   VARIABLES,
+  VARIABLE_GROUPS,
   variableMeasures,
   type Measure,
   type Variable,
 } from "./data";
 import styles from "./Twin.module.css";
+import { ObservedSeriesChart } from "./ObservedSeriesChart";
+
+const GROUPS = VARIABLE_GROUPS;
+const variableEntries = Object.entries(VARIABLES) as [Variable, (typeof VARIABLES)[Variable]][];
 export function TwinButton() {
   const active = useTwinStore((s) => s.active);
   return (
@@ -103,6 +108,10 @@ export function TwinPanel() {
   const stationId =
     s.selection?.kind === "sensor" ? s.selection.stationId : null;
   const sensor = rows.find((x) => x.stationId === stationId);
+  const otherMeasures = variableEntries.flatMap(([id, definition]) => {
+    const measure = s.measures.find((m) => m.stationId === stationId && m.sensorId === definition.id);
+    return id !== s.variable && measure ? [{ id, definition, measure }] : [];
+  });
   const request = () =>
     useTwinStore.setState((state) => ({ refreshKey: state.refreshKey + 1 }));
   return (
@@ -112,22 +121,41 @@ export function TwinPanel() {
         <p>Trieste–Monfalcone</p>
       </div>
       <div className={styles.section}>
-        <fieldset className={styles.mobileVariables}>
-          <legend>Dati sulla mappa</legend>
-          <div>
-            {Object.entries(VARIABLES).map(([id, variable]) => (
-              <button
-                key={id}
-                type="button"
-                aria-pressed={s.variable === id}
-                title={variable.label}
-                onClick={() => useTwinStore.setState({ variable: id as Variable })}
-              >
-                {variable.shortLabel}
-              </button>
+        <label className={styles.field}>
+          <strong>Dati sulla mappa</strong>
+          <select aria-label="Dati sulla mappa · Osservazioni PCR" aria-describedby="twin-variable-description" value={s.variable}
+            onChange={(e) => useTwinStore.setState({ variable: e.target.value as Variable })}>
+            {Object.entries(GROUPS).map(([group, label]) => (
+              <optgroup key={group} label={label}>
+                {variableEntries.filter(([, definition]) => definition.group === group).map(([id, definition]) => (
+                  <option key={id} value={id}>{definition.label} · {definition.unit}</option>
+                ))}
+              </optgroup>
             ))}
+          </select>
+        </label>
+        <p id="twin-variable-description" className={styles.caption}>{v.description}</p>
+        <div className={styles.measureSummary} role="status" aria-live="polite" aria-atomic="true">
+          {rows.length ? <><strong>{rows.length} stazioni in regione</strong><span>{recent} con misura negli ultimi 45 minuti</span></> :
+            <span>{s.sensorsFeed.loading ? "Lettura delle stazioni…" : "Nessuna misura disponibile per questa variabile. Scegli un altro dato o aggiorna la fonte."}</span>}
+        </div>
+        {s.sensorsFeed.snapshot && <p className={styles.caption}>Snapshot salvato · la fonte corrente non è disponibile.</p>}
+        {s.sensorsFeed.error && !s.sensorsFeed.snapshot && <p className={styles.error}>Fonte non raggiunta: {s.measures.length ? "conservo le ultime misure" : "nessuna misura ricevuta"}.</p>}
+        {v.comparable && <div className={styles.legend} aria-label={`Scala di ${v.label}, in ${v.unit}`}>
+          <div className={styles.colorScale} aria-hidden="true" style={{ background: `linear-gradient(90deg, ${v.colors.join(", ")})` }} />
+          <div className={styles.scaleLabels}>
+            {[v.min, (v.min + v.max) / 2, v.max].map((n) => <span key={n}>{n === v.min ? "≤ " : n === v.max ? "≥ " : ""}{formatValue(n)} {v.unit}</span>)}
           </div>
-        </fieldset>
+        </div>}
+        <p className={styles.caption}>{v.comparable
+          ? "Colore e dimensione: valore. Grigio: orario non recente o non valido. Alone: selezione. Nessuna soglia di pericolo."
+          : "Cerchi uniformi, senza scala comune. Alone: punto selezionato; verifica l’orario nel dettaglio."}</p>
+        <button type="button" className={styles.action} disabled={!rows.length} onClick={() => {
+          window.dispatchEvent(new CustomEvent("fvg:twin-fit"));
+          if (window.matchMedia("(max-width: 768px), (max-height: 500px) and (pointer: coarse)").matches)
+            useAppStore.setState({ drawerOpen: false });
+        }}>Inquadra stazioni</button>
+
         <div
           className={styles.scenes}
           role="group"
@@ -155,22 +183,6 @@ export function TwinPanel() {
             </button>
           ))}
         </div>
-        <label className={`${styles.field} ${styles.desktopVariable}`}>
-          Osservazioni PCR
-          <select
-            aria-label="Osservazioni PCR"
-            value={s.variable}
-            onChange={(e) =>
-              useTwinStore.setState({ variable: e.target.value as Variable })
-            }
-          >
-            {Object.entries(VARIABLES).map(([id, v]) => (
-              <option key={id} value={id}>
-                {v.label}
-              </option>
-            ))}
-          </select>
-        </label>
         <div className={styles.layerToggles} role="group" aria-label="Livelli aggiuntivi">
           <label className={styles.check}>
             <input
@@ -205,35 +217,6 @@ export function TwinPanel() {
           </label>
         </div>
         <p className={styles.caption}>
-          {rows.length} stazioni per questa variabile in regione · {recent} con
-          misura negli ultimi 45 minuti.
-        </p>
-        <div className={styles.legend}>
-          {[v.min, (v.min + v.max) / 2, v.max].map((n, i) => (
-            <span key={n}>
-              <i style={{ background: v.colors[i] }} />
-              {n}
-              {i === 2 ? "+" : ""} {v.unit}
-            </span>
-          ))}
-        </div>
-        <p className={styles.caption}>
-          Grigio: misura precedente o ora da verificare. Colori del valore,
-          senza soglie di pericolo.
-        </p>
-        {s.variable === "wind" && (
-          <p className={styles.caption}>
-            Frecce verso cui soffia il vento misurato alla stazione. Non
-            rappresentano una simulazione di dispersione.
-          </p>
-        )}
-        {s.variable === "sea" && (
-          <p className={styles.caption}>
-            Riferimento IGM42 dichiarato dalla fonte; qualità del singolo valore
-            da verificare. Non è una quota di allagamento.
-          </p>
-        )}
-        <p className={styles.caption}>
           Edifici visibili da zoom 12. Usa Trieste o Monfalcone per esplorare
           l’estratto.
         </p>
@@ -248,57 +231,11 @@ export function TwinPanel() {
           </p>
         )}
       </div>
-      <div className={styles.section}>
-        <h3>Osservazioni e aggiornamenti</h3>
-        <label className={styles.check}>
-          <input
-            type="checkbox"
-            checked={s.autoRefresh}
-            onChange={(e) =>
-              useTwinStore.setState({ autoRefresh: e.target.checked })
-            }
-          />
-          Verifica le fonti ogni minuto
-        </label>
-        <button
-          type="button"
-          className={styles.action}
-          disabled={s.sensorsFeed.loading || (s.radarOn && s.radarFeed.loading)}
-          onClick={request}
-        >
-          Aggiorna adesso
-        </button>
-        <Feed label="Sensori PCR" feed={s.sensorsFeed} now={now} />
-        <p className={styles.caption}>
-          Le misure hanno orari individuali. Campioni verificati a intervalli di
-          15 minuti; la frequenza varia per sensore.
-        </p>
-        {s.radarOn && (
-          <>
-            <Feed
-              label="Radar PCR · Fossalon SRI"
-              feed={s.radarFeed}
-              now={now}
-              {...(s.radar ? { time: s.radar.ms } : {})}
-            />
-            <p className={styles.caption}>
-              Intensità della precipitazione in mm/h. Poco colore può indicare
-              assenza di precipitazione; copertura e dato mancante restano
-              distinti nella legenda della fonte. Il polling non aumenta la
-              frequenza del prodotto.
-            </p>
-            <a
-              href="https://monitor.protezionecivile.fvg.it/"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Radar e legenda ufficiale PCR ↗
-            </a>
-          </>
-        )}
-      </div>
       <div ref={inspector} className={styles.section}>
-        <h3>Esplora un oggetto</h3>
+        <div className={styles.inspectorHeading}>
+          <h3>{s.selection ? "Dettaglio selezionato" : "Esplora un oggetto"}</h3>
+          {s.selection && <button type="button" className={styles.clearSelection} aria-label="Chiudi il dettaglio selezionato" onClick={() => useTwinStore.setState({ selection: null })}>Chiudi</button>}
+        </div>
         <p className={styles.caption}>
           Tocca un sensore, uno stabilimento o un edificio sulla mappa.
         </p>
@@ -319,30 +256,53 @@ export function TwinPanel() {
               })
             }
           >
-            <option value="">Seleziona una stazione</option>
+            <option value="">{rows.length ? "Seleziona una stazione" : "Nessuna stazione disponibile"}</option>
+            {stationId !== null && !sensor && <option value={stationId}>{s.measures.find((m) => m.stationId === stationId)?.name ?? `Stazione ${stationId}`} · dato assente</option>}
             {rows.map((m) => (
               <option key={m.stationId} value={m.stationId}>
-                {m.name}
+                {m.name} · {formatValue(m.value)} {v.unit}
               </option>
             ))}
           </select>
         </label>
         {sensor && (
-          <>
+          <div className={styles.observation} key={`${sensor.stationId}:${s.variable}:${sensor.time}`}>
             <h3>{sensor.name}</h3>
+            <p className={styles.caption}>{v.label}</p>
             <div className={styles.value}>
               {formatValue(sensor.value)} <span>{v.unit}</span>
             </div>
             <p className={styles.caption}>{formatTime(sensor.ms)}</p>
             <Freshness ms={sensor.ms} now={now} />
+            <button type="button" className={styles.action} onClick={() => {
+              window.dispatchEvent(new CustomEvent("fvg:twin-station", { detail: sensor.stationId }));
+              if (window.matchMedia("(max-width: 768px), (max-height: 500px) and (pointer: coarse)").matches)
+                useAppStore.setState({ drawerOpen: false });
+            }}>Mostra sulla mappa</button>
             <Series measure={sensor} />
-          </>
+          </div>
         )}
         {s.selection?.kind === "sensor" && !sensor && (
           <p className={styles.caption}>
             Questa stazione non ha una misura della variabile selezionata nella
             risposta disponibile.
           </p>
+        )}
+        {stationId !== null && (
+          <details className={styles.stationMeasures}>
+            <summary>Altre misure della stazione</summary>
+            <div className={styles.nearby}>
+              {otherMeasures.map(({ id, definition, measure }) => (
+                <button type="button" key={id} onClick={() => useTwinStore.setState({ variable: id })}>
+                  <strong>{definition.label}</strong>
+                  <span>{formatValue(measure.value)} {definition.unit}</span>
+                  <Freshness ms={measure.ms} now={now} />
+                </button>
+              ))}
+              {!otherMeasures.length &&
+                <p className={styles.caption}>Nessun’altra variabile disponibile nella risposta della fonte.</p>}
+            </div>
+          </details>
         )}
         {s.selection?.kind === "asset" && (
           <>
@@ -366,6 +326,7 @@ export function TwinPanel() {
               esposizione o impatto calcolato.
             </p>
             <div className={styles.nearby}>
+              {!rows.length && <p className={styles.caption}>Nessuna stazione con questa variabile nella risposta disponibile.</p>}
               {rows
                 .map((m) => ({
                   m,
@@ -431,6 +392,55 @@ export function TwinPanel() {
           </>
         )}
       </div>
+      <details className={styles.section}>
+        <summary>Fonti e aggiornamenti</summary>
+        <label className={styles.check}>
+          <input
+            type="checkbox"
+            checked={s.autoRefresh}
+            onChange={(e) =>
+              useTwinStore.setState({ autoRefresh: e.target.checked })
+            }
+          />
+          Verifica le fonti ogni minuto
+        </label>
+        <button
+          type="button"
+          className={styles.action}
+          disabled={s.sensorsFeed.loading || (s.radarOn && s.radarFeed.loading)}
+          onClick={request}
+        >
+          {s.sensorsFeed.loading || (s.radarOn && s.radarFeed.loading) ? "Verifica delle fonti…" : "Aggiorna adesso"}
+        </button>
+        <Feed label="Sensori PCR" feed={s.sensorsFeed} now={now} />
+        <p className={styles.caption}>
+          Le misure hanno orari individuali e frequenze diverse per sensore.
+          La verifica ogni minuto non aumenta la frequenza delle osservazioni.
+        </p>
+        {s.radarOn && (
+          <>
+            <Feed
+              label="Radar PCR · Fossalon SRI"
+              feed={s.radarFeed}
+              now={now}
+              {...(s.radar ? { time: s.radar.ms } : {})}
+            />
+            <p className={styles.caption}>
+              Intensità della precipitazione in mm/h. Poco colore può indicare
+              assenza di precipitazione; copertura e dato mancante restano
+              distinti nella legenda della fonte. Il polling non aumenta la
+              frequenza del prodotto.
+            </p>
+            <a
+              href="https://monitor.protezionecivile.fvg.it/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Radar e legenda ufficiale PCR ↗
+            </a>
+          </>
+        )}
+      </details>
       <details className={styles.section}>
         <summary>Fonti, copertura e limiti</summary>
         <p className={styles.caption}>
@@ -538,47 +548,6 @@ function Series({ measure }: { measure: Measure }) {
         Meno di due osservazioni nella serie disponibile.
       </p>
     );
-  const a = state.rows,
-    lo = Math.min(...a.map((m) => m.value)),
-    hi = Math.max(...a.map((m) => m.value)),
-    first = a[0]!,
-    last = a[a.length - 1]!,
-    span = last.ms - first.ms || 1;
-  const d = a
-    .map(
-      (m, i) =>
-        `${i && m.ms - a[i - 1]!.ms <= 45 * 60000 ? "L" : "M"}${12 + ((m.ms - first.ms) / span) * 236},${96 - ((m.value - lo) / (hi - lo || 1)) * 68}`,
-    )
-    .join(" ");
-  return (
-    <div className={styles.series}>
-      <p className={styles.caption}>Ultime 24 ore · {a.length} osservazioni</p>
-      <svg
-        viewBox="0 0 260 130"
-        role="img"
-        aria-label={`Serie osservata di ${measure.name}, da ${formatTime(first.ms)} a ${formatTime(last.ms)}`}
-      >
-        <text x="12" y="16">
-          {formatValue(hi)} {VARIABLES[useTwinStore.getState().variable].unit}
-        </text>
-        <path d={d} />
-        <text x="12" y="122">
-          {new Date(first.ms).toLocaleTimeString("it-IT", {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
-        </text>
-        <text x="210" y="122">
-          {new Date(last.ms).toLocaleTimeString("it-IT", {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
-        </text>
-      </svg>
-      <p className={styles.caption}>
-        {formatTime(first.ms)} → {formatTime(last.ms)}. Interruzioni oltre 45
-        minuti lasciate visibili.
-      </p>
-    </div>
-  );
+  const definition = variableEntries.find(([, variable]) => variable.id === measure.sensorId)?.[1];
+  return <ObservedSeriesChart key={key} rows={state.rows} unit={definition?.unit ?? ""} />;
 }
