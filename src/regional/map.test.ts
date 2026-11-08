@@ -101,3 +101,22 @@ it("preserves literal raster template variables and clips requests to available 
   ]);
   expect(h.sources.get("regional-sample")?.bounds).toEqual([12, 45, 14, 47]);
 });
+
+it("refreshes mirrored raster tile URLs on a catalog update even when the oldest acquisition date stays unchanged", () => {
+  const layer = {
+    ...base,
+    kind: "raster" as const,
+    tiles: ["data/regional/raster-sample/{z}/{x}/{y}.png"],
+  };
+  const h = harness(layer);
+  const before = h.sources.get("regional-sample")?.tiles;
+  useRegionalStore.setState({
+    catalog: { generatedAt: "2026-01-02", layers: [layer] },
+  });
+  const after = h.sources.get("regional-sample")?.tiles;
+  expect(after).not.toEqual(before);
+  expect(after).toEqual([expect.stringContaining("?v=2026-01-02")]);
+  expect(
+    h.addSource.mock.calls.filter(([id]) => id === "regional-sample"),
+  ).toHaveLength(2);
+});

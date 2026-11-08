@@ -23,6 +23,7 @@ export function mountRegionalMap(map: MLMap): () => void {
     popup: Popup | null = null,
     hoverId = "",
     lastHover = 0;
+  const rasterVersions = new Map<string, string>();
   const installed = new Map<string, LayerDefinition>(),
     dataRefs = new Map<string, unknown>();
   function hideHover() {
@@ -36,6 +37,7 @@ export function mountRegionalMap(map: MLMap): () => void {
       if (map.getLayer(src + "-" + suffix)) map.removeLayer(src + "-" + suffix);
     if (map.getSource(src)) map.removeSource(src);
     installed.delete(id);
+    rasterVersions.delete(id);
     dataRefs.delete(id);
   }
   function color(l: LayerDefinition): string | ExpressionSpecification {
@@ -111,7 +113,9 @@ export function mountRegionalMap(map: MLMap): () => void {
       if (
         old &&
         (old.kind !== l.kind ||
-          (old.retrievedAt !== l.retrievedAt && l.kind !== "geojson"))
+          (old.retrievedAt !== l.retrievedAt && l.kind !== "geojson") ||
+          (l.kind === "raster" &&
+            rasterVersions.get(l.id) !== s.catalog?.generatedAt))
       )
         remove(l.id);
       if (l.kind === "geojson" && !entry?.data) continue;
@@ -143,7 +147,9 @@ export function mountRegionalMap(map: MLMap): () => void {
                     window.location.href,
                   ).href
                     .replace(/%7B/gi, "{")
-                    .replace(/%7D/gi, "}"),
+                    .replace(/%7D/gi, "}") +
+                  "?v=" +
+                  encodeURIComponent(s.catalog?.generatedAt ?? ""),
             ),
             tileSize: 512,
             minzoom: l.minzoom ?? 0,
@@ -161,6 +167,8 @@ export function mountRegionalMap(map: MLMap): () => void {
           });
         else continue;
         installed.set(l.id, l);
+        if (l.kind === "raster")
+          rasterVersions.set(l.id, s.catalog!.generatedAt);
         dataRefs.set(l.id, entry?.data);
       } else if (
         l.kind === "geojson" &&
@@ -431,6 +439,7 @@ export function mountRegionalMap(map: MLMap): () => void {
   function style() {
     ready = true;
     installed.clear();
+    rasterVersions.clear();
     dataRefs.clear();
     sync();
   }
