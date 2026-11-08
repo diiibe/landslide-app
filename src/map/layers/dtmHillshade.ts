@@ -1,4 +1,5 @@
 import type { Map as MLMap } from "maplibre-gl";
+import { HAS_MAPBOX_TOKEN } from "../style";
 
 export const DEM_SOURCE = "dtm-dem";
 export const DTM_LAYER = "dtm-hillshade";
@@ -32,6 +33,9 @@ export const DTM_LAYER = "dtm-hillshade";
  * our raster-dem source.
  */
 export function addDtmHillshade(m: MLMap, visible: boolean, dark: boolean): void {
+  // MapLibre requests TileJSON even for hidden layers. Do not create an
+  // unusable mapbox:// source when the app is using its public basemap.
+  if (!HAS_MAPBOX_TOKEN) return;
   if (m.getLayer(DTM_LAYER)) m.removeLayer(DTM_LAYER);
   if (!m.getSource(DEM_SOURCE)) {
     m.addSource(DEM_SOURCE, {

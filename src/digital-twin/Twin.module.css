@@ -1,0 +1,242 @@
+.mode {
+  font: inherit;
+  font-size: 12px;
+  white-space: nowrap;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--c-text);
+  padding: 6px 9px;
+  cursor: pointer;
+  min-height: 30px;
+}
+.mode[aria-pressed="true"] {
+  border-color: var(--c-slate);
+  color: var(--c-slate);
+  background: var(--c-surface-2, var(--c-bg-linen));
+}
+.mode:hover {
+  background: var(--c-panel-item-hover);
+}
+.panel {
+  font-size: 12px;
+  color: var(--c-text);
+  line-height: 1.5;
+}
+.heading {
+  padding: 14px 12px;
+  border-bottom: 1px solid var(--c-border);
+}
+.heading h2 {
+  font-size: 15px;
+  margin: 0 0 4px;
+  font-weight: 650;
+}
+.heading p {
+  margin: 0;
+  color: var(--c-text-soft);
+}
+.section {
+  padding: 12px;
+  border-bottom: 1px solid var(--c-border);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.section h3 {
+  font-size: 12px;
+  margin: 0;
+  font-weight: 650;
+}
+.section p {
+  margin: 0;
+}
+.scenes {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.scenes button,
+.action {
+  font: inherit;
+  color: var(--c-text);
+  background: var(--c-surface-2, var(--c-bg-linen));
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-sm);
+  padding: 7px 8px;
+  cursor: pointer;
+  min-height: 34px;
+}
+.scenes button:hover,
+.action:hover {
+  border-color: var(--c-slate);
+}
+.action:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+.check {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 28px;
+  cursor: pointer;
+}
+.check input {
+  accent-color: var(--c-slate);
+  margin: 0;
+  width: 15px;
+  height: 15px;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.field select {
+  width: 100%;
+  font: inherit;
+  background: var(--c-surface);
+  color: var(--c-text);
+  padding: 8px;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-sm);
+  min-height: 36px;
+}
+.caption {
+  font-size: 11px;
+  color: var(--c-text-soft);
+  line-height: 1.55;
+}
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 10px;
+}
+.legend span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.legend i {
+  width: 10px;
+  height: 10px;
+  display: inline-block;
+}
+.assetDot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  background: #e0b361;
+  border-radius: 50%;
+}
+.feed {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+}
+.feed > span {
+  color: var(--c-text-soft);
+}
+.freshness {
+  font-size: 11px;
+  color: var(--c-text-soft);
+}
+.freshness[data-status="recent"] {
+  color: var(--c-forest);
+}
+.freshness[data-status="delayed"] {
+  color: var(--c-ochre);
+}
+.freshness[data-status="invalid"],
+.error {
+  color: var(--c-russet) !important;
+  font-size: 11px;
+}
+.value {
+  font-size: 24px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.value span {
+  font-size: 13px;
+}
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+}
+.details > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.details dt {
+  color: var(--c-text-soft);
+  font-size: 11px;
+}
+.details dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.nearby {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.nearby button {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font: inherit;
+  color: var(--c-text);
+  border: 1px solid var(--c-border);
+  background: transparent;
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.nearby button:hover {
+  background: var(--c-panel-item-hover);
+}
+.panel a {
+  color: var(--c-slate);
+  overflow-wrap: anywhere;
+}
+.panel summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.panel details[open] > summary {
+  margin-bottom: 10px;
+}
+.series svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.series text {
+  font-size: 10px;
+  fill: var(--c-text-soft);
+}
+.series path {
+  stroke: var(--c-slate);
+  stroke-width: 2;
+  fill: none;
+}
+@media (max-width: 480px) {
+  .mode {
+    font-size: 11px;
+    padding: 6px;
+  }
+  .section {
+    padding: 12px;
+  }
+  .check {
+    min-height: 34px;
+  }
+}

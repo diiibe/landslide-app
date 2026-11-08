@@ -14,6 +14,13 @@ make tiles-v2            # model v2 layers; requires sibling repo HazardFVG (see
 npm run dev
 ```
 
+## Digital twin demo
+
+Open **Digital twin** for the Trieste–Monfalcone workspace: PCR observations and
+radar, urban building extrusions and AIA sites. See [sources, update behaviour and
+verification](docs/digital-twin.md). The bounded demo extracts in `public/data/twin/`
+are tracked and do not need a data build step.
+
 ## Test
 
 ```

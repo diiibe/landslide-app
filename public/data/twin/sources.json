@@ -1,0 +1,51 @@
+{
+  "retrievedAt": "2026-11-08",
+  "buildings": {
+    "source": "Regione Autonoma Friuli Venezia Giulia — EDIFICI:DBS_EDIFICATO",
+    "basePeriod": "2017–2020",
+    "license": "IODL 2.0, condizioni IRDAT e metadato specifico",
+    "url": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&request=GetCapabilities&version=2.0.0",
+    "bounds": {
+      "trieste": [
+        13.754,
+        45.635,
+        13.783,
+        45.656
+      ],
+      "monfalcone": [
+        13.527,
+        45.794,
+        13.552,
+        45.813
+      ]
+    },
+    "counts": {
+      "trieste": {
+        "features": 3303,
+        "positiveHeights": 2020
+      },
+      "monfalcone": {
+        "features": 4849,
+        "positiveHeights": 4848
+      }
+    }
+  },
+  "aia": {
+    "source": "Regione FVG — INDUSTR:autorizzazione_integrata_ambientale_aia",
+    "count": 234,
+    "license": "IODL 2.0, condizioni IRDAT e metadato specifico"
+  },
+  "sensors": {
+    "source": "Protezione Civile della Regione Friuli Venezia Giulia",
+    "url": "https://monitor.protezionecivile.fvg.it/api/measures/latest",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://monitor.protezionecivile.fvg.it/licenza"
+  },
+  "radar": {
+    "source": "Protezione Civile della Regione Friuli Venezia Giulia",
+    "license": "CC BY 4.0",
+    "product": "SRI",
+    "snapshotUTC": "2026-11-08T15:30:00Z",
+    "note": "DPC SRI API inspected; WMS and presigned TIFF have no CORS in checks. Regional PCR selected for static-browser compatibility."
+  }
+}
