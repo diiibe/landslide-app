@@ -192,9 +192,14 @@ def test_build_writes_tiles_and_model_json(map_dir: Path, tmp_path: Path):
     run = FakeRunner()
     build(map_dir, tiles, data, run=run, metrics_path=write_metrics(tmp_path, METRICS))
 
-    assert sorted(p.name for p in tiles.iterdir()) == ["v2_bodies.pmtiles", "v2_diffuse.pmtiles"]
+    assert sorted(p.name for p in tiles.iterdir()) == [
+        "v2_bodies.pmtiles", "v2_bodies_raster.pmtiles",
+        "v2_diffuse.pmtiles", "v2_diffuse_raster.pmtiles",
+    ]
     tips = [c for c in run.cmds if c[0] == "tippecanoe"]
     assert tips and all(c[c.index("-M") + 1] == str(PART_TILE_BYTES) for c in tips)
+    # Vector tiles start where the raster pyramid stops.
+    assert all((c[c.index("-Z") + 1], c[c.index("-z") + 1]) == ("10", "14") for c in tips)
     joins = [c for c in run.cmds if c[0] == "tile-join"]
     assert [Path(c[c.index("-o") + 1]).name for c in joins] == [
         "v2_bodies.pmtiles", "v2_diffuse.pmtiles"
@@ -203,6 +208,7 @@ def test_build_writes_tiles_and_model_json(map_dir: Path, tmp_path: Path):
     model = json.loads((data / "model_v2.json").read_text())
     assert model["model"] == "v2"
     assert model["requested_classes"] == N_CLASSES
+    assert model["zooms"] == {"raster": [6, 9], "vector": [10, 14]}
     assert set(model["layers"]) == {"bodies", "diffuse"}
     for name in ("bodies", "diffuse"):
         layer = model["layers"][name]

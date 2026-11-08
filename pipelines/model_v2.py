@@ -18,14 +18,18 @@ Pipeline, per layer:
        each class is recorded; fewer than 3 distinct classes is an error.
     3. Cell polygons from (i, j), reprojected to EPSG:4326, with `score`,
        `source`, `cls` and `ncls` (the layer's class count).
-    4. Tiles: one tippecanoe run per (cls, source) group with
-       --coalesce-densest-as-needed, then tile-join into `v2_<layer>.pmtiles`.
-       Coalescing therefore only ever merges cells of the same class and
-       source, so low zooms stay full without mixing classes (tippecanoe
-       keeps one feature's attributes when it coalesces; a single run moved
-       5-7 % of the area into the wrong class at z7-8). `score` of a
-       coalesced feature is the mean of the merged cells. GeoJSON
-       intermediates live in a temporary directory and are deleted.
+    4. Vector tiles for z10-14 (`v2_<layer>.pmtiles`): one tippecanoe run
+       per (cls, source) group with --coalesce-densest-as-needed, then
+       tile-join. Coalescing therefore only ever merges cells of the same
+       class and source (tippecanoe keeps one feature's attributes when it
+       coalesces; a single run moved 5-7 % of the area into the wrong
+       class at z7-8). `score` of a coalesced feature is the mean of the
+       merged cells. GeoJSON intermediates live in a temporary directory.
+    5. Raster tiles for z6-9 (`v2_<layer>_raster.pmtiles`, see
+       pipelines/raster_tiles.py): at those zooms the real vector tiles
+       reached 0.6-0.9 MB, so the class grid is rendered to palette PNGs
+       (nearest cell per pixel, same colours) instead. The map switches
+       from raster to vector at z10.
 Then `model_v2.json` collects the per-layer edges, shares and source
 counts, plus the owner's metrics copied from the committed
 `pipelines/model_v2_metrics.json` (groups of label/value rows per layer,
@@ -40,7 +44,7 @@ import json
 import subprocess
 import tempfile
 from collections.abc import Callable
-from dataclasses import asdict, dataclass
+from dataclasses import asdict
 from pathlib import Path
 
 import geopandas as gpd
@@ -49,23 +53,13 @@ import pandas as pd
 import shapely
 
 from pipelines.build_tiles import _check_tippecanoe_available
-
-
-@dataclass(frozen=True)
-class Grid:
-    """North-up grid, origin at the top-left corner. Mirrors HazardFVG `Grid`."""
-
-    crs: str
-    x0: float
-    y0: float
-    cell: float
-    width: int
-    height: int
-
-
-GRID = Grid(crs="EPSG:32633", x0=282549.4208, y0=5176239.1188, cell=120.0, width=1180, height=1120)
+from pipelines.grid import GRID
+from pipelines.raster_tiles import class_grid, write_class_pmtiles
 
 LAYERS = ("bodies", "diffuse")
+# Zoom split, mirrored by V2_VECTOR_MIN_ZOOM in src/map/layers/modelV2.ts.
+RASTER_ZOOMS = (6, 9)
+VECTOR_ZOOMS = (10, 14)
 METRICS_PATH = Path(__file__).with_name("model_v2_metrics.json")
 SOURCES = ("oof", "holdout", "in_sample")
 COLUMNS = ("i", "j", "score", "source", "seed_spread")
@@ -230,9 +224,21 @@ def build_layer(
     tile_layer(
         cells_to_geodataframe(df, edges),
         tiles_dir / f"v2_{name}.pmtiles",
+        min_zoom=VECTOR_ZOOMS[0],
+        max_zoom=VECTOR_ZOOMS[1],
         max_tile_bytes=PART_TILE_BYTES,
         run=run,
     )
+    cls = assign_classes(scores, edges)
+    raster = write_class_pmtiles(
+        class_grid(df["i"].to_numpy(), df["j"].to_numpy(), cls),
+        ncls=len(edges) - 1,
+        out=tiles_dir / f"v2_{name}_raster.pmtiles",
+        min_zoom=RASTER_ZOOMS[0],
+        max_zoom=RASTER_ZOOMS[1],
+    )
+    for z, st in sorted(raster.items()):
+        print(f"{name} raster z{z}: {st['tiles']} tiles, max {st['max_bytes'] / 1024:.0f} KB")
 
     counts = df["source"].value_counts()
     return {
@@ -305,6 +311,7 @@ def build(
     model = {
         "model": "v2",
         "grid": asdict(GRID),
+        "zooms": {"raster": list(RASTER_ZOOMS), "vector": list(VECTOR_ZOOMS)},
         "requested_classes": N_CLASSES,
         "layers": layers,
         "metrics": metrics,
