@@ -14,7 +14,7 @@ const LAYER_TITLE: Record<V2Layer, string> = {
 function toKV(r: V2MetricRow): KVRow {
   if (r.unit === "%") return { label: r.label, value: r.value.toFixed(2), unit: "%" };
   const ci = r.ci ? `(${r.ci[0].toFixed(3)}–${r.ci[1].toFixed(3)})` : undefined;
-  return { label: r.label, value: r.value.toFixed(3), unit: ci };
+  return { label: r.label, value: r.value.toFixed(3), sub: ci };
 }
 
 /**
@@ -60,7 +60,11 @@ export function ModelV2Panel() {
           {V2_LAYERS.filter((l) => g.layers[l].length > 0).map((l) => (
             <div key={l} className={styles.v2Layer}>
               <h4 className={styles.v2LayerTitle}>{LAYER_TITLE[l]}</h4>
-              <KVTable ariaLabel={LAYER_TITLE[l]} rows={g.layers[l].map(toKV)} />
+              <KVTable
+                ariaLabel={LAYER_TITLE[l]}
+                className={styles.v2Kv}
+                rows={g.layers[l].map(toKV)}
+              />
             </div>
           ))}
         </Section>

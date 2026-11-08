@@ -8,3 +8,5 @@
 .v2Layer + .v2Layer { margin-top: 8px; }
 .v2LayerTitle { margin: 0 0 2px; font-size: 11px; font-weight: 600; color: var(--c-text); }
 .v2Empty { padding: 8px; font-size: 12px; color: var(--c-text-soft); }
+/* v2 metric values stay on one line; the interval sits under them. */
+.v2Kv td:last-child { white-space: nowrap; }
