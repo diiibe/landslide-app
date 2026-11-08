@@ -517,7 +517,8 @@ function Series({ measure }: { measure: Measure }) {
           .filter(
             (m) =>
               m.stationId === measure.stationId &&
-              m.sensorId === measure.sensorId,
+              m.sensorId === measure.sensorId &&
+              m.ms >= start.getTime() && m.ms <= end.getTime(),
           )
           .sort((a, b) => a.ms - b.ms);
         if (!ac.signal.aborted)
