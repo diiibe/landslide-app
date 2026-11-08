@@ -10,7 +10,9 @@ saved locally. **Analisi** preserves the existing model tools.
 On phones the panel opens as a bottom sheet, in touch landscape as a side sheet.
 The search, layer switches and Info buttons have touch targets of at least 44px.
 “Inquadra il livello” closes the mobile sheet before navigation. Point selection
-uses a 44px picking area without enlarging polygon hit areas. Selection and new
+uses a 44px picking area without enlarging polygon hit areas. Container resizing keeps the MapLibre canvas aligned after flex/sheet changes,
+including Safari. Coincident point records have a separate inspector selector.
+Selection and new
 PCR samples can trigger a brief feedback ring; there is no simulated continuous
 movement. Reduced motion is respected. Source attributes are rendered as text.
 

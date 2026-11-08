@@ -7,7 +7,7 @@
       "priority": 1,
       "status": "Importabile",
       "what": "Salinità, ossigeno disciolto, clorofilla a, torbidità e temperatura. Punto nel golfo con storico e selezione della profondità.",
-      "limit": "Feed locale: a 10 m la sonda RBRCON3_01 ha ultimo campione 08/11/2026 21:00 UTC. Ultimi QC=0: controllo non eseguito. Altri sensori dello stesso dataset hanno profondità 0 e 15 m e molte variabili null: non mescolare le righe.",
+      "limit": "Feed locale: conservare profondità e QC. QC=0 significa controllo non eseguito. Non mescolare i sensori e le profondità del dataset.",
       "sources": [
         {
           "id": "MAMBO3_TS",
@@ -28,7 +28,7 @@
       "priority": 2,
       "status": "Preparazione",
       "what": "Altezza significativa, periodo e direzione osservati alle boe; storico delle mareggiate e confronto fra punti.",
-      "limit": "Nella verifica precedente dello stesso giorno DWRG1/2 erano alle 16:30 UTC e DWRG3 alle 12:00 UTC. Serve mostrare il ritardo, conservare QC e convenzione della direzione.",
+      "limit": "Ogni boa conserva il proprio orario, QC e convenzione direzionale. La disponibilità può variare: mostrare il ritardo senza dichiarare tutte le osservazioni correnti.",
       "sources": [
         {
           "id": "DWRG1_TS",
@@ -82,7 +82,7 @@
       "priority": 1,
       "status": "Importabile",
       "what": "Punti delle centraline, concentrazione media giornaliera, serie temporale e confronto fra stazioni.",
-      "limit": "Ultima data misura in entrambi i feed Socrata: 01/11/2026, non 08/11 benché il catalogo si aggiorni oggi. Niente interpolazione che inventi valori in ogni quartiere.",
+      "limit": "Osservazioni giornaliere: verificare la data effettiva del dato nella scheda, distinta dall’aggiornamento del catalogo. Non interpolare valori in ogni quartiere.",
       "sources": [
         {
           "id": "qp5k-6pvm",
@@ -111,7 +111,7 @@
       "priority": 1,
       "status": "Importabile",
       "what": "Confronto di massimi orari giornalieri, medie giornaliere e massimi su 8 ore secondo il parametro.",
-      "limit": "Ultimo dato Socrata 01/11/2026. Un massimo orario della giornata non è un flusso aggiornato ogni ora. Tenere separati indicatore, unità e periodo.",
+      "limit": "Un massimo orario della giornata non è un flusso aggiornato ogni ora. Tenere separati indicatore, unità e periodo; leggere la data effettiva del dato.",
       "sources": [
         {
           "id": "ke9b-p6z2",
@@ -148,7 +148,7 @@
       "priority": 2,
       "status": "Importabile",
       "what": "Stazioni e concentrazioni per famiglia/genere con linea temporale stagionale e filtro.",
-      "limit": "Ultimo intervallo restituito: 19–26/10/2026. Mostrare il periodo di campionamento; la presenza di zero non certifica assenza di allergeni ovunque.",
+      "limit": "Mostrare il periodo di campionamento. La presenza di zero non certifica assenza di allergeni ovunque.",
       "sources": [
         {
           "id": "rnci-smsu",
@@ -169,7 +169,7 @@
       "priority": 3,
       "status": "Preparazione",
       "what": "Archivio per analisi e confronti storici.",
-      "limit": "CO arriva al 15/01/2026; il particolato totale è un altro archivio. Non prioritari come livelli correnti.",
+      "limit": "Archivi con coperture temporali diverse: non considerarli automaticamente misure correnti. Leggere la data effettiva nella scheda.",
       "sources": [
         {
           "id": "t274-vki6",
@@ -198,7 +198,7 @@
       "priority": 1,
       "status": "Pronto tecnicamente",
       "what": "Perimetri reali dei siti AUE con proponente, potenza dichiarata e stato del procedimento o esercizio; filtri sulla mappa.",
-      "limit": "174 geometrie di registro, non censimento di tutti i pannelli sui tetti. Autorizzato non equivale a costruito; potenza nominale non equivale a produzione misurata.",
+      "limit": "Geometrie di registro, non censimento di tutti i pannelli sui tetti. Autorizzato non equivale a costruito; potenza nominale non equivale a produzione misurata.",
       "sources": [
         {
           "id": "RIS_ENERG:imp_ftv_agriftv",
@@ -392,7 +392,7 @@
       "priority": 2,
       "status": "Pronto tecnicamente",
       "what": "Poligoni di destinazione urbanistica con norme e data di validità; contesto per energia, rigenerazione e attività.",
-      "limit": "Campioni con DATA_VAL anche 2011/2018. Destinazione del piano diversa dall’uso effettivo; verificare la variante vigente.",
+      "limit": "Destinazione del piano diversa dall’uso effettivo: verificare data di validità e variante vigente nelle proprietà della fonte.",
       "sources": [
         {
           "id": "CER:ZONE_INDUSTRIALI_ARTIG_D",
@@ -439,7 +439,7 @@
       "priority": 2,
       "status": "Preparazione",
       "what": "Censimento 2025 per Comune, categoria, stato della pratica e fase: mappa comunale o collegamento a geometrie ufficiali.",
-      "limit": "La tabella di 1.659 record NON contiene coordinate né indirizzo: si può aggregare per Comune; per singolo sito serve una geometria attendibile collegabile. “Archiviata” non va interpretato automaticamente come sito contaminato attivo.",
+      "limit": "La tabella non espone coordinate utilizzabili: aggregazione per Comune. Per il singolo sito occorre una geometria attendibile. “Archiviata” non equivale a sito contaminato attivo.",
       "sources": [
         {
           "id": "ti84-itu7",
@@ -460,7 +460,7 @@
       "priority": 2,
       "status": "Pronto tecnicamente",
       "what": "Localizzazione, stato operativo e tipologia; selezione degli impianti attivi e schede di gestione.",
-      "limit": "1.430 include inattivi: non usare il totale come numero di impianti in esercizio. I centri di raccolta sono uno strato distinto.",
+      "limit": "Il registro include anche impianti inattivi: non usare il totale come numero di impianti in esercizio. I centri di raccolta sono uno strato distinto.",
       "sources": [
         {
           "id": "RIFIUTI:MV_IMPIANTO",
@@ -507,7 +507,7 @@
       "priority": 2,
       "status": "Pronto tecnicamente",
       "what": "Punti di prelievo e impianti con uso, concessione, stato e valori dichiarati; contesto per scarsità e risorsa idrica.",
-      "limit": "11.049 prese sotterranee e 2.528 impianti sono record di registro, non sensori di portata. Non includono automaticamente tutta la rete di acquedotto.",
+      "limit": "Record di registro, non sensori di portata. Non descrivono automaticamente tutta la rete di acquedotto.",
       "sources": [
         {
           "id": "IDROGRAF:IDR_GIS_PRESE_SOTTERRANEE",
@@ -554,7 +554,7 @@
       "priority": 2,
       "status": "Preparazione",
       "what": "Risultati Escherichia coli / enterococchi e storia di campionamento delle aree di balneazione.",
-      "limit": "Ultimo campione Socrata 02/09/2026. La tabella non ha coordinate; collegare l’anagrafe ufficiale con controllo dei codici. I campioni “<10” restano censurati; non sono dati continui né un giudizio attuale di balneabilità.",
+      "limit": "Campioni stagionali collegati ai soli codici geografici verificati. I valori censurati mantengono il limite analitico. Non è un giudizio attuale di balneabilità.",
       "sources": [
         {
           "id": "fpj6-y9vk",
@@ -635,7 +635,7 @@
       "priority": 1,
       "status": "Importabile",
       "what": "Punti di parchi e giardini con scheda culturale; poligoni dei parchi comunali/intercomunali quando disponibili.",
-      "limit": "226 punti non sono tutti gli spazi verdi urbani né misure di accessibilità o ombra. I 18 poligoni regionali di parco comunale/intercomunale sono una tipologia giuridica diversa.",
+      "limit": "Il catalogo non censisce tutti gli spazi verdi urbani e non misura accessibilità o ombra. I parchi comunali/intercomunali regionali sono una tipologia giuridica distinta.",
       "sources": [
         {
           "id": "efx9-g469",
@@ -663,7 +663,7 @@
       "priority": 1,
       "status": "Pronto tecnicamente",
       "what": "Punti con specie, dimensioni, criteri di tutela e schede; esplorazione del patrimonio arboreo.",
-      "limit": "840 record non sono il censimento di tutti gli alberi di strada. Non dedurre salute attuale, rischio di caduta o ombra corrente.",
+      "limit": "Il registro non è il censimento di tutti gli alberi di strada. Non dedurre salute attuale, rischio di caduta o ombra corrente.",
       "sources": [
         {
           "id": "PPR:v_alberi_monumentali_e_notevoli",
@@ -683,7 +683,7 @@
       "priority": 2,
       "status": "Pronto tecnicamente",
       "what": "Aree protette, habitat e prati stabili per leggere continuità ecologica e rapporto fra città e natura.",
-      "limit": "Diverse fonti e revisioni: non confondere aree protette con parchi fruibili o accessibili; campioni dei prati hanno date di aggiornamento anche 2010/2013.",
+      "limit": "Fonti e revisioni diverse: verificare gli attributi di validità. Non confondere tutela ambientale con fruibilità o accessibilità.",
       "sources": [
         {
           "id": "SITI_PROT:SIC",
@@ -724,7 +724,7 @@
       "priority": 3,
       "status": "Importabile",
       "what": "Caso pilota molto dettagliato sulle alberature: specie, posizione e rilievi disponibili.",
-      "limit": "1.242 righe, con campioni risalenti al 2001. Copertura locale Codroipo e dati storici: non usarli come condizioni attuali dell’albero o copertura di Trieste.",
+      "limit": "Copertura locale di Codroipo e rilievi storici: non rappresenta le condizioni attuali degli alberi o la copertura di Trieste.",
       "sources": [
         {
           "id": "uqpq-dr8x",
@@ -745,7 +745,7 @@
       "priority": 1,
       "status": "Pronto tecnicamente",
       "what": "Sedi e tipologie scolastiche da selezionare e incrociare con misure, verde e urbanistica come analisi di prossimità.",
-      "limit": "Il servizio espone 987 record. Presenza di una scuola non misura occupazione presente o esposizione personale; verificare anno e stato delle sedi.",
+      "limit": "La presenza di una scuola non misura occupazione presente o esposizione personale: verificare anno e stato delle sedi.",
       "sources": [
         {
           "id": "PUB_UTIL:SCUOLE_GEO",
@@ -806,7 +806,7 @@
       "priority": 3,
       "status": "Importabile",
       "what": "Punti di connettività negli spazi pubblici.",
-      "limit": "749 righe ma 746 nomi distinti; max modified 15/01/2025. I campi ok/problem/critical non hanno un timestamp di osservazione verificato: non mostrarli come stato live.",
+      "limit": "I campi ok/problem/critical non hanno un timestamp di osservazione verificato. Il livello mostra posizioni e attributi della fonte, senza garantire disponibilità live.",
       "sources": [
         {
           "id": "53ur-f9mj",
@@ -827,7 +827,7 @@
       "priority": 1,
       "status": "Importabile",
       "what": "Linee ciclabili locali e regionali, filtro dello stato ove disponibile, raccordo con sentieri e servizi.",
-      "limit": "1.174 segmenti del dataset 2020 e 486 locali: non chilometri né itinerari unici. RECIR 2022 dichiara che i percorsi non sono tutti realizzati/percorribili: niente navigazione garantita.",
+      "limit": "Segmenti, non chilometri o itinerari unici. Il piano RECIR include percorsi non necessariamente realizzati o percorribili: nessuna navigazione garantita.",
       "sources": [
         {
           "id": "38yx-qk7a",
@@ -897,7 +897,7 @@
       "priority": 2,
       "status": "Importabile",
       "what": "Base per cercare indirizzi e collegare registri con una posizione attendibile; query spaziali per quartiere.",
-      "limit": "372.811 ASCOT e 24.910 non ASCOT nella versione 2024; copertura ed eventuali duplicati vanno verificati. Non scaricare tutto nel browser mobile a ogni apertura.",
+      "limit": "Numeri civici della distribuzione regionale: copertura ed eventuali duplicati vanno verificati. I tile caricano solo il dettaglio necessario alla vista.",
       "sources": [
         {
           "id": "fcre-uegn",
@@ -926,7 +926,7 @@
       "priority": 2,
       "status": "Preparazione",
       "what": "Attività per indirizzo nei Comuni coperti; strutture ricettive e andamento del tessuto economico.",
-      "limit": "Copertura non uniforme: il commercio Udine ha 17.899 righe storiche, non negozi attivi unici. Alberghi/RTA: 776 righe senza coordinate né indirizzo nella tabella; non posizionabili al singolo edificio senza altra anagrafe.",
+      "limit": "Copertura non uniforme e dichiarazioni storiche: i record non equivalgono automaticamente a negozi attivi unici. Le strutture prive di coordinate sono aggregate per Comune.",
       "sources": [
         {
           "id": "nqb3-7fg7",
@@ -955,7 +955,7 @@
       "priority": 3,
       "status": "Importabile",
       "what": "Mappa comunale e confronto temporale di arrivi/presenze, per analizzare stagionalità.",
-      "limit": "Ultimo anno/mese effettivamente restituito: dicembre 2025. 41.664 righe aggregate: non persone presenti ora, né flusso pedonale osservato. Join sul codice ISTAT normalizzato.",
+      "limit": "Arrivi e presenze del periodo dichiarato dalla fonte, non persone presenti ora o flusso pedonale osservato. Collegamento prioritario per codice ISTAT normalizzato.",
       "sources": [
         {
           "id": "7eps-cpgr",
@@ -976,7 +976,7 @@
       "priority": 2,
       "status": "Preparazione",
       "what": "Localizzazione e gestore delle stazioni radio base, stato amministrativo e storia.",
-      "limit": "360.855 righe ma 3.961 id impianto distinti. Consolidare per impianto/gestore/stato/data; verificare il CRS delle coordinate ETRS89 prima di trasformarle. Non fornisce copertura radio o traffico utenti.",
+      "limit": "Dichiarazioni consolidate per impianto e gestore; coordinate ETRS89/UTM33N convertite in WGS84. Non descrive copertura radio o traffico utenti.",
       "sources": [
         {
           "id": "28hy-b3b2",
@@ -997,7 +997,7 @@
       "priority": 2,
       "status": "Preparazione",
       "what": "Punti di misura con V/m, altezza e data della campagna; lettura separata dalle antenne.",
-      "limit": "Ultimo campione 03/11/2026. I campi chiamati gauss_boaga hanno numeri da verificare rispetto al CRS effettivo: serve controllo cartografico prima dell’import. Nessuna misura continua fra i punti.",
+      "limit": "Rilievi puntuali e campagne datate. Le coordinate gauss_boaga attendono conferma del CRS: il livello attuale è aggregato per Comune. Non è un campo continuo fra i punti.",
       "sources": [
         {
           "id": "g844-avf4",
@@ -1039,7 +1039,7 @@
       "priority": 2,
       "status": "Pronto tecnicamente",
       "what": "Beni, aree e schede ufficiali per capire cosa è tutelato e contestualizzare progetti e trasformazioni.",
-      "limit": "La mappa informativa non sostituisce la verifica del vincolo vigente. I 3.279 record si riferiscono al solo layer beni culturali campionato.",
+      "limit": "La mappa informativa non sostituisce la verifica del vincolo vigente. Ogni tipologia mantiene il proprio registro e la propria copertura.",
       "sources": [
         {
           "id": "PPR:v_beni_culturali",
@@ -1107,7 +1107,7 @@
       "priority": 2,
       "status": "Pronto tecnicamente",
       "what": "Punti di origine e aree storicamente bruciate, con confronto temporale quando le date sono valorizzate.",
-      "limit": "4.577 punti e 724 superfici boscate sono archivi, non incendi attivi. Un evento in corso richiede un’altra fonte operativa verificata.",
+      "limit": "Archivi di eventi e superfici percorse dal fuoco, non incendi attivi. Un evento in corso richiede una fonte operativa verificata.",
       "sources": [
         {
           "id": "ZONE_RISC:V_INCENDI_PUNTOINIZIO",
@@ -1161,7 +1161,7 @@
       "priority": 2,
       "status": "Preparazione",
       "what": "Poligoni delle sezioni 2021 da collegare alle tabelle ISTAT per confronti di quartiere e accesso ai servizi.",
-      "limit": "18.960 geometrie non significano popolazione osservata; il layer di confine da solo non contiene necessariamente gli indicatori voluti. Servono join e anno esplicito.",
+      "limit": "Geometrie di confine, non popolazione osservata. Gli indicatori demografici richiedono una fonte e un anno espliciti; non si deducono dal solo perimetro.",
       "sources": [
         {
           "id": "UNITA_STAT:SEZ_CENS_2021",
@@ -1241,7 +1241,7 @@
       "priority": 3,
       "status": "Preparazione",
       "what": "Segnalare atti relativi a progetti territoriali solo quando una localizzazione è esplicita e verificabile, con link all’atto.",
-      "limit": "11.599 atti senza geometrie: il Comune è aggregabile, il punto di cantiere non si deve inventare dal testo. Non una fonte certificata di cantieri attivi.",
+      "limit": "Atti privi di geometria aggregati per Comune. Il punto di un cantiere non viene inventato dal testo; non è una fonte certificata di cantieri attivi.",
       "sources": [
         {
           "id": "vny3-2fkg",

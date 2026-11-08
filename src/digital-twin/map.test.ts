@@ -28,6 +28,8 @@ function harness() {
   vi.stubGlobal("cancelAnimationFrame", (id: number) => frames.delete(id));
   const container = document.createElement("div");
   container.getBoundingClientRect = () => ({ x: 0, y: 0, width: 390, height: 700, top: 0, bottom: 700, left: 0, right: 390, toJSON: () => ({}) });
+  Object.defineProperties(container,{clientWidth:{value:390},clientHeight:{value:700}});
+  const canvas={clientWidth:390,clientHeight:164,style:{cursor:""}};
   const handlers = new Map<string, () => void>();
   const sources = new Map<string, { setData: ReturnType<typeof vi.fn> }>();
   const layers = new Map<string, unknown>();
@@ -35,7 +37,8 @@ function harness() {
   const flyTo = vi.fn(() => { flying = true; });
   const fitBounds = vi.fn(() => { flying = true; });
   const map = {
-    getContainer: () => container,
+    getContainer: () => container, getCanvas:()=>canvas,
+    resize:vi.fn(()=>{canvas.clientWidth=390;canvas.clientHeight=700;flying=false;}),
     getStyle: () => ({ layers: [] }),
     on: (event: string, handler: () => void) => handlers.set(event, handler),
     off: (event: string) => handlers.delete(event),
@@ -51,7 +54,7 @@ function harness() {
     addLayer: (layer: { id: string }) => layers.set(layer.id, layer),
   };
   dispose = mountTwinMap(map as unknown as MLMap);
-  return { paint, jumpTo, flyTo, fitBounds, isFlying: () => flying, getPadding: () => padding,
+  return { paint, jumpTo, flyTo, fitBounds, canvas, resize:map.resize, isFlying: () => flying, getPadding: () => padding,
     drain: () => { for (let n = 0; frames.size && n < 20; n++) { const batch = [...frames]; frames.clear(); for (const [, callback] of batch) callback(n * 16); } },
     emit: (event: string) => handlers.get(event)?.() };
 }
@@ -97,7 +100,7 @@ it("applies the closed sheet inset before flying or fitting, so a later layout f
   const sample = { stationId: 212, sensorId: 6, name: "Trieste", lon: 13.75, lat: 45.65, value: 3, time: "2026-11-08 18:00:00", ms: Date.UTC(2026, 10, 8, 18) };
   useAppStore.setState({ drawerOpen: true });
   useTwinStore.setState({ active: true, measures: [sample, { ...sample, stationId: 213, lon: 13.5 }] });
-  h.drain(); expect(h.getPadding().bottom).toBe(434);
+  h.drain(); expect(h.getPadding().bottom).toBe(434);expect(h.canvas.clientHeight).toBe(700);expect(h.resize).toHaveBeenCalledTimes(1);
   window.dispatchEvent(new CustomEvent("fvg:twin-station", { detail: 212 }));
   useAppStore.setState({ drawerOpen: false });
   h.drain();

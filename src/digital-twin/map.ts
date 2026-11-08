@@ -74,6 +74,17 @@ export function mountTwinMap(map: MLMap): () => void {
   const interactions = mountTwinInteractions(map, () => ready && !disposed);
   function applyPadding() {
     if (!ready || disposed) return;
+    const containerElement = map.getContainer();
+    // MapLibre listens to window resizing, while flex/sheet layout can resize
+    // its container independently (notably during Safari's first layout).
+    if (containerElement.clientWidth > 0 && containerElement.clientHeight > 0) {
+      const canvas = map.getCanvas();
+      if (
+        canvas.clientWidth !== containerElement.clientWidth ||
+        canvas.clientHeight !== containerElement.clientHeight
+      )
+        map.resize();
+    }
     const panel = document.getElementById("drawer-panel"),
       container = map.getContainer().getBoundingClientRect();
     const padding = { top: 0, bottom: 0, left: 0, right: 0 };

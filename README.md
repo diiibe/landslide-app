@@ -1,8 +1,8 @@
-# landslide-app
+# FVG · Territorio
 
-Friuli-Venezia Giulia landslide susceptibility viewer. Shipping Phase **J.2**
-(best pooled AUC 0.802) and **J.3** (geomorphological zones, AUC 0.805) with
-IFFI catalogued landslides as ground truth.
+Mappa unificata del Friuli Venezia Giulia: osservazioni, registri territoriali,
+ambiente, città e infrastrutture in layer tematici indipendenti, insieme ai modelli
+di suscettibilità alle frane J.2/J.3, alluvioni e inventario IFFI.
 
 ## Develop
 
