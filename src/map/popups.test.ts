@@ -1,3 +1,6 @@
+import { useAppStore } from "@/app/store";
+import type { Map as MLMap, MapMouseEvent } from "maplibre-gl";
+import { registerPopups } from "./popups";
 import { describe, expect, it } from "vitest";
 import {
   buildCellPopupNode,
@@ -84,10 +87,14 @@ describe("buildV2PopupNode", () => {
   });
 
   it("no longer shows a per-cell score source", () => {
-    const text = buildV2PopupNode({ layer: "bodies", cls: 5, ncls: 5 }).textContent ?? "";
+    const text =
+      buildV2PopupNode({ layer: "bodies", cls: 5, ncls: 5 }).textContent ?? "";
     expect(text).not.toMatch(/oof|holdout|in-sample|fuori campione/i);
-    expect(buildV2PopupNode({ layer: "bodies", cls: 5, ncls: 5 }).querySelector(".fvg-popup__warn"))
-      .toBeNull();
+    expect(
+      buildV2PopupNode({ layer: "bodies", cls: 5, ncls: 5 }).querySelector(
+        ".fvg-popup__warn",
+      ),
+    ).toBeNull();
   });
 });
 
@@ -99,16 +106,67 @@ describe("v2 zoom hint", () => {
   });
 
   it("applies below z10 while a v2 raster is visible", () => {
-    expect(v2ZoomHintApplies(fake(9.5, { "v2-bodies-raster": "visible" }))).toBe(true);
+    expect(
+      v2ZoomHintApplies(fake(9.5, { "v2-bodies-raster": "visible" })),
+    ).toBe(true);
   });
 
   it("does not apply from z10, or when the v2 layers are hidden or absent", () => {
-    expect(v2ZoomHintApplies(fake(10, { "v2-bodies-raster": "visible" }))).toBe(false);
-    expect(v2ZoomHintApplies(fake(8, { "v2-diffuse-raster": "none" }))).toBe(false);
+    expect(v2ZoomHintApplies(fake(10, { "v2-bodies-raster": "visible" }))).toBe(
+      false,
+    );
+    expect(v2ZoomHintApplies(fake(8, { "v2-diffuse-raster": "none" }))).toBe(
+      false,
+    );
     expect(v2ZoomHintApplies(fake(8, {}))).toBe(false);
   });
 
   it("reads 'Avvicinati per i dettagli della cella'", () => {
-    expect(buildV2ZoomHintNode().textContent).toBe("Avvicinati per i dettagli della cella");
+    expect(buildV2ZoomHintNode().textContent).toBe(
+      "Avvicinati per i dettagli della cella",
+    );
   });
+});
+
+it("reserves clicks and cursor for drawing instead of opening susceptibility popups", () => {
+  const handlers = new Map<string, (...args: unknown[]) => void>();
+  let queries = 0;
+  const canvas = { style: { cursor: "crosshair" } };
+  const map = {
+    on: (
+      event: string,
+      layerOrHandler: string | ((...args: unknown[]) => void),
+      handler?: (...args: unknown[]) => void,
+    ) => {
+      handlers.set(
+        typeof layerOrHandler === "string"
+          ? event + ":" + layerOrHandler
+          : event,
+        typeof layerOrHandler === "function" ? layerOrHandler : handler!,
+      );
+    },
+    off: () => {},
+    getCanvas: () => canvas,
+    getLayer: () => ({}),
+    getZoom: () => 12,
+    queryRenderedFeatures: () => {
+      queries++;
+      return [];
+    },
+  };
+  const dispose = registerPopups(map as unknown as MLMap);
+  try {
+    useAppStore.setState({ drawingMode: true });
+    handlers.get("click")?.({ point: { x: 1, y: 1 } } as MapMouseEvent);
+    handlers.get("mouseenter:susceptibility")?.();
+    handlers.get("mouseleave:susceptibility")?.();
+    expect(queries).toBe(0);
+    expect(canvas.style.cursor).toBe("crosshair");
+    useAppStore.setState({ drawingMode: false });
+    handlers.get("click")?.({ point: { x: 1, y: 1 } } as MapMouseEvent);
+    expect(queries).toBe(1);
+  } finally {
+    dispose();
+    useAppStore.setState({ drawingMode: false });
+  }
 });
