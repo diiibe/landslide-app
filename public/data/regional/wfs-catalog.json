@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+  "generatedAt": "2026-11-09T22:22:46.776812+00:00",
   "layers": [
     {
       "id": "region-ris-energ-imp-ftv-agriftv",
@@ -17,8 +17,8 @@
       "color": "#d5ae58",
       "count": 173,
       "sourceCount": 174,
-      "retrievedAt": "2026-11-09T06:26:22.940905+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:22:48.727658+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.52249523,
@@ -52,7 +52,16 @@
       ],
       "status": "ready",
       "kind": "geojson",
-      "file": "region-ris-energ-imp-ftv-agriftv.geojson"
+      "file": "region-ris-energ-imp-ftv-agriftv.geojson",
+      "overview": {
+        "file": "overview-region-ris-energ-imp-ftv-agriftv-66628232d884.geojson",
+        "count": 171,
+        "sourceCount": 173,
+        "maxCount": 1,
+        "resolutionKm": 0,
+        "detailZoom": 14,
+        "kind": "areas"
+      }
     },
     {
       "id": "region-ris-energ-prog-impaue-v-bess-public",
@@ -70,8 +79,8 @@
       "color": "#d5ae58",
       "count": 36,
       "sourceCount": 36,
-      "retrievedAt": "2026-11-09T06:26:22.383643+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:22:48.097589+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.65711886,
@@ -104,7 +113,16 @@
       ],
       "status": "ready",
       "kind": "geojson",
-      "file": "region-ris-energ-prog-impaue-v-bess-public.geojson"
+      "file": "region-ris-energ-prog-impaue-v-bess-public.geojson",
+      "overview": {
+        "file": "overview-region-ris-energ-prog-impaue-v-bess-public-235e2be270ee.geojson",
+        "count": 36,
+        "sourceCount": 36,
+        "maxCount": 1,
+        "resolutionKm": 0,
+        "detailZoom": 14,
+        "kind": "areas"
+      }
     },
     {
       "id": "region-ris-energ-prog-impaue-v-biomasse-biometano-public",
@@ -122,8 +140,8 @@
       "color": "#d5ae58",
       "count": 22,
       "sourceCount": 22,
-      "retrievedAt": "2026-11-09T06:26:22.413827+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:22:48.118832+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.54079988,
@@ -156,7 +174,16 @@
       ],
       "status": "ready",
       "kind": "geojson",
-      "file": "region-ris-energ-prog-impaue-v-biomasse-biometano-public.geojson"
+      "file": "region-ris-energ-prog-impaue-v-biomasse-biometano-public.geojson",
+      "overview": {
+        "file": "overview-region-ris-energ-prog-impaue-v-biomasse-biometano-public-45331a985c8d.geojson",
+        "count": 22,
+        "sourceCount": 22,
+        "maxCount": 1,
+        "resolutionKm": 0,
+        "detailZoom": 14,
+        "kind": "areas"
+      }
     },
     {
       "id": "region-ris-energ-prog-impaue-v-idroelettrici-public",
@@ -174,8 +201,8 @@
       "color": "#d5ae58",
       "count": 54,
       "sourceCount": 54,
-      "retrievedAt": "2026-11-09T06:26:23.660563+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:22:49.777836+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.50370183,
@@ -212,7 +239,16 @@
       ],
       "status": "ready",
       "kind": "geojson",
-      "file": "region-ris-energ-prog-impaue-v-idroelettrici-public.geojson"
+      "file": "region-ris-energ-prog-impaue-v-idroelettrici-public.geojson",
+      "overview": {
+        "file": "overview-region-ris-energ-prog-impaue-v-idroelettrici-public-d191003ec26d.geojson",
+        "count": 54,
+        "sourceCount": 54,
+        "maxCount": 1,
+        "resolutionKm": 0,
+        "detailZoom": 14,
+        "kind": "areas"
+      }
     },
     {
       "id": "region-cer-areeconvenzionali-cp",
@@ -230,8 +266,8 @@
       "color": "#d5ae58",
       "count": 57,
       "sourceCount": 57,
-      "retrievedAt": "2026-11-09T06:26:25.989414+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:22:52.448571+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.32138347,
@@ -273,8 +309,8 @@
       "color": "#d5ae58",
       "count": 215,
       "sourceCount": 215,
-      "retrievedAt": "2026-11-09T06:26:49.067140+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:23:22.410216+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.32138347,
@@ -325,10 +361,10 @@
       "sourceUrl": "https://serviziogc.regione.fvg.it/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=INDUSTR%3Aprog_masterplan_vm_siti_masterplan&outputFormat=application%2Fjson&count=2&srsName=EPSG%3A4326",
       "cadence": "Registro territoriale · non telemetria",
       "color": "#c58d69",
-      "count": 222,
-      "sourceCount": 222,
-      "retrievedAt": "2026-11-09T06:26:25.059909+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "count": 228,
+      "sourceCount": 228,
+      "retrievedAt": "2026-11-09T22:22:51.433514+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.34361246,
@@ -363,7 +399,16 @@
       ],
       "status": "ready",
       "kind": "geojson",
-      "file": "region-industr-prog-masterplan-vm-siti-masterplan.geojson"
+      "file": "region-industr-prog-masterplan-vm-siti-masterplan.geojson",
+      "overview": {
+        "file": "overview-region-industr-prog-masterplan-vm-siti-masterplan-857133212887.geojson",
+        "count": 228,
+        "sourceCount": 228,
+        "maxCount": 1,
+        "resolutionKm": 0,
+        "detailZoom": 14,
+        "kind": "areas"
+      }
     },
     {
       "id": "region-industr-autorizzazione-unica-ambientale-aua",
@@ -381,8 +426,8 @@
       "color": "#d3a26a",
       "count": 3470,
       "sourceCount": 3470,
-      "retrievedAt": "2026-11-09T06:26:26.639790+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:22:53.489458+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.34440039,
@@ -426,8 +471,8 @@
       "color": "#d3a26a",
       "count": 29,
       "sourceCount": 29,
-      "retrievedAt": "2026-11-09T06:26:27.732580+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:22:54.229746+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.71766469,
@@ -474,8 +519,8 @@
       "color": "#c58d69",
       "count": 331,
       "sourceCount": 335,
-      "retrievedAt": "2026-11-09T06:26:28.611073+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:22:55.879527+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.43370506,
@@ -507,7 +552,16 @@
       ],
       "status": "ready",
       "kind": "geojson",
-      "file": "region-util-ter-via-reg-loc-progetti.geojson"
+      "file": "region-util-ter-via-reg-loc-progetti.geojson",
+      "overview": {
+        "file": "overview-region-util-ter-via-reg-loc-progetti-a42564ee9a95.geojson",
+        "count": 315,
+        "sourceCount": 331,
+        "maxCount": 1,
+        "resolutionKm": 0,
+        "detailZoom": 14,
+        "kind": "areas"
+      }
     },
     {
       "id": "region-util-ter-screening-via-reg",
@@ -525,8 +579,8 @@
       "color": "#c58d69",
       "count": 1888,
       "sourceCount": 1888,
-      "retrievedAt": "2026-11-09T06:26:32.016567+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:23:01.272226+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.37406956,
@@ -557,6 +611,15 @@
       "status": "ready",
       "kind": "vector",
       "file": "region-util-ter-screening-via-reg.pmtiles",
+      "overview": {
+        "file": "overview-region-util-ter-screening-via-reg-47d397383f3c.geojson",
+        "count": 1848,
+        "sourceCount": 1888,
+        "maxCount": 1,
+        "resolutionKm": 0,
+        "detailZoom": 14,
+        "kind": "areas"
+      },
       "sourceLayer": "data"
     },
     {
@@ -575,8 +638,8 @@
       "color": "#c58d69",
       "count": 4155,
       "sourceCount": 4155,
-      "retrievedAt": "2026-11-09T06:26:38.222969+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:23:02.485019+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.34351152,
@@ -626,6 +689,15 @@
       "status": "ready",
       "kind": "vector",
       "file": "region-cer-zone-industriali-artig-d.pmtiles",
+      "overview": {
+        "file": "overview-region-cer-zone-industriali-artig-d-054c75b92863.geojson",
+        "count": 4150,
+        "sourceCount": 4155,
+        "maxCount": 1,
+        "resolutionKm": 0,
+        "detailZoom": 14,
+        "kind": "areas"
+      },
       "sourceLayer": "data"
     },
     {
@@ -644,8 +716,8 @@
       "color": "#c58d69",
       "count": 1466,
       "sourceCount": 1466,
-      "retrievedAt": "2026-11-09T06:26:36.517055+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:23:08.650725+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.46204485,
@@ -691,7 +763,16 @@
       "warnings": [],
       "status": "ready",
       "kind": "geojson",
-      "file": "region-cer-zone-commerciali-h.geojson"
+      "file": "region-cer-zone-commerciali-h.geojson",
+      "overview": {
+        "file": "overview-region-cer-zone-commerciali-h-ed30db3b2821.geojson",
+        "count": 1466,
+        "sourceCount": 1466,
+        "maxCount": 1,
+        "resolutionKm": 0,
+        "detailZoom": 14,
+        "kind": "areas"
+      }
     },
     {
       "id": "region-ppr-v-aree-degradate",
@@ -709,8 +790,8 @@
       "color": "#c58d69",
       "count": 276,
       "sourceCount": 276,
-      "retrievedAt": "2026-11-09T06:26:38.265013+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:23:08.254658+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.42557821,
@@ -746,7 +827,16 @@
       ],
       "status": "ready",
       "kind": "geojson",
-      "file": "region-ppr-v-aree-degradate.geojson"
+      "file": "region-ppr-v-aree-degradate.geojson",
+      "overview": {
+        "file": "overview-region-ppr-v-aree-degradate-47dd8bc1884c.geojson",
+        "count": 269,
+        "sourceCount": 276,
+        "maxCount": 1,
+        "resolutionKm": 0,
+        "detailZoom": 14,
+        "kind": "areas"
+      }
     },
     {
       "id": "region-rifiuti-mv-impianto",
@@ -764,8 +854,8 @@
       "color": "#b8a787",
       "count": 1430,
       "sourceCount": 1430,
-      "retrievedAt": "2026-11-09T06:26:39.620970+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:23:10.247721+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.454609,
@@ -817,8 +907,8 @@
       "color": "#b8a787",
       "count": 172,
       "sourceCount": 172,
-      "retrievedAt": "2026-11-09T06:26:41.011057+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:23:10.076561+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.437571,
@@ -859,8 +949,8 @@
       "color": "#b8a787",
       "count": 274,
       "sourceCount": 274,
-      "retrievedAt": "2026-11-09T06:26:41.893821+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:23:10.972676+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.45417733,
@@ -888,7 +978,16 @@
       "warnings": [],
       "status": "ready",
       "kind": "geojson",
-      "file": "region-rifiuti-discariche-2025.geojson"
+      "file": "region-rifiuti-discariche-2025.geojson",
+      "overview": {
+        "file": "overview-region-rifiuti-discariche-2025-b5b28cb26f80.geojson",
+        "count": 274,
+        "sourceCount": 274,
+        "maxCount": 1,
+        "resolutionKm": 0,
+        "detailZoom": 14,
+        "kind": "areas"
+      }
     },
     {
       "id": "region-idrograf-idr-gis-prese-sotterranee",
@@ -906,8 +1005,8 @@
       "color": "#6cafd1",
       "count": 11049,
       "sourceCount": 11049,
-      "retrievedAt": "2026-11-09T06:26:42.984702+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:23:12.709659+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.42864786,
@@ -960,6 +1059,15 @@
       "status": "ready",
       "kind": "vector",
       "file": "region-idrograf-idr-gis-prese-sotterranee.pmtiles",
+      "overview": {
+        "file": "overview-region-idrograf-idr-gis-prese-sotterranee-8b22a41db101.geojson",
+        "count": 11049,
+        "sourceCount": 11049,
+        "maxCount": 1519,
+        "resolutionKm": 7,
+        "detailZoom": 11,
+        "kind": "registry"
+      },
       "sourceLayer": "data"
     },
     {
@@ -978,8 +1086,8 @@
       "color": "#6cafd1",
       "count": 2528,
       "sourceCount": 2528,
-      "retrievedAt": "2026-11-09T06:26:42.989322+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:23:12.288593+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.33314842,
@@ -1037,8 +1145,8 @@
       "color": "#6cafd1",
       "count": 482,
       "sourceCount": 482,
-      "retrievedAt": "2026-11-09T06:26:44.116710+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:23:13.513642+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.47493381,
@@ -1090,8 +1198,8 @@
       "color": "#5ebfcc",
       "count": 68,
       "sourceCount": 68,
-      "retrievedAt": "2026-11-09T06:26:44.818484+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:23:14.192049+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.72714904,
@@ -1131,8 +1239,8 @@
       "color": "#86b381",
       "count": 18,
       "sourceCount": 18,
-      "retrievedAt": "2026-11-09T06:26:46.989497+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:23:15.608684+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.6848218,
@@ -1159,7 +1267,16 @@
       "warnings": [],
       "status": "ready",
       "kind": "geojson",
-      "file": "region-siti-prot-parchi-comunali-rafvg.geojson"
+      "file": "region-siti-prot-parchi-comunali-rafvg.geojson",
+      "overview": {
+        "file": "overview-region-siti-prot-parchi-comunali-rafvg-414128c177a2.geojson",
+        "count": 3,
+        "sourceCount": 18,
+        "maxCount": 1,
+        "resolutionKm": 0,
+        "detailZoom": 14,
+        "kind": "areas"
+      }
     },
     {
       "id": "region-ppr-v-alberi-monumentali-e-notevoli",
@@ -1177,8 +1294,8 @@
       "color": "#86b381",
       "count": 840,
       "sourceCount": 840,
-      "retrievedAt": "2026-11-09T06:26:50.632844+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:23:17.114429+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.33045,
@@ -1252,8 +1369,8 @@
       "color": "#86b381",
       "count": 66,
       "sourceCount": 66,
-      "retrievedAt": "2026-11-09T06:26:53.411945+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:23:19.927147+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.32808671,
@@ -1285,7 +1402,16 @@
       "warnings": [],
       "status": "ready",
       "kind": "geojson",
-      "file": "region-siti-prot-sic.geojson"
+      "file": "region-siti-prot-sic.geojson",
+      "overview": {
+        "file": "overview-region-siti-prot-sic-d24d8b6ba5eb.geojson",
+        "count": 21,
+        "sourceCount": 66,
+        "maxCount": 1,
+        "resolutionKm": 0,
+        "detailZoom": 14,
+        "kind": "areas"
+      }
     },
     {
       "id": "region-siti-prot-pratistabili",
@@ -1303,8 +1429,8 @@
       "color": "#86b381",
       "count": 10486,
       "sourceCount": 10486,
-      "retrievedAt": "2026-11-09T06:26:59.808163+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:23:27.830377+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.42739491,
@@ -1375,8 +1501,8 @@
       "color": "#86b381",
       "count": 52185,
       "sourceCount": 52185,
-      "retrievedAt": "2026-11-09T06:27:33.596001+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:23:53.804356+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.3212537,
@@ -1429,8 +1555,8 @@
       "color": "#86b381",
       "count": 343,
       "sourceCount": 343,
-      "retrievedAt": "2026-11-09T06:27:03.329077+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:23:38.372385+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.32125369,
@@ -1481,8 +1607,8 @@
       "color": "#c58dba",
       "count": 987,
       "sourceCount": 987,
-      "retrievedAt": "2026-11-09T06:27:07.404037+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:23:42.168440+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.372258,
@@ -1529,8 +1655,8 @@
       "color": "#c58dba",
       "count": 1545,
       "sourceCount": 1546,
-      "retrievedAt": "2026-11-09T06:27:08.803783+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:23:43.615746+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.3707161,
@@ -1604,6 +1730,15 @@
       "status": "ready",
       "kind": "vector",
       "file": "region-pub-util-impiantisportivifvg.pmtiles",
+      "overview": {
+        "file": "overview-region-pub-util-impiantisportivifvg-ea032275815d.geojson",
+        "count": 1545,
+        "sourceCount": 1545,
+        "maxCount": 89,
+        "resolutionKm": 7,
+        "detailZoom": 11,
+        "kind": "registry"
+      },
       "sourceLayer": "data"
     },
     {
@@ -1622,8 +1757,8 @@
       "color": "#b0b7b0",
       "count": 124,
       "sourceCount": 124,
-      "retrievedAt": "2026-11-09T06:27:12.751326+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:23:48.376148+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.42613344,
@@ -1669,8 +1804,8 @@
       "color": "#b0b7b0",
       "count": 75546,
       "sourceCount": 75546,
-      "retrievedAt": "2026-11-09T06:27:17.103047+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:23:53.930595+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.32455777,
@@ -1735,8 +1870,8 @@
       "color": "#b0b7b0",
       "count": 9282,
       "sourceCount": 9282,
-      "retrievedAt": "2026-11-09T06:27:22.081771+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:23:54.043964+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.4649242,
@@ -1799,8 +1934,8 @@
       "color": "#b0b7b0",
       "count": 540,
       "sourceCount": 541,
-      "retrievedAt": "2026-11-09T06:27:34.111415+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:24:04.672315+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.33379992,
@@ -1854,8 +1989,8 @@
       "color": "#c58dba",
       "count": 3279,
       "sourceCount": 3279,
-      "retrievedAt": "2026-11-09T06:27:35.984074+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:24:06.935549+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.3291869,
@@ -1917,8 +2052,8 @@
       "color": "#c58dba",
       "count": 5040,
       "sourceCount": 5040,
-      "retrievedAt": "2026-11-09T06:27:38.863666+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:24:10.156637+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.43298955,
@@ -1961,6 +2096,15 @@
       "status": "ready",
       "kind": "vector",
       "file": "region-ppr-v-beni-immobili-interesse-storico-artistico-parte-ii.pmtiles",
+      "overview": {
+        "file": "overview-region-ppr-v-beni-immobili-interesse-storico-artistico-parte-ii-c5de21079404.geojson",
+        "count": 5039,
+        "sourceCount": 5040,
+        "maxCount": 1,
+        "resolutionKm": 0,
+        "detailZoom": 14,
+        "kind": "areas"
+      },
       "sourceLayer": "data"
     },
     {
@@ -1979,8 +2123,8 @@
       "color": "#c58dba",
       "count": 1534,
       "sourceCount": 1534,
-      "retrievedAt": "2026-11-09T06:27:45.583819+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:24:20.163063+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.47911455,
@@ -2019,7 +2163,16 @@
       "warnings": [],
       "status": "ready",
       "kind": "geojson",
-      "file": "region-ppr-v-zone-interesse-archeologico.geojson"
+      "file": "region-ppr-v-zone-interesse-archeologico.geojson",
+      "overview": {
+        "file": "overview-region-ppr-v-zone-interesse-archeologico-28f5669667b2.geojson",
+        "count": 1534,
+        "sourceCount": 1534,
+        "maxCount": 1,
+        "resolutionKm": 0,
+        "detailZoom": 14,
+        "kind": "areas"
+      }
     },
     {
       "id": "region-adspmao-aree-patrimoniali-t",
@@ -2037,8 +2190,8 @@
       "color": "#d3a26a",
       "count": 21,
       "sourceCount": 21,
-      "retrievedAt": "2026-11-09T06:27:46.813402+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:24:21.493795+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           13.74971318,
@@ -2063,7 +2216,16 @@
       ],
       "status": "ready",
       "kind": "geojson",
-      "file": "region-adspmao-aree-patrimoniali-t.geojson"
+      "file": "region-adspmao-aree-patrimoniali-t.geojson",
+      "overview": {
+        "file": "overview-region-adspmao-aree-patrimoniali-t-a0c751734c97.geojson",
+        "count": 21,
+        "sourceCount": 21,
+        "maxCount": 1,
+        "resolutionKm": 0,
+        "detailZoom": 14,
+        "kind": "areas"
+      }
     },
     {
       "id": "region-adspmao-aree-patrimoniali-m",
@@ -2081,8 +2243,8 @@
       "color": "#d3a26a",
       "count": 5,
       "sourceCount": 5,
-      "retrievedAt": "2026-11-09T06:27:47.435711+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:24:24.918165+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           13.54968361,
@@ -2143,7 +2305,16 @@
       "warnings": [],
       "status": "ready",
       "kind": "geojson",
-      "file": "region-adspmao-aree-patrimoniali-m.geojson"
+      "file": "region-adspmao-aree-patrimoniali-m.geojson",
+      "overview": {
+        "file": "overview-region-adspmao-aree-patrimoniali-m-60e7881e0460.geojson",
+        "count": 5,
+        "sourceCount": 5,
+        "maxCount": 1,
+        "resolutionKm": 0,
+        "detailZoom": 14,
+        "kind": "areas"
+      }
     },
     {
       "id": "region-aut-port-prp-trieste-azzonamento-funzionale-rdn2008",
@@ -2161,8 +2332,8 @@
       "color": "#d3a26a",
       "count": 75,
       "sourceCount": 75,
-      "retrievedAt": "2026-11-09T06:27:48.334628+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:24:25.997832+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           13.73312064,
@@ -2192,7 +2363,16 @@
       ],
       "status": "ready",
       "kind": "geojson",
-      "file": "region-aut-port-prp-trieste-azzonamento-funzionale-rdn2008.geojson"
+      "file": "region-aut-port-prp-trieste-azzonamento-funzionale-rdn2008.geojson",
+      "overview": {
+        "file": "overview-region-aut-port-prp-trieste-azzonamento-funzionale-rdn2008-ab09649e2b10.geojson",
+        "count": 74,
+        "sourceCount": 75,
+        "maxCount": 1,
+        "resolutionKm": 0,
+        "detailZoom": 14,
+        "kind": "areas"
+      }
     },
     {
       "id": "region-zone-risc-v-incendi-puntoinizio",
@@ -2210,8 +2390,8 @@
       "color": "#b8a787",
       "count": 4577,
       "sourceCount": 4577,
-      "retrievedAt": "2026-11-09T06:27:49.335981+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:24:27.459012+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.32353275,
@@ -2252,8 +2432,8 @@
       "color": "#b8a787",
       "count": 724,
       "sourceCount": 724,
-      "retrievedAt": "2026-11-09T06:27:53.802157+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:24:30.547655+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.32326263,
@@ -2280,7 +2460,16 @@
       ],
       "status": "ready",
       "kind": "geojson",
-      "file": "region-zone-risc-superficie-boscata-bruciata.geojson"
+      "file": "region-zone-risc-superficie-boscata-bruciata.geojson",
+      "overview": {
+        "file": "overview-region-zone-risc-superficie-boscata-bruciata-a9ee8e02a912.geojson",
+        "count": 713,
+        "sourceCount": 724,
+        "maxCount": 1,
+        "resolutionKm": 0,
+        "detailZoom": 14,
+        "kind": "areas"
+      }
     },
     {
       "id": "region-ersa-awc-capacita-acqua-disp",
@@ -2298,8 +2487,8 @@
       "color": "#86b381",
       "count": 6,
       "sourceCount": 6,
-      "retrievedAt": "2026-11-09T06:27:58.326179+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:24:35.436682+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.42292128,
@@ -2345,8 +2534,8 @@
       "color": "#86b381",
       "count": 76,
       "sourceCount": 76,
-      "retrievedAt": "2026-11-09T06:28:05.352191+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:24:42.357335+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           13.25102549,
@@ -2412,8 +2601,8 @@
       "color": "#c58dba",
       "count": 18960,
       "sourceCount": 18960,
-      "retrievedAt": "2026-11-09T06:28:19.073991+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:24:53.811402+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.32093824,
@@ -2478,8 +2667,8 @@
       "color": "#a3b8b4",
       "count": 38173,
       "sourceCount": 38173,
-      "retrievedAt": "2026-11-09T06:29:32.432802+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:26:28.676331+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.32,
@@ -2524,8 +2713,8 @@
       "color": "#a3b8b4",
       "count": 14917,
       "sourceCount": 14917,
-      "retrievedAt": "2026-11-09T06:29:34.983457+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:26:33.910105+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.31083537,
@@ -2570,8 +2759,8 @@
       "color": "#a3b8b4",
       "count": 15,
       "sourceCount": 15,
-      "retrievedAt": "2026-11-09T06:29:51.706961+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:26:58.928140+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.62138101,
@@ -2612,8 +2801,8 @@
       "color": "#a3b8b4",
       "count": 14917,
       "sourceCount": 14917,
-      "retrievedAt": "2026-11-09T06:29:54.455305+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:27:00.973164+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.31083537,
@@ -2657,8 +2846,8 @@
       "color": "#d3a26a",
       "count": 234,
       "sourceCount": 234,
-      "retrievedAt": "2026-11-09T06:29:59.360234+00:00",
-      "generatedAt": "2026-11-09T06:26:21.395212+00:00",
+      "retrievedAt": "2026-11-09T22:27:06.833431+00:00",
+      "generatedAt": "2026-11-09T22:22:46.776812+00:00",
       "bounds": [
         [
           12.45476919,
