@@ -3,6 +3,7 @@ import { z } from "zod";
 import type { Map } from "maplibre-gl";
 import { POI_CATEGORIES, POI_DEFAULT_COLORS } from "@/app/types";
 import { useAppStore } from "@/app/store";
+import { BUILTIN_LAYERS, isLayerEnabled } from "@/regional/builtins";
 import { useRegionalStore } from "@/regional/store";
 const KEY = "friulview:spaces:v1";
 const flags = z.record(z.string().max(180), z.boolean());
@@ -36,7 +37,9 @@ const map = () => (window as unknown as { __mlmap?: Map }).__mlmap;
 export function saveSpace(name: string) {
   const a = useAppStore.getState(), r = useRegionalStore.getState(), m = map();
   const center = m?.getCenter();
-  const space = schema.parse({ id: crypto.randomUUID(), name, savedAt: Date.now(), layers: a.layers, floodView: a.floodView, floodOpacity: a.floodOpacity, paiOpacity: a.paiOpacity, diffOpacity: a.diffOpacity, poiColors: a.poiColors, poiCategoryVisible: a.poiCategoryVisible, enabled: r.enabled, opacity: r.opacity, display: r.display, susceptibilityStyle: a.susceptibilityStyle, basemap: a.basemap, view3D: a.view3D,
+  const enabled = { ...r.enabled };
+  for (const layer of BUILTIN_LAYERS) enabled[layer.id] = isLayerEnabled(layer);
+  const space = schema.parse({ id: crypto.randomUUID(), name, savedAt: Date.now(), layers: a.layers, floodView: a.floodView, floodOpacity: a.floodOpacity, paiOpacity: a.paiOpacity, diffOpacity: a.diffOpacity, poiColors: a.poiColors, poiCategoryVisible: a.poiCategoryVisible, enabled, opacity: r.opacity, display: r.display, susceptibilityStyle: a.susceptibilityStyle, basemap: a.basemap, view3D: a.view3D,
     camera: m && center ? { center: [center.lng, center.lat], zoom: m.getZoom(), bearing: m.getBearing(), pitch: m.getPitch() } : null });
   publish([space, ...useSpaces.getState().spaces].slice(0, 30));
 }

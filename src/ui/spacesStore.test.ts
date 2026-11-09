@@ -10,7 +10,8 @@ it("restores a view without freezing or replacing observed data", () => {
   useAppStore.setState({ basemap: "dark" }); useRegionalStore.setState({ enabled: { other: true } });
   const observations = useTwinStore.getState().measures;
   restoreSpace(saved);
-  expect(useRegionalStore.getState().enabled).toEqual({ "pcr-wind": true });
+  expect(useRegionalStore.getState().enabled["pcr-wind"]).toBe(true);
+  expect(useRegionalStore.getState().enabled.other).toBeUndefined();
   expect(useAppStore.getState().basemap).toBe(saved.basemap);
   expect(useTwinStore.getState().measures).toBe(observations);
   expect(JSON.parse(localStorage.getItem("friulview:spaces:v1")!)[0].name).toBe("Costa");
@@ -34,4 +35,10 @@ it("restores hazard styling, POI settings and queues the exact camera", () => {
   expect(useAppStore.getState().poiCategoryVisible).toEqual(poiCategoryVisible);
   expect(useAppStore.getState().cameraRequest?.pitch).toBe(35);
   vi.unstubAllGlobals();
+});
+
+it("records implicit default layers explicitly so space counts and future restores agree", () => {
+  useRegionalStore.setState({ enabled: {} });
+  saveSpace("Default");
+  expect(useSpaces.getState().spaces[0]?.enabled["pcr-wind"]).toBe(true);
 });
