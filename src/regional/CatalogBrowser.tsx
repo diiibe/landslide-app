@@ -1,5 +1,7 @@
 import { Icon } from "@/ui/Icon";
 import { SearchField } from "@/ui/SearchField";
+import { Select } from "@/ui/Select";
+import { FileExplorer } from "./FileExplorer";
 import { useEffect, useId, useRef, useState } from "react";
 import { useAppStore } from "@/app/store";
 import { useRegionalStore } from "./store";
@@ -7,6 +9,7 @@ import { useTwinStore } from "@/digital-twin/store";
 import { enableLayer, isLayerEnabled } from "./builtins";
 import {
   catalogItems,
+  displayProvider,
   filterItems,
   itemType,
   itemCadence,
@@ -121,27 +124,56 @@ export function CatalogExplorer({ mode }: { mode: "catalog" | "sidebar" }) {
   useAppStore((v) => v.userLayers);
   const items = catalogItems(s.catalog?.layers ?? []);
   const [filters, setFilters] = useState<CatalogFilters>(emptyFilters),
-    [source, setSource] = useState(""),
     [limit, setLimit] = useState(40);
   const set = (key: keyof CatalogFilters, value: string) => {
     setFilters((f) => ({ ...f, [key]: value }));
     setLimit(40);
-    if (key === "theme") setSource("");
   };
   const effectiveFilters =
     mode === "sidebar" ? { ...filters, query: s.query } : filters;
   const filtered = filterItems(items, effectiveFilters, isLayerEnabled);
-  const list = source
-    ? filtered.filter((i) => (i.layer.subfolder ?? i.layer.sourceId) === source)
-    : filtered;
+  const list = filtered;
   const theme = filters.theme as keyof typeof THEMES;
-  const providers = [...new Set(items.map((i) => i.layer.provider))].sort(
-    (a, b) => a.localeCompare(b, "it"),
-  );
-  const groups = [
-    ...new Set(filtered.map((i) => i.layer.subfolder ?? i.layer.sourceId)),
-  ];
-  const browse = mode === "sidebar" && !s.query;
+  const providers = [
+    ...new Set(items.map((i) => displayProvider(i.layer))),
+  ].sort((a, b) => a.localeCompare(b, "it"));
+  if (mode === "sidebar")
+    return (
+      <>
+        {s.catalogError && (
+          <div className={styles.catalogState} role="alert">
+            <strong>Catalogo regionale non raggiungibile</strong>
+            <p>
+              La ricerca include soltanto i dati già caricati. L’aggiornamento
+              automatico riproverà a contattare la fonte.
+            </p>
+            <button
+              onClick={() =>
+                useRegionalStore.setState((state) => ({
+                  refreshKey: state.refreshKey + 1,
+                }))
+              }
+            >
+              Riprova adesso
+            </button>
+          </div>
+        )}
+        {!s.catalog && !s.catalogError && (
+          <p className={styles.catalogState} role="status">
+            Caricamento del catalogo regionale… Puoi già esplorare le mappature
+            disponibili.
+          </p>
+        )}
+        <FileExplorer
+          items={items}
+          query={s.query}
+          clearQuery={() => useRegionalStore.setState({ query: "" })}
+          renderItem={(item) => (
+            <CatalogRow item={item} compact context="browse" />
+          )}
+        />
+      </>
+    );
   return (
     <div className={styles.explorer} data-mode={mode}>
       {mode === "catalog" && (
@@ -152,62 +184,64 @@ export function CatalogExplorer({ mode }: { mode: "catalog" | "sidebar" }) {
           onChange={(value) => set("query", value)}
         />
       )}
-      {mode === "catalog" && (
-        <div className={styles.filters}>
-          <label>
-            Fonte
-            <select
-              aria-label="Fonte"
-              value={filters.provider}
-              onChange={(e) => set("provider", e.target.value)}
-            >
-              <option value="">Tutte le fonti</option>
-              {providers.map((p) => (
-                <option key={p}>{p}</option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Tipo di dato
-            <select
-              aria-label="Tipo di dato"
-              value={filters.type}
-              onChange={(e) => set("type", e.target.value)}
-            >
-              <option value="">Tutti i tipi</option>
-              {[...new Set(items.map(itemType))].map((t) => (
-                <option key={t}>{t}</option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Aggiornamento
-            <select
-              aria-label="Aggiornamento"
-              value={filters.cadence}
-              onChange={(e) => set("cadence", e.target.value)}
-            >
-              <option value="">Ogni frequenza</option>
-              {[...new Set(items.map(itemCadence))].map((t) => (
-                <option key={t}>{t}</option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Disponibilità
-            <select
-              aria-label="Disponibilità"
-              value={filters.availability}
-              onChange={(e) => set("availability", e.target.value)}
-            >
-              <option value="">Tutti</option>
-              <option value="ready">Importabili</option>
-              <option value="active">Sulla mappa</option>
-              <option value="blocked">Da revisionare</option>
-            </select>
-          </label>
-        </div>
-      )}
+      <div className={styles.filters}>
+        <label>
+          Fonte
+          <Select
+            label="Fonte"
+            value={filters.provider}
+            onChange={(value) => set("provider", value)}
+            options={[
+              { value: "", label: "Tutte le fonti" },
+              ...providers.map((p) => ({ value: p, label: p })),
+            ]}
+          />
+        </label>
+        <label>
+          Tipo di dato
+          <Select
+            label="Tipo di dato"
+            value={filters.type}
+            onChange={(value) => set("type", value)}
+            options={[
+              { value: "", label: "Tutti i tipi" },
+              ...[...new Set(items.map(itemType))].map((t) => ({
+                value: t,
+                label: t,
+              })),
+            ]}
+          />
+        </label>
+        <label>
+          Aggiornamento
+          <Select
+            label="Aggiornamento"
+            value={filters.cadence}
+            onChange={(value) => set("cadence", value)}
+            options={[
+              { value: "", label: "Ogni frequenza" },
+              ...[...new Set(items.map(itemCadence))].map((t) => ({
+                value: t,
+                label: t,
+              })),
+            ]}
+          />
+        </label>
+        <label>
+          Disponibilità
+          <Select
+            label="Disponibilità"
+            value={filters.availability}
+            onChange={(value) => set("availability", value)}
+            options={[
+              { value: "", label: "Tutti" },
+              { value: "ready", label: "Importabili" },
+              { value: "active", label: "Sulla mappa" },
+              { value: "blocked", label: "Da revisionare" },
+            ]}
+          />
+        </label>
+      </div>
       <div className={styles.explorerBody}>
         {mode === "catalog" && (
           <nav className={styles.themes} aria-label="Temi del catalogo">
@@ -237,7 +271,6 @@ export function CatalogExplorer({ mode }: { mode: "catalog" | "sidebar" }) {
             <button
               onClick={() => {
                 set("theme", "");
-                setSource("");
               }}
             >
               Tutti i dati
@@ -245,108 +278,58 @@ export function CatalogExplorer({ mode }: { mode: "catalog" | "sidebar" }) {
             {theme && (
               <>
                 <Icon name="chevron" />
-                <button onClick={() => setSource("")}>{THEMES[theme]}</button>
-              </>
-            )}
-            {source && (
-              <>
-                <Icon name="chevron" />
-                <span>{source}</span>
+                <span aria-current="location">{THEMES[theme]}</span>
               </>
             )}
           </nav>
-          {browse && !theme ? (
-            <div className={styles.folders}>
-              {Object.entries(THEMES).map(([id, label]) => {
-                const count = items.filter((i) => i.theme === id).length;
-                return count > 0 ? (
-                  <button key={id} onClick={() => set("theme", id)}>
-                    <Icon name="folder" />
-                    {label}
-                    <span>
-                      {count}
-                      <Icon name="chevron" />
-                    </span>
-                  </button>
-                ) : null;
-              })}
-            </div>
-          ) : browse && !source && groups.length > 1 ? (
-            <div className={styles.folders}>
-              {groups.map((g) => (
-                <button key={g} onClick={() => setSource(g)}>
-                  <Icon name="folder" />
-                  {g}
-                  <span>
-                    {
-                      filtered.filter(
-                        (i) => (i.layer.subfolder ?? i.layer.sourceId) === g,
-                      ).length
-                    }{" "}
-                    <Icon name="chevron" />
-                  </span>
-                </button>
-              ))}
-            </div>
-          ) : (
-            <>
-              <div className={styles.resultHead}>
-                <span role="status">{list.length} livelli</span>
-                {Object.values(effectiveFilters).some(Boolean) && (
-                  <button
-                    onClick={() => {
-                      setFilters(emptyFilters);
-                      setSource("");
-                      setLimit(40);
-                      if (mode === "sidebar")
-                        useRegionalStore.setState({ query: "" });
-                    }}
-                  >
-                    Azzera filtri
-                  </button>
-                )}
-              </div>
-              {mode === "catalog" &&
-                !filters.query &&
-                !theme &&
-                !filters.provider &&
-                !filters.type &&
-                !filters.cadence &&
-                !filters.availability && (
-                  <div className={styles.featured}>
-                    <strong>Mappature dei versanti</strong>
-                    <p>
-                      Esplora la suscettibilità ai corpi di frana e alle zone
-                      diffuse, con soglia e trasparenza regolabili.
-                    </p>
-                    <button onClick={() => set("theme", "frane")}>
-                      Esplora le mappature
-                      <Icon name="arrow" />
-                    </button>
-                  </div>
-                )}
-              {list.slice(0, limit).map((item) => (
-                <CatalogRow
-                  key={item.layer.id}
-                  item={item}
-                  compact={mode === "sidebar"}
-                />
-              ))}
-              {list.length === 0 && (
-                <p className={styles.empty}>
-                  Nessun livello trovato. Prova un parametro più generico o
-                  rimuovi un filtro.
+          <div className={styles.resultHead}>
+            <span role="status">{list.length} livelli</span>
+            {Object.values(effectiveFilters).some(Boolean) && (
+              <button
+                onClick={() => {
+                  setFilters(emptyFilters);
+                  setLimit(40);
+                }}
+              >
+                Azzera filtri
+              </button>
+            )}
+          </div>
+          {mode === "catalog" &&
+            !filters.query &&
+            !theme &&
+            !filters.provider &&
+            !filters.type &&
+            !filters.cadence &&
+            !filters.availability && (
+              <div className={styles.featured}>
+                <strong>Mappature dei versanti</strong>
+                <p>
+                  Esplora la suscettibilità ai corpi di frana e alle zone
+                  diffuse, con soglia e trasparenza regolabili.
                 </p>
-              )}
-              {list.length > limit && (
-                <button
-                  className={styles.more}
-                  onClick={() => setLimit((v) => v + 40)}
-                >
-                  Mostra altri {Math.min(40, list.length - limit)} livelli
+                <button onClick={() => set("theme", "frane")}>
+                  Esplora le mappature
+                  <Icon name="arrow" />
                 </button>
-              )}
-            </>
+              </div>
+            )}
+          {list.slice(0, limit).map((item) => (
+            <CatalogRow key={item.layer.id} item={item} />
+          ))}
+          {list.length === 0 && (
+            <p className={styles.empty}>
+              Nessun livello trovato. Prova un parametro più generico o rimuovi
+              un filtro.
+            </p>
+          )}
+          {list.length > limit && (
+            <button
+              className={styles.more}
+              onClick={() => setLimit((v) => v + 40)}
+            >
+              Mostra altri {Math.min(40, list.length - limit)} livelli
+            </button>
           )}
           {s.catalogError && (
             <p role="alert">Catalogo regionale: {s.catalogError}</p>
@@ -362,15 +345,23 @@ export function CatalogExplorer({ mode }: { mode: "catalog" | "sidebar" }) {
 export function CatalogRow({
   item,
   compact = false,
+  context = "active",
 }: {
   item: CatalogItem;
   compact?: boolean;
+  context?: "active" | "browse";
 }) {
   const metadataId = useId();
+  const current = useRegionalStore((state) => state.detailId === item.layer.id);
   const l = item.layer,
     on = isLayerEnabled(l);
   return (
-    <article className={styles.row} data-active={on} data-compact={compact}>
+    <article
+      className={styles.row}
+      data-active={on}
+      data-compact={compact}
+      data-detail={current}
+    >
       <div className={styles.rowInfo}>
         <button
           className={styles.name}
@@ -381,7 +372,7 @@ export function CatalogRow({
           <i aria-hidden="true" style={{ background: l.color }} />
           <span>{l.title}</span>
           <small id={metadataId} title={`${itemType(item)} · ${l.provider}`}>
-            {itemType(item)} · {l.provider}
+            {itemType(item)} · {displayProvider(l)}
           </small>
         </button>
         {!compact && <p>{l.description}</p>}
@@ -400,7 +391,15 @@ export function CatalogRow({
           "Non disponibile"
         ) : (
           <>
-            <Icon name={on ? (compact ? "close" : "check") : "plus"} />
+            <Icon
+              name={
+                on
+                  ? compact && context === "active"
+                    ? "close"
+                    : "check"
+                  : "plus"
+              }
+            />
             {!compact && (on ? "Sulla mappa" : "Aggiungi")}
           </>
         )}

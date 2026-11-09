@@ -1,4 +1,5 @@
 import { Icon } from "@/ui/Icon";
+import { Select } from "@/ui/Select";
 import { SearchField } from "@/ui/SearchField";
 import { useEffect, useRef, type CSSProperties } from "react";
 import { useAppStore } from "@/app/store";
@@ -55,7 +56,7 @@ export function RegionalPanel() {
       );
   const selectedId = selected?.layer.id;
   useEffect(() => {
-    if (selectedId) ref.current?.scrollIntoView?.({ block: "nearest" });
+    if (selectedId) ref.current?.scrollIntoView?.({ block: "start" });
   }, [selectedId, state.selection, twin.selection]);
   const close = () => {
     useRegionalStore.setState({ detailId: null, selection: null });
@@ -332,36 +333,33 @@ function LayerInfo({ layer: l }: { layer: LayerDefinition }) {
       {coincident.length > 1 && (
         <label className={styles.field}>
           Elementi nello stesso punto
-          <select
+          <Select
+            label="Elementi nello stesso punto"
             value={String(p?.__featureId ?? "")}
-            onChange={(e) => {
+            onChange={(value) => {
               const feature = coincident.find(
-                (f) => f.properties?.__featureId === e.target.value,
+                (f) => String(f.properties?.__featureId) === value,
               );
               if (feature)
                 useRegionalStore.setState({
                   selection: { layerId: l.id, feature },
                 });
             }}
-          >
-            {coincident.map((f, i) => (
-              <option
-                key={String(f.properties?.__featureId)}
-                value={String(f.properties?.__featureId)}
-              >
-                {i + 1}. {String(f.properties?.__name ?? "Elemento")}
-                {f.properties?.__depth
+            options={coincident.map((f, i) => ({
+              value: String(f.properties?.__featureId),
+              label:
+                `${i + 1}. ${String(f.properties?.__name ?? "Elemento")}` +
+                (f.properties?.__depth
                   ? " · " + String(f.properties.__depth) + " m"
-                  : ""}
-                {f.properties?.__displayValue !== undefined
+                  : "") +
+                (f.properties?.__displayValue !== undefined
                   ? " · " +
                     String(f.properties.__displayValue) +
                     " " +
                     String(f.properties.__unit ?? "")
-                  : ""}
-              </option>
-            ))}
-          </select>
+                  : ""),
+            }))}
+          />
         </label>
       )}
       {p && (
@@ -461,21 +459,24 @@ function LayerInfo({ layer: l }: { layer: LayerDefinition }) {
       {depths.length > 1 && (
         <label className={styles.field}>
           Profondità nella fonte
-          <select
+          <Select
+            label="Profondità nella fonte"
             value={s.filters[l.id] ?? ""}
-            onChange={(e) =>
+            onChange={(value) =>
               useRegionalStore.setState((st) => ({
-                filters: { ...st.filters, [l.id]: e.target.value },
+                filters: { ...st.filters, [l.id]: value },
               }))
             }
-          >
-            <option value="">Tutte le profondità</option>
-            {depths.map((d) => (
-              <option key={d} value={d}>
-                {Number.isFinite(Number(d)) ? formatValue(Number(d)) : d} m
-              </option>
-            ))}
-          </select>
+            options={[
+              { value: "", label: "Tutte le profondità" },
+              ...depths.map((d) => ({
+                value: d,
+                label:
+                  (Number.isFinite(Number(d)) ? formatValue(Number(d)) : d) +
+                  " m",
+              })),
+            ]}
+          />
         </label>
       )}
       {(l.bounds || l.pcrVariable) && (

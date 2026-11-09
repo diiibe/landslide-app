@@ -136,3 +136,16 @@
   border-color: var(--c-edge);
   animation: var(--motion-surface);
 }
+
+.input,
+.optName {
+  font-size: var(--text-body);
+}
+.optCtx {
+  font-size: var(--text-caption);
+}
+@media (max-width: 768px), (pointer: coarse) {
+  .input {
+    font-size: var(--text-reading);
+  }
+}

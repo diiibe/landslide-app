@@ -142,3 +142,21 @@
       var(--shadow-edge);
   }
 }
+
+.drawer {
+  background-image: var(--surface-texture);
+}
+.mobileHeader {
+  background-color: var(--c-surface-raised);
+}
+.heading {
+  font-size: var(--text-heading);
+  line-height: 1.4;
+}
+@supports (backdrop-filter: blur(16px)) {
+  .drawer {
+    background-color: color-mix(in srgb, var(--c-surface-2) 97%, transparent);
+    backdrop-filter: blur(16px) saturate(0.7);
+  }
+}
+.handle[hidden] { display: none; }

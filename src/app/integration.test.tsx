@@ -10,6 +10,7 @@ beforeEach(() => {
   useAppStore.getState().reset();
   useRegionalStore.setState({
     catalog: null,
+    catalogError: null,
     catalogOpen: false,
     enabled: {},
     query: "",
@@ -136,6 +137,66 @@ describe("Unified catalog experience", () => {
     );
     expect(
       within(explorer).getByRole("button", { name: /Meteo e precipitazioni/ }),
+    ).toBeInTheDocument();
+  });
+  it("searches globally from an expanded thematic folder and restores the folder when cleared", () => {
+    render(<App />);
+    const explorer = screen.getByRole("region", { name: "Esplora i livelli" });
+    const folder = within(explorer).getByRole("button", {
+      name: /Frane e versanti/,
+    });
+    fireEvent.click(folder);
+    expect(folder).toHaveAttribute("aria-expanded", "true");
+    const search = screen.getByRole("searchbox", { name: "Cerca nei livelli" });
+    fireEvent.change(search, { target: { value: "strade" } });
+    expect(
+      within(explorer).getByRole("button", { name: "Strade" }),
+    ).toBeInTheDocument();
+    fireEvent.click(
+      within(explorer).getByRole("button", { name: "Azzera ricerca" }),
+    );
+    expect(
+      within(
+        within(explorer).getByRole("navigation", { name: "Cartelle dei dati" }),
+      ).getByRole("button", { name: /Frane e versanti/ }),
+    ).toHaveAttribute("aria-expanded", "true");
+  });
+  it("shows catalog failures in the sidebar and offers a retry instead of implying missing data", () => {
+    useRegionalStore.setState({ catalogError: "HTTP 503" });
+    render(<App />);
+    const explorer = screen.getByRole("region", { name: "Esplora i livelli" });
+    expect(within(explorer).getByRole("alert")).toHaveTextContent(
+      "Catalogo regionale non raggiungibile",
+    );
+    const previous = useRegionalStore.getState().refreshKey;
+    fireEvent.click(
+      within(explorer).getByRole("button", { name: "Riprova adesso" }),
+    );
+    expect(useRegionalStore.getState().refreshKey).toBe(previous + 1);
+  });
+  it("restores the legend after drawing without changing the saved legend preference", () => {
+    render(<App />);
+    const previous = useAppStore.getState().legendOpen;
+    const preferredDrawer = useAppStore.getState().drawerOpen;
+    expect(
+      screen.getByRole("button", { name: "Suscettibilità frane" }),
+    ).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Disegna un’area" }));
+    expect(
+      screen.queryByRole("button", { name: "Suscettibilità frane" }),
+    ).toBeNull();
+    expect(
+      screen.queryByRole("complementary", { name: "Sulla mappa" }),
+    ).toBeNull();
+    expect(useAppStore.getState().drawerOpen).toBe(preferredDrawer);
+    fireEvent.click(screen.getByRole("button", { name: "Annulla" }));
+    expect(
+      screen.getByRole("button", { name: "Suscettibilità frane" }),
+    ).toBeInTheDocument();
+    expect(useAppStore.getState().legendOpen).toBe(previous);
+    expect(useAppStore.getState().drawerOpen).toBe(preferredDrawer);
+    expect(
+      screen.getByRole("complementary", { name: "Sulla mappa" }),
     ).toBeInTheDocument();
   });
   it("closes the overlay drawer without changing which data layers are active", () => {

@@ -503,3 +503,22 @@
     font-size: 13px;
   }
 }
+
+.panel {
+  font: 400 var(--text-body)/1.6 var(--font-stack);
+}
+.caption,
+.field,
+.source,
+.freshness {
+  font-size: var(--text-caption);
+  line-height: 1.6;
+}
+.inspectorHeading h3,
+.observation h3 {
+  font-size: var(--text-heading);
+  line-height: 1.4;
+}
+.action {
+  font-size: var(--text-body);
+}

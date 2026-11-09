@@ -1,3 +1,4 @@
+import { Select } from "@/ui/Select";
 import { FVG_BOUNDS } from "@/map/style";
 import { ColorButton } from "@/map-overlays/ColorButton";
 import { PoiLegendPanel } from "@/map-overlays/PoiLegendPanel";
@@ -91,17 +92,17 @@ export function MapLayerControls({ item }: { item: CatalogItem }) {
       {key === "flood" && (
         <label className={styles.field}>
           Pericolosità visualizzata
-          <select
+          <Select
+            label="Pericolosità visualizzata"
             value={s.floodView}
-            onChange={(e) =>
-              s.setFloodView(e.target.value as typeof s.floodView)
-            }
-          >
-            <option value="combined">Tutte le classi</option>
-            <option value="P1plus">P1 · sola classe bassa</option>
-            <option value="P2plus">P2 · sola classe media</option>
-            <option value="P3">P3 · classe elevata</option>
-          </select>
+            onChange={(value) => s.setFloodView(value as typeof s.floodView)}
+            options={[
+              { value: "combined", label: "Tutte le classi" },
+              { value: "P1plus", label: "P1 · sola classe bassa" },
+              { value: "P2plus", label: "P2 · sola classe media" },
+              { value: "P3", label: "P3 · classe elevata" },
+            ]}
+          />
         </label>
       )}
       {(key === "flood" || key === "pai" || key === "diff") && (

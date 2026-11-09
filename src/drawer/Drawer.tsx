@@ -18,14 +18,20 @@ export function Drawer({
   triggerLabel = "Livelli",
   summary,
 }: Props) {
-  const drawerOpen = useAppStore((s) => s.drawerOpen);
+  const preferredOpen = useAppStore((s) => s.drawerOpen);
+  const drawing = useAppStore((s) => s.drawingMode);
+  const drawerOpen = preferredOpen && !drawing;
   const toggle = useAppStore((s) => s.toggleDrawer);
   const handle = useRef<HTMLButtonElement>(null);
   const panel = useRef<HTMLElement>(null);
   useEffect(() => {
-    if (!drawerOpen && panel.current?.contains(document.activeElement))
+    if (
+      !drawerOpen &&
+      !drawing &&
+      panel.current?.contains(document.activeElement)
+    )
       handle.current?.focus();
-  }, [drawerOpen]);
+  }, [drawerOpen, drawing]);
 
   // Close drawer on Escape (mobile UX; harmless on desktop where backdrop is hidden).
   useEffect(() => {
@@ -60,7 +66,7 @@ export function Drawer({
       <button
         type="button"
         ref={handle}
-        hidden={drawerOpen}
+        hidden={drawerOpen || drawing}
         className={styles.handle}
         data-sheet={mobileSheet}
         data-open={drawerOpen}

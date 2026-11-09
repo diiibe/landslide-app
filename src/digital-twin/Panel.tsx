@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Select } from "@/ui/Select";
 import { useAppStore } from "@/app/store";
 import { setTwinActive, useTwinStore, type FeedState } from "./store";
 import {
@@ -22,7 +23,10 @@ import { ObservedSeriesChart } from "./ObservedSeriesChart";
 import { setRegionalEnabled } from "@/regional/store";
 
 const GROUPS = VARIABLE_GROUPS;
-const variableEntries = Object.entries(VARIABLES) as [Variable, (typeof VARIABLES)[Variable]][];
+const variableEntries = Object.entries(VARIABLES) as [
+  Variable,
+  (typeof VARIABLES)[Variable],
+][];
 export function TwinButton() {
   const active = useTwinStore((s) => s.active);
   return (
@@ -86,7 +90,9 @@ function Feed({
     </div>
   );
 }
-export function TwinPanel({ inspectorOnly = false }: { inspectorOnly?: boolean } = {}) {
+export function TwinPanel({
+  inspectorOnly = false,
+}: { inspectorOnly?: boolean } = {}) {
   const inspector = useRef<HTMLDivElement>(null);
   const s = useTwinStore(),
     [now, setNow] = useState(() => Date.now());
@@ -106,170 +112,294 @@ export function TwinPanel({ inspectorOnly = false }: { inspectorOnly?: boolean }
   );
   const recent = rows.filter((m) => freshness(m.ms, now) === "recent").length;
   const v = VARIABLES[s.variable];
+  const variableOptions = Object.entries(GROUPS).flatMap(([group, label]) =>
+    variableEntries
+      .filter(([, definition]) => definition.group === group)
+      .map(([value, definition]) => ({
+        value,
+        label: definition.label + " · " + definition.unit,
+        group: label,
+      })),
+  );
   const stationId =
     s.selection?.kind === "sensor" ? s.selection.stationId : null;
   const sensor = rows.find((x) => x.stationId === stationId);
   const otherMeasures = variableEntries.flatMap(([id, definition]) => {
-    const measure = s.measures.find((m) => m.stationId === stationId && m.sensorId === definition.id);
+    const measure = s.measures.find(
+      (m) => m.stationId === stationId && m.sensorId === definition.id,
+    );
     return id !== s.variable && measure ? [{ id, definition, measure }] : [];
   });
   const request = () =>
     useTwinStore.setState((state) => ({ refreshKey: state.refreshKey + 1 }));
   return (
-    <section className={styles.panel} aria-label={inspectorOnly ? "Dettaglio osservazioni PCR" : "Digital twin regionale"}>
-      {inspectorOnly ? s.selection?.kind!=="building" && <label className={styles.field}>Variabile della stazione<select aria-label="Variabile della stazione" value={s.variable} onChange={e => useTwinStore.setState({ variable: e.target.value as Variable })}>{variableEntries.map(([id, v]) => <option key={id} value={id}>{v.label} · {v.unit}</option>)}</select></label> : <>
-      <div className={styles.heading}>
-        <h2>Città, costa e attività</h2>
-        <p>Trieste–Monfalcone</p>
-      </div>
-      <div className={styles.section}>
-        <label className={styles.field}>
-          <strong>Dati sulla mappa</strong>
-          <select aria-label="Dati sulla mappa · Osservazioni PCR" aria-describedby="twin-variable-description" value={s.variable}
-            onChange={(e) => useTwinStore.setState({ variable: e.target.value as Variable })}>
-            {Object.entries(GROUPS).map(([group, label]) => (
-              <optgroup key={group} label={label}>
-                {variableEntries.filter(([, definition]) => definition.group === group).map(([id, definition]) => (
-                  <option key={id} value={id}>{definition.label} · {definition.unit}</option>
-                ))}
-              </optgroup>
-            ))}
-          </select>
-        </label>
-        <p id="twin-variable-description" className={styles.caption}>{v.description}</p>
-        <div className={styles.measureSummary} role="status" aria-live="polite" aria-atomic="true">
-          {rows.length ? <><strong>{rows.length} stazioni in regione</strong><span>{recent} con misura negli ultimi 45 minuti</span></> :
-            <span>{s.sensorsFeed.loading ? "Lettura delle stazioni…" : "Nessuna misura disponibile per questa variabile. Scegli un altro dato o aggiorna la fonte."}</span>}
-        </div>
-        {s.sensorsFeed.snapshot && <p className={styles.caption}>Snapshot salvato · la fonte corrente non è disponibile.</p>}
-        {s.sensorsFeed.error && !s.sensorsFeed.snapshot && <p className={styles.error}>Fonte non raggiunta: {s.measures.length ? "conservo le ultime misure" : "nessuna misura ricevuta"}.</p>}
-        {v.comparable && <div className={styles.legend} aria-label={`Scala di ${v.label}, in ${v.unit}`}>
-          <div className={styles.colorScale} aria-hidden="true" style={{ background: `linear-gradient(90deg, ${v.colors.join(", ")})` }} />
-          <div className={styles.scaleLabels}>
-            {[v.min, (v.min + v.max) / 2, v.max].map((n) => <span key={n}>{n === v.min ? "≤ " : n === v.max ? "≥ " : ""}{formatValue(n)} {v.unit}</span>)}
+    <section
+      className={styles.panel}
+      aria-label={
+        inspectorOnly ? "Dettaglio osservazioni PCR" : "Digital twin regionale"
+      }
+    >
+      {inspectorOnly ? (
+        s.selection?.kind !== "building" && (
+          <label className={styles.field}>
+            Variabile della stazione
+            <Select
+              label="Variabile della stazione"
+              value={s.variable}
+              options={variableOptions}
+              onChange={(value) =>
+                useTwinStore.setState({ variable: value as Variable })
+              }
+            />
+          </label>
+        )
+      ) : (
+        <>
+          <div className={styles.heading}>
+            <h2>Città, costa e attività</h2>
+            <p>Trieste–Monfalcone</p>
           </div>
-        </div>}
-        <p className={styles.caption}>{v.comparable
-          ? "Colore e dimensione: valore. Grigio: orario non recente o non valido. Alone: selezione. Nessuna soglia di pericolo."
-          : "Cerchi uniformi, senza scala comune. Alone: punto selezionato; verifica l’orario nel dettaglio."}</p>
-        <button type="button" className={styles.action} disabled={!rows.length} onClick={() => {
-          window.dispatchEvent(new CustomEvent("fvg:twin-fit"));
-          if (window.matchMedia("(max-width: 768px), (max-height: 500px) and (pointer: coarse)").matches)
-            useAppStore.setState({ drawerOpen: false });
-        }}>Inquadra stazioni</button>
-
-        <div
-          className={styles.scenes}
-          role="group"
-          aria-label="Inquadra la demo"
-        >
-          {(
-            [
-              ["coast", "Costa"],
-              ["trieste", "Trieste"],
-              ["monfalcone", "Monfalcone"],
-            ] as const
-          ).map(([id, label]) => (
+          <div className={styles.section}>
+            <label className={styles.field}>
+              <strong>Dati sulla mappa</strong>
+              <Select
+                label="Dati sulla mappa · Osservazioni PCR"
+                describedBy="twin-variable-description"
+                value={s.variable}
+                options={variableOptions}
+                onChange={(value) =>
+                  useTwinStore.setState({ variable: value as Variable })
+                }
+              />
+            </label>
+            <p id="twin-variable-description" className={styles.caption}>
+              {v.description}
+            </p>
+            <div
+              className={styles.measureSummary}
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+            >
+              {rows.length ? (
+                <>
+                  <strong>{rows.length} stazioni in regione</strong>
+                  <span>{recent} con misura negli ultimi 45 minuti</span>
+                </>
+              ) : (
+                <span>
+                  {s.sensorsFeed.loading
+                    ? "Lettura delle stazioni…"
+                    : "Nessuna misura disponibile per questa variabile. Scegli un altro dato o aggiorna la fonte."}
+                </span>
+              )}
+            </div>
+            {s.sensorsFeed.snapshot && (
+              <p className={styles.caption}>
+                Snapshot salvato · la fonte corrente non è disponibile.
+              </p>
+            )}
+            {s.sensorsFeed.error && !s.sensorsFeed.snapshot && (
+              <p className={styles.error}>
+                Fonte non raggiunta:{" "}
+                {s.measures.length
+                  ? "conservo le ultime misure"
+                  : "nessuna misura ricevuta"}
+                .
+              </p>
+            )}
+            {v.comparable && (
+              <div
+                className={styles.legend}
+                aria-label={`Scala di ${v.label}, in ${v.unit}`}
+              >
+                <div
+                  className={styles.colorScale}
+                  aria-hidden="true"
+                  style={{
+                    background: `linear-gradient(90deg, ${v.colors.join(", ")})`,
+                  }}
+                />
+                <div className={styles.scaleLabels}>
+                  {[v.min, (v.min + v.max) / 2, v.max].map((n) => (
+                    <span key={n}>
+                      {n === v.min ? "≤ " : n === v.max ? "≥ " : ""}
+                      {formatValue(n)} {v.unit}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            <p className={styles.caption}>
+              {v.comparable
+                ? "Colore e dimensione: valore. Grigio: orario non recente o non valido. Alone: selezione. Nessuna soglia di pericolo."
+                : "Cerchi uniformi, senza scala comune. Alone: punto selezionato; verifica l’orario nel dettaglio."}
+            </p>
             <button
-              key={id}
               type="button"
+              className={styles.action}
+              disabled={!rows.length}
               onClick={() => {
-                window.dispatchEvent(
-                  new CustomEvent("fvg:twin-scene", { detail: id }),
-                );
-                if (window.matchMedia("(max-width: 768px), (max-height: 500px) and (pointer: coarse)").matches)
+                window.dispatchEvent(new CustomEvent("fvg:twin-fit"));
+                if (
+                  window.matchMedia(
+                    "(max-width: 768px), (max-height: 500px) and (pointer: coarse)",
+                  ).matches
+                )
                   useAppStore.setState({ drawerOpen: false });
               }}
             >
-              {label}
+              Inquadra stazioni
             </button>
-          ))}
-        </div>
-        <div className={styles.layerToggles} role="group" aria-label="Livelli aggiuntivi">
-          <label className={styles.check}>
-            <input
-              type="checkbox"
-              checked={s.radarOn}
-              onChange={(e) =>
-                useTwinStore.setState({ radarOn: e.target.checked })
-              }
-            />
-            Radar precipitazioni SRI · mm/h
-          </label>
-          <label className={styles.check}>
-            <input
-              type="checkbox"
-              checked={s.assetsOn}
-              onChange={(e) =>
-                useTwinStore.setState({ assetsOn: e.target.checked })
-              }
-            />
-            <i className={styles.assetDot} />
-            Stabilimenti AIA
-          </label>
-          <label className={styles.check}>
-            <input
-              type="checkbox"
-              checked={s.buildingsOn}
-              onChange={(e) =>
-                useTwinStore.setState({ buildingsOn: e.target.checked })
-              }
-            />
-            Edifici 2,5D · estratti urbani
-          </label>
-        </div>
-        <p className={styles.caption}>
-          Edifici visibili da zoom 12. Usa Trieste o Monfalcone per esplorare
-          l’estratto.
-        </p>
-        {s.assetsError && (
-          <p className={styles.error}>
-            Stabilimenti non disponibili: {s.assetsError}
-          </p>
-        )}
-        {s.buildingsError && (
-          <p className={styles.error}>
-            Edifici non disponibili: {s.buildingsError}
-          </p>
-        )}
-      </div>
-      </>}
+
+            <div
+              className={styles.scenes}
+              role="group"
+              aria-label="Inquadra la demo"
+            >
+              {(
+                [
+                  ["coast", "Costa"],
+                  ["trieste", "Trieste"],
+                  ["monfalcone", "Monfalcone"],
+                ] as const
+              ).map(([id, label]) => (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => {
+                    window.dispatchEvent(
+                      new CustomEvent("fvg:twin-scene", { detail: id }),
+                    );
+                    if (
+                      window.matchMedia(
+                        "(max-width: 768px), (max-height: 500px) and (pointer: coarse)",
+                      ).matches
+                    )
+                      useAppStore.setState({ drawerOpen: false });
+                  }}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            <div
+              className={styles.layerToggles}
+              role="group"
+              aria-label="Livelli aggiuntivi"
+            >
+              <label className={styles.check}>
+                <input
+                  type="checkbox"
+                  checked={s.radarOn}
+                  onChange={(e) =>
+                    useTwinStore.setState({ radarOn: e.target.checked })
+                  }
+                />
+                Radar precipitazioni SRI · mm/h
+              </label>
+              <label className={styles.check}>
+                <input
+                  type="checkbox"
+                  checked={s.assetsOn}
+                  onChange={(e) =>
+                    useTwinStore.setState({ assetsOn: e.target.checked })
+                  }
+                />
+                <i className={styles.assetDot} />
+                Stabilimenti AIA
+              </label>
+              <label className={styles.check}>
+                <input
+                  type="checkbox"
+                  checked={s.buildingsOn}
+                  onChange={(e) =>
+                    useTwinStore.setState({ buildingsOn: e.target.checked })
+                  }
+                />
+                Edifici 2,5D · estratti urbani
+              </label>
+            </div>
+            <p className={styles.caption}>
+              Edifici visibili da zoom 12. Usa Trieste o Monfalcone per
+              esplorare l’estratto.
+            </p>
+            {s.assetsError && (
+              <p className={styles.error}>
+                Stabilimenti non disponibili: {s.assetsError}
+              </p>
+            )}
+            {s.buildingsError && (
+              <p className={styles.error}>
+                Edifici non disponibili: {s.buildingsError}
+              </p>
+            )}
+          </div>
+        </>
+      )}
       <div ref={inspector} className={styles.section}>
         <div className={styles.inspectorHeading}>
-          <h3>{s.selection ? "Dettaglio selezionato" : "Esplora un oggetto"}</h3>
-          {s.selection && <button type="button" className={styles.clearSelection} aria-label="Chiudi il dettaglio selezionato" onClick={() => useTwinStore.setState({ selection: null })}>Chiudi</button>}
+          <h3>
+            {s.selection ? "Dettaglio selezionato" : "Esplora un oggetto"}
+          </h3>
+          {s.selection && (
+            <button
+              type="button"
+              className={styles.clearSelection}
+              aria-label="Chiudi il dettaglio selezionato"
+              onClick={() => useTwinStore.setState({ selection: null })}
+            >
+              Chiudi
+            </button>
+          )}
         </div>
         <p className={styles.caption}>
           Tocca un sensore, uno stabilimento o un edificio sulla mappa.
         </p>
-        {s.selection?.kind!=="building" && <label className={styles.field}>
-          Stazione
-          <select
-            aria-label="Stazione"
-            value={
-              s.selection?.kind === "sensor"
-                ? String(s.selection.stationId)
-                : ""
-            }
-            onChange={(e) =>
-              useTwinStore.setState({
-                selection: e.target.value
-                  ? { kind: "sensor", stationId: Number(e.target.value) }
-                  : null,
-              })
-            }
-          >
-            <option value="">{rows.length ? "Seleziona una stazione" : "Nessuna stazione disponibile"}</option>
-            {stationId !== null && !sensor && <option value={stationId}>{s.measures.find((m) => m.stationId === stationId)?.name ?? `Stazione ${stationId}`} · dato assente</option>}
-            {rows.map((m) => (
-              <option key={m.stationId} value={m.stationId}>
-                {m.name} · {formatValue(m.value)} {v.unit}
-              </option>
-            ))}
-          </select>
-        </label>}
+        {s.selection?.kind !== "building" && (
+          <label className={styles.field}>
+            Stazione
+            <Select
+              label="Stazione"
+              value={stationId === null ? "" : String(stationId)}
+              onChange={(value) =>
+                useTwinStore.setState({
+                  selection: value
+                    ? { kind: "sensor", stationId: Number(value) }
+                    : null,
+                })
+              }
+              options={[
+                {
+                  value: "",
+                  label: rows.length
+                    ? "Seleziona una stazione"
+                    : "Nessuna stazione disponibile",
+                },
+                ...(stationId !== null && !sensor
+                  ? [
+                      {
+                        value: String(stationId),
+                        label:
+                          (s.measures.find((m) => m.stationId === stationId)
+                            ?.name ?? `Stazione ${stationId}`) +
+                          " · dato assente",
+                      },
+                    ]
+                  : []),
+                ...rows.map((m) => ({
+                  value: String(m.stationId),
+                  label: m.name + " · " + formatValue(m.value) + " " + v.unit,
+                })),
+              ]}
+            />
+          </label>
+        )}
         {sensor && (
-          <div className={styles.observation} key={`${sensor.stationId}:${s.variable}:${sensor.time}`}>
+          <div
+            className={styles.observation}
+            key={`${sensor.stationId}:${s.variable}:${sensor.time}`}
+          >
             <h3>{sensor.name}</h3>
             <p className={styles.caption}>{v.label}</p>
             <div className={styles.value}>
@@ -277,12 +407,26 @@ export function TwinPanel({ inspectorOnly = false }: { inspectorOnly?: boolean }
             </div>
             <p className={styles.caption}>{formatTime(sensor.ms)}</p>
             <Freshness ms={sensor.ms} now={now} />
-            <button type="button" className={styles.action} onClick={() => {
-              setRegionalEnabled("pcr-" + s.variable, true);
-              window.dispatchEvent(new CustomEvent("fvg:twin-station", { detail: sensor.stationId }));
-              if (window.matchMedia("(max-width: 768px), (max-height: 500px) and (pointer: coarse)").matches)
-                useAppStore.setState({ drawerOpen: false });
-            }}>Mostra sulla mappa</button>
+            <button
+              type="button"
+              className={styles.action}
+              onClick={() => {
+                setRegionalEnabled("pcr-" + s.variable, true);
+                window.dispatchEvent(
+                  new CustomEvent("fvg:twin-station", {
+                    detail: sensor.stationId,
+                  }),
+                );
+                if (
+                  window.matchMedia(
+                    "(max-width: 768px), (max-height: 500px) and (pointer: coarse)",
+                  ).matches
+                )
+                  useAppStore.setState({ drawerOpen: false });
+              }}
+            >
+              Mostra sulla mappa
+            </button>
             <Series measure={sensor} />
           </div>
         )}
@@ -297,14 +441,23 @@ export function TwinPanel({ inspectorOnly = false }: { inspectorOnly?: boolean }
             <summary>Altre misure della stazione</summary>
             <div className={styles.nearby}>
               {otherMeasures.map(({ id, definition, measure }) => (
-                <button type="button" key={id} onClick={() => useTwinStore.setState({ variable: id })}>
+                <button
+                  type="button"
+                  key={id}
+                  onClick={() => useTwinStore.setState({ variable: id })}
+                >
                   <strong>{definition.label}</strong>
-                  <span>{formatValue(measure.value)} {definition.unit}</span>
+                  <span>
+                    {formatValue(measure.value)} {definition.unit}
+                  </span>
                   <Freshness ms={measure.ms} now={now} />
                 </button>
               ))}
-              {!otherMeasures.length &&
-                <p className={styles.caption}>Nessun’altra variabile disponibile nella risposta della fonte.</p>}
+              {!otherMeasures.length && (
+                <p className={styles.caption}>
+                  Nessun’altra variabile disponibile nella risposta della fonte.
+                </p>
+              )}
             </div>
           </details>
         )}
@@ -330,7 +483,12 @@ export function TwinPanel({ inspectorOnly = false }: { inspectorOnly?: boolean }
               esposizione o impatto calcolato.
             </p>
             <div className={styles.nearby}>
-              {!rows.length && <p className={styles.caption}>Nessuna stazione con questa variabile nella risposta disponibile.</p>}
+              {!rows.length && (
+                <p className={styles.caption}>
+                  Nessuna stazione con questa variabile nella risposta
+                  disponibile.
+                </p>
+              )}
               {rows
                 .map((m) => ({
                   m,
@@ -414,12 +572,14 @@ export function TwinPanel({ inspectorOnly = false }: { inspectorOnly?: boolean }
           disabled={s.sensorsFeed.loading || (s.radarOn && s.radarFeed.loading)}
           onClick={request}
         >
-          {s.sensorsFeed.loading || (s.radarOn && s.radarFeed.loading) ? "Verifica delle fonti…" : "Aggiorna adesso"}
+          {s.sensorsFeed.loading || (s.radarOn && s.radarFeed.loading)
+            ? "Verifica delle fonti…"
+            : "Aggiorna adesso"}
         </button>
         <Feed label="Sensori PCR" feed={s.sensorsFeed} now={now} />
         <p className={styles.caption}>
-          Le misure hanno orari individuali e frequenze diverse per sensore.
-          La verifica ogni minuto non aumenta la frequenza delle osservazioni.
+          Le misure hanno orari individuali e frequenze diverse per sensore. La
+          verifica ogni minuto non aumenta la frequenza delle osservazioni.
         </p>
         {s.radarOn && (
           <>
@@ -445,44 +605,51 @@ export function TwinPanel({ inspectorOnly = false }: { inspectorOnly?: boolean }
           </>
         )}
       </details>
-      {!inspectorOnly && <details className={styles.section}>
-        <summary>Fonti, copertura e limiti</summary>
-        <p className={styles.caption}>
-          Fonte: Protezione Civile della Regione Friuli Venezia Giulia ·{" "}
+      {!inspectorOnly && (
+        <details className={styles.section}>
+          <summary>Fonti, copertura e limiti</summary>
+          <p className={styles.caption}>
+            Fonte: Protezione Civile della Regione Friuli Venezia Giulia ·{" "}
+            <a
+              href="https://monitor.protezionecivile.fvg.it/licenza"
+              target="_blank"
+              rel="noreferrer"
+            >
+              CC BY 4.0
+            </a>
+            . Le osservazioni vengono richieste direttamente alla fonte; la
+            verifica si sospende nelle schede non visibili.
+          </p>
+          <p className={styles.caption}>
+            Fonte asset: Regione FVG / IRDAT, edificato DBS e autorizzazioni
+            AIA. Estratti acquisiti l’8/11/2026. Base edifici 2017–2020: 3.303
+            geometrie a Trieste e 4.849 a Monfalcone. 1.284 geometrie senza
+            altezza utilizzabile restano piatte. IODL 2.0 secondo condizioni
+            IRDAT e metadati delle risorse.
+          </p>
+          <p className={styles.caption}>
+            Nessun consumo energetico, conteggio del traffico o emissione
+            industriale istantanea viene dedotto da queste anagrafiche.
+          </p>
           <a
-            href="https://monitor.protezionecivile.fvg.it/licenza"
+            href={`${import.meta.env.BASE_URL}data/twin/sources.json`}
             target="_blank"
             rel="noreferrer"
           >
-            CC BY 4.0
+            Provenienza degli estratti ↗
           </a>
-          . Le osservazioni vengono richieste direttamente alla fonte; la
-          verifica si sospende nelle schede non visibili.
-        </p>
-        <p className={styles.caption}>
-          Fonte asset: Regione FVG / IRDAT, edificato DBS e autorizzazioni AIA.
-          Estratti acquisiti l’8/11/2026. Base edifici 2017–2020: 3.303
-          geometrie a Trieste e 4.849 a Monfalcone. 1.284 geometrie senza
-          altezza utilizzabile restano piatte. IODL 2.0 secondo condizioni IRDAT
-          e metadati delle risorse.
-        </p>
-        <p className={styles.caption}>
-          Nessun consumo energetico, conteggio del traffico o emissione
-          industriale istantanea viene dedotto da queste anagrafiche.
-        </p>
-        <a
-          href={`${import.meta.env.BASE_URL}data/twin/sources.json`}
-          target="_blank"
-          rel="noreferrer"
-        >
-          Provenienza degli estratti ↗
-        </a>
-      </details>}
-
+        </details>
+      )}
     </section>
   );
 }
-export function Series({ measure, unitOverride }: { measure: Measure; unitOverride?: string }) {
+export function Series({
+  measure,
+  unitOverride,
+}: {
+  measure: Measure;
+  unitOverride?: string;
+}) {
   const refreshKey = useTwinStore((s) => s.refreshKey);
   const [state, setState] = useState<{
     key: string;
@@ -511,7 +678,8 @@ export function Series({ measure, unitOverride }: { measure: Measure; unitOverri
             (m) =>
               m.stationId === measure.stationId &&
               m.sensorId === measure.sensorId &&
-              m.ms >= start.getTime() && m.ms <= end.getTime(),
+              m.ms >= start.getTime() &&
+              m.ms <= end.getTime(),
           )
           .sort((a, b) => a.ms - b.ms);
         if (!ac.signal.aborted)
@@ -542,6 +710,14 @@ export function Series({ measure, unitOverride }: { measure: Measure; unitOverri
         Meno di due osservazioni nella serie disponibile.
       </p>
     );
-  const definition = variableEntries.find(([, variable]) => variable.id === measure.sensorId)?.[1];
-  return <ObservedSeriesChart key={key} rows={state.rows} unit={unitOverride ?? definition?.unit ?? ""} />;
+  const definition = variableEntries.find(
+    ([, variable]) => variable.id === measure.sensorId,
+  )?.[1];
+  return (
+    <ObservedSeriesChart
+      key={key}
+      rows={state.rows}
+      unit={unitOverride ?? definition?.unit ?? ""}
+    />
+  );
 }

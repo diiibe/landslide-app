@@ -34,8 +34,13 @@
 }
 
 @keyframes pulseDot {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(47, 93, 58, 0.7); }
-  50% { box-shadow: 0 0 0 6px rgba(47, 93, 58, 0); }
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(47, 93, 58, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(47, 93, 58, 0);
+  }
 }
 
 .ttl {
@@ -113,9 +118,17 @@
   overflow: hidden;
 }
 
-.swatch::-webkit-color-swatch-wrapper { padding: 0; }
-.swatch::-webkit-color-swatch { border: 0; border-radius: 50%; }
-.swatch::-moz-color-swatch { border: 0; border-radius: 50%; }
+.swatch::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+.swatch::-webkit-color-swatch {
+  border: 0;
+  border-radius: 50%;
+}
+.swatch::-moz-color-swatch {
+  border: 0;
+  border-radius: 50%;
+}
 
 .actions {
   display: flex;
@@ -134,7 +147,10 @@
   border: 1px solid var(--c-border);
   background: var(--c-surface);
   color: var(--c-text);
-  transition: background .12s var(--e-quart), color .12s var(--e-quart), border-color .12s var(--e-quart);
+  transition:
+    background 0.12s var(--e-quart),
+    color 0.12s var(--e-quart),
+    border-color 0.12s var(--e-quart);
 }
 
 .cancel:hover {
@@ -169,4 +185,19 @@
   .actions button {
     min-height: 44px;
   }
+}
+
+.ttl {
+  font-size: var(--text-heading);
+}
+.cancel,
+.save,
+.input {
+  font-size: var(--text-body);
+}
+.hint,
+.kvLabel,
+.kvValue {
+  font-size: var(--text-caption);
+  line-height: 1.6;
 }

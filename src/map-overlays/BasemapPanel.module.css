@@ -112,3 +112,10 @@
 .body:not([hidden]) {
   animation: var(--motion-fade);
 }
+
+.head {
+  font-size: var(--text-caption);
+}
+.body button {
+  font-size: var(--text-caption);
+}
