@@ -1,3 +1,5 @@
+import { mountExperienceMap } from "@/spaces/map";
+import { useExperienceStore } from "@/spaces/store";
 import { useEffect, useRef } from "react";
 import maplibregl from "maplibre-gl";
 import { useAppStore } from "@/app/store";
@@ -54,6 +56,7 @@ import {
 } from "./layers/comuni";
 import {
   addCriticalPoi,
+  setPoiCompact,
   applyPoiCategoryFilter,
   applyPoiColors,
   applyPoiModel,
@@ -94,7 +97,7 @@ import {
   setupUserPolygons,
   updateUserPolygonsData,
 } from "./layers/userPolygons";
-import { startDrawing, stopDrawing } from "./drawing";
+import { startDrawing, stopDrawing, prepareDrawing, drawingError } from "./drawing";
 import { registerPopups } from "./popups";
 import { setMap } from "./instance";
 import { rewriteMapboxUrl } from "./mapboxUrl";
@@ -121,8 +124,8 @@ function setupStaticLayers(m: maplibregl.Map): void {
   const dark = s.theme === "dark";
   addDtmHillshade(m, s.layers.dtm, dark);
   addComuni(m, s.layers.comuni, dark);
-  addTrails(m, s.layers.trails, dark);
-  addRoads(m, s.layers.roads, dark);
+  addTrails(m, s.layers.trails && useExperienceStore.getState().activeId !== "landslides", dark);
+  addRoads(m, s.layers.roads && useExperienceStore.getState().activeId !== "landslides", dark);
   addCriticalPoi(m, s.layers.poiCritical, s.layers.poiHuts);
 }
 
@@ -159,8 +162,8 @@ function applyThemeToLayers(m: maplibregl.Map): void {
   // outline color also varies by theme so it joins this gated re-add.
   if (appliedTheme !== null && appliedTheme !== s.theme) {
     addComuni(m, s.layers.comuni, dark);
-    addTrails(m, s.layers.trails, dark);
-    addRoads(m, s.layers.roads, dark);
+    addTrails(m, s.layers.trails && useExperienceStore.getState().activeId !== "landslides", dark);
+    addRoads(m, s.layers.roads && useExperienceStore.getState().activeId !== "landslides", dark);
     addCriticalPoi(m, s.layers.poiCritical, s.layers.poiHuts);
   }
   appliedTheme = s.theme;
@@ -322,6 +325,7 @@ export function MapView() {
   const userLayers = useAppStore((s) => s.userLayers);
   const userPolygons = useAppStore((s) => s.userPolygons);
   const drawingMode = useAppStore((s) => s.drawingMode);
+  const activeExperience = useExperienceStore(s => s.activeId);
   const view3D = useAppStore((s) => s.view3D);
   const poiColors = useAppStore((s) => s.poiColors);
   const poiCategoryVisible = useAppStore((s) => s.poiCategoryVisible);
@@ -382,9 +386,11 @@ export function MapView() {
     });
     const unmountTwin = mountTwinMap(m);
     const unmountRegional = mountRegionalMap(m);
+    const unmountExperience = mountExperienceMap(m);
     mapRef.current = m;
     setMap(m);
     return () => {
+      unmountExperience();
       unmountRegional();
       unmountTwin();
       setMap(null);
@@ -414,6 +420,7 @@ export function MapView() {
         // Run after JSON arrives and before replacing the old projection.
         // A failed download leaves the current terrain untouched.
         transformStyle: (_previous, next) => {
+          if(useAppStore.getState().drawingMode){stopDrawing();prepareDrawing();}
           if (m.getTerrain()) m.setTerrain(null);
           return next;
         },
@@ -430,8 +437,8 @@ export function MapView() {
     const m = mapRef.current;
     if (!m || !m.isStyleLoaded()) return;
     setupModelLayers(m);
-    if (useAppStore.getState().layers.roads) rebakeRoads(m);
-    if (useAppStore.getState().layers.trails) rebakeTrails(m);
+    if (useAppStore.getState().layers.roads && useExperienceStore.getState().activeId !== "landslides") rebakeRoads(m);
+    if (useAppStore.getState().layers.trails && useExperienceStore.getState().activeId !== "landslides") rebakeTrails(m);
     if (useAppStore.getState().layers.comuni) applyComuniModel(m);
     const ls = useAppStore.getState().layers;
     if (ls.poiCritical || ls.poiHuts) applyPoiModel();
@@ -485,12 +492,12 @@ export function MapView() {
   }, [v2DiffuseOn, susceptibilityStyle.diffuse]);
 
   useEffect(() => {
-    if (mapRef.current) setRoadsVisible(mapRef.current, roadsOn);
-  }, [roadsOn]);
+    if (mapRef.current) setRoadsVisible(mapRef.current, roadsOn && activeExperience !== "landslides");
+  }, [roadsOn, activeExperience]);
 
   useEffect(() => {
-    if (mapRef.current) setTrailsVisible(mapRef.current, trailsOn);
-  }, [trailsOn]);
+    if (mapRef.current) setTrailsVisible(mapRef.current, trailsOn && activeExperience !== "landslides");
+  }, [trailsOn, activeExperience]);
 
   useEffect(() => {
     if (mapRef.current) setComuniVisible(mapRef.current, comuniOn);
@@ -499,17 +506,21 @@ export function MapView() {
     if (mapRef.current) setCriticalVisible(mapRef.current, poiCriticalOn);
   }, [poiCriticalOn]);
   useEffect(() => {
+    if(mapRef.current) setPoiCompact(mapRef.current, activeExperience === "landslides");
+  }, [activeExperience]);
+
+  useEffect(() => {
     if (mapRef.current) setHutsVisible(mapRef.current, poiHutsOn);
   }, [poiHutsOn]);
 
   // Sensitivity (paint-only) vs gamma/radius (re-bake). Each network is
   // wired independently so changing trails params doesn't touch roads.
   useEffect(() => {
-    if (mapRef.current && roadsOn) applyRoadSensitivity(mapRef.current);
-  }, [sensRoads, roadsOn]);
+    if (mapRef.current && roadsOn && activeExperience !== "landslides") applyRoadSensitivity(mapRef.current);
+  }, [sensRoads, roadsOn, activeExperience]);
   useEffect(() => {
-    if (mapRef.current && trailsOn) applyTrailSensitivity(mapRef.current);
-  }, [sensTrails, trailsOn]);
+    if (mapRef.current && trailsOn && activeExperience !== "landslides") applyTrailSensitivity(mapRef.current);
+  }, [sensTrails, trailsOn, activeExperience]);
   // P0.4 / P1.12 — slider drags fire ~60 events/sec; without a debounce
   // each event kicks off a full ~290M-op rebake. Schedule a trailing-edge
   // rebake; clearing on every new event coalesces a burst into one bake.
@@ -520,7 +531,7 @@ export function MapView() {
   // switch: the model effect owns the rebake in that case.
   useEffect(() => {
     const m = mapRef.current;
-    if (!m || !roadsOn) return;
+    if (!m || !roadsOn || activeExperience === "landslides") return;
     const currentModel = useAppStore.getState().model;
     if (prevModelForRoads.current !== currentModel) {
       prevModelForRoads.current = currentModel;
@@ -528,10 +539,10 @@ export function MapView() {
     }
     const id = setTimeout(() => rebakeRoads(m), REBAKE_DEBOUNCE_MS);
     return () => clearTimeout(id);
-  }, [gammaRoads, radiusRoads, roadsOn]);
+  }, [gammaRoads, radiusRoads, roadsOn, activeExperience]);
   useEffect(() => {
     const m = mapRef.current;
-    if (!m || !trailsOn) return;
+    if (!m || !trailsOn || activeExperience === "landslides") return;
     const currentModel = useAppStore.getState().model;
     if (prevModelForTrails.current !== currentModel) {
       prevModelForTrails.current = currentModel;
@@ -539,7 +550,7 @@ export function MapView() {
     }
     const id = setTimeout(() => rebakeTrails(m), REBAKE_DEBOUNCE_MS);
     return () => clearTimeout(id);
-  }, [gammaTrails, radiusTrails, trailsOn]);
+  }, [gammaTrails, radiusTrails, trailsOn, activeExperience]);
 
   useEffect(() => {
     if (mapRef.current) setDtmHillshadeVisible(mapRef.current, dtmOn);
@@ -751,12 +762,14 @@ export function MapView() {
   useEffect(() => {
     const m = mapRef.current;
     if (!m) return;
-    if (drawingMode) {
-      void startDrawing(m);
-    } else {
-      stopDrawing();
-    }
-    return () => stopDrawing();
+    let disposed=false;
+    const start=()=>{if(!disposed && useAppStore.getState().drawingMode)void startDrawing(m,()=>!disposed&&styleReady.current).catch(drawingError);};
+    const loading=()=>{stopDrawing();prepareDrawing();};
+    if(drawingMode){
+      m.on("style.load",start);m.on("styledataloading",loading);
+      prepareDrawing();if(styleReady.current)start();
+    }else stopDrawing();
+    return()=>{disposed=true;m.off("style.load",start);m.off("styledataloading",loading);stopDrawing();};
   }, [drawingMode]);
 
   // 3D view toggle: tilt the camera to 60° AND enable terrain on the

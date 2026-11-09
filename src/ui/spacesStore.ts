@@ -9,6 +9,7 @@ const KEY = "friulview:spaces:v1";
 const flags = z.record(z.string().max(180), z.boolean());
 const style = z.object({ minClass: z.number().int().min(1).max(5), opacity: z.number().min(0).max(1) });
 const schema = z.object({
+  experienceId: z.enum(["landslides","industry","vineyard","retail","traffic","mountain"]).optional(),
   id: z.string().max(100), name: z.string().trim().min(1).max(70), savedAt: z.number().finite(),
   layers: flags, enabled: flags,
   opacity: z.record(z.string(), z.number().min(0).max(1)),
@@ -34,14 +35,17 @@ function publish(spaces: Space[]) {
   useSpaces.setState({ spaces, storageError });
 }
 const map = () => (window as unknown as { __mlmap?: Map }).__mlmap;
-export function saveSpace(name: string) {
+export function captureView(name: string, experienceId?: Space["experienceId"]): Space {
   const a = useAppStore.getState(), r = useRegionalStore.getState(), m = map();
   const center = m?.getCenter();
   const enabled = { ...r.enabled };
   for (const layer of BUILTIN_LAYERS) enabled[layer.id] = isLayerEnabled(layer);
-  const space = schema.parse({ id: crypto.randomUUID(), name, savedAt: Date.now(), layers: a.layers, floodView: a.floodView, floodOpacity: a.floodOpacity, paiOpacity: a.paiOpacity, diffOpacity: a.diffOpacity, poiColors: a.poiColors, poiCategoryVisible: a.poiCategoryVisible, enabled, opacity: r.opacity, display: r.display, susceptibilityStyle: a.susceptibilityStyle, basemap: a.basemap, view3D: a.view3D,
+  const space = schema.parse({ experienceId, id: crypto.randomUUID(), name, savedAt: Date.now(), layers: a.layers, floodView: a.floodView, floodOpacity: a.floodOpacity, paiOpacity: a.paiOpacity, diffOpacity: a.diffOpacity, poiColors: a.poiColors, poiCategoryVisible: a.poiCategoryVisible, enabled, opacity: r.opacity, display: r.display, susceptibilityStyle: a.susceptibilityStyle, basemap: a.basemap, view3D: a.view3D,
     camera: m && center ? { center: [center.lng, center.lat], zoom: m.getZoom(), bearing: m.getBearing(), pitch: m.getPitch() } : null });
-  publish([space, ...useSpaces.getState().spaces].slice(0, 30));
+  return space;
+}
+export function saveSpace(name: string, experienceId?: Space["experienceId"]) {
+  publish([captureView(name, experienceId), ...useSpaces.getState().spaces].slice(0, 30));
 }
 export function removeSpace(id: string) { publish(useSpaces.getState().spaces.filter(s => s.id !== id)); }
 export function restoreSpace(space: Space) {

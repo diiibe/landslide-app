@@ -169,3 +169,5 @@
 .stackTrigger:hover { background: var(--c-selected); }
 .stackTrigger[hidden] { display: none; }
 @media (max-width: 768px), (max-height: 500px) and (pointer: coarse) { .stackTrigger { font-size: 12px; } }
+
+.backdrop[data-interactive="true"]{pointer-events:none;background:transparent}

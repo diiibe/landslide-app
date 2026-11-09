@@ -1,3 +1,5 @@
+import {isProbeClick} from "@/spaces/interactions";
+import { useExperienceStore } from "@/spaces/store";
 import { Popup, type Map as MLMap, type MapGeoJSONFeature, type MapMouseEvent, type GeoJSONSource } from "maplibre-gl";
 import { useAppearance } from "@/ui/appearance";
 import { useAppStore } from "@/app/store";
@@ -107,7 +109,7 @@ export function mountTwinInteractions(map: MLMap, isReady: () => boolean) {
     }
   }
   function hover(event: MapMouseEvent) {
-    if (!isReady() || !useTwinStore.getState().active || useAppStore.getState().drawingMode) return;
+    if (!isReady() || !useTwinStore.getState().active || (useAppStore.getState().drawingMode || useExperienceStore.getState().probe)) return;
     if (!(window.matchMedia?.("(hover: hover)").matches ?? false)) return;
     if (map.isMoving()) { clearHover(); return; }
     if (performance.now() - lastHoverTime < 32) return;
@@ -135,7 +137,7 @@ export function mountTwinInteractions(map: MLMap, isReady: () => boolean) {
     } else popup.setLngLat(event.lngLat).setDOMContent(node);
   }
   function click(event: MapMouseEvent) {
-    if (!isReady() || !useTwinStore.getState().active || useAppStore.getState().drawingMode) return;
+    if (!isReady() || !useTwinStore.getState().active || (useAppStore.getState().drawingMode || isProbeClick(event))) return;
     const touch = window.matchMedia?.("(pointer: coarse)").matches ?? false;
     const hit = pickDataFeature(map, event.point, touch ? 22 : 8);
     const feature = hit && !hit.layer.id.startsWith("regional-") ? hit : undefined;

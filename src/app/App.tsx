@@ -1,6 +1,10 @@
 import { lazy, Suspense, useEffect, useRef, useState, type ComponentType } from "react";
 import styles from "./App.module.css";
-import { RegionalPanel } from "@/regional/Panel";
+import { SpacePanel } from "@/spaces/SpacePanel";
+import { SpaceBar } from "@/spaces/SpaceBar";
+import { SpaceRuntime } from "@/spaces/Runtime";
+import { useExperienceStore } from "@/spaces/store";
+import { experience } from "@/spaces/experiences";
 import { CatalogButton, CatalogBrowser } from "@/regional/CatalogBrowser";
 import { RegionalRuntime } from "@/regional/Runtime";
 import { TwinRuntime } from "@/digital-twin/Runtime";
@@ -32,6 +36,9 @@ import { Drawer, LayersButton } from "@/drawer/Drawer";
 import { useAppStore } from "@/app/store";
 
 export default function App() {
+  const activeSpace = useExperienceStore(s => s.activeId);
+  const scene = experience(activeSpace);
+  const showFraneLegend = useAppStore(s => s.layers.v2Bodies || s.layers.v2Diffuse || s.layers.iffi);
   const drawerOpen = useAppStore((s) => s.drawerOpen);
   const drawingMode = useAppStore((s) => s.drawingMode);
   const mapControlsRoot = useRef<HTMLDivElement>(null);
@@ -107,6 +114,7 @@ export default function App() {
           <span>Drop GPX, GeoJSON, or KML to add as a layer</span>
         </div>
       )}
+      <SpaceRuntime />
       <TwinRuntime />
       <RegionalRuntime />
       <CatalogBrowser />
@@ -118,12 +126,14 @@ export default function App() {
       <div
         className={styles.body}
         data-workspace="unified"
+        data-space={activeSpace ?? "region"}
         data-drawer={drawerOpen && !drawingMode ? "open" : "closed"}
       >
         <div className={styles.map} ref={mapControlsRoot}>
           <Suspense fallback={<MapSkeleton />}>
             <MapView />
           </Suspense>
+          {!drawingMode && <SpaceBar />}
           <div className={styles.rightStack} role="group" aria-label="Comandi mappa">
             <BasemapPanel />
             <LayersButton />
@@ -131,11 +141,11 @@ export default function App() {
           </div>
 
           <div className={styles.threeD} data-map-3d><ThreeDButton /></div>
-          {!drawingMode && <Legend />}
+          {!drawingMode && showFraneLegend && <Legend />}
           <DrawingPanel />
         </div>
-        <Drawer mobileSheet label="Sulla mappa">
-          <RegionalPanel />
+        <Drawer mobileSheet interactiveMap={!!activeSpace} label={scene?.title ?? "Sulla mappa"}>
+          <SpacePanel />
         </Drawer>
       </div>
     </div>

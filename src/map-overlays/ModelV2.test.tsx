@@ -128,6 +128,7 @@ describe("Legend · Modello v2", () => {
   });
 
   it("shows only the inventory legend when both susceptibility mappings are off", () => {
+    useAppStore.getState().toggleLayer("iffi");
     render(<Legend />);
     expect(screen.getByText("Frana censita · IFFI")).toBeInTheDocument();
     expect(screen.queryByText("0.3")).toBeNull();

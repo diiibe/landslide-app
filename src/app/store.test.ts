@@ -4,12 +4,12 @@ import { useAppStore } from "./store";
 describe("useAppStore", () => {
   beforeEach(() => useAppStore.getState().reset());
 
-  it("starts with J.3 active and threshold 0.50", () => {
+  it("starts on the regional map with landslides opt-in", () => {
     const s = useAppStore.getState();
     expect(s.model).toBe("j3");
     expect(s.threshold).toBe(0.5);
     expect(s.basemap).toBe("outdoors");
-    expect(s.layers.iffi).toBe(true);
+    expect(s.layers.iffi).toBe(false);
     expect(s.drawerOpen).toBe(true);
     expect(s.legendOpen).toBe(true);
   });
@@ -141,16 +141,16 @@ describe("useAppStore", () => {
 describe("model v2 layer exclusivity", () => {
   beforeEach(() => { useAppStore.getState().reset(); });
 
-  it("starts with the new bodies mapping and keeps old surfaces hidden", () => {
+  it("keeps all susceptibility surfaces off before entering their space", () => {
     const { layers } = useAppStore.getState();
-    expect(layers.v2Bodies).toBe(true);
+    expect(layers.v2Bodies).toBe(false);
     expect(layers.v2Diffuse).toBe(false);
     expect(layers.susceptibility).toBe(false);
     expect(layers.smoothHeatmap).toBe(false);
   });
 
   it("turning bodies on hides the J surfaces but keeps IFFI", () => {
-    useAppStore.setState(s=>({layers:{...s.layers,v2Bodies:false}}));
+    useAppStore.setState(s=>({layers:{...s.layers,v2Bodies:false,iffi:true,susceptibility:true,smoothHeatmap:true}}));
     useAppStore.getState().toggleLayer("v2Bodies");
     const { layers } = useAppStore.getState();
     expect(layers.v2Bodies).toBe(true);
@@ -196,13 +196,15 @@ describe("model v2 layer exclusivity", () => {
     expect(layers.v2Bodies).toBe(false);
   });
 
-  it("turning a J surface off leaves the v2 layers alone", () => {
+  it("turning inventory off leaves the selected v2 layer alone", () => {
+    useAppStore.setState(s=>({layers:{...s.layers,v2Bodies:true,iffi:true}}));
     const s = useAppStore.getState();
     s.toggleLayer("iffi");
     expect(useAppStore.getState().layers.v2Bodies).toBe(true);
   });
 
   it("flood and context overlays are independent of v2", () => {
+    useAppStore.setState(s=>({layers:{...s.layers,v2Bodies:true}}));
     const s = useAppStore.getState();
     s.toggleLayer("flood");
     s.toggleLayer("roads");

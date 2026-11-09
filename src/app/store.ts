@@ -538,7 +538,7 @@ const initial: Omit<
   layers: {
     susceptibility: false,
     smoothHeatmap: false,
-    iffi: true,
+    iffi: false,
     zoneBoundaries: false,
     roads: false,
     trails: false,
@@ -551,7 +551,7 @@ const initial: Omit<
     pai: false,
     diff: false,
     floodHistorical: false,
-    v2Bodies: true,
+    v2Bodies: false,
     v2Diffuse: false,
   },
   floodView: "combined",
