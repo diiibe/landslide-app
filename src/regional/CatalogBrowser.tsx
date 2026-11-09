@@ -65,7 +65,13 @@ export function CatalogBrowser() {
           useRegionalStore.setState({ catalogOpen: false });
       }}
       onKeyDown={(e) => {
-        if (e.key === "Escape") e.stopPropagation();
+        if (e.key === "Escape") {
+          // Search inputs can consume Escape to clear their value. The
+          // catalog uses it consistently to close, leaving clear explicit.
+          e.preventDefault();
+          e.stopPropagation();
+          useRegionalStore.setState({ catalogOpen: false });
+        }
       }}
     >
       <div className={styles.header}>

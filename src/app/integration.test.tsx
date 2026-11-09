@@ -61,6 +61,17 @@ describe("Unified catalog experience", () => {
     expect(search).toHaveFocus();
     expect(search).toHaveValue("");
   });
+  it("closes the catalog with Escape even while a non-empty search input has focus", () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "Catalogo" }));
+    const search = screen
+      .getByRole("dialog", { name: "Catalogo dei dati" })
+      .querySelector("input")!;
+    fireEvent.change(search, { target: { value: "scuole" } });
+    fireEvent.keyDown(search, { key: "Escape" });
+    expect(useRegionalStore.getState().catalogOpen).toBe(false);
+    expect(useAppStore.getState().drawerOpen).toBe(true);
+  });
   it("opens the central catalog and adds a layer while keeping the catalog open", () => {
     render(<App />);
     fireEvent.click(screen.getByRole("button", { name: "Catalogo" }));
