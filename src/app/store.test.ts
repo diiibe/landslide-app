@@ -139,15 +139,18 @@ describe("useAppStore", () => {
  * allowed) and with the J.2/J.3 susceptibility + KDE surfaces. Inventory,
  * flood and context overlays stay independent. */
 describe("model v2 layer exclusivity", () => {
-  beforeEach(() => useAppStore.getState().reset());
+  beforeEach(() => { useAppStore.getState().reset(); });
 
-  it("starts with both v2 layers off", () => {
+  it("starts with the new bodies mapping and keeps old surfaces hidden", () => {
     const { layers } = useAppStore.getState();
-    expect(layers.v2Bodies).toBe(false);
+    expect(layers.v2Bodies).toBe(true);
     expect(layers.v2Diffuse).toBe(false);
+    expect(layers.susceptibility).toBe(false);
+    expect(layers.smoothHeatmap).toBe(false);
   });
 
   it("turning bodies on hides the J surfaces but keeps IFFI", () => {
+    useAppStore.setState(s=>({layers:{...s.layers,v2Bodies:false}}));
     useAppStore.getState().toggleLayer("v2Bodies");
     const { layers } = useAppStore.getState();
     expect(layers.v2Bodies).toBe(true);
@@ -195,7 +198,6 @@ describe("model v2 layer exclusivity", () => {
 
   it("turning a J surface off leaves the v2 layers alone", () => {
     const s = useAppStore.getState();
-    s.toggleLayer("v2Bodies");
     s.toggleLayer("iffi");
     expect(useAppStore.getState().layers.v2Bodies).toBe(true);
   });
@@ -204,7 +206,6 @@ describe("model v2 layer exclusivity", () => {
     const s = useAppStore.getState();
     s.toggleLayer("flood");
     s.toggleLayer("roads");
-    s.toggleLayer("v2Bodies");
     const { layers } = useAppStore.getState();
     expect(layers.flood).toBe(true);
     expect(layers.roads).toBe(true);

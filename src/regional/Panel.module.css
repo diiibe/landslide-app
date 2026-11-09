@@ -310,3 +310,38 @@
 .panel select {
   height: 48px;
 }
+.sectionHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.sectionHead h2 span {
+  font-weight: 400;
+  font-size: 13px;
+  color: var(--c-text-muted);
+  margin-left: 6px;
+}
+.sectionHead button {
+  font-size: 12px;
+}
+.activeSection {
+  display: grid;
+  gap: 8px;
+}
+.browseSection {
+  display: grid;
+  gap: 12px;
+  border-top: 1px solid var(--c-border);
+  padding-top: 16px;
+}
+.activeSection .toolbar {
+  padding: 8px 0 12px;
+}
+.activeSection .caption {
+  font-size: 11px;
+}
+.panel {
+  gap: 20px;
+}
+.panel input[type="range"] {width:100%;accent-color:var(--c-forest);}

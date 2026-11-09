@@ -1,3 +1,4 @@
+import { useAppStore } from "@/app/store";
 import { VARIABLES, VARIABLE_GROUPS, type Variable } from "@/digital-twin/data";
 import { useTwinStore } from "@/digital-twin/store";
 import { setRegionalEnabled, useRegionalStore } from "./store";
@@ -88,11 +89,33 @@ export function isPCREnabled(variable: Variable): boolean {
   );
 }
 export function isLayerEnabled(layer: LayerDefinition): boolean {
+  if (layer.id.startsWith("map-"))
+    return !!useAppStore.getState().layers[
+      layer.id.slice(4) as keyof ReturnType<
+        typeof useAppStore.getState
+      >["layers"]
+    ];
+  if (layer.id.startsWith("user-"))
+    return !!useAppStore
+      .getState()
+      .userLayers.find((u) => u.id === layer.id.slice(5))?.visible;
   return (
     useRegionalStore.getState().enabled[layer.id] ?? layer.id === "pcr-wind"
   );
 }
 export function enableLayer(layer: LayerDefinition, on: boolean) {
+  if (layer.id.startsWith("map-")) {
+    const key = layer.id.slice(4) as keyof ReturnType<
+      typeof useAppStore.getState
+    >["layers"];
+    if (useAppStore.getState().layers[key] !== on)
+      useAppStore.getState().toggleLayer(key);
+    return;
+  }
+  if (layer.id.startsWith("user-")) {
+    useAppStore.getState().updateUserLayer(layer.id.slice(5), { visible: on });
+    return;
+  }
   setRegionalEnabled(layer.id, on);
   if (layer.kind === "radar") useTwinStore.setState({ radarOn: on });
   if (layer.kind === "buildings") useTwinStore.setState({ buildingsOn: on });

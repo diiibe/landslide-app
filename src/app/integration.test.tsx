@@ -1,93 +1,98 @@
-import { act, render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import { describe, it, expect, beforeEach, vi } from "vitest";
-
-// Stub the MapView — jsdom has no WebGL, and we're only testing the chrome here.
 vi.mock("@/map/MapView", () => ({
   MapView: () => <div data-testid="map-stub" />,
 }));
-
 import App from "./App";
 import { useAppStore } from "./store";
-import {useRegionalStore} from "@/regional/store";
-
+import { useRegionalStore } from "@/regional/store";
 beforeEach(() => {
   useAppStore.getState().reset();
-  useRegionalStore.setState({tab:"layers",query:"",activeOnly:false,enabled:{},selection:null,detailId:null});
-  // Stub fetch for public/data/*.json so tests don't need a server.
-  vi.spyOn(globalThis, "fetch").mockImplementation(async (input: RequestInfo | URL) => {
-    const url = typeof input === "string" ? input : input.toString();
-    if (url.includes("model_")) {
-      return new Response(
-        JSON.stringify({
-          model: "j2",
-          auc_pooled: 0.802,
-          pr_auc: 0.363,
-          ece: 0.006,
-          brier: 0.080,
-          cells_trained: 676416,
-          cv_folds: 378,
-          zones: [],
-          calibration: Array.from({ length: 9 }, (_, i) => ({
-            p_pred: (i + 0.5) / 10,
-            observed: (i + 0.5) / 10,
-          })),
-        }),
-      );
-    }
-    if (url.includes("zones_")) return new Response("[]");
-    return new Response("{}");
+  useRegionalStore.setState({
+    catalog: null,
+    catalogOpen: false,
+    enabled: {},
+    query: "",
+    selection: null,
+    detailId: null,
   });
+  HTMLDialogElement.prototype.showModal = function () {
+    this.setAttribute("open", "");
+  };
+  HTMLDialogElement.prototype.close = function () {
+    this.removeAttribute("open");
+  };
+  vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("{}"));
 });
-
-describe("App integration", () => {
-  it("renders brand, map stub and drawer groups", () => {
+describe("Unified catalog experience", () => {
+  it("shows current mappings and active layers without obsolete model selectors or analysis tabs", () => {
     render(<App />);
     expect(screen.getByText("FVG · Territorio")).toBeInTheDocument();
     expect(screen.getByTestId("map-stub")).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("tab",{name:"Analisi"}));
-    expect(screen.getByRole("button", { name: /^view/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /^monitoring/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /^analytics/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /^model/i })).toBeInTheDocument();
-  });
-
-  it("switches model via the LayersPanel J.3 button", () => {
-    render(<App />);
-    // Two J.3 buttons exist: the one in LayersPanel and… well, only one now.
-    const j3 = screen.getAllByRole("button", { name: /^J\.3$/ })[0]!;
-    fireEvent.click(j3);
-    expect(useAppStore.getState().model).toBe("j3");
-  });
-
-  it("replaces the J statistics groups with one line while a v2 layer is on", () => {
-    useAppStore.getState().toggleLayer("v2Diffuse");
-    render(<App />);
-    fireEvent.click(screen.getByRole("tab",{name:"Analisi"}));
+    expect(screen.queryByRole("tab", { name: "Analisi" })).toBeNull();
+    expect(screen.queryByRole("button", { name: /^J\.[23]$/ })).toBeNull();
+    const active = screen.getByRole("region", { name: "Livelli attivi" });
     expect(
-      screen.getByText("Statistiche disponibili per J.2/J.3. Il modello v2 non ha zone."),
+      within(active).getByRole("button", {
+        name: "Corpi di frana · Suscettibilità",
+      }),
     ).toBeInTheDocument();
-    for (const name of [/^view/i, /^monitoring/i, /^analytics/i, /^model$/i]) {
-      expect(screen.queryByRole("button", { name })).toBeNull();
-    }
-    expect(screen.getByRole("button", { name: /^metriche v2/i })).toBeInTheDocument();
+    fireEvent.click(
+      within(active).getByRole("button", {
+        name: "Corpi di frana · Suscettibilità",
+      }),
+    );
+    expect(screen.getByRole("slider", { name: /Soglia/ })).toHaveValue("3");
   });
-
-  it("shows the J groups again when the v2 layer goes off", () => {
-    useAppStore.getState().toggleLayer("v2Diffuse");
-    const { rerender } = render(<App />);
-    fireEvent.click(screen.getByRole("tab",{name:"Analisi"}));
-    act(() => useAppStore.getState().toggleLayer("v2Diffuse"));
-    rerender(<App />);
-    expect(screen.queryByText(/Il modello v2 non ha zone/)).toBeNull();
-    for (const name of [/^view/i, /^monitoring/i, /^analytics/i, /^model$/i]) {
-      expect(screen.getByRole("button", { name })).toBeInTheDocument();
-    }
-  });
-
-  it("toggles drawer via the handle", () => {
+  it("opens the central catalog and adds a layer while keeping the catalog open", () => {
     render(<App />);
-    expect(useAppStore.getState().drawerOpen).toBe(true);
-    fireEvent.click(screen.getByRole("button", { name: /chiudi livelli e analisi/i }));
+    fireEvent.click(screen.getByRole("button", { name: "Catalogo" }));
+    const dialog = screen.getByRole("dialog", { name: "Catalogo dei dati" });
+    const search = within(dialog).getByRole("searchbox", {
+      name: "Cerca nel catalogo",
+    });
+    fireEvent.change(search, { target: { value: "zone diffuse" } });
+    fireEvent.click(
+      within(dialog).getByRole("button", {
+        name: "Aggiungi alla mappa · Zone diffuse · Suscettibilità",
+      }),
+    );
+    expect(useAppStore.getState().layers.v2Diffuse).toBe(true);
+    expect(useAppStore.getState().layers.v2Bodies).toBe(false);
+    expect(useRegionalStore.getState().catalogOpen).toBe(true);
+    expect(
+      within(dialog).getByRole("button", {
+        name: "Rimuovi dalla mappa · Zone diffuse · Suscettibilità",
+      }),
+    ).toBeInTheDocument();
+  });
+  it("opens a thematic folder and navigates back using the filesystem breadcrumb", () => {
+    render(<App />);
+    const explorer = screen.getByRole("region", { name: "Esplora i livelli" });
+    fireEvent.click(
+      within(explorer).getByRole("button", { name: /Frane e versanti/ }),
+    );
+    fireEvent.click(
+      within(explorer).getByRole("button", { name: /Modello territoriale/ }),
+    );
+    expect(
+      within(explorer).getByRole("button", {
+        name: "Zone diffuse · Suscettibilità",
+      }),
+    ).toBeInTheDocument();
+    fireEvent.click(
+      within(explorer).getByRole("button", { name: "Tutti i dati" }),
+    );
+    expect(
+      within(explorer).getByRole("button", { name: /Meteo e precipitazioni/ }),
+    ).toBeInTheDocument();
+  });
+  it("closes the overlay drawer without changing which data layers are active", () => {
+    render(<App />);
+    fireEvent.click(
+      screen.getByRole("button", { name: /chiudi sulla mappa/i }),
+    );
     expect(useAppStore.getState().drawerOpen).toBe(false);
+    expect(useAppStore.getState().layers.v2Bodies).toBe(true);
   });
 });

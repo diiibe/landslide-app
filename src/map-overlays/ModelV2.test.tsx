@@ -46,6 +46,7 @@ beforeEach(() => {
   vi.spyOn(console, "info").mockImplementation(() => {});
   resetModelV2Cache();
   useAppStore.getState().reset();
+  useAppStore.setState(s=>({layers:{...s.layers,v2Bodies:false}}));
 });
 
 describe("LayersPanel · Modello v2", () => {
@@ -126,9 +127,10 @@ describe("Legend · Modello v2", () => {
     );
   });
 
-  it("keeps the J ramp when no v2 layer is on", () => {
+  it("shows only the inventory legend when both susceptibility mappings are off", () => {
     render(<Legend />);
-    expect(screen.getByText("0.3")).toBeInTheDocument();
+    expect(screen.getByText("Frana censita · IFFI")).toBeInTheDocument();
+    expect(screen.queryByText("0.3")).toBeNull();
     expect(screen.queryByText(/Modello v2/)).toBeNull();
   });
 });
@@ -170,7 +172,7 @@ describe("ModelV2Panel", () => {
   it("says the metrics are not comparable with J and that none are provided yet", async () => {
     stubModelV2(READY);
     render(<ModelV2Panel />);
-    expect(screen.getByText(/non confrontabili con quelle di J\.2\/J\.3/)).toBeInTheDocument();
+    expect(screen.getByText(/non descrivono la probabilità di un evento futuro/)).toBeInTheDocument();
     expect(await screen.findByText("Metriche non ancora fornite.")).toBeInTheDocument();
   });
 
@@ -210,7 +212,7 @@ describe("ModelV2Panel", () => {
     expect(within(cv).queryByRole("table", { name: "Zone diffuse" })).toBeNull();
     expect(screen.getByText(/non la capacità di prevedere frane/)).toBeInTheDocument();
     // The J non-comparability note stays alongside the owner's notes.
-    expect(screen.getByText(/non confrontabili con quelle di J\.2\/J\.3/)).toBeInTheDocument();
+    expect(screen.getByText(/non descrivono la probabilità di un evento futuro/)).toBeInTheDocument();
     expect(screen.queryByText("Metriche non ancora fornite.")).toBeNull();
   });
 });

@@ -34,8 +34,8 @@ export function ModelV2Panel() {
             <li key={n}>{n}</li>
           ))}
           <li>
-            Metriche del modello v2, non confrontabili con quelle di J.2/J.3:
-            inventario, dominio e validazione sono diversi.
+            Le metriche misurano la corrispondenza con l’inventario di riferimento;
+            non descrivono la probabilità di un evento futuro.
           </li>
         </ul>
       </Section>

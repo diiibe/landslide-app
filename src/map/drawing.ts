@@ -70,7 +70,7 @@ function readPreview(phase: "drawing" | "ready"): DrawingPreview {
   const feats = active.getSnapshot() as DrawFeature[];
   const open = feats.find((f) => f.properties?.mode === "polygon");
   const closed = feats.find((f) => f.id === readyFeatureId);
-  const target = phase === "ready" ? closed : open ?? closed;
+  const target = phase === "ready" ? closed : (open ?? closed);
   if (!target || target.geometry.type !== "Polygon") {
     return { phase, vertexCount: 0, areaKm2: 0 };
   }
@@ -162,7 +162,8 @@ export function commitDrawing(name: string, color?: string): boolean {
     [bbox[0]!, bbox[1]!],
     [bbox[2]!, bbox[3]!],
   ];
-  const trimmed = name.trim() || `Area ${useAppStore.getState().userPolygons.length + 1}`;
+  const trimmed =
+    name.trim() || `Area ${useAppStore.getState().userPolygons.length + 1}`;
   useAppStore.getState().addUserPolygon({
     name: trimmed,
     geometry: geom,
@@ -187,7 +188,7 @@ export function isDrawing(): boolean {
 
 /** Stats sampled from the currently-rendered map state for a polygon
  *  closed via terra-draw. */
-function computeStatsForPolygon(
+export function computeStatsForPolygon(
   m: MLMap,
   polygon: GeoJSON.Polygon,
 ): UserPolygonStats {
@@ -198,6 +199,27 @@ function computeStatsForPolygon(
   };
   const areaKm2 = turfArea(polyFeature) / 1_000_000;
   const state = useAppStore.getState();
+  // A drawn geometry is valid independently of the analytical grid. The
+  // current class maps cannot yield complete area statistics by querying
+  // viewport tiles; never save hidden historical scores or fabricated zeros.
+  if (
+    state.layers.v2Bodies ||
+    state.layers.v2Diffuse ||
+    !state.layers.susceptibility
+  ) {
+    return {
+      areaKm2,
+      cellsVisible: null,
+      cellsAboveThreshold: null,
+      meanP: null,
+      medianP: null,
+      iffiCount: null,
+      threshold: null,
+      model: null,
+      unavailableReason:
+        "Area geografica salvata. Statistiche di suscettibilità non calcolate: richiedono una valutazione completa della mappatura corrente.",
+    };
+  }
   const threshold = state.threshold;
   const model = state.model;
 

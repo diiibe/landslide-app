@@ -60,7 +60,7 @@ it("lets the user inspect separate observations at identical coordinates and lab
     },
     selection: { layerId: "sample", feature: features[0]! },
   });
-  render(<RegionalPanel analysis={null} />);
+  render(<RegionalPanel />);
   const choose = screen.getByLabelText("Elementi nello stesso punto");
   fireEvent.change(choose, { target: { value: "B" } });
   expect(

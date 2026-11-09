@@ -526,7 +526,7 @@ function UserPolygonsSection() {
           <button
             type="button"
             className={styles.userName}
-            title={`${p.stats.cellsAboveThreshold} cells ≥ ${p.stats.threshold.toFixed(
+            title={`${p.stats.cellsAboveThreshold} cells ≥ ${(p.stats.threshold ?? 0).toFixed(
               2,
             )} · ${p.stats.areaKm2.toFixed(1)} km²`}
             onClick={() => {
