@@ -1,3 +1,4 @@
+import { formatValue } from "@/digital-twin/data";
 import type { LayerDefinition, MapData } from "./types";
 const finite = (v: unknown): v is number =>
   typeof v === "number" && Number.isFinite(v);
@@ -206,4 +207,13 @@ export function defaultOpacity(l: LayerDefinition): number {
           : l.geometryTypes?.some((g) => g.includes("Polygon"))
             ? 0.35
             : 0.85;
+}
+
+/** Render labels are formatted copies; the original values and censored strings stay intact. */
+export function mapLabelData(layer: LayerDefinition, data: MapData): MapData {
+  if (!layer.metric) return data;
+  return { ...data, features: data.features.map((feature) => {
+    const p = feature.properties ?? {}, value = p[layer.metric!.field];
+    return { ...feature, properties: { ...p, __mapLabel: p.__censored ? String(p.__displayValue ?? "") : finite(value) ? formatValue(value) : String(p.__displayValue ?? "") } };
+  }) };
 }

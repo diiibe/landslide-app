@@ -263,7 +263,7 @@
 }
 .scale i {
   height: 6px;
-  background: linear-gradient(90deg, #deded0, var(--layer-color), #3b534c);
+  background: linear-gradient(90deg, var(--layer-low, #deded0), var(--layer-color) var(--layer-midpoint, 50%), var(--layer-high, #3b534c));
   border-radius: 2px;
 }
 .review {
@@ -415,3 +415,8 @@
 .detail {
   scroll-margin-top: 12px;
 }
+
+.representation { padding: 12px; background: var(--c-surface-sunken); border: 1px solid var(--c-border); border-radius: var(--radius-sm); }
+.representation > strong { font-size: var(--text-body); font-weight: 650; }
+.representation p { font-size: var(--text-caption); color: var(--c-text-muted); line-height: 1.6; margin: 6px 0; }
+.representation label { margin-top: 12px; }

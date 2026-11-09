@@ -1,12 +1,46 @@
 """Regression checks for data identity, units and partial-source recovery (no network)."""
-import importlib.util,pathlib,unittest
+import importlib.util,pathlib,unittest,tempfile,json
 from unittest.mock import patch
 from shapely.geometry import shape
 HERE=pathlib.Path(__file__).parent
 def load(name,file):
  spec=importlib.util.spec_from_file_location(name,HERE/file);module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module);return module
 t=load('tables_test','build-regional-tables.py');b=t.b
+import regional_overviews as overview
 class RegionalPipeline(unittest.TestCase):
+ def test_overview_counts_records_and_retains_content_addressed_previous_version(self):
+  definition={'id':'sample','kind':'vector','geometryTypes':['Point'],'status':'ready','sourceId':'sample','count':2}
+  rows=[{'geometry':{'type':'Point','coordinates':[13,46]}},{'geometry':{'type':'MultiPoint','coordinates':[[13.01,46.01],[13.02,46.02]]}}]
+  with tempfile.TemporaryDirectory()as path,patch.object(overview,'OUT',pathlib.Path(path)):
+   overview.publish_overview(definition,rows);old=pathlib.Path(path)/definition['overview']['file'];payload=old.read_text()
+   self.assertEqual(sum(f['properties']['__count']for f in json.loads(payload)['features']),2)
+   rows[0]['geometry']['coordinates']=[13.5,46]
+   overview.publish_overview(definition,rows)
+   self.assertNotEqual(old.name,definition['overview']['file']);self.assertEqual(old.read_text(),payload)
+ def test_overview_failure_precedes_primary_file_publication(self):
+  definition={'id':'sample','kind':'geojson','sourceId':'sample'}
+  rows=[{'type':'Feature','geometry':{'type':'Point','coordinates':[13,46]},'properties':{'__featureId':'a'}}]
+  with tempfile.TemporaryDirectory()as path:
+   out=pathlib.Path(path)/'out';out.mkdir();cache=pathlib.Path(path)/'cache';cache.mkdir()
+   primary=out/'sample.geojson';primary.write_text('previous-version')
+   with patch.object(b,'OUT',out),patch.object(b,'CACHE',cache),patch.object(overview,'publish_overview',side_effect=ValueError('index failure')):
+    with self.assertRaisesRegex(ValueError,'index failure'):b.save_layer(definition,rows)
+   self.assertEqual(primary.read_text(),'previous-version')
+ def test_overview_rejects_partial_vector_coverage(self):
+  layer={'file':'sample.pmtiles','kind':'vector','count':2}
+  raw={'type':'FeatureCollection','features':[{'type':'Feature','geometry':{'type':'Point','coordinates':[13,46]},'properties':{'__featureId':'same'}}]}
+  with patch.object(overview.subprocess,'check_output',return_value=json.dumps(raw)):
+   with self.assertRaisesRegex(ValueError,'Incomplete vector coverage'):overview.source_features(layer)
+ def test_catalog_generation_changes_only_when_navigation_metadata_change(self):
+  polygon={'type':'Polygon','coordinates':[[[13,46],[13.001,46],[13.001,46.001],[13,46.001],[13,46]]]}
+  layer={'id':'sample','sourceId':'sample','status':'ready','kind':'geojson','file':'sample.geojson','geometryTypes':['Polygon'],'count':1,'retrievedAt':'2026-01-01'}
+  with tempfile.TemporaryDirectory()as path,patch.object(overview,'OUT',pathlib.Path(path)):
+   root=pathlib.Path(path);catalog=root/'catalog.json'
+   (root/'sample.geojson').write_text(json.dumps({'type':'FeatureCollection','features':[{'type':'Feature','geometry':polygon,'properties':{'__featureId':'a'}}]}))
+   catalog.write_text(json.dumps({'generatedAt':'2026-01-01','layers':[layer]}))
+   overview.main();first=json.loads(catalog.read_text())
+   self.assertNotEqual(first['generatedAt'],'2026-01-01');self.assertEqual(first['layers'][0]['retrievedAt'],'2026-01-01')
+   overview.main();self.assertEqual(json.loads(catalog.read_text())['generatedAt'],first['generatedAt'])
  def test_censored_values_are_not_zero(self):
   self.assertIsNone(t.number('<0.01'));self.assertIsNone(t.number('> 300'));self.assertEqual(t.number('0'),0)
  def test_water_coordinates_are_native_wgs84(self):

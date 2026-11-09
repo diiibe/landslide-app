@@ -107,3 +107,16 @@ describe("regional observations", () => {
     expect(useAppStore.getState().layers).toBe(before);
   });
 });
+
+// Small analytical concentrations must not be rounded into a measured zero.
+import { formatValue } from "@/digital-twin/data";
+import { mapLabelData } from "./data";
+it("preserves tiny and censored values when formatting map labels", () => {
+ expect(formatValue(0.0006)).toBe("0,0006");
+ expect(formatValue(0.0106)).toBe("0,0106");
+ const data: GeoJSON.FeatureCollection={type:"FeatureCollection",features:[{type:"Feature",geometry:{type:"Point",coordinates:[13,46]},properties:{__value:0.0006}},{type:"Feature",geometry:{type:"Point",coordinates:[13,46]},properties:{__censored:true,__displayValue:"<0.01"}}]};
+ const result=mapLabelData({metric:{field:"__value",unit:"µg/l"}} as import("./types").LayerDefinition,data);
+ expect(result.features[0]!.properties?.__mapLabel).toBe("0,0006");
+ expect(result.features[1]!.properties?.__mapLabel).toBe("<0.01");
+ expect(data.features[0]!.properties?.__mapLabel).toBeUndefined();
+});

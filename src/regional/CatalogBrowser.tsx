@@ -1,4 +1,4 @@
-import { Icon } from "@/ui/Icon";
+import { Icon, type IconName } from "@/ui/Icon";
 import { SearchField } from "@/ui/SearchField";
 import { Select } from "@/ui/Select";
 import { FileExplorer } from "./FileExplorer";
@@ -16,6 +16,7 @@ import {
   THEMES,
   type CatalogItem,
   type CatalogFilters,
+  type ThemeId,
 } from "./catalog";
 import styles from "./CatalogBrowser.module.css";
 
@@ -58,7 +59,9 @@ export function CatalogBrowser() {
     const el = dialog.current;
     if (open && el && !el.open) {
       el.showModal();
-      el.querySelector<HTMLInputElement>('input[type="search"]')?.focus();
+      if (window.matchMedia?.(mobileCatalogQuery).matches)
+        el.querySelector<HTMLElement>("#catalog-title")?.focus();
+      else el.querySelector<HTMLInputElement>('input[type="search"]')?.focus();
     } else if (!open && el?.open) el.close();
   }, [open]);
   return (
@@ -84,7 +87,7 @@ export function CatalogBrowser() {
     >
       <div className={styles.header}>
         <div>
-          <h1 id="catalog-title">Catalogo dei dati</h1>
+          <h1 id="catalog-title" tabIndex={-1}>Catalogo dei dati</h1>
           <p>Trova i dati da aggiungere alla tua mappa.</p>
         </div>
         <button
@@ -110,6 +113,16 @@ export function CatalogBrowser() {
     </dialog>
   );
 }
+const mobileCatalogQuery = "(max-width: 768px), (max-height: 500px) and (pointer: coarse)";
+const categoryIcons: Record<ThemeId, IconName> = { frane: "mountain", alluvioni: "water", meteo: "weather", mare: "waves", aria: "air", energia: "energy", trasformazioni: "territory", attivita: "factory", ambiente: "recycle", acqua: "water", verde: "leaf", servizi: "services", mobilita: "mobility", infrastrutture: "network", contesto: "layers", personali: "folder" };
+const categoryNotes: Record<ThemeId, string> = {
+  frane: "Suscettibilità e inventari", alluvioni: "Mappe e fasce di pericolosità",
+  meteo: "Stazioni e precipitazioni", mare: "Boe, onde e costa", aria: "Misure e campionamenti",
+  energia: "Impianti e reti", trasformazioni: "Uso e trasformazioni del suolo", attivita: "Imprese, turismo e porto",
+  ambiente: "Rifiuti e monitoraggi", acqua: "Risorsa idrica e analisi", verde: "Habitat, parchi e suoli",
+  servizi: "Luoghi e servizi pubblici", mobilita: "Strade, sentieri e ciclovie",
+  infrastrutture: "Reti e telecomunicazioni", contesto: "Immagini, rilievi ed edifici", personali: "File caricati da te",
+};
 const emptyFilters: CatalogFilters = {
   query: "",
   theme: "",
@@ -125,6 +138,21 @@ export function CatalogExplorer({ mode }: { mode: "catalog" | "sidebar" }) {
   const items = catalogItems(s.catalog?.layers ?? []);
   const [filters, setFilters] = useState<CatalogFilters>(emptyFilters),
     [limit, setLimit] = useState(40);
+  const [filtersOpen, setFiltersOpen] = useState(() => !window.matchMedia?.(mobileCatalogQuery).matches);
+  const [browseAll, setBrowseAll] = useState(false);
+  const resultRef = useRef<HTMLDivElement>(null);
+  const refinementCount = [filters.provider, filters.type, filters.cadence, filters.availability].filter(Boolean).length;
+  const showCategories = !browseAll && !Object.values(filters).some(Boolean);
+  const resetCatalog = () => {
+    setBrowseAll(false); setFilters(emptyFilters); setLimit(40);
+    requestAnimationFrame(() => { if (resultRef.current) resultRef.current.scrollTop = 0; });
+  };
+  const chooseTheme = (id: string) => {
+    setBrowseAll(!id);
+    set("theme", id);
+    if (window.matchMedia?.(mobileCatalogQuery).matches)
+      requestAnimationFrame(() => { if (resultRef.current) resultRef.current.scrollTop = 0; });
+  };
   const set = (key: keyof CatalogFilters, value: string) => {
     setFilters((f) => ({ ...f, [key]: value }));
     setLimit(40);
@@ -175,7 +203,7 @@ export function CatalogExplorer({ mode }: { mode: "catalog" | "sidebar" }) {
       </>
     );
   return (
-    <div className={styles.explorer} data-mode={mode}>
+    <div className={styles.explorer} data-mode={mode} data-categories={showCategories}>
       {mode === "catalog" && (
         <SearchField
           label="Cerca nel catalogo"
@@ -184,6 +212,8 @@ export function CatalogExplorer({ mode }: { mode: "catalog" | "sidebar" }) {
           onChange={(value) => set("query", value)}
         />
       )}
+      <details className={styles.filterDisclosure} open={filtersOpen} onToggle={(event) => setFiltersOpen(event.currentTarget.open)}>
+        <summary><Icon name="filter" /><span>Filtri{refinementCount ? ` · ${refinementCount} attivi` : ""}</span><Icon name="chevron" /></summary>
       <div className={styles.filters}>
         <label>
           Fonte
@@ -242,28 +272,32 @@ export function CatalogExplorer({ mode }: { mode: "catalog" | "sidebar" }) {
           />
         </label>
       </div>
-      <div className={styles.explorerBody}>
+      </details>
+      <div className={styles.explorerBody} ref={resultRef}>
         {mode === "catalog" && (
           <nav className={styles.themes} aria-label="Temi del catalogo">
+            <h2 className={styles.categoryHeading}>Esplora per categoria</h2>
             <button
               aria-current={!theme ? "page" : undefined}
-              onClick={() => set("theme", "")}
+              onClick={() => chooseTheme("")}
             >
-              Tutti i dati <span>{items.length}</span>
+              <Icon name="layers" /><strong>Tutti i dati</strong><span>{items.length}</span>
             </button>
             {Object.entries(THEMES).map(([id, label]) => (
               <button
                 key={id}
                 aria-current={theme === id ? "page" : undefined}
-                onClick={() => set("theme", id)}
+                onClick={() => chooseTheme(id)}
               >
-                {label}
+                <Icon name={categoryIcons[id as ThemeId]} />
+                <strong>{label}<small>{categoryNotes[id as ThemeId]}</small></strong>
                 <span>{items.filter((i) => i.theme === id).length}</span>
               </button>
             ))}
           </nav>
         )}
         <div className={styles.results}>
+          <button className={styles.backCategories} onClick={resetCatalog}><Icon name="chevron" />Categorie</button>
           <nav
             className={styles.breadcrumbs}
             aria-label="Percorso del catalogo"
@@ -287,6 +321,7 @@ export function CatalogExplorer({ mode }: { mode: "catalog" | "sidebar" }) {
             {Object.values(effectiveFilters).some(Boolean) && (
               <button
                 onClick={() => {
+                  setBrowseAll(false);
                   setFilters(emptyFilters);
                   setLimit(40);
                 }}

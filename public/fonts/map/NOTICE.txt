@@ -1,0 +1,7 @@
+Open Sans Semibold glyph PBF ranges used by the OpenStreetMap fallback.
+Source: https://github.com/maplibre/demotiles/tree/main/font/Open%20Sans%20Semibold
+Mirrored unchanged on 2026-11-09 to keep numbers and unit labels readable when the external glyph endpoint is unavailable.
+MapLibre repository BSD-3-Clause notice: MapLibre-LICENSE.txt.
+Open Sans upstream font and SIL Open Font License: https://github.com/googlefonts/opensans ; OpenSans-OFL.txt.
+Manrope remains the application interface font; map provider styles retain their own glyph fonts.
+Directional arrows are rendered from an application-owned image and do not use a font glyph.

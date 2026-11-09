@@ -190,8 +190,8 @@ export function mountTwinMap(map: MLMap): () => void {
                 11,
               ],
               "circle-color": color,
-              "circle-stroke-color": "#172624",
-              "circle-stroke-width": 1.5,
+              "circle-stroke-color": "#f6f5ec",
+              "circle-stroke-width": 2,
             },
           });
         if (!map.getLayer(id + "-labels"))
@@ -199,7 +199,7 @@ export function mountTwinMap(map: MLMap): () => void {
             id: id + "-labels",
             type: "symbol",
             source: id,
-            minzoom: 11,
+            minzoom: 9,
             layout: {
               "text-field": ["get", "label"],
               "text-font": fonts ?? ["Open Sans Semibold"],
@@ -231,7 +231,7 @@ export function mountTwinMap(map: MLMap): () => void {
           source: WIND,
           paint: {
             "line-color": ["case", ["get", "stale"], "#888888", "#5ebfcc"],
-            "line-width": 2,
+            "line-width": 2.8,
           },
         });
     }

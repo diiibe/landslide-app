@@ -49,6 +49,7 @@ jobs:
       - name: Verifica e assembla il catalogo
         run: |
           python scripts/assemble-regional-catalog.py
+          python scripts/build-regional-overviews.py
           python scripts/validate-regional-data.py
           python scripts/test_regional_pipeline.py
       - name: Pubblica i dati aggiornati

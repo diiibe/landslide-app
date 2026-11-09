@@ -38,7 +38,7 @@ for l in layers:
 compiled={'generatedAt':NOW,'refreshHours':6,'layers':layers,'families':families}
 temp=OUT/'catalog.json.tmp';temp.write_text(json.dumps(compiled,ensure_ascii=False,separators=(',',':'),allow_nan=False)+'\n');temp.replace(OUT/'catalog.json')
 # Delete only unreferenced generated flat data files, never user uploads or source catalogs.
-keep={l['file']for l in layers if l.get('file')}
+keep={l['file']for l in layers if l.get('file')} | {l['overview']['file']for l in layers if l.get('overview')}
 for file in OUT.iterdir():
  if file.is_file()and file.suffix in ['.geojson','.pmtiles']and file.name not in keep:file.unlink()
 print('CATALOG',len(layers),'ready',sum(l['status']=='ready'for l in layers),'blocked',sum(l['status']=='blocked'for l in layers))
