@@ -790,6 +790,15 @@ export function MapView() {
     }
   }, [view3D]);
 
+  // A saved view owns its exact pitch. Apply it after the 3D effect above,
+  // which otherwise sets the default 60°/0° and overwrites the saved camera.
+  const cameraRequest = useAppStore((s) => s.cameraRequest);
+  useEffect(() => {
+    if (!cameraRequest || !mapRef.current) return;
+    mapRef.current.jumpTo(cameraRequest);
+    useAppStore.setState({ cameraRequest: null });
+  }, [cameraRequest]);
+
   // Push the saved polygons array into the map source on every change.
   // Same rationale as the userLayers effect: gate on `getStyle()`, not
   // `isStyleLoaded()`. The latter goes false the moment any source has

@@ -1,3 +1,4 @@
+import { createPortal } from "react-dom";
 import { useRef, useState } from "react";
 import { useAppStore } from "@/app/store";
 import { parseBundleFile } from "@/lib/bundle";
@@ -10,7 +11,7 @@ import styles from "./IconButtons.module.css";
  * which tracks / saved areas to include. Import stays a single hidden
  * file input — bundle files round-trip back into the store.
  */
-export function ExportImportButton() {
+export function ExportImportButton({ labeled = false }: { labeled?: boolean } = {}) {
   const addUserLayer = useAppStore((s) => s.addUserLayer);
   const addUserPolygon = useAppStore((s) => s.addUserPolygon);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -19,6 +20,7 @@ export function ExportImportButton() {
   const [exportOpen, setExportOpen] = useState(false);
 
   const onExport = () => {
+    detailsRef.current?.querySelector("summary")?.focus({ preventScroll: true });
     setExportOpen(true);
     detailsRef.current?.removeAttribute("open");
   };
@@ -62,6 +64,7 @@ export function ExportImportButton() {
             <path d="M8 2.4v8" />
             <path d="M4.6 6.8L8 10.4l3.4-3.6" />
           </svg>
+          {labeled && <span>Esporta / importa</span>}
         </summary>
         <div className={styles.menu} role="menu">
           <button
@@ -93,12 +96,12 @@ export function ExportImportButton() {
         }}
         aria-hidden="true"
       />
-      {error && (
+      {error && createPortal(
         <div role="status" aria-live="polite" className={styles.uploadErr}>
           {error}
-        </div>
+        </div>, document.body
       )}
-      <ExportPanel open={exportOpen} onClose={() => setExportOpen(false)} />
+      {createPortal(<ExportPanel open={exportOpen} onClose={() => setExportOpen(false)} />, document.body)}
     </>
   );
 }

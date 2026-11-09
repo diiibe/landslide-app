@@ -1,3 +1,4 @@
+import { createPortal } from "react-dom";
 import { useRef, useState } from "react";
 import { useAppStore } from "@/app/store";
 import { parseUserFile, UPLOAD_ACCEPT } from "@/lib/upload";
@@ -12,7 +13,7 @@ import styles from "./IconButtons.module.css";
  * Drag & drop on the map is wired separately (App.tsx → useMapDropZone)
  * to keep this component focused on the keyboard / mouse flow.
  */
-export function UploadButton() {
+export function UploadButton({ labeled = false }: { labeled?: boolean } = {}) {
   const fileRef = useRef<HTMLInputElement>(null);
   const addUserLayer = useAppStore((s) => s.addUserLayer);
   const [error, setError] = useState<string | null>(null);
@@ -72,6 +73,7 @@ export function UploadButton() {
           <path d="M4.6 5.8L8 2.4l3.4 3.4" />
           <path d="M2.5 11.5v1.4a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-1.4" />
         </svg>
+        {labeled && <span>Carica file</span>}
       </button>
       <input
         ref={fileRef}
@@ -86,10 +88,10 @@ export function UploadButton() {
         }}
         aria-hidden="true"
       />
-      {error && (
+      {error && createPortal(
         <div role="status" aria-live="polite" className={styles.uploadErr}>
           {error}
-        </div>
+        </div>, document.body
       )}
     </>
   );

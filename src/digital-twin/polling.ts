@@ -24,10 +24,14 @@ export function startPolling(
     else if (timer) clearTimeout(timer);
   };
   document.addEventListener("visibilitychange", visible);
+  window.addEventListener("online", visible);
+  window.addEventListener("focus", visible);
   void run();
   return () => {
     ac.abort();
     if (timer) clearTimeout(timer);
     document.removeEventListener("visibilitychange", visible);
+    window.removeEventListener("online", visible);
+    window.removeEventListener("focus", visible);
   };
 }

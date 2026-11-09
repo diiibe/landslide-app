@@ -407,6 +407,7 @@ export interface AppState {
    *  terrain (raster-dem exaggerated 1.5×) and tilts the camera to ~60°
    *  pitch; when off it returns to the flat 0° top-down view. */
   view3D: boolean;
+  cameraRequest: { center: [number, number]; zoom: number; bearing: number; pitch: number } | null;
   /** Per-category colour for the gaussian POI balls. Defaults to
    *  POI_DEFAULT_COLORS; user-editable via the PoiLegendPanel. */
   poiColors: Record<PoiCategory, string>;
@@ -580,6 +581,7 @@ const initial: Omit<
   userPolygons: userData.polygons,
   drawingMode: false,
   view3D: false,
+  cameraRequest: null,
   poiColors: {
     ...POI_DEFAULT_COLORS,
     ...((userData.poiColors ?? {}) as Partial<Record<PoiCategory, string>>),

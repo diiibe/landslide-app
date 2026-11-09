@@ -1,5 +1,6 @@
 import type { ReactNode, SVGProps } from "react";
 export type IconName =
+  | "spaces" | "profile" | "brand"
   | "fileData"
   | "sensor" | "lineData" | "pointData" | "areaData" | "rasterData" | "eye" | "tools"
   | "search"
@@ -20,6 +21,9 @@ export type IconName =
   | "moon"
   | "weather" | "waves" | "air" | "energy" | "territory" | "factory" | "recycle" | "water" | "leaf" | "services" | "mobility" | "network";
 const paths: Record<IconName, ReactNode> = {
+  brand: <><path d="m2 15 5-10 4 7 3-5 4 8"/><path d="M2 18h16M5 11l2 2 2-3"/></>,
+  spaces: <><rect x="2" y="3" width="10" height="10" rx="1.5"/><path d="M6 16h11V7M6 7h2m-2 3h3"/></>,
+  profile: <><circle cx="10" cy="6" r="3"/><path d="M3.5 18v-2a6.5 6.5 0 0 1 13 0v2"/></>,
   fileData: <><path d="M4 2h8l4 4v12H4Z"/><path d="M12 2v5h4M7 11h6m-6 3h4"/></>,
   sensor: <><circle cx="10" cy="10" r="2.5"/><path d="M5 5a7 7 0 0 0 0 10m10-10a7 7 0 0 1 0 10M2.5 2.5a10.5 10.5 0 0 0 0 15m15-15a10.5 10.5 0 0 1 0 15"/></>,
   pointData: <><circle cx="6" cy="6" r="2"/><circle cx="14" cy="8" r="2"/><circle cx="8" cy="15" r="2"/></>,
@@ -60,14 +64,7 @@ const paths: Record<IconName, ReactNode> = {
       <path d="m13 13 4 4" />
     </>
   ),
-  catalog: (
-    <>
-      <rect x="3" y="3" width="5" height="5" rx=".7" />
-      <rect x="12" y="3" width="5" height="5" rx=".7" />
-      <rect x="3" y="12" width="5" height="5" rx=".7" />
-      <rect x="12" y="12" width="5" height="5" rx=".7" />
-    </>
-  ),
+  catalog: <><path d="M2 3.5h5a4 4 0 0 1 3 1.3 4 4 0 0 1 3-1.3h5v13h-5a4 4 0 0 0-3 1.3 4 4 0 0 0-3-1.3H2Z"/><path d="M10 5v13M5 7h2m-2 3h2m6-3h2m-2 3h2"/></>,
   layers: (
     <>
       <path d="m2.5 7 7.5-4.5L17.5 7 10 11.5Z" />

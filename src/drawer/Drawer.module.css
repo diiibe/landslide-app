@@ -160,3 +160,12 @@
   }
 }
 .handle[hidden] { display: none; }
+.stackTrigger { width: 100%; display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 10px 12px; font: 600 14px var(--font-stack); color: var(--c-text); background: var(--c-surface); border: 1px solid var(--c-edge); border-radius: 6px; box-shadow: var(--shadow-control); cursor: pointer; }
+.stackTrigger > span { flex: 1; text-align: left; }
+.stackTrigger > svg { width: 18px; height: 18px; color: var(--c-text-muted); }
+.stackTrigger > svg:last-child { width: 12px; height: 12px; transition: transform 160ms var(--e-quart); }
+.stackTrigger[aria-expanded="true"] { background: var(--c-selected); border-color: var(--c-border-strong); }
+.stackTrigger[aria-expanded="true"] > svg:last-child { transform: rotate(180deg); }
+.stackTrigger:hover { background: var(--c-selected); }
+.stackTrigger[hidden] { display: none; }
+@media (max-width: 768px), (max-height: 500px) and (pointer: coarse) { .stackTrigger { font-size: 12px; } }

@@ -24,7 +24,10 @@ const MapView: ComponentType =
 import { BasemapPanel } from "@/map-overlays/BasemapPanel";
 import { DrawingPanel } from "@/map-overlays/DrawingPanel";
 import { Legend } from "@/map-overlays/Legend";
-import { Drawer } from "@/drawer/Drawer";
+import { SpacesButton } from "@/ui/Spaces";
+import { MapTools } from "@/map-overlays/MapTools";
+import { ThreeDButton } from "@/topbar/ThreeDButton";
+import { Drawer, LayersButton } from "@/drawer/Drawer";
 import { useAppStore } from "@/app/store";
 
 export default function App() {
@@ -105,7 +108,7 @@ export default function App() {
       <RegionalRuntime />
       <CatalogBrowser />
       <TopBar
-        tabs={<CatalogButton />}
+        tabs={<><CatalogButton /><SpacesButton /></>}
         search={<SearchLocality />}
         icons={<IconButtons />}
       />
@@ -118,14 +121,17 @@ export default function App() {
           <Suspense fallback={<MapSkeleton />}>
             <MapView />
           </Suspense>
-          <div className={styles.rightStack}>
+          <div className={styles.rightStack} role="group" aria-label="Comandi mappa">
             <BasemapPanel />
+            <LayersButton />
+            <MapTools />
           </div>
 
+          <div className={styles.threeD}><ThreeDButton /></div>
           {!drawingMode && <Legend />}
           <DrawingPanel />
         </div>
-        <Drawer mobileSheet label="Sulla mappa" triggerLabel="Livelli">
+        <Drawer mobileSheet label="Sulla mappa">
           <RegionalPanel />
         </Drawer>
       </div>

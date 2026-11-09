@@ -153,3 +153,28 @@ come OpenStreetMap senza mostrare un selettore privo di alternative.
 Sotto560px le categorie passano a righe su una colonna: icona, titolo con
 sottotitolo e conteggio a destra. I nomi non vengono sillabati per farli entrare
 in tessere strette; tablet e landscape ampi possono mantenere due colonne.
+
+## FriulView: navigazione e viste
+
+FriulView sostituisce il nome della testata. Catalogo (atlante aperto) e Spazi
+(viste sovrapposte) restano affiancati; la navbar termina, da destra, con versione,
+impostazioni, profilo locale e tema. Su telefono i due ingressi usano le stesse
+icone e nomi accessibili, con ricerca subito accanto.
+
+Sfondo mappa, Livelli e Strumenti appartengono al medesimo gruppo ancorato alla
+mappa, quindi condividono tutti gli offset del drawer. Strumenti ospita caricamento,
+disegno, esportazione e importazione. L'esportazione usa un dialogo nativo sul top
+layer, con opener visibile e ritorno focus; non è vincolata al contenitore scorrevole
+dei comandi. Il3D è in basso a sinistra, con spazio riservato all'attribuzione.
+
+Spazi salva sul dispositivo fino a30configurazioni di catalogo e camera, comprese
+classi/opacità e visibilità/colori POI. Le osservazioni dei sensori non sono mai
+salvate nello Spazio: riaprire una vista continua a utilizzare i dati aggiornati.
+I file personali sono separati e si possono conservare tramite Esporta. Il profilo
+indica esplicitamente l'assenza di un account remoto; niente sincronizzazione cloud
+simulata. Il browser segnala se lo storage non è disponibile.
+
+Polling osservazioni:60secondi tra richieste completate, senza sovrapposizioni;
+pausa nelle schede nascoste, lettura al ritorno in vista, focus e riconnessione.
+Catalogo:5minuti e ripresa su focus/rete. Le cartografie seguono la cadenza della
+fonte e l'importazione programmata: il controllo client non inventa nuove misure.

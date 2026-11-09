@@ -124,3 +124,6 @@
 .single svg { width: 18px; height: 18px; color: var(--c-text-muted); }
 
 .single.single { width: max-content; max-width: 100%; margin-left: auto; }
+.head { font-size: 14px; }
+.single.single { width: 100%; }
+@media (max-width: 768px), (max-height: 500px) and (pointer: coarse) { .head, .single { font-size: 12px; } }

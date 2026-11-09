@@ -38,6 +38,7 @@ export function ThreeDButton() {
         <path d="M1.8 5v6L8 14.4V8.4" />
         <path d="M14.2 5v6L8 14.4" />
       </svg>
+      <span>3D</span>
     </button>
   );
 }

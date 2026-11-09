@@ -7,7 +7,7 @@ import styles from "./IconButtons.module.css";
  * that flag. Visual state mirrors the lock toggle convention used
  * elsewhere: `aria-pressed` carries the on/off semantics.
  */
-export function DrawButton() {
+export function DrawButton({ labeled = false }: { labeled?: boolean } = {}) {
   const drawing = useAppStore((s) => s.drawingMode);
   const setDrawingMode = useAppStore((s) => s.setDrawingMode);
   return (
@@ -33,6 +33,7 @@ export function DrawButton() {
         <path d="M2.5 3l3 11 3-4 4 1z" />
         <path d="M11.5 11l1.5 1.5" />
       </svg>
+      {labeled && <span>Disegna area</span>}
     </button>
   );
 }

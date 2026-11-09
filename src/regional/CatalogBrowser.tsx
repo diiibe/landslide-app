@@ -50,7 +50,7 @@ export function CatalogButton() {
       }}
     >
       <Icon name="catalog" />
-      Catalogo
+      <span>Catalogo</span>
     </button>
   );
 }

@@ -7,22 +7,18 @@ interface Props {
   children: ReactNode;
   mobileSheet?: boolean;
   label?: string;
-  triggerLabel?: string;
-  summary?: string | undefined;
+
 }
 
 export function Drawer({
   children,
   mobileSheet = false,
   label = "Sulla mappa",
-  triggerLabel = "Livelli",
-  summary,
 }: Props) {
   const preferredOpen = useAppStore((s) => s.drawerOpen);
   const drawing = useAppStore((s) => s.drawingMode);
   const drawerOpen = preferredOpen && !drawing;
   const toggle = useAppStore((s) => s.toggleDrawer);
-  const handle = useRef<HTMLButtonElement>(null);
   const panel = useRef<HTMLElement>(null);
   useEffect(() => {
     if (
@@ -30,7 +26,7 @@ export function Drawer({
       !drawing &&
       panel.current?.contains(document.activeElement)
     )
-      handle.current?.focus();
+      document.getElementById("layers-trigger")?.focus();
   }, [drawerOpen, drawing]);
 
   // Close drawer on Escape (mobile UX; harmless on desktop where backdrop is hidden).
@@ -63,31 +59,6 @@ export function Drawer({
           if (drawerOpen) toggle();
         }}
       />
-      <button
-        type="button"
-        ref={handle}
-        hidden={drawerOpen || drawing}
-        className={styles.handle}
-        data-sheet={mobileSheet}
-        data-open={drawerOpen}
-        aria-label={
-          drawerOpen
-            ? `Chiudi ${label.toLowerCase()}`
-            : `Apri ${label.toLowerCase()}`
-        }
-        aria-expanded={drawerOpen}
-        aria-controls="drawer-panel"
-        onClick={() => {
-          toggle();
-          if (!drawerOpen) panel.current?.scrollTo?.({ top: 0 });
-        }}
-      >
-        <span className={styles.handleLabel}>
-          {triggerLabel}
-          {summary && <span> · {summary}</span>}
-        </span>
-        <Icon name="layers" />
-      </button>
       <aside
         ref={panel}
         id="drawer-panel"
@@ -103,7 +74,7 @@ export function Drawer({
           </div>
           <button
             type="button"
-            aria-label={`Chiudi ${label.toLowerCase()}`}
+            aria-label="Chiudi pannello livelli"
             title="Mostra mappa"
             onClick={toggle}
           >
@@ -114,4 +85,9 @@ export function Drawer({
       </aside>
     </>
   );
+}
+
+export function LayersButton() {
+  const open = useAppStore(s => s.drawerOpen), drawing = useAppStore(s => s.drawingMode), toggle = useAppStore(s => s.toggleDrawer);
+  return <button id="layers-trigger" type="button" className={styles.stackTrigger} hidden={drawing} aria-label={open ? "Chiudi sulla mappa" : "Apri sulla mappa"} aria-controls="drawer-panel" aria-expanded={open} onClick={() => { toggle(); if (!open) document.getElementById("drawer-panel")?.scrollTo?.({ top: 0 }); }}><Icon name="layers" /><span>Livelli</span><Icon name="chevron" /></button>;
 }

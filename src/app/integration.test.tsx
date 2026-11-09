@@ -51,7 +51,7 @@ describe("Unified catalog experience", () => {
   });
   it("shows current mappings and active layers without obsolete model selectors or analysis tabs", () => {
     render(<App />);
-    expect(screen.getByText("FVG · Territorio")).toBeInTheDocument();
+    expect(screen.getByText("FriulView")).toBeInTheDocument();
     expect(screen.getByTestId("map-stub")).toBeInTheDocument();
     expect(screen.queryByRole("tab", { name: "Analisi" })).toBeNull();
     expect(screen.queryByRole("button", { name: /^J\.[23]$/ })).toBeNull();
@@ -181,6 +181,7 @@ describe("Unified catalog experience", () => {
     expect(
       screen.getByRole("button", { name: "Suscettibilità frane" }),
     ).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Strumenti" }));
     fireEvent.click(screen.getByRole("button", { name: "Disegna un’area" }));
     expect(
       screen.queryByRole("button", { name: "Suscettibilità frane" }),

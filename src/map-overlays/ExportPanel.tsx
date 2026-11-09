@@ -1,5 +1,5 @@
 import { Icon } from "@/ui/Icon";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useAppStore } from "@/app/store";
 import {
   downloadBlob,
@@ -41,6 +41,8 @@ const FORMAT_HINT: Record<ExportFormat, string> = {
  *   3. Action row (Export + Cancel).
  */
 export function ExportPanel({ open, onClose }: Props) {
+  const dialog = useRef<HTMLDialogElement>(null);
+  useEffect(() => { const el = dialog.current; if (open && el && !el.open) el.showModal(); else if (!open && el?.open) el.close(); }, [open]);
   const userLayers = useAppStore((s) => s.userLayers);
   const userPolygons = useAppStore((s) => s.userPolygons);
 
@@ -128,21 +130,19 @@ export function ExportPanel({ open, onClose }: Props) {
     }
   };
 
-  if (!open) return null;
-
   return (
-    <div
+    <dialog
+      ref={dialog}
+      aria-label="Esporta dati"
+      onCancel={onClose}
+      onKeyDown={e => { if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); onClose(); } }}
       className={styles.backdrop}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
-      role="presentation"
     >
       <div
         className={styles.panel}
-        role="dialog"
-        aria-label="Esporta dati"
-        aria-modal="true"
       >
         <div className={styles.head}>
           <span className={styles.ttl}>Esporta</span>
@@ -266,6 +266,6 @@ export function ExportPanel({ open, onClose }: Props) {
           </button>
         </div>
       </div>
-    </div>
+    </dialog>
   );
 }

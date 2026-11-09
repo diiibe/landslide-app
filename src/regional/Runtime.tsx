@@ -41,12 +41,14 @@ export function RegionalRuntime() {
     const timer = setInterval(() => void load(), 300000);
     document.addEventListener("visibilitychange", load);
     window.addEventListener("online", load);
+    window.addEventListener("focus", load);
     return () => {
       stopped = true;
       controller?.abort();
       clearInterval(timer);
       document.removeEventListener("visibilitychange", load);
       window.removeEventListener("online", load);
+      window.removeEventListener("focus", load);
     };
   }, [key]);
   useEffect(() => {
