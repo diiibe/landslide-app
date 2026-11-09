@@ -52,7 +52,7 @@ export function v2LayerIds(which: V2Layer): string[] {
 }
 
 /** Colour of class `cls` out of `ncls`: evenly spread over the earthy
- *  ramp, so five classes land exactly on its five stops. Same visual
+ *  warm-to-vivid-red ramp, so five classes land exactly on its five stops. Same visual
  *  language as J.x without sharing its probability scale. */
 export function v2ClassColor(cls: number, ncls: number): string {
   return rampColorAt(ncls > 1 ? (cls - 1) / (ncls - 1) : 1);
@@ -82,7 +82,7 @@ export function addModelV2Layer(
   if (!m.getSource(rasterSrc)) {
     m.addSource(rasterSrc, {
       type: "raster",
-      url: `pmtiles://${import.meta.env.BASE_URL}tiles/v2_${which}_raster${settings.minClass > 1 ? `_min${settings.minClass}` : ""}.pmtiles`,
+      url: `pmtiles://${import.meta.env.BASE_URL}tiles/v2_${which}_raster${settings.minClass > 1 ? `_min${settings.minClass}` : ""}.pmtiles?palette=red-v1`,
       tileSize: 256,
     });
   }

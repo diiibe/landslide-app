@@ -91,7 +91,7 @@ describe("model v2 map layers", () => {
       "nearest",
     );
     expect(String(f.sources.get(raster.source as string)!.url)).toMatch(
-      /tiles\/v2_bodies_raster\.pmtiles$/,
+      /tiles\/v2_bodies_raster\.pmtiles\?palette=red-v1$/,
     );
     expect(String(f.sources.get(vector.source as string)!.url)).toMatch(
       /tiles\/v2_bodies\.pmtiles$/,

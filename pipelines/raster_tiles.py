@@ -33,11 +33,11 @@ HALF = 20037508.342789244  # half the Web Mercator world width, metres
 
 # Mirrors RAMP_STOPS in src/map/style.ts (test_raster_tiles parses it).
 RAMP_STOPS: list[tuple[float, str]] = [
-    (0.0, "#E8F0D8"),
-    (0.25, "#8BB26B"),
-    (0.5, "#D9A441"),
-    (0.75, "#D25524"),
-    (1.0, "#7A1F10"),
+    (0.0, "#FFF1B8"),
+    (0.25, "#FFD166"),
+    (0.5, "#FF9A3C"),
+    (0.75, "#FF5B2E"),
+    (1.0, "#FF1F1F"),
 ]
 
 
@@ -64,6 +64,37 @@ def ramp_color_at(p: float) -> tuple[int, int, int]:
 def class_palette(ncls: int) -> list[tuple[int, int, int]]:
     """Colour of classes 1..ncls, like `v2ClassColor(cls, ncls)`."""
     return [ramp_color_at((k - 1) / (ncls - 1) if ncls > 1 else 1.0) for k in range(1, ncls + 1)]
+
+
+def recolor_class_pmtiles(source: Path, ncls: int) -> None:
+    """Replace only the PNG palette, preserving classes, alpha and tile coordinates.
+
+    This updates a shipped pyramid without re-running the model or resampling
+    the grid. Publish only after every tile has been validated and rewritten.
+    """
+    from pmtiles.reader import Reader, all_tiles
+
+    raw = source.read_bytes()
+    get_bytes = lambda offset, length: raw[offset:offset + length]
+    reader = Reader(get_bytes)
+    header, metadata = reader.header(), reader.metadata()
+    palette = [0, 0, 0] + [c for rgb in class_palette(ncls) for c in rgb]
+    palette += [0] * (768 - len(palette))
+    output = io.BytesIO()
+    writer = Writer(output)
+    for (z, x, y), data in all_tiles(get_bytes):
+        with Image.open(io.BytesIO(data)) as image:
+            if image.mode != "P" or max(image.tobytes()) > ncls:
+                raise ValueError(f"Expected class-indexed PNG: {source} {z}/{x}/{y}")
+            alpha = image.info.get("transparency")
+            image.putpalette(palette)
+            encoded = io.BytesIO()
+            image.save(encoded, format="PNG", transparency=alpha, optimize=True)
+            writer.write_tile(zxy_to_tileid(z, x, y), encoded.getvalue())
+    writer.finalize(dict(header), metadata)
+    temporary = source.with_suffix(".pmtiles.tmp")
+    temporary.write_bytes(output.getvalue())
+    temporary.replace(source)
 
 
 def class_grid(i: np.ndarray, j: np.ndarray, cls: np.ndarray) -> np.ndarray:
