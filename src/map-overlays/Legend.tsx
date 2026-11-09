@@ -35,7 +35,7 @@ export function Legend() {
   );
   if (!v2Layer && !iffiOn) return null;
   return (
-    <div className={styles.legend} data-open={open}>
+    <div className={styles.legend} data-map-legend data-open={open}>
       <button
         type="button"
         className={styles.head}

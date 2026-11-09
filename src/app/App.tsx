@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState, type ComponentType } from "react";
+import { lazy, Suspense, useEffect, useRef, useState, type ComponentType } from "react";
 import styles from "./App.module.css";
 import { RegionalPanel } from "@/regional/Panel";
 import { CatalogButton, CatalogBrowser } from "@/regional/CatalogBrowser";
@@ -26,6 +26,7 @@ import { DrawingPanel } from "@/map-overlays/DrawingPanel";
 import { Legend } from "@/map-overlays/Legend";
 import { SpacesButton } from "@/ui/Spaces";
 import { MapTools } from "@/map-overlays/MapTools";
+import { useControlClearance } from "@/map-overlays/useControlClearance";
 import { ThreeDButton } from "@/topbar/ThreeDButton";
 import { Drawer, LayersButton } from "@/drawer/Drawer";
 import { useAppStore } from "@/app/store";
@@ -33,6 +34,8 @@ import { useAppStore } from "@/app/store";
 export default function App() {
   const drawerOpen = useAppStore((s) => s.drawerOpen);
   const drawingMode = useAppStore((s) => s.drawingMode);
+  const mapControlsRoot = useRef<HTMLDivElement>(null);
+  useControlClearance(mapControlsRoot, drawerOpen, drawingMode);
   const addUserLayer = useAppStore((s) => s.addUserLayer);
 
   // Drag & drop on the map area: accept the same file types as the
@@ -117,7 +120,7 @@ export default function App() {
         data-workspace="unified"
         data-drawer={drawerOpen && !drawingMode ? "open" : "closed"}
       >
-        <div className={styles.map}>
+        <div className={styles.map} ref={mapControlsRoot}>
           <Suspense fallback={<MapSkeleton />}>
             <MapView />
           </Suspense>
@@ -127,7 +130,7 @@ export default function App() {
             <MapTools />
           </div>
 
-          <div className={styles.threeD}><ThreeDButton /></div>
+          <div className={styles.threeD} data-map-3d><ThreeDButton /></div>
           {!drawingMode && <Legend />}
           <DrawingPanel />
         </div>
