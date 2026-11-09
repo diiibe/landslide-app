@@ -273,6 +273,14 @@ export function CatalogExplorer({ mode }: { mode: "catalog" | "sidebar" }) {
         </label>
       </div>
       </details>
+      {s.catalogError && (
+        <div className={styles.catalogState} role="alert">
+          <strong>Catalogo regionale non raggiungibile</strong>
+          <p>Le categorie includono soltanto i dati già disponibili. Puoi continuare a esplorare la mappa.</p>
+          <button onClick={() => useRegionalStore.setState((state) => ({ refreshKey: state.refreshKey + 1 }))}>Riprova adesso</button>
+        </div>
+      )}
+      {!s.catalog && !s.catalogError && <p className={styles.catalogState} role="status">Caricamento dei dati regionali…</p>}
       <div className={styles.explorerBody} ref={resultRef}>
         {mode === "catalog" && (
           <nav className={styles.themes} aria-label="Temi del catalogo">
@@ -366,12 +374,7 @@ export function CatalogExplorer({ mode }: { mode: "catalog" | "sidebar" }) {
               Mostra altri {Math.min(40, list.length - limit)} livelli
             </button>
           )}
-          {s.catalogError && (
-            <p role="alert">Catalogo regionale: {s.catalogError}</p>
-          )}
-          {!s.catalog && !s.catalogError && (
-            <p role="status">Caricamento dei dati regionali…</p>
-          )}
+
         </div>
       </div>
     </div>

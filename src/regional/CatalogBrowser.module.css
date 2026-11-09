@@ -576,3 +576,5 @@
   .themes button small { display: block; }
 }
 .themes button strong { min-width: 0; overflow-wrap: anywhere; hyphens: auto; }
+/* This heading is a programmatic reading target, not an interactive control. */
+.header h1:focus { outline: none; }
