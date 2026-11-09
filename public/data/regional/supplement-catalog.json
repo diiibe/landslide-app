@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+  "generatedAt": "2026-11-08T23:51:38.795126+00:00",
   "layers": [
     {
       "id": "twin-buildings",
@@ -18,7 +18,7 @@
       "color": "#a3b8b4",
       "count": 8152,
       "sourceCount": 8152,
-      "retrievedAt": "2026-11-08T22:40:08.470029+00:00",
+      "retrievedAt": "2026-11-08T23:51:42.906967+00:00",
       "bounds": [
         [
           13.527,
@@ -48,7 +48,7 @@
       "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
       "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
       "color": "#be9b68",
-      "retrievedAt": "2026-11-08T22:40:12.254207+00:00",
+      "retrievedAt": "2026-11-08T23:52:20.518341+00:00",
       "metric": {
         "field": "__value",
         "unit": "ha",
@@ -58,7 +58,7 @@
       "dataDate": "2012",
       "count": 215,
       "sourceCount": 215,
-      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "generatedAt": "2026-11-08T23:51:38.795126+00:00",
       "bounds": [
         [
           12.32138347,
@@ -100,7 +100,7 @@
       "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
       "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
       "color": "#be9b68",
-      "retrievedAt": "2026-11-08T22:40:15.720120+00:00",
+      "retrievedAt": "2026-11-08T23:52:25.812964+00:00",
       "metric": {
         "field": "__value",
         "unit": "ha",
@@ -110,7 +110,7 @@
       "dataDate": "2012",
       "count": 215,
       "sourceCount": 215,
-      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "generatedAt": "2026-11-08T23:51:38.795126+00:00",
       "bounds": [
         [
           12.32138347,
@@ -152,7 +152,7 @@
       "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
       "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
       "color": "#be9b68",
-      "retrievedAt": "2026-11-08T22:40:19.188109+00:00",
+      "retrievedAt": "2026-11-08T23:52:31.229106+00:00",
       "metric": {
         "field": "__value",
         "unit": "ha",
@@ -162,7 +162,7 @@
       "dataDate": "2012",
       "count": 215,
       "sourceCount": 215,
-      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "generatedAt": "2026-11-08T23:51:38.795126+00:00",
       "bounds": [
         [
           12.32138347,
@@ -204,7 +204,7 @@
       "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
       "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
       "color": "#be9b68",
-      "retrievedAt": "2026-11-08T22:40:22.585282+00:00",
+      "retrievedAt": "2026-11-08T23:52:36.659989+00:00",
       "metric": {
         "field": "__value",
         "unit": "ha",
@@ -214,7 +214,7 @@
       "dataDate": "2015",
       "count": 215,
       "sourceCount": 215,
-      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "generatedAt": "2026-11-08T23:51:38.795126+00:00",
       "bounds": [
         [
           12.32138347,
@@ -256,7 +256,7 @@
       "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
       "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
       "color": "#be9b68",
-      "retrievedAt": "2026-11-08T22:40:26.052212+00:00",
+      "retrievedAt": "2026-11-08T23:52:42.097060+00:00",
       "metric": {
         "field": "__value",
         "unit": "ha",
@@ -266,7 +266,7 @@
       "dataDate": "2015",
       "count": 215,
       "sourceCount": 215,
-      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "generatedAt": "2026-11-08T23:51:38.795126+00:00",
       "bounds": [
         [
           12.32138347,
@@ -308,7 +308,7 @@
       "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
       "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
       "color": "#be9b68",
-      "retrievedAt": "2026-11-08T22:40:29.679601+00:00",
+      "retrievedAt": "2026-11-08T23:52:47.516696+00:00",
       "metric": {
         "field": "__value",
         "unit": "ha",
@@ -318,7 +318,7 @@
       "dataDate": "2015",
       "count": 215,
       "sourceCount": 215,
-      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "generatedAt": "2026-11-08T23:51:38.795126+00:00",
       "bounds": [
         [
           12.32138347,
@@ -360,7 +360,7 @@
       "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
       "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
       "color": "#be9b68",
-      "retrievedAt": "2026-11-08T22:40:33.711606+00:00",
+      "retrievedAt": "2026-11-08T23:52:52.930001+00:00",
       "metric": {
         "field": "__value",
         "unit": "ha",
@@ -370,7 +370,7 @@
       "dataDate": "2016",
       "count": 215,
       "sourceCount": 215,
-      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "generatedAt": "2026-11-08T23:51:38.795126+00:00",
       "bounds": [
         [
           12.32138347,
@@ -412,7 +412,7 @@
       "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
       "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
       "color": "#be9b68",
-      "retrievedAt": "2026-11-08T22:40:37.360047+00:00",
+      "retrievedAt": "2026-11-08T23:52:58.350955+00:00",
       "metric": {
         "field": "__value",
         "unit": "ha",
@@ -422,7 +422,7 @@
       "dataDate": "2016",
       "count": 215,
       "sourceCount": 215,
-      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "generatedAt": "2026-11-08T23:51:38.795126+00:00",
       "bounds": [
         [
           12.32138347,
@@ -464,7 +464,7 @@
       "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
       "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
       "color": "#be9b68",
-      "retrievedAt": "2026-11-08T22:40:40.923118+00:00",
+      "retrievedAt": "2026-11-08T23:53:03.647064+00:00",
       "metric": {
         "field": "__value",
         "unit": "ha",
@@ -474,7 +474,7 @@
       "dataDate": "2016",
       "count": 215,
       "sourceCount": 215,
-      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "generatedAt": "2026-11-08T23:51:38.795126+00:00",
       "bounds": [
         [
           12.32138347,
@@ -516,7 +516,7 @@
       "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
       "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
       "color": "#be9b68",
-      "retrievedAt": "2026-11-08T22:40:44.725037+00:00",
+      "retrievedAt": "2026-11-08T23:53:09.068083+00:00",
       "metric": {
         "field": "__value",
         "unit": "ha",
@@ -526,7 +526,7 @@
       "dataDate": "2017",
       "count": 215,
       "sourceCount": 215,
-      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "generatedAt": "2026-11-08T23:51:38.795126+00:00",
       "bounds": [
         [
           12.32138347,
@@ -568,7 +568,7 @@
       "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
       "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
       "color": "#be9b68",
-      "retrievedAt": "2026-11-08T22:40:48.468965+00:00",
+      "retrievedAt": "2026-11-08T23:53:14.369066+00:00",
       "metric": {
         "field": "__value",
         "unit": "ha",
@@ -578,7 +578,7 @@
       "dataDate": "2017",
       "count": 215,
       "sourceCount": 215,
-      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "generatedAt": "2026-11-08T23:51:38.795126+00:00",
       "bounds": [
         [
           12.32138347,
@@ -620,7 +620,7 @@
       "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
       "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
       "color": "#be9b68",
-      "retrievedAt": "2026-11-08T22:40:52.009652+00:00",
+      "retrievedAt": "2026-11-08T23:53:19.793081+00:00",
       "metric": {
         "field": "__value",
         "unit": "ha",
@@ -630,7 +630,7 @@
       "dataDate": "2017",
       "count": 215,
       "sourceCount": 215,
-      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "generatedAt": "2026-11-08T23:51:38.795126+00:00",
       "bounds": [
         [
           12.32138347,
@@ -672,7 +672,7 @@
       "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
       "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
       "color": "#be9b68",
-      "retrievedAt": "2026-11-08T22:40:55.496939+00:00",
+      "retrievedAt": "2026-11-08T23:53:25.227340+00:00",
       "metric": {
         "field": "__value",
         "unit": "ha",
@@ -682,7 +682,7 @@
       "dataDate": "2018",
       "count": 215,
       "sourceCount": 215,
-      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "generatedAt": "2026-11-08T23:51:38.795126+00:00",
       "bounds": [
         [
           12.32138347,
@@ -724,7 +724,7 @@
       "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
       "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
       "color": "#be9b68",
-      "retrievedAt": "2026-11-08T22:40:59.043907+00:00",
+      "retrievedAt": "2026-11-08T23:53:30.674148+00:00",
       "metric": {
         "field": "__value",
         "unit": "ha",
@@ -734,7 +734,7 @@
       "dataDate": "2018",
       "count": 215,
       "sourceCount": 215,
-      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "generatedAt": "2026-11-08T23:51:38.795126+00:00",
       "bounds": [
         [
           12.32138347,
@@ -776,7 +776,7 @@
       "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
       "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
       "color": "#be9b68",
-      "retrievedAt": "2026-11-08T22:41:02.564071+00:00",
+      "retrievedAt": "2026-11-08T23:53:36.136200+00:00",
       "metric": {
         "field": "__value",
         "unit": "ha",
@@ -786,7 +786,7 @@
       "dataDate": "2018",
       "count": 215,
       "sourceCount": 215,
-      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "generatedAt": "2026-11-08T23:51:38.795126+00:00",
       "bounds": [
         [
           12.32138347,
@@ -828,7 +828,7 @@
       "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
       "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
       "color": "#be9b68",
-      "retrievedAt": "2026-11-08T22:41:06.159914+00:00",
+      "retrievedAt": "2026-11-08T23:53:41.507208+00:00",
       "metric": {
         "field": "__value",
         "unit": "ha",
@@ -838,7 +838,7 @@
       "dataDate": "2019",
       "count": 215,
       "sourceCount": 215,
-      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "generatedAt": "2026-11-08T23:51:38.795126+00:00",
       "bounds": [
         [
           12.32138347,
@@ -880,7 +880,7 @@
       "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
       "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
       "color": "#be9b68",
-      "retrievedAt": "2026-11-08T22:41:09.773006+00:00",
+      "retrievedAt": "2026-11-08T23:53:46.969423+00:00",
       "metric": {
         "field": "__value",
         "unit": "ha",
@@ -890,7 +890,7 @@
       "dataDate": "2019",
       "count": 215,
       "sourceCount": 215,
-      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "generatedAt": "2026-11-08T23:51:38.795126+00:00",
       "bounds": [
         [
           12.32138347,
@@ -932,7 +932,7 @@
       "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
       "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
       "color": "#be9b68",
-      "retrievedAt": "2026-11-08T22:41:13.327307+00:00",
+      "retrievedAt": "2026-11-08T23:53:52.410335+00:00",
       "metric": {
         "field": "__value",
         "unit": "ha",
@@ -942,7 +942,7 @@
       "dataDate": "2019",
       "count": 215,
       "sourceCount": 215,
-      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "generatedAt": "2026-11-08T23:51:38.795126+00:00",
       "bounds": [
         [
           12.32138347,
@@ -984,7 +984,7 @@
       "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
       "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
       "color": "#be9b68",
-      "retrievedAt": "2026-11-08T22:41:16.927146+00:00",
+      "retrievedAt": "2026-11-08T23:53:57.726450+00:00",
       "metric": {
         "field": "__value",
         "unit": "ha",
@@ -994,7 +994,7 @@
       "dataDate": "2020",
       "count": 215,
       "sourceCount": 215,
-      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "generatedAt": "2026-11-08T23:51:38.795126+00:00",
       "bounds": [
         [
           12.32138347,
@@ -1036,7 +1036,7 @@
       "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
       "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
       "color": "#be9b68",
-      "retrievedAt": "2026-11-08T22:41:20.663488+00:00",
+      "retrievedAt": "2026-11-08T23:54:03.192325+00:00",
       "metric": {
         "field": "__value",
         "unit": "ha",
@@ -1046,7 +1046,7 @@
       "dataDate": "2020",
       "count": 215,
       "sourceCount": 215,
-      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "generatedAt": "2026-11-08T23:51:38.795126+00:00",
       "bounds": [
         [
           12.32138347,
@@ -1088,7 +1088,7 @@
       "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
       "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
       "color": "#be9b68",
-      "retrievedAt": "2026-11-08T22:41:24.307906+00:00",
+      "retrievedAt": "2026-11-08T23:54:08.555345+00:00",
       "metric": {
         "field": "__value",
         "unit": "ha",
@@ -1098,7 +1098,7 @@
       "dataDate": "2020",
       "count": 215,
       "sourceCount": 215,
-      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "generatedAt": "2026-11-08T23:51:38.795126+00:00",
       "bounds": [
         [
           12.32138347,
@@ -1140,7 +1140,7 @@
       "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
       "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
       "color": "#be9b68",
-      "retrievedAt": "2026-11-08T22:41:28.101788+00:00",
+      "retrievedAt": "2026-11-08T23:54:14.013399+00:00",
       "metric": {
         "field": "__value",
         "unit": "ha",
@@ -1150,7 +1150,7 @@
       "dataDate": "2021",
       "count": 215,
       "sourceCount": 215,
-      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "generatedAt": "2026-11-08T23:51:38.795126+00:00",
       "bounds": [
         [
           12.32138347,
@@ -1192,7 +1192,7 @@
       "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
       "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
       "color": "#be9b68",
-      "retrievedAt": "2026-11-08T22:41:31.700799+00:00",
+      "retrievedAt": "2026-11-08T23:54:19.489352+00:00",
       "metric": {
         "field": "__value",
         "unit": "ha",
@@ -1202,7 +1202,7 @@
       "dataDate": "2021",
       "count": 215,
       "sourceCount": 215,
-      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "generatedAt": "2026-11-08T23:51:38.795126+00:00",
       "bounds": [
         [
           12.32138347,
@@ -1244,7 +1244,7 @@
       "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
       "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
       "color": "#be9b68",
-      "retrievedAt": "2026-11-08T22:41:35.238648+00:00",
+      "retrievedAt": "2026-11-08T23:54:24.973526+00:00",
       "metric": {
         "field": "__value",
         "unit": "ha",
@@ -1254,7 +1254,7 @@
       "dataDate": "2021",
       "count": 215,
       "sourceCount": 215,
-      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "generatedAt": "2026-11-08T23:51:38.795126+00:00",
       "bounds": [
         [
           12.32138347,
@@ -1296,7 +1296,7 @@
       "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
       "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
       "color": "#be9b68",
-      "retrievedAt": "2026-11-08T22:41:38.721189+00:00",
+      "retrievedAt": "2026-11-08T23:54:30.451444+00:00",
       "metric": {
         "field": "__value",
         "unit": "ha",
@@ -1306,7 +1306,7 @@
       "dataDate": "2022",
       "count": 215,
       "sourceCount": 215,
-      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "generatedAt": "2026-11-08T23:51:38.795126+00:00",
       "bounds": [
         [
           12.32138347,
@@ -1348,7 +1348,7 @@
       "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
       "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
       "color": "#be9b68",
-      "retrievedAt": "2026-11-08T22:41:42.277883+00:00",
+      "retrievedAt": "2026-11-08T23:54:35.934548+00:00",
       "metric": {
         "field": "__value",
         "unit": "ha",
@@ -1358,7 +1358,7 @@
       "dataDate": "2022",
       "count": 215,
       "sourceCount": 215,
-      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "generatedAt": "2026-11-08T23:51:38.795126+00:00",
       "bounds": [
         [
           12.32138347,
@@ -1400,7 +1400,7 @@
       "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
       "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
       "color": "#be9b68",
-      "retrievedAt": "2026-11-08T22:41:45.871751+00:00",
+      "retrievedAt": "2026-11-08T23:54:41.423466+00:00",
       "metric": {
         "field": "__value",
         "unit": "ha",
@@ -1410,7 +1410,7 @@
       "dataDate": "2022",
       "count": 215,
       "sourceCount": 215,
-      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "generatedAt": "2026-11-08T23:51:38.795126+00:00",
       "bounds": [
         [
           12.32138347,
@@ -1452,7 +1452,7 @@
       "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
       "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
       "color": "#be9b68",
-      "retrievedAt": "2026-11-08T22:41:49.426073+00:00",
+      "retrievedAt": "2026-11-08T23:54:46.777459+00:00",
       "metric": {
         "field": "__value",
         "unit": "ha",
@@ -1462,7 +1462,7 @@
       "dataDate": "2023",
       "count": 215,
       "sourceCount": 215,
-      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "generatedAt": "2026-11-08T23:51:38.795126+00:00",
       "bounds": [
         [
           12.32138347,
@@ -1504,7 +1504,7 @@
       "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
       "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
       "color": "#be9b68",
-      "retrievedAt": "2026-11-08T22:41:52.929341+00:00",
+      "retrievedAt": "2026-11-08T23:54:52.256677+00:00",
       "metric": {
         "field": "__value",
         "unit": "ha",
@@ -1514,7 +1514,7 @@
       "dataDate": "2023",
       "count": 215,
       "sourceCount": 215,
-      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "generatedAt": "2026-11-08T23:51:38.795126+00:00",
       "bounds": [
         [
           12.32138347,
@@ -1556,7 +1556,7 @@
       "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
       "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
       "color": "#be9b68",
-      "retrievedAt": "2026-11-08T22:41:56.483483+00:00",
+      "retrievedAt": "2026-11-08T23:54:57.628523+00:00",
       "metric": {
         "field": "__value",
         "unit": "ha",
@@ -1566,7 +1566,7 @@
       "dataDate": "2023",
       "count": 215,
       "sourceCount": 215,
-      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "generatedAt": "2026-11-08T23:51:38.795126+00:00",
       "bounds": [
         [
           12.32138347,
@@ -1608,7 +1608,7 @@
       "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
       "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
       "color": "#be9b68",
-      "retrievedAt": "2026-11-08T22:42:00.055939+00:00",
+      "retrievedAt": "2026-11-08T23:55:03.113509+00:00",
       "metric": {
         "field": "__value",
         "unit": "ha",
@@ -1618,7 +1618,7 @@
       "dataDate": "2024",
       "count": 215,
       "sourceCount": 215,
-      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "generatedAt": "2026-11-08T23:51:38.795126+00:00",
       "bounds": [
         [
           12.32138347,
@@ -1660,7 +1660,7 @@
       "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
       "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
       "color": "#be9b68",
-      "retrievedAt": "2026-11-08T22:42:03.577398+00:00",
+      "retrievedAt": "2026-11-08T23:55:08.599681+00:00",
       "metric": {
         "field": "__value",
         "unit": "ha",
@@ -1670,7 +1670,7 @@
       "dataDate": "2024",
       "count": 215,
       "sourceCount": 215,
-      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "generatedAt": "2026-11-08T23:51:38.795126+00:00",
       "bounds": [
         [
           12.32138347,
@@ -1712,7 +1712,7 @@
       "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
       "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
       "color": "#be9b68",
-      "retrievedAt": "2026-11-08T22:42:07.247177+00:00",
+      "retrievedAt": "2026-11-08T23:55:14.091823+00:00",
       "metric": {
         "field": "__value",
         "unit": "ha",
@@ -1722,7 +1722,7 @@
       "dataDate": "2024",
       "count": 215,
       "sourceCount": 215,
-      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "generatedAt": "2026-11-08T23:51:38.795126+00:00",
       "bounds": [
         [
           12.32138347,
@@ -1764,7 +1764,7 @@
       "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
       "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
       "color": "#be9b68",
-      "retrievedAt": "2026-11-08T22:42:10.997766+00:00",
+      "retrievedAt": "2026-11-08T23:55:19.572561+00:00",
       "metric": {
         "field": "__value",
         "unit": "ha",
@@ -1774,7 +1774,7 @@
       "dataDate": "2025",
       "count": 215,
       "sourceCount": 215,
-      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "generatedAt": "2026-11-08T23:51:38.795126+00:00",
       "bounds": [
         [
           12.32138347,
@@ -1816,7 +1816,7 @@
       "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
       "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
       "color": "#be9b68",
-      "retrievedAt": "2026-11-08T22:42:14.731339+00:00",
+      "retrievedAt": "2026-11-08T23:55:24.945796+00:00",
       "metric": {
         "field": "__value",
         "unit": "ha",
@@ -1826,7 +1826,7 @@
       "dataDate": "2025",
       "count": 215,
       "sourceCount": 215,
-      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "generatedAt": "2026-11-08T23:51:38.795126+00:00",
       "bounds": [
         [
           12.32138347,
@@ -1868,7 +1868,7 @@
       "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
       "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
       "color": "#be9b68",
-      "retrievedAt": "2026-11-08T22:42:18.309141+00:00",
+      "retrievedAt": "2026-11-08T23:55:30.440659+00:00",
       "metric": {
         "field": "__value",
         "unit": "ha",
@@ -1878,7 +1878,7 @@
       "dataDate": "2025",
       "count": 215,
       "sourceCount": 215,
-      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "generatedAt": "2026-11-08T23:51:38.795126+00:00",
       "bounds": [
         [
           12.32138347,
@@ -1920,7 +1920,7 @@
       "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
       "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
       "color": "#be9b68",
-      "retrievedAt": "2026-11-08T22:42:21.874267+00:00",
+      "retrievedAt": "2026-11-08T23:55:35.936957+00:00",
       "metric": {
         "field": "__value",
         "unit": "ha",
@@ -1930,7 +1930,7 @@
       "dataDate": "2025",
       "count": 215,
       "sourceCount": 215,
-      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "generatedAt": "2026-11-08T23:51:38.795126+00:00",
       "bounds": [
         [
           12.32138347,
@@ -1972,7 +1972,7 @@
       "licenseUrl": "https://www.isprambiente.gov.it/files2023/trasparenza/disposizioni-generali-2023/delibera_31ca-_regolamento_data_policy_dati_territoriali_e_ambientali_erogati_da_ispra_-1.pdf",
       "cadence": "Sincronizzazione automatica ogni 6 ore · dati annuali",
       "color": "#be9b68",
-      "retrievedAt": "2026-11-08T22:42:25.488790+00:00",
+      "retrievedAt": "2026-11-08T23:55:41.359596+00:00",
       "metric": {
         "field": "__value",
         "unit": "%",
@@ -1982,7 +1982,7 @@
       "dataDate": "2025",
       "count": 215,
       "sourceCount": 215,
-      "generatedAt": "2026-11-08T22:40:07.221958+00:00",
+      "generatedAt": "2026-11-08T23:51:38.795126+00:00",
       "bounds": [
         [
           12.32138347,

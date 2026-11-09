@@ -29,7 +29,7 @@
         "positiveHeights": 4848
       }
     },
-    "retrievedAtUTC": "2026-11-08T22:40:08.470029+00:00"
+    "retrievedAtUTC": "2026-11-08T23:51:42.906967+00:00"
   },
   "aia": {
     "source": "Regione FVG — INDUSTR:autorizzazione_integrata_ambientale_aia",
@@ -41,7 +41,7 @@
     "url": "https://monitor.protezionecivile.fvg.it/api/measures/latest",
     "license": "CC BY 4.0",
     "licenseUrl": "https://monitor.protezionecivile.fvg.it/licenza",
-    "snapshotRetrievedAtUTC": "2026-11-08T22:27:14.847855+00:00",
+    "snapshotRetrievedAtUTC": "2026-11-08T23:55:50.743374+00:00",
     "snapshotSensorIds": [
       1,
       2,
@@ -125,7 +125,7 @@
       152,
       153
     ],
-    "snapshotMeasureCount": 4786,
+    "snapshotMeasureCount": 4788,
     "catalogUrl": "https://monitor.protezionecivile.fvg.it/api/sensors",
     "note": "19 observation variables plus wind-direction channel. Idrometro values have station-specific references and are not ranked across sites. Snapshot is a saved observation, not generated live data."
   },
