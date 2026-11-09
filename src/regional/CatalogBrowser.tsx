@@ -36,7 +36,12 @@ export function CatalogButton() {
       aria-haspopup="dialog"
       aria-controls="data-catalog"
       aria-expanded={open}
-      onClick={() => useRegionalStore.setState({ catalogOpen: !open })}
+      onClick={(event) => {
+        // Safari does not focus buttons on pointer activation. Establish the
+        // opener before showModal so native close can restore focus to it.
+        event.currentTarget.focus({ preventScroll: true });
+        useRegionalStore.setState({ catalogOpen: !open });
+      }}
     >
       <Icon name="catalog" />
       Catalogo

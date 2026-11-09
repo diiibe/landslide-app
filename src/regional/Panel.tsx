@@ -76,7 +76,10 @@ export function RegionalPanel() {
             Livelli attivi <span>{active.length}</span>
           </h2>
           <button
-            onClick={() => useRegionalStore.setState({ catalogOpen: true })}
+            onClick={(event) => {
+              event.currentTarget.focus({ preventScroll: true });
+              useRegionalStore.setState({ catalogOpen: true });
+            }}
           >
             <Icon name="plus" />
             Aggiungi dati
