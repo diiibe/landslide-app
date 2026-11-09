@@ -121,3 +121,35 @@ Durante il disegno drawer e legenda vengono temporaneamente sospesi e
 ripristinati, senza cambiare le preferenze dell’utente. Il menu strumenti si
 chiude per lasciare la mappa libera; gli inset della camera si azzerano e si
 ripristinano senza cambiare le dimensioni del canvas.
+
+## Componenti centrali: proporzioni e significato
+
+Il catalogo concentra ricerca e comando Filtri sulla stessa riga; le opzioni sono
+inizialmente chiuse anche su desktop. L'apertura non azzera query o selezioni e
+il comando mantiene il focus quando nasconde i campi. Il numero sul comando
+conta soltanto i filtri avanzati applicati, non la categoria o il testo cercato.
+
+Le categorie condividono icone e quattro famiglie cromatiche di orientamento tra
+catalogo e albero: terra/energia, acqua/meteo, natura/ambiente, città/reti. Il testo
+e la forma dell'icona identificano sempre il tema anche senza colore. Queste
+famiglie non sostituiscono i colori delle misure, le classi scientifiche o le
+legende. I simboli dei livelli distinguono raster, aree, reti, punti e sensori;
+file personali o schemi misti conservano simboli generici senza inventare una
+geometria. Il campione di colore originale rimane sul fondo del simbolo.
+
+Nel pannello, il nome e il chevron aprono il dettaglio; l'occhio nella lista
+attiva nasconde il livello. Nel catalogo, più e spunta aggiungono o rimuovono il
+dato. Le etichette accessibili esplicitano sempre l'azione. Le righe hanno un
+passo compatto, i dettagli più respiro; non si estendono le azioni brevi fino a
+riempire la riga. Il percorso compare quando indica una navigazione effettiva.
+I pulsanti touch conservano44px anche nei tablet oltre768px.
+
+Il movimento si limita alla rotazione del chevron, all'apparizione del ramo e
+alla conferma della spunta (tratto disegnato in180ms). Le icone non oscillano e
+non si animano dati senza nuove osservazioni. Le preferenze di movimento ridotto
+coprono anche questi stati. L'unico sfondo disponibile senza token è indicato
+come OpenStreetMap senza mostrare un selettore privo di alternative.
+
+Sotto560px le categorie passano a righe su una colonna: icona, titolo con
+sottotitolo e conteggio a destra. I nomi non vengono sillabati per farli entrare
+in tessere strette; tablet e landscape ampi possono mantenere due colonne.

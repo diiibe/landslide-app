@@ -16,6 +16,11 @@ export function BasemapPanel() {
         { id: "dark", label: "Scuro" },
       ]
     : [{ id: "outdoors", label: "OpenStreetMap" }];
+  if (!HAS_MAPBOX_TOKEN) return (
+    <div className={styles.single} aria-label="Sfondo mappa: OpenStreetMap">
+      <Icon name="map" /><span>OpenStreetMap</span>
+    </div>
+  );
   return (
     <div className={styles.panel} data-open={open}>
       <button

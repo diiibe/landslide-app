@@ -1,0 +1,61 @@
+.category {
+  --category-ink: var(--c-text-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--category-ink);
+}
+.category[data-tone="terrain"] {
+  --category-ink: #995020;
+}
+.category[data-tone="water"] {
+  --category-ink: #266781;
+}
+.category[data-tone="nature"] {
+  --category-ink: #38704c;
+}
+.category[data-tone="built"] {
+  --category-ink: #795582;
+}
+:global([data-theme="dark"]) .category[data-tone="terrain"] {
+  --category-ink: #e6b58d;
+}
+:global([data-theme="dark"]) .category[data-tone="water"] {
+  --category-ink: #91c9df;
+}
+:global([data-theme="dark"]) .category[data-tone="nature"] {
+  --category-ink: #a0d4ae;
+}
+:global([data-theme="dark"]) .category[data-tone="built"] {
+  --category-ink: #d1b2db;
+}
+.category svg {
+  width: 20px;
+  height: 20px;
+}
+.symbol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: start;
+  width: 20px;
+  height: 22px;
+  color: var(--c-text-muted);
+  position: relative;
+}
+/* Keep the source swatch; the stroke remains legible in both UI themes. */
+.symbol::before {
+  content: "";
+  position: absolute;
+  inset: 2px 0;
+  background: color-mix(in srgb, var(--symbol-color) 24%, transparent);
+  border-radius: 3px;
+}
+.symbol svg {
+  position: relative;
+  width: 18px;
+  height: 18px;
+}

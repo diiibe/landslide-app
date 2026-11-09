@@ -51,7 +51,7 @@ export function TopBar({ tabs, search, icons }: Props) {
           aria-controls="map-tools"
           onClick={() => setToolsOpen(!toolsOpen)}
         >
-          <Icon name="filter" />
+          <Icon name="tools" />
           Strumenti
         </button>
         <div

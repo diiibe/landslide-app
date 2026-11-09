@@ -119,3 +119,8 @@
 .body button {
   font-size: var(--text-caption);
 }
+
+.single { display: inline-flex; align-items: center; gap: 8px; padding: 10px 12px; min-height: 44px; background: var(--c-surface); color: var(--c-text); border: 1px solid var(--c-edge); border-radius: 6px; box-shadow: var(--shadow-control); font-size: var(--text-body); }
+.single svg { width: 18px; height: 18px; color: var(--c-text-muted); }
+
+.single.single { width: max-content; max-width: 100%; margin-left: auto; }

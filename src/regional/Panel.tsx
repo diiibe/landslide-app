@@ -97,7 +97,10 @@ export function RegionalPanel() {
           <div key={item.layer.id}>
             <CatalogRow item={item} compact />
             {!item.mapKey && !item.userId && (
-              <p className={styles.sourceState}>{rowStatus(item.layer)}</p>
+              <p className={styles.sourceState} data-state={rowSourceState(item.layer)}>
+                {rowSourceState(item.layer) === "snapshot" && item.layer.kind !== "radar" && "Copia salvata · "}
+                {rowStatus(item.layer)}
+              </p>
             )}
           </div>
         ))}
@@ -197,6 +200,13 @@ export function RegionalPanel() {
     </div>
   );
 }
+function rowSourceState(l: LayerDefinition) {
+  const entry = useRegionalStore.getState().entries[l.id];
+  const twin = useTwinStore.getState();
+  const feed = l.kind === "radar" ? twin.radarFeed : l.pcrVariable ? twin.sensorsFeed : null;
+  if (l.status !== "ready" || entry?.error || l.refreshError || feed?.error) return "attention";
+  return entry?.snapshot || feed?.snapshot ? "snapshot" : "neutral";
+}
 function rowStatus(l: LayerDefinition) {
   if (l.status !== "ready") return "Da revisionare";
   const e = useRegionalStore.getState().entries[l.id];
@@ -217,6 +227,7 @@ function rowStatus(l: LayerDefinition) {
     return `${rows.length} stazioni${latest ? " · " + ageLabel(latest) : s.sensorsFeed.loading ? " · lettura fonte…" : ""}${s.sensorsFeed.error ? " · fonte non raggiunta" : ""}`;
   }
   if (e?.loading) return "Caricamento…";
+  if (e?.error) return "Errore fonte · apri Info";
   if (l.liveKind === "pcr" && e?.data)
     return e.data.features.length + " stazioni con osservazioni";
   if ((l.live || l.pollUrl) && e?.data) {
@@ -229,7 +240,6 @@ function rowStatus(l: LayerDefinition) {
       (times.length ? " · " + ageLabel(Math.max(...times)) : "")
     );
   }
-  if (e?.error) return "Errore fonte · apri Info";
   if (l.refreshError) return "Ultimo aggiornamento fallito · dato conservato";
   return [
     l.count !== undefined
