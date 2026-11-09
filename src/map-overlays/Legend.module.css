@@ -203,3 +203,7 @@
 @media (max-width: 768px), (max-height: 500px) and (pointer: coarse) { .legend { bottom: 68px; } }
 
 @media (max-width: 768px), (max-height: 500px) and (pointer: coarse) { .legend { bottom: calc(96px + env(safe-area-inset-bottom, 0px)); } }
+
+.legend { bottom: var(--map-legend-bottom, 96px); }
+
+.legend { max-height: max(44px, calc(100% - var(--map-legend-bottom, 96px) - 16px)); }

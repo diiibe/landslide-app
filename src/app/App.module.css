@@ -180,3 +180,13 @@
   .body[data-drawer="open"] .threeD { bottom: calc(62% + 44px); }
 }
 @media (max-height: 500px) and (pointer: coarse) and (orientation: landscape) { .body[data-drawer="open"] .threeD { bottom: 44px; } }
+
+.threeD, .body[data-drawer="open"] .threeD { bottom: var(--map-control-bottom, 44px); }
+@media (max-width: 768px), (max-height: 500px) and (pointer: coarse) {
+  .body[data-drawer="open"] .map :global([data-map-legend]) { max-width: calc(100% - 184px); }
+}
+@media (max-height: 500px) and (pointer: coarse) and (orientation: landscape) {
+  .rightStack { left: auto; right: 8px; }
+  .body[data-drawer="open"] .rightStack { left: auto; right: calc(min(52%, 420px) + 8px); }
+  .body[data-drawer="open"] .map :global([data-map-legend]) { max-width: calc(100% - min(52%, 420px) - 184px); }
+}
