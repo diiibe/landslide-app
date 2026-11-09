@@ -41,3 +41,13 @@ it("preserves refinements while collapsing them and resets their mobile state on
  expect(dialog.querySelector('details')).not.toHaveAttribute('open');
  expect(within(dialog).getByRole('searchbox',{name:'Cerca nel catalogo'})).toHaveValue('');
 });
+
+it("keeps catalog failures visible above the mobile category/results switch and permits retry",()=>{
+ useRegionalStore.setState({catalogError:"HTTP 503",refreshKey:0});
+ render(<CatalogBrowser/>);
+ const alert=screen.getByRole("alert");
+ expect(alert.parentElement).toHaveAttribute("data-mode","catalog");
+ expect(alert.parentElement).toHaveAttribute("data-categories","true");
+ fireEvent.click(within(alert).getByRole("button",{name:"Riprova adesso"}));
+ expect(useRegionalStore.getState().refreshKey).toBe(1);
+});
