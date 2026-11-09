@@ -29,7 +29,7 @@
         "positiveHeights": 4848
       }
     },
-    "retrievedAtUTC": "2026-11-08T23:51:42.906967+00:00"
+    "retrievedAtUTC": "2026-11-09T06:36:42.169261+00:00"
   },
   "aia": {
     "source": "Regione FVG — INDUSTR:autorizzazione_integrata_ambientale_aia",
@@ -41,7 +41,7 @@
     "url": "https://monitor.protezionecivile.fvg.it/api/measures/latest",
     "license": "CC BY 4.0",
     "licenseUrl": "https://monitor.protezionecivile.fvg.it/licenza",
-    "snapshotRetrievedAtUTC": "2026-11-08T23:55:50.743374+00:00",
+    "snapshotRetrievedAtUTC": "2026-11-09T06:41:00.071934+00:00",
     "snapshotSensorIds": [
       1,
       2,
@@ -125,7 +125,7 @@
       152,
       153
     ],
-    "snapshotMeasureCount": 4788,
+    "snapshotMeasureCount": 4798,
     "catalogUrl": "https://monitor.protezionecivile.fvg.it/api/sensors",
     "note": "19 observation variables plus wind-direction channel. Idrometro values have station-specific references and are not ranked across sites. Snapshot is a saved observation, not generated live data."
   },
@@ -135,6 +135,6 @@
     "product": "SRI",
     "snapshotUTC": "2026-11-08T15:30:00Z",
     "note": "DPC SRI API inspected; WMS and presigned TIFF have no CORS in checks. Regional PCR selected for static-browser compatibility.",
-    "snapshotRetrievedAtUTC": "2026-11-08T22:42:29.693859+00:00"
+    "snapshotRetrievedAtUTC": "2026-11-09T06:41:01.960218+00:00"
   }
 }
