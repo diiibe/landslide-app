@@ -35,3 +35,25 @@ describe("twin polling lifecycle", () => {
     stop();
   });
 });
+
+it("reads new observations every minute in view and immediately after reconnect/focus", async () => {
+  vi.useFakeTimers();
+  const hidden = vi.spyOn(document, "hidden", "get").mockReturnValue(false);
+  let value = 0;
+  const task = vi.fn(async () => { value += 1; });
+  const stop = startPolling(task, true);
+  await Promise.resolve();
+  expect(value).toBe(1);
+  await vi.advanceTimersByTimeAsync(60000);
+  expect(value).toBe(2);
+  hidden.mockReturnValue(true); document.dispatchEvent(new Event("visibilitychange"));
+  await vi.advanceTimersByTimeAsync(180000);
+  expect(value).toBe(2);
+  hidden.mockReturnValue(false); document.dispatchEvent(new Event("visibilitychange"));
+  await Promise.resolve(); expect(value).toBe(3);
+  window.dispatchEvent(new Event("online")); await Promise.resolve(); expect(value).toBe(4);
+  window.dispatchEvent(new Event("focus")); await Promise.resolve(); expect(value).toBe(5);
+  stop(); window.dispatchEvent(new Event("online")); window.dispatchEvent(new Event("focus"));
+  await vi.advanceTimersByTimeAsync(60000); expect(value).toBe(5);
+  hidden.mockRestore();
+});

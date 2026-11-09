@@ -199,3 +199,7 @@
   font-size: var(--text-caption);
   line-height: 1.6;
 }
+.legend { bottom: 68px; max-height: calc(100% - 84px); overflow-y: auto; }
+@media (max-width: 768px), (max-height: 500px) and (pointer: coarse) { .legend { bottom: 68px; } }
+
+@media (max-width: 768px), (max-height: 500px) and (pointer: coarse) { .legend { bottom: calc(96px + env(safe-area-inset-bottom, 0px)); } }

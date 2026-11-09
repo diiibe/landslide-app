@@ -162,3 +162,21 @@
     scroll-padding-top: 128px;
   }
 }
+/* Every map command shares the same anchor and safe-area offsets. */
+.rightStack { overflow-x: hidden; }
+.threeD { position: absolute; left: 16px; bottom: 16px; z-index: 6; }
+.threeD > button { min-width: 44px; min-height: 44px; background: var(--c-surface); border: 1px solid var(--c-edge); border-radius: 6px; box-shadow: var(--shadow-control); }
+@media (max-width: 768px), (max-height: 500px) and (pointer: coarse) {
+  .rightStack { max-height: calc(100% - 16px); }
+  .body[data-drawer="open"] .rightStack { max-height: calc(38% - 16px); }
+  .body[data-drawer="open"] .threeD { bottom: calc(62% + 8px); }
+}
+@media (max-height: 500px) and (pointer: coarse) and (orientation: landscape) { .body[data-drawer="open"] .rightStack { max-height: calc(100% - 16px); } .body[data-drawer="open"] .threeD { bottom: 16px; } }
+
+.threeD > button { gap: 8px; padding-inline: 12px; font-weight: 650; }
+
+@media (max-width: 768px), (max-height: 500px) and (pointer: coarse) {
+  .threeD { bottom: calc(44px + env(safe-area-inset-bottom, 0px)); }
+  .body[data-drawer="open"] .threeD { bottom: calc(62% + 44px); }
+}
+@media (max-height: 500px) and (pointer: coarse) and (orientation: landscape) { .body[data-drawer="open"] .threeD { bottom: 44px; } }

@@ -1,0 +1,13 @@
+.panel { border: 1px solid var(--c-edge); border-radius: 6px; background: var(--c-surface); box-shadow: var(--shadow-control); }
+.head { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 44px; padding: 10px 12px; border: 0; border-radius: 6px; background: transparent; color: var(--c-text); font: 600 14px var(--font-stack); cursor: pointer; }
+.head > span { flex: 1; text-align: left; }
+.head > svg { width: 18px; height: 18px; color: var(--c-text-muted); }
+.head > svg:last-child { width: 12px; height: 12px; transition: transform 160ms var(--e-quart); }
+.head[aria-expanded="true"] > svg:last-child { transform: rotate(90deg); }
+.head:hover { background: var(--c-selected); }
+.body { border-top: 1px solid var(--c-border); padding: 4px 6px; animation: var(--motion-fade); }
+.body[hidden] { display: none; }
+.body > button, .body > details > summary { width: 100%; display: flex; gap: 8px; justify-content: start; text-align: left; font-size: 14px; padding: 8px; min-height: 44px; }
+.body > details > div[role="menu"] { position: static; margin: 0 0 8px; min-width: 0; box-shadow: none; animation: none; border: 0; border-left: 1px solid var(--c-border); border-radius: 0; padding-left: 6px; }
+.body p { font-size: 12px; line-height: 1.5; color: var(--c-text-muted); padding: 8px; margin: 0; }
+@media (max-width: 768px), (max-height: 500px) and (pointer: coarse) { .head { font-size: 12px; } .body > button, .body > details > summary { font-size: 12px; } }
