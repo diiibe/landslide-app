@@ -56,7 +56,10 @@
   color: var(--c-text-soft);
 }
 
-.close:hover { background: var(--c-bg-linen); color: var(--c-text); }
+.close:hover {
+  background: var(--c-bg-linen);
+  color: var(--c-text);
+}
 
 .body {
   padding: 12px 14px;
@@ -79,7 +82,7 @@
   font-size: 11px;
   font-weight: 700;
   color: var(--c-text-soft);
-  letter-spacing: .04em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   padding: 0;
   display: flex;
@@ -103,7 +106,9 @@
   text-decoration: underline;
   text-underline-offset: 2px;
 }
-.linkBtn:hover { color: var(--c-text); }
+.linkBtn:hover {
+  color: var(--c-text);
+}
 
 .radioRow,
 .checkRow {
@@ -190,7 +195,9 @@
   border: 1px solid var(--c-border);
   background: var(--c-surface);
   color: var(--c-text);
-  transition: background .12s var(--e-quart), color .12s var(--e-quart);
+  transition:
+    background 0.12s var(--e-quart),
+    color 0.12s var(--e-quart);
 }
 
 .cancel:hover {
@@ -215,6 +222,82 @@
 }
 
 @media (max-width: 480px) {
-  .panel { max-width: none; max-height: calc(100dvh - 16px); }
-  .actions button { min-height: 44px; }
+  .panel {
+    max-width: none;
+    max-height: calc(100dvh - 16px);
+  }
+  .actions button {
+    min-height: 44px;
+  }
+}
+.backdrop {
+  backdrop-filter: none;
+  background: rgb(16 30 21 / 0.38);
+}
+.panel {
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-panel);
+}
+.head {
+  padding: 16px 20px;
+  background: var(--c-surface);
+}
+.ttl {
+  font-size: 18px;
+  font-weight: 650;
+  letter-spacing: -0.3px;
+}
+.close {
+  width: 44px;
+  height: 44px;
+}
+.body {
+  padding: 20px;
+  gap: 20px;
+}
+.sectionTitle {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--c-text-muted);
+}
+.radioRow,
+.checkRow {
+  min-height: 44px;
+}
+.hint {
+  font-size: 12px;
+  font-style: normal;
+  line-height: 1.65;
+  color: var(--c-text-muted);
+}
+.actions {
+  padding: 16px 20px;
+  background: var(--c-surface-2);
+}
+.actions button {
+  min-height: 44px;
+}
+.export {
+  background: var(--c-action);
+  border-color: var(--c-action);
+  color: var(--c-action-text);
+}
+.export:hover {
+  background: var(--c-action-hover);
+  filter: none;
+}
+.cancel:hover {
+  background: var(--c-surface-2);
+  color: var(--c-text);
+  border-color: var(--c-border-strong);
+}
+.linkBtn {
+  min-height: 36px;
+  font-size: 12px;
+}
+.subTitle {
+  font-size: 12px;
+  color: var(--c-text-muted);
 }

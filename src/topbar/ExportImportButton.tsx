@@ -46,8 +46,8 @@ export function ExportImportButton() {
       <details ref={detailsRef} className={styles.menuWrap}>
         <summary
           className={styles.btn}
-          title="Export / import your tracks and saved areas"
-          aria-label="Export or import data"
+          title="Esporta o importa file e aree salvate"
+          aria-label="Esporta o importa dati"
         >
           <svg
             viewBox="0 0 16 16"
@@ -70,7 +70,7 @@ export function ExportImportButton() {
             className={styles.menuItem}
             onClick={onExport}
           >
-            Export…
+            Esporta…
           </button>
           <button
             type="button"
@@ -78,7 +78,7 @@ export function ExportImportButton() {
             className={styles.menuItem}
             onClick={onImport}
           >
-            Import bundle…
+            Importa archivio FVG…
           </button>
         </div>
       </details>

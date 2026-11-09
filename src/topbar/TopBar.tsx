@@ -1,3 +1,4 @@
+import { Icon } from "@/ui/Icon";
 import styles from "./TopBar.module.css";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import pkg from "../../package.json";
@@ -33,11 +34,12 @@ export function TopBar({ tabs, search, icons }: Props) {
   }, [toolsOpen]);
   return (
     <header className={styles.bar}>
-      <div className={styles.brand}>
+      <div
+        className={styles.brand}
+        title={`FVG · Territorio — versione ${APP_VERSION}`}
+      >
+        <Icon name="map" />
         <span>FVG · Territorio</span>
-        <span className={styles.version} title={`Build version ${APP_VERSION}`}>
-          v{APP_VERSION}
-        </span>
       </div>
       {tabs}
       <div className={styles.search}>{search}</div>
@@ -48,8 +50,13 @@ export function TopBar({ tabs, search, icons }: Props) {
           aria-expanded={toolsOpen}
           aria-controls="map-tools"
           onClick={() => setToolsOpen(!toolsOpen)}
-        >Strumenti</button>
-        <div id="map-tools" className={styles.spacer} data-open={toolsOpen}>{icons}</div>
+        >
+          <Icon name="filter" />
+          Strumenti
+        </button>
+        <div id="map-tools" className={styles.spacer} data-open={toolsOpen}>
+          {icons}
+        </div>
       </div>
     </header>
   );

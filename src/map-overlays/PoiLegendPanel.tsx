@@ -16,7 +16,7 @@ const POI_PALETTE = Object.values(POI_DEFAULT_COLORS);
 
 /**
  * Floating legend for the breathing POI points. Mounts only when at
- * least one of the two POI groups is on (Critical structures / Alpine
+ * least one of the two POI groups is on (Strutture essenziali / Alpine
  * huts). Each row shows:
  *   • a visibility checkbox bound to `poiCategoryVisible[cat]` so the
  *     user can hide individual categories within an active group;
@@ -38,19 +38,22 @@ export function PoiLegendPanel() {
 
   if (!layers.poiCritical && !layers.poiHuts) return null;
 
-  const groups: { title: string; categories: PoiCategory[]; visible: boolean }[] =
-    [
-      {
-        title: "Critical structures",
-        categories: ["hospital", "fire_station", "police", "school"],
-        visible: layers.poiCritical,
-      },
-      {
-        title: "Alpine huts",
-        categories: ["alpine_hut", "wilderness_hut"],
-        visible: layers.poiHuts,
-      },
-    ];
+  const groups: {
+    title: string;
+    categories: PoiCategory[];
+    visible: boolean;
+  }[] = [
+    {
+      title: "Strutture essenziali",
+      categories: ["hospital", "fire_station", "police", "school"],
+      visible: layers.poiCritical,
+    },
+    {
+      title: "Rifugi e bivacchi",
+      categories: ["alpine_hut", "wilderness_hut"],
+      visible: layers.poiHuts,
+    },
+  ];
 
   const isCustomised = POI_CATEGORIES.some(
     (c) => poiColors[c] !== POI_DEFAULT_COLORS[c],
@@ -63,11 +66,15 @@ export function PoiLegendPanel() {
         className={styles.head}
         aria-expanded={open}
         aria-controls="poi-legend-body"
-        aria-label={open ? "Collapse POI legend" : "Expand POI legend"}
+        aria-label={
+          open ? "Chiudi categorie dei luoghi" : "Apri categorie dei luoghi"
+        }
         onClick={() => setOpen((o) => !o)}
       >
-        <span className={styles.ttl}>POI legend</span>
-        <span className={styles.caret} aria-hidden="true">▾</span>
+        <span className={styles.ttl}>Categorie dei luoghi</span>
+        <span className={styles.caret} aria-hidden="true">
+          ▾
+        </span>
       </button>
       <div className={styles.wrap} id="poi-legend-body">
         <div className={styles.body}>
@@ -108,9 +115,9 @@ export function PoiLegendPanel() {
               type="button"
               className={styles.reset}
               onClick={resetPoiColors}
-              title="Restore the default palette"
+              title="Ripristina i colori originali"
             >
-              Reset to defaults
+              Ripristina colori
             </button>
           )}
         </div>

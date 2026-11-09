@@ -1,3 +1,4 @@
+import { Icon } from "@/ui/Icon";
 import { useAppStore } from "@/app/store";
 import type { V2Layer } from "@/app/types";
 import { useModelV2 } from "@/lib/modelV2";
@@ -45,9 +46,7 @@ export function Legend() {
           {v2Layer ? "Suscettibilità frane" : "Frane censite"}
         </span>
         <span className={styles.miniRamp} aria-hidden="true" />
-        <span className={styles.caret} aria-hidden="true">
-          ▾
-        </span>
+        <Icon name="chevron" className={styles.caret} />
       </button>
       <div className={styles.wrap}>
         <div className={styles.body}>
@@ -96,9 +95,12 @@ function V2LegendBody({ layer }: { layer: V2Layer }) {
         style={{ gridTemplateColumns: `repeat(${n}, 1fr)` }}
       >
         {Array.from({ length: n }, (_, i) => (
-          <li key={i} style={{ opacity: i + 1 < cutoff ? 0.3 : 1 }}>
+          <li key={i}>
             <i
-              style={{ background: v2ClassColor(i + 1, n) }}
+              style={{
+                background: v2ClassColor(i + 1, n),
+                opacity: i + 1 < cutoff ? 0.3 : 1,
+              }}
               aria-hidden="true"
             />
             <span>{i + 1}</span>
@@ -112,14 +114,17 @@ function V2LegendBody({ layer }: { layer: V2Layer }) {
       <p className={styles.v2Copy}>
         Visibili le classi da {Math.min(cutoff, n)} a {n}.
       </p>
-      <p className={styles.v2Copy}>{copy}</p>
-      <p className={styles.v2Note}>{V2_FULL_FIT_NOTE}</p>
-      {stats && (
-        <p className={styles.v2Note}>
-          Classi per quantili; quote effettive:{" "}
-          {stats.shares.map(pct).join(", ")}.
-        </p>
-      )}
+      <details className={styles.reading}>
+        <summary>Come leggere la mappa</summary>
+        <p className={styles.v2Copy}>{copy}</p>
+        <p className={styles.v2Note}>{V2_FULL_FIT_NOTE}</p>
+        {stats && (
+          <p className={styles.v2Note}>
+            Classi per quantili; quote effettive:{" "}
+            {stats.shares.map(pct).join(", ")}.
+          </p>
+        )}
+      </details>
     </section>
   );
 }

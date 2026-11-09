@@ -30,12 +30,12 @@ export const POI_DEFAULT_COLORS: Record<PoiCategory, string> = {
 };
 
 export const POI_CATEGORY_LABELS: Record<PoiCategory, string> = {
-  hospital: "Hospital",
-  fire_station: "Fire station",
-  police: "Police",
-  school: "School",
-  alpine_hut: "Alpine hut",
-  wilderness_hut: "Wilderness hut",
+  hospital: "Ospedali",
+  fire_station: "Vigili del fuoco",
+  police: "Forze dell’ordine",
+  school: "Scuole",
+  alpine_hut: "Rifugi",
+  wilderness_hut: "Bivacchi",
 };
 
 /* ───── User-uploaded layers & drawn areas ───── */

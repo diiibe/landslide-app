@@ -1,73 +1,47 @@
 import { useAppStore } from "@/app/store";
 import { HAS_MAPBOX_TOKEN } from "@/map/style";
 import type { Basemap } from "@/app/types";
-import styles from "./LayersPanel.module.css";
-
-/**
- * Floating Basemap picker. Used to live inside the LayersPanel as a
- * sub-section; was promoted to its own panel so the basemap choice
- * doesn't compete visually with overlay toggles + model selector for
- * the limited vertical real estate of the right-hand column.
- *
- * Visual classes (`panel`, `head`, `ttl`, `caret`, `wrap`, `body`,
- * `bm`, `bmRow`) are shared with LayersPanel via the same CSS module —
- * the two panels are siblings stacked in a flex column inside
- * `.rightStack` (App.module.css), so we drop the absolute positioning
- * the panel class used to carry. The `.panel--inStack` modifier removes
- * `position: absolute / top / right` so the parent flex layout drives
- * placement.
- */
+import { Icon } from "@/ui/Icon";
+import styles from "./BasemapPanel.module.css";
 export function BasemapPanel() {
-  const open = useAppStore((s) => s.basemapPanelOpen);
-  const toggle = useAppStore((s) => s.toggleBasemapPanel);
-  const basemap = useAppStore((s) => s.basemap);
-  const setBasemap = useAppStore((s) => s.setBasemap);
-
+  const open = useAppStore((s) => s.basemapPanelOpen),
+    toggle = useAppStore((s) => s.toggleBasemapPanel),
+    basemap = useAppStore((s) => s.basemap),
+    setBasemap = useAppStore((s) => s.setBasemap);
   const items: { id: Basemap; label: string }[] = HAS_MAPBOX_TOKEN
     ? [
-        { id: "outdoors", label: "Outdoors" },
-        { id: "light", label: "Light" },
+        { id: "outdoors", label: "Rilievo" },
+        { id: "light", label: "Chiaro" },
         { id: "satellite", label: "Satellite" },
-        { id: "dark", label: "Dark" },
+        { id: "dark", label: "Scuro" },
       ]
     : [{ id: "outdoors", label: "OpenStreetMap" }];
-
   return (
-    <div className={`${styles.panel} ${styles.panelInStack}`} data-open={open}>
+    <div className={styles.panel} data-open={open}>
       <button
-        type="button"
         className={styles.head}
         aria-expanded={open}
         aria-controls="basemap-panel-body"
-        aria-label={open ? "Collapse basemap panel" : "Expand basemap panel"}
+        aria-label={
+          open ? "Chiudi scelta sfondo mappa" : "Apri scelta sfondo mappa"
+        }
         onClick={toggle}
       >
-        <span className={styles.ttl}>Basemap</span>
-        <span className={styles.caret} aria-hidden="true">
-          ▾
-        </span>
+        <Icon name="map" />
+        <span>Sfondo mappa</span>
+        <Icon name="chevron" className={styles.caret} />
       </button>
-      <div className={styles.wrap} id="basemap-panel-body">
-        <div className={styles.body}>
-          <div className={styles.g}>
-            <div className={styles.bmGrid}>
-              {items.map((b) => (
-                <button
-                  key={b.id}
-                  type="button"
-                  className={styles.bm}
-                  data-kind={b.id}
-                  data-active={!HAS_MAPBOX_TOKEN || basemap === b.id}
-                  aria-pressed={!HAS_MAPBOX_TOKEN || basemap === b.id}
-                  title={`Use ${b.label} basemap`}
-                  onClick={() => setBasemap(b.id)}
-                >
-                  {b.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
+      <div className={styles.body} id="basemap-panel-body" hidden={!open}>
+        {items.map((b) => (
+          <button
+            key={b.id}
+            aria-pressed={!HAS_MAPBOX_TOKEN || basemap === b.id}
+            title={"Usa sfondo " + b.label}
+            onClick={() => setBasemap(b.id)}
+          >
+            {b.label}
+          </button>
+        ))}
       </div>
     </div>
   );

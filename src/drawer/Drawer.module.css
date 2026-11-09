@@ -1,195 +1,114 @@
-.handle {
-  width: var(--handle-w);
+.drawer {
+  background: var(--c-surface);
+  padding: 0 0 16px;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-gutter: stable;
   flex-shrink: 0;
+}
+.handle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 14px;
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  right: auto;
+  z-index: 31;
+  color: var(--c-text);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-panel);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.handle[data-open="true"] {
+  display: none;
+}
+.handle:hover {
+  background: var(--c-selected);
+}
+.handleLabel {
+  display: inline;
+}
+.handleLabel > span {
+  font-weight: 400;
+}
+.handle svg {
+  width: 18px;
+  height: 18px;
+}
+.mobileHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  min-height: 64px;
+  padding: 10px 20px;
+  background: var(--c-surface);
+  border-bottom: 1px solid var(--c-border);
+}
+.heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  letter-spacing: -0.25px;
+}
+.heading > svg {
+  color: var(--c-text-muted);
+}
+.heading strong {
+  font-weight: 650;
+}
+.mobileHeader > button {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--c-surface);
-  border: 0;
-  border-right: 1px solid var(--c-border);
-  cursor: pointer;
+  min-width: 40px;
+  min-height: 40px;
   padding: 0;
-  color: var(--c-text-soft);
-  transition:
-    background 0.18s var(--e-quart),
-    color 0.18s var(--e-quart);
+  color: var(--c-text-muted);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
 }
-.handle:active {
-  background: var(--c-bg-linen);
-  color: var(--c-forest);
+.mobileHeader > button:hover {
+  background: var(--c-surface-2);
+  color: var(--c-text);
 }
-@media (hover: hover) {
-  .handle:hover {
-    background: var(--c-bg-linen);
-    color: var(--c-forest);
-  }
-}
-.handle svg {
-  width: 10px;
-  height: 10px;
-  transition: transform 0.32s var(--e-expo);
-}
-:global(.body[data-drawer="closed"]) .handle svg {
-  transform: rotate(180deg);
-}
-:global(.body[data-drawer="closed"]) .handle {
-  border-right: 0;
-  border-left: 1px solid var(--c-border);
-}
-
-.drawer {
-  width: var(--drawer-w);
-  background: var(--c-surface);
-  padding: 0 0 8px;
-  overflow-y: auto;
-  transition:
-    width 0.4s var(--e-expo),
-    opacity 0.28s var(--e-quart);
-  flex-shrink: 0;
-}
-.handleLabel,
-.mobileHeader {
-  display: none;
-}
-
-/* Backdrop — purely decorative scrim that closes the drawer on tap.
-   Hidden on desktop; only shown on mobile when drawer is open. */
 .backdrop {
   display: none;
-  position: fixed;
-  inset: 0;
-  background: rgb(0 0 0 / 0.4);
-  z-index: 30; /* below drawer/handle (z-index 31) but above map content */
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 200ms var(--e-quart);
 }
-
-@media (prefers-reduced-motion: reduce) {
-  .backdrop {
-    transition: none;
-  }
-}
-
-/* ───── Mobile / tablet ─────
- * Make the handle an honest 44 px tap target floating on the right edge,
- * and let the drawer overlay the map (positioning is owned by App.module.css). */
 @media (max-width: 768px), (max-height: 500px) and (pointer: coarse) {
-  .handle {
-    width: 44px;
-    min-height: 44px;
-    height: 44px;
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    z-index: 31;
-    border: 1px solid var(--c-border);
-    border-radius: var(--radius-md);
-    background: var(--c-surface);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  }
-  .handle svg {
-    width: 14px;
-    height: 14px;
-  }
-
-  /* When the drawer is closed the handle still needs to float on the map,
-   * not pinned to a vanished left/right border. */
-  :global(.body[data-drawer="closed"]) .handle {
-    border: 1px solid var(--c-border);
-    border-left: 1px solid var(--c-border);
-    border-right: 1px solid var(--c-border);
-  }
-
-  .drawer {
-    /* The actual sheet width is set in App.module.css via min(92vw, 360px). */
-    width: min(92vw, 360px);
-    max-width: 92vw;
-  }
-
-  .backdrop[data-drawer="open"] {
-    display: block;
-    opacity: 1;
-    pointer-events: auto;
-  }
-
-  .handle {
-    width: auto;
-    padding: 0 12px;
-    gap: 8px;
-    font-size: 14px;
-  }
-  .handleLabel {
-    display: inline;
-  }
-  .handleLabel > span {
-    font-weight: 400;
-  }
   .mobileHeader {
-    display: flex;
-    position: sticky;
-    top: 0;
-    z-index: 2;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    min-height: 60px;
-    padding: 8px 12px;
-    background: var(--c-surface);
-    border-bottom: 1px solid var(--c-border);
-    font-size: 15px;
+    min-height: 56px;
+    padding: 6px 16px;
   }
-  .mobileHeader button {
+  .mobileHeader > button {
+    min-width: 44px;
     min-height: 44px;
-    padding: 0 10px;
-    border: 1px solid var(--c-border);
-    border-radius: var(--radius-sm);
-    background: var(--c-bg-linen);
-    font-size: 14px;
-    cursor: pointer;
-  }
-  .mobileHeader button span {
-    margin-left: 6px;
-    font-size: 20px;
-  }
-  .backdrop[data-sheet="true"] {
-    display: none;
   }
   .handle[data-sheet="true"] {
     top: auto;
-    bottom: calc(20px + env(safe-area-inset-bottom, 0px));
-    left: 12px;
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    left: 16px;
     right: auto;
-    max-width: calc(100% - 72px);
     min-height: 48px;
-    font-weight: 600;
   }
-  .handle[data-open="true"] {
-    display: none;
+  .handleLabel {
+    font-size: 14px;
   }
-  .handle[data-sheet="true"] svg {
-    transform: rotate(-90deg);
-  }
-}
-.handle {
-  position: absolute;
-  right: var(--drawer-w);
-  top: 0;
-  bottom: 0;
-  z-index: 31;
-  transition: none;
-  border-left: 1px solid var(--c-border);
-}
-.handle[data-open="false"] {
-  right: 0;
-}
-@media (max-width: 768px), (max-height: 500px) and (pointer: coarse) {
-  .handle {
-    right: 8px;
-    top: 8px;
-    bottom: auto;
-  }
-  .handle[data-open="false"] {
-    right: auto;
+  .drawer {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 }

@@ -21,19 +21,6 @@ function flyTo(s: Suggestion): void {
 }
 
 /**
- * P3 nit: render `⌘K` on Apple platforms (Mac/iPhone/iPad) and `Ctrl K`
- * elsewhere instead of unconditionally showing the Mac glyph.
- * `navigator.platform` is deprecated but still the most reliable signal
- * across browsers; userAgent is the fallback.
- */
-function shortcutHint(): string {
-  if (typeof navigator === "undefined") return "⌘K";
-  const ua = (navigator.platform || navigator.userAgent || "").toLowerCase();
-  return /mac|iphone|ipad|ipod/.test(ua) ? "⌘K" : "Ctrl K";
-}
-const KBD_HINT = shortcutHint();
-
-/**
  * P1.7: validate the geocoder payload before consuming it. Mapbox can
  * reply with a partial / malformed feature shape; without this guard a
  * crashy NaN coord could be passed to flyTo and lock the camera.
@@ -163,10 +150,7 @@ export function SearchLocality() {
   const trimmed = query.trim();
   const hasResults = suggestions.length > 0;
   const showEmptyState =
-    !loading &&
-    trimmed.length >= 2 &&
-    !hasResults &&
-    fetchedFor === trimmed;
+    !loading && trimmed.length >= 2 && !hasResults && fetchedFor === trimmed;
   const menuOpen = open && (hasResults || showEmptyState);
 
   const onKey = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -209,17 +193,18 @@ export function SearchLocality() {
       <input
         className={styles.input}
         type="text"
-        placeholder="Search locality, comune…"
-        aria-label="Search locality"
+        placeholder="Cerca una località…"
+        aria-label="Cerca una località"
         aria-autocomplete="list"
         aria-expanded={menuOpen}
-        aria-activedescendant={activeIdx >= 0 ? `sl-opt-${activeIdx}` : undefined}
+        aria-activedescendant={
+          activeIdx >= 0 ? `sl-opt-${activeIdx}` : undefined
+        }
         value={query}
         onChange={(e) => setSearch({ query: e.target.value, placeName: null })}
         onFocus={() => suggestions.length > 0 && setOpen(true)}
         onKeyDown={onKey}
       />
-      <span className={styles.kbd}>{KBD_HINT}</span>
       {menuOpen && (
         <ul className={styles.menu} role="listbox">
           {hasResults &&
@@ -252,7 +237,7 @@ export function SearchLocality() {
               row is not selectable as an option. */}
           {showEmptyState && (
             <li role="status" className={styles.optEmpty}>
-              No matches in FVG
+              Nessun risultato in Friuli Venezia Giulia
             </li>
           )}
         </ul>

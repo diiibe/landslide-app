@@ -1,4 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { Icon } from "@/ui/Icon";
+import { SearchField } from "@/ui/SearchField";
+import { useEffect, useId, useRef, useState } from "react";
 import { useAppStore } from "@/app/store";
 import { useRegionalStore } from "./store";
 import { useTwinStore } from "@/digital-twin/store";
@@ -36,20 +38,7 @@ export function CatalogButton() {
       aria-expanded={open}
       onClick={() => useRegionalStore.setState({ catalogOpen: !open })}
     >
-      <svg
-        viewBox="0 0 20 20"
-        width="18"
-        height="18"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        aria-hidden="true"
-      >
-        <rect x="2" y="2" width="6" height="6" />
-        <rect x="12" y="2" width="6" height="6" />
-        <rect x="2" y="12" width="6" height="6" />
-        <rect x="12" y="12" width="6" height="6" />
-      </svg>
+      <Icon name="catalog" />
       Catalogo
     </button>
   );
@@ -59,8 +48,10 @@ export function CatalogBrowser() {
     dialog = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     const el = dialog.current;
-    if (open && !el?.open) el?.showModal();
-    else if (!open && el?.open) el.close();
+    if (open && el && !el.open) {
+      el.showModal();
+      el.querySelector<HTMLInputElement>('input[type="search"]')?.focus();
+    } else if (!open && el?.open) el.close();
   }, [open]);
   return (
     <dialog
@@ -85,8 +76,9 @@ export function CatalogBrowser() {
         <button
           onClick={() => useRegionalStore.setState({ catalogOpen: false })}
           aria-label="Chiudi catalogo"
+          title="Chiudi catalogo"
         >
-          Chiudi ×
+          <Icon name="close" />
         </button>
       </div>
       {open && <CatalogExplorer mode="catalog" />}
@@ -142,15 +134,12 @@ export function CatalogExplorer({ mode }: { mode: "catalog" | "sidebar" }) {
   return (
     <div className={styles.explorer} data-mode={mode}>
       {mode === "catalog" && (
-        <label className={styles.search}>
-          Cerca nel catalogo
-          <input
-            type="search"
-            placeholder="Nome, parametro, fonte…"
-            value={filters.query}
-            onChange={(e) => set("query", e.target.value)}
-          />
-        </label>
+        <SearchField
+          label="Cerca nel catalogo"
+          placeholder="Cerca dati, sensori e fonti…"
+          value={filters.query}
+          onChange={(value) => set("query", value)}
+        />
       )}
       {mode === "catalog" && (
         <div className={styles.filters}>
@@ -244,13 +233,13 @@ export function CatalogExplorer({ mode }: { mode: "catalog" | "sidebar" }) {
             </button>
             {theme && (
               <>
-                <span>/</span>
+                <Icon name="chevron" />
                 <button onClick={() => setSource("")}>{THEMES[theme]}</button>
               </>
             )}
             {source && (
               <>
-                <span>/</span>
+                <Icon name="chevron" />
                 <span>{source}</span>
               </>
             )}
@@ -261,9 +250,12 @@ export function CatalogExplorer({ mode }: { mode: "catalog" | "sidebar" }) {
                 const count = items.filter((i) => i.theme === id).length;
                 return count > 0 ? (
                   <button key={id} onClick={() => set("theme", id)}>
-                    <span aria-hidden="true">▱</span>
+                    <Icon name="folder" />
                     {label}
-                    <span>{count} ›</span>
+                    <span>
+                      {count}
+                      <Icon name="chevron" />
+                    </span>
                   </button>
                 ) : null;
               })}
@@ -272,7 +264,7 @@ export function CatalogExplorer({ mode }: { mode: "catalog" | "sidebar" }) {
             <div className={styles.folders}>
               {groups.map((g) => (
                 <button key={g} onClick={() => setSource(g)}>
-                  <span aria-hidden="true">▱</span>
+                  <Icon name="folder" />
                   {g}
                   <span>
                     {
@@ -280,7 +272,7 @@ export function CatalogExplorer({ mode }: { mode: "catalog" | "sidebar" }) {
                         (i) => (i.layer.subfolder ?? i.layer.sourceId) === g,
                       ).length
                     }{" "}
-                    ›
+                    <Icon name="chevron" />
                   </span>
                 </button>
               ))}
@@ -318,6 +310,7 @@ export function CatalogExplorer({ mode }: { mode: "catalog" | "sidebar" }) {
                     </p>
                     <button onClick={() => set("theme", "frane")}>
                       Esplora le mappature
+                      <Icon name="arrow" />
                     </button>
                   </div>
                 )}
@@ -362,18 +355,24 @@ export function CatalogRow({
   item: CatalogItem;
   compact?: boolean;
 }) {
+  const metadataId = useId();
   const l = item.layer,
     on = isLayerEnabled(l);
   return (
     <article className={styles.row} data-active={on} data-compact={compact}>
       <div className={styles.rowInfo}>
-        <button className={styles.name} onClick={() => showDetails(item)}>
+        <button
+          className={styles.name}
+          aria-label={l.title}
+          aria-describedby={metadataId}
+          onClick={() => showDetails(item)}
+        >
           <i aria-hidden="true" style={{ background: l.color }} />
-          {l.title}
+          <span>{l.title}</span>
+          <small id={metadataId} title={`${itemType(item)} · ${l.provider}`}>
+            {itemType(item)} · {l.provider}
+          </small>
         </button>
-        <span>
-          {itemType(item)} · {l.provider}
-        </span>
         {!compact && <p>{l.description}</p>}
         {l.status === "blocked" && <span>Da revisionare · {l.problem}</span>}
       </div>
@@ -386,13 +385,14 @@ export function CatalogRow({
         }
         onClick={() => enableLayer(l, !on)}
       >
-        {l.status === "blocked"
-          ? "Non disponibile"
-          : on
-            ? compact
-              ? "Rimuovi"
-              : "✓ Sulla mappa"
-            : "Aggiungi"}
+        {l.status === "blocked" ? (
+          "Non disponibile"
+        ) : (
+          <>
+            <Icon name={on ? (compact ? "close" : "check") : "plus"} />
+            {!compact && (on ? "Sulla mappa" : "Aggiungi")}
+          </>
+        )}
       </button>
     </article>
   );

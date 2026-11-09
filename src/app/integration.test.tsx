@@ -44,6 +44,23 @@ describe("Unified catalog experience", () => {
     );
     expect(screen.getByRole("slider", { name: /Soglia/ })).toHaveValue("3");
   });
+  it("focuses the catalog search after opening and returns focus to the input after clearing", () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "Catalogo" }));
+    const dialog = screen.getByRole("dialog", { name: "Catalogo dei dati" });
+    const search = within(dialog).getByRole("searchbox", {
+      name: "Cerca nel catalogo",
+    });
+    expect(search).toHaveFocus();
+    fireEvent.change(search, { target: { value: "zone diffuse" } });
+    const clear = within(dialog).getByRole("button", {
+      name: "Svuota · Cerca nel catalogo",
+    });
+    clear.focus();
+    fireEvent.click(clear);
+    expect(search).toHaveFocus();
+    expect(search).toHaveValue("");
+  });
   it("opens the central catalog and adds a layer while keeping the catalog open", () => {
     render(<App />);
     fireEvent.click(screen.getByRole("button", { name: "Catalogo" }));

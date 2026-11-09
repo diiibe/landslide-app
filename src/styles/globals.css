@@ -1,6 +1,10 @@
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
   margin: 0;
 }
@@ -9,7 +13,7 @@ body {
   font-family: var(--font-stack);
   color: var(--c-text);
   background: var(--c-bg-linen);
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.5;
   /* Prevent iOS double-tap zoom on interactive map controls. */
   -webkit-text-size-adjust: 100%;
@@ -21,11 +25,15 @@ button {
   color: inherit;
 }
 
-input { font-family: inherit; }
+input {
+  font-family: inherit;
+}
 
 /* Keyboard focus ring — visible on every focusable element across themes.
  * Uses --c-focus which adapts per theme (forest green light, cyan-teal dark). */
-:focus { outline: none; }
+:focus {
+  outline: none;
+}
 *:focus-visible {
   outline: 2px solid var(--c-focus);
   outline-offset: 2px;
@@ -42,7 +50,7 @@ input { font-family: inherit; }
   color: var(--c-text);
   border: 1px solid var(--c-border);
   border-radius: var(--radius-md);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, .25);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
   font-family: var(--font-stack);
   font-size: 12px;
   padding: 10px 12px;
@@ -75,23 +83,48 @@ input { font-family: inherit; }
 /* Programmatic popup card built by src/map/popups.ts and
  * src/map/layers/userPolygons.ts. Class-driven so it tracks the
  * active theme automatically — no inline hex literals to forget. */
-.fvg-popup { color: var(--c-text); font-family: var(--font-stack); font-size: 12px; }
-.fvg-popup--stack { display: flex; flex-direction: column; gap: 8px; }
-.fvg-popup__title { font-weight: 700; margin-bottom: 2px; color: var(--c-text); }
-.fvg-popup__strong { font-weight: 600; color: var(--c-text); }
-.fvg-popup__muted { color: var(--c-text-soft); }
+.fvg-popup {
+  color: var(--c-text);
+  font-family: var(--font-stack);
+  font-size: 12px;
+}
+.fvg-popup--stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.fvg-popup__title {
+  font-weight: 700;
+  margin-bottom: 2px;
+  color: var(--c-text);
+}
+.fvg-popup__strong {
+  font-weight: 600;
+  color: var(--c-text);
+}
+.fvg-popup__muted {
+  color: var(--c-text-soft);
+}
 .fvg-popup__caps {
   color: var(--c-text-muted);
   font-variant: small-caps;
-  letter-spacing: .04em;
+  letter-spacing: 0.04em;
 }
-.fvg-popup__warn { color: var(--c-russet); font-weight: 600; }
+.fvg-popup__warn {
+  color: var(--c-russet);
+  font-weight: 600;
+}
 .fvg-popup__divider {
   border-top: 1px solid var(--c-border);
   margin: 0 -10px;
 }
-.fvg-popup--polygon { min-width: 200px; }
-.fvg-popup__meta { font-size: 11px; margin-bottom: 8px; }
+.fvg-popup--polygon {
+  min-width: 200px;
+}
+.fvg-popup__meta {
+  font-size: 11px;
+  margin-bottom: 8px;
+}
 .fvg-popup__stats {
   display: grid;
   grid-template-columns: auto 1fr;
@@ -104,4 +137,65 @@ input { font-family: inherit; }
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   color: var(--c-text);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+button,
+summary,
+a,
+input,
+select {
+  touch-action: manipulation;
+}
+button {
+  transition:
+    background var(--duration-fast),
+    border-color var(--duration-fast),
+    color var(--duration-fast);
+}
+button:disabled {
+  cursor: default;
+}
+::selection {
+  background: var(--c-selected);
+  color: var(--c-text);
+}
+input[type="checkbox"] {
+  accent-color: var(--c-action);
+}
+input[type="range"] {
+  accent-color: var(--c-action);
+  cursor: pointer;
+}
+.maplibregl-ctrl-group {
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-md);
+  background: var(--c-surface);
+  box-shadow: var(--shadow-panel);
+  overflow: hidden;
+}
+.maplibregl-ctrl-group button {
+  background: var(--c-surface);
+  width: 36px;
+  height: 36px;
+}
+.maplibregl-ctrl-group button:hover {
+  background: var(--c-selected);
+}
+.maplibregl-ctrl-group button + button {
+  border-top: 1px solid var(--c-border);
+}
+[data-theme="dark"] .maplibregl-ctrl-icon {
+  filter: invert(1);
+}
+@media (pointer: coarse) {
+  .maplibregl-ctrl-group button {
+    width: 44px;
+    height: 44px;
+  }
 }

@@ -15,8 +15,12 @@ export function ThreeDButton() {
       type="button"
       className={styles.btn}
       data-active={view3D}
-      title={view3D ? "Switch back to top-down view" : "Tilt to oblique 3D view"}
-      aria-label={view3D ? "Disable 3D view" : "Enable 3D view"}
+      title={
+        view3D
+          ? "Torna alla vista dall’alto"
+          : "Attiva la vista tridimensionale"
+      }
+      aria-label={view3D ? "Disattiva vista 3D" : "Attiva vista 3D"}
       aria-pressed={view3D}
       onClick={toggle}
     >

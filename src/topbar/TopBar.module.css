@@ -4,61 +4,156 @@
   border-bottom: 1px solid var(--c-border);
   display: flex;
   align-items: center;
-  padding: 0 16px;
-  gap: 14px;
+  gap: 24px;
+  padding: 0 24px;
   flex-shrink: 0;
+  position: relative;
+  z-index: 40;
 }
 .brand {
   display: inline-flex;
-  align-items: baseline;
-  gap: 6px;
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--c-text);
+  align-items: center;
+  gap: 10px;
   white-space: nowrap;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: -0.35px;
+  color: var(--c-text);
 }
-.version {
-  font-weight: 500;
-  font-size: 10px;
-  color: var(--c-text-soft);
-  letter-spacing: .02em;
-  padding: 1px 5px;
-  border: 1px solid var(--c-border);
-  border-radius: 999px;
-  text-transform: uppercase;
+.brand > svg {
+  width: 22px;
+  height: 22px;
+  color: var(--c-forest);
 }
-@media (max-width: 480px) {
-  .version { display: none; }
+.search {
+  flex: 1;
+  min-width: 120px;
+  max-width: 360px;
+  margin-left: 0;
 }
-.spacer { margin-left: auto; display: flex; gap: 4px; align-items: center; }
-.tools { display: contents; }
-.toolsToggle { display: none; }
-
-/* ───── Mobile ───── */
+.tools {
+  margin-left: auto;
+  display: contents;
+}
+.spacer {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-left: 16px;
+  border-left: 1px solid var(--c-border);
+}
+.toolsToggle {
+  display: none;
+}
+@media (max-width: 1000px) {
+  .bar {
+    gap: 16px;
+    padding: 0 16px;
+  }
+  .brand {
+    font-size: 14px;
+    gap: 8px;
+  }
+  .brand > svg {
+    width: 20px;
+    height: 20px;
+  }
+  .spacer {
+    padding-left: 8px;
+    gap: 0;
+  }
+}
 @media (max-width: 768px), (max-height: 500px) and (pointer: coarse) {
-  .bar { padding: 0 10px; gap: 8px; }
+  .bar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    height: auto;
+    min-height: var(--topbar-h);
+    padding: 12px 16px;
+    gap: 10px 12px;
+  }
+  .bar > button {
+    justify-self: end;
+  }
+  .search {
+    max-width: none;
+    min-width: 0;
+    width: 100%;
+  }
+  .tools {
+    display: block;
+    position: relative;
+    margin-left: 0;
+  }
+  .toolsToggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 550;
+    min-height: 44px;
+    padding: 8px 12px;
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+  }
+  .toolsToggle[aria-expanded="true"] {
+    background: var(--c-selected);
+    border-color: var(--c-border-strong);
+  }
+  .spacer {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    padding: 8px;
+    margin: 0;
+    width: max-content;
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-md);
+    background: var(--c-surface);
+    box-shadow: var(--shadow-panel);
+    z-index: 45;
+    gap: 4px;
+  }
+  .spacer[data-open="true"] {
+    display: flex;
+  }
 }
-@media (max-width: 480px) {
-  /* The brand "FVG Landslide" is the longest fixed-width element; on 360 px
-   * phones the search input would otherwise overflow. */
-  .brand { font-size: 13px; }
-  .bar { padding: 0 8px; gap: 6px; }
+@media (max-width: 360px) {
+  .bar {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+  .brand {
+    font-size: 13px;
+    gap: 6px;
+  }
+  .brand > svg {
+    width: 18px;
+    height: 18px;
+  }
+  .toolsToggle {
+    padding: 8px;
+    gap: 6px;
+  }
 }
-
-.search { flex: 1; min-width: 120px; max-width: 240px; }
-@media (max-width: 768px), (max-height: 500px) and (pointer: coarse) {
-  .bar { position: relative; z-index: 40; display: grid; grid-template-columns: minmax(0, 1fr) auto; height: auto; min-height: var(--topbar-h); padding: 8px; gap: 6px 8px; }
-  .bar > button { justify-self: end; }
-  .search { width: 100%; min-width: 0; max-width: none; }
-  .tools { display: block; position: relative; }
-  .toolsToggle { display: block; min-height: 44px; padding: 8px 10px; border: 1px solid var(--c-border); border-radius: var(--radius-sm); background: var(--c-surface); cursor: pointer; font-size: 14px; }
-  .spacer { display: none; position: absolute; right: 0; top: calc(100% + 6px); margin: 0; padding: 8px; width: max-content; gap: 6px; border: 1px solid var(--c-border); border-radius: var(--radius-sm); background: var(--c-surface); box-shadow: 0 2px 8px rgb(0 0 0 / 0.12); }
-  .spacer[data-open="true"] { display: flex; }
-  .spacer button, .spacer summary { min-width: 44px; min-height: 44px; }
-}
-
 @media (max-height: 500px) and (pointer: coarse) and (orientation: landscape) {
-  .bar { display: flex; height: 60px; min-height: 60px; }
-  .search { flex: 1; min-width: 0; }
-  .tools { flex-shrink: 0; }
+  .bar {
+    display: flex;
+    min-height: 60px;
+    height: 60px;
+    padding: 8px 16px;
+  }
+  .search {
+    flex: 1;
+    min-width: 0;
+  }
+  .tools {
+    flex-shrink: 0;
+    margin-left: auto;
+  }
 }

@@ -15,8 +15,8 @@ export function DrawButton() {
       type="button"
       className={styles.btn}
       data-active={drawing}
-      title={drawing ? "Stop drawing" : "Draw an area to save stats for"}
-      aria-label={drawing ? "Stop drawing" : "Draw an area"}
+      title={drawing ? "Termina disegno" : "Disegna e salva un’area geografica"}
+      aria-label={drawing ? "Termina disegno" : "Disegna un’area"}
       aria-pressed={drawing}
       onClick={() => setDrawingMode(!drawing)}
     >

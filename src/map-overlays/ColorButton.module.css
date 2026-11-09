@@ -14,7 +14,9 @@
   border-radius: 50%;
   cursor: pointer;
   padding: 0;
-  transition: transform .12s var(--e-quart), border-color .12s var(--e-quart);
+  transition:
+    transform 0.12s var(--e-quart),
+    border-color 0.12s var(--e-quart);
   /* Ensure the colour swatch is large enough to tap on touch devices
      without overriding the per-instance pixel `size` that desktop
      rows depend on. We expand the hit area via a transparent ::after
@@ -28,7 +30,9 @@
   border-radius: 50%;
 }
 @media (hover: hover) {
-  .trigger::after { inset: 0; }
+  .trigger::after {
+    inset: 0;
+  }
 }
 
 .trigger:hover:not(:disabled) {
@@ -75,7 +79,9 @@
   border-radius: 50%;
   cursor: pointer;
   padding: 0;
-  transition: transform .12s var(--e-quart), border-color .12s var(--e-quart);
+  transition:
+    transform 0.12s var(--e-quart),
+    border-color 0.12s var(--e-quart);
 }
 
 .swatch:hover {
@@ -83,12 +89,16 @@
 }
 
 .swatch[data-selected="true"] {
-  box-shadow: 0 0 0 2px var(--c-surface), 0 0 0 4px var(--c-forest);
+  box-shadow:
+    0 0 0 2px var(--c-surface),
+    0 0 0 4px var(--c-forest);
 }
 
 .swatch:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px var(--c-surface), 0 0 0 4px var(--c-forest);
+  box-shadow:
+    0 0 0 2px var(--c-surface),
+    0 0 0 4px var(--c-forest);
 }
 
 @media (max-width: 768px) {
@@ -99,4 +109,21 @@
   .grid {
     gap: 8px;
   }
+}
+.trigger,
+.swatch {
+  transition:
+    border-color var(--duration-fast),
+    box-shadow var(--duration-fast);
+}
+.trigger:hover:not(:disabled),
+.swatch:hover {
+  transform: none;
+}
+.trigger:focus-visible {
+  box-shadow: var(--shadow-focus);
+}
+.popover {
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-panel);
 }

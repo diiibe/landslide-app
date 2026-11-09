@@ -85,7 +85,11 @@
   min-height: 44px;
   cursor: pointer;
 }
-.layerToggles { display: flex; flex-direction: column; gap: 4px; }
+.layerToggles {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
 .check input {
   accent-color: var(--c-slate);
   margin: 0;
@@ -229,12 +233,20 @@
   fill: none;
 }
 @media (max-width: 768px), (max-height: 500px) and (pointer: coarse) {
-  .heading { display: none; }
-  .panel { font-size: 14px; }
+  .heading {
+    display: none;
+  }
+  .panel {
+    font-size: 14px;
+  }
   .panel .caption,
   .feed,
-  .freshness { font-size: 13px; }
-  .panel .section h3 { font-size: 14px; }
+  .freshness {
+    font-size: 13px;
+  }
+  .panel .section h3 {
+    font-size: 14px;
+  }
   .mode {
     font-size: 13px;
     min-height: 44px;
@@ -247,54 +259,247 @@
     min-height: 44px;
     gap: 10px;
   }
-  .check input { width: 20px; height: 20px; flex-shrink: 0; }
+  .check input {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
   .scenes button,
   .action,
-  .nearby button { min-height: 44px; }
-  .scenes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
-  .field select { height: 48px; min-height: 48px; font-size: 16px; }
-  .legend { font-size: 12px; }
-  .panel summary { min-height: 44px; padding-block: 10px; }
+  .nearby button {
+    min-height: 44px;
+  }
+  .scenes {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+  .field select {
+    height: 48px;
+    min-height: 48px;
+    font-size: 16px;
+  }
+  .legend {
+    font-size: 12px;
+  }
+  .panel summary {
+    min-height: 44px;
+    padding-block: 10px;
+  }
 }
 
-.panel button, .panel select, .mode {
-  transition: background-color 150ms var(--e-quart), border-color 150ms var(--e-quart), color 150ms var(--e-quart);
+.panel button,
+.panel select,
+.mode {
+  transition:
+    background-color 150ms var(--e-quart),
+    border-color 150ms var(--e-quart),
+    color 150ms var(--e-quart);
 }
-.panel :is(button, select, input, summary):focus-visible, .mode:focus-visible {
+.panel :is(button, select, input, summary):focus-visible,
+.mode:focus-visible {
   outline: 2px solid var(--c-focus);
   outline-offset: 3px;
 }
-.field select { min-width: 0; max-width: 100%; text-overflow: ellipsis; }
-.panel button:disabled { cursor: default; opacity: .6; }
-.measureSummary { display: flex; flex-direction: column; gap: 2px; }
-.measureSummary span { color: var(--c-twin-muted); font-size: 12px; }
-.colorScale { height: 8px; border: 1px solid var(--c-border); }
-.scaleLabels { display: flex; justify-content: space-between; gap: 6px; font-variant-numeric: tabular-nums; }
-.scaleLabels span { min-width: 0; }
-.scaleLabels span:nth-child(2) { text-align: center; }
-.scaleLabels span:last-child { text-align: right; }
-.inspectorHeading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.clearSelection { font: inherit; padding: 6px 8px; min-height: 44px; color: var(--c-text); background: transparent; border: 1px solid var(--c-border); border-radius: var(--radius-sm); cursor: pointer; }
-.clearSelection:hover { background: var(--c-panel-item-hover); }
-.observation { display: flex; flex-direction: column; gap: 8px; animation: observation-reveal 180ms var(--e-quart); }
-@keyframes observation-reveal { from { opacity: .45; } to { opacity: 1; } }
-.panel details > summary { min-height: 44px; align-content: center; }
-.stationMeasures { border-top: 1px solid var(--c-border); padding-top: 4px; }
-.series { min-width: 0; padding-top: 6px; border-top: 1px solid var(--c-border); }
-.series text { fill: var(--c-twin-muted); }
-.chartAxis { stroke: var(--c-border); }
-.chartSample { fill: var(--c-slate); }
-.chartCursor { stroke: var(--c-twin-muted); stroke-width: 1; stroke-dasharray: 3 3; }
-.chartSelected { fill: var(--c-surface); stroke: var(--c-slate); stroke-width: 2; }
-.sampleSlider { width: 100%; min-height: 44px; margin: 0; accent-color: var(--c-slate); cursor: pointer; }
-.sampleReadout { display: flex; flex-direction: column; gap: 2px; font-variant-numeric: tabular-nums; }
-.sampleReadout span { font-size: 11px; color: var(--c-twin-muted); }
-@media (pointer: coarse) { .mode { min-height: 44px; } }
+.field select {
+  min-width: 0;
+  max-width: 100%;
+  text-overflow: ellipsis;
+}
+.panel button:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+.measureSummary {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.measureSummary span {
+  color: var(--c-twin-muted);
+  font-size: 12px;
+}
+.colorScale {
+  height: 8px;
+  border: 1px solid var(--c-border);
+}
+.scaleLabels {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  font-variant-numeric: tabular-nums;
+}
+.scaleLabels span {
+  min-width: 0;
+}
+.scaleLabels span:nth-child(2) {
+  text-align: center;
+}
+.scaleLabels span:last-child {
+  text-align: right;
+}
+.inspectorHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.clearSelection {
+  font: inherit;
+  padding: 6px 8px;
+  min-height: 44px;
+  color: var(--c-text);
+  background: transparent;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.clearSelection:hover {
+  background: var(--c-panel-item-hover);
+}
+.observation {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  animation: observation-reveal 180ms var(--e-quart);
+}
+@keyframes observation-reveal {
+  from {
+    opacity: 0.45;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.panel details > summary {
+  min-height: 44px;
+  align-content: center;
+}
+.stationMeasures {
+  border-top: 1px solid var(--c-border);
+  padding-top: 4px;
+}
+.series {
+  min-width: 0;
+  padding-top: 6px;
+  border-top: 1px solid var(--c-border);
+}
+.series text {
+  fill: var(--c-twin-muted);
+}
+.chartAxis {
+  stroke: var(--c-border);
+}
+.chartSample {
+  fill: var(--c-slate);
+}
+.chartCursor {
+  stroke: var(--c-twin-muted);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+.chartSelected {
+  fill: var(--c-surface);
+  stroke: var(--c-slate);
+  stroke-width: 2;
+}
+.sampleSlider {
+  width: 100%;
+  min-height: 44px;
+  margin: 0;
+  accent-color: var(--c-slate);
+  cursor: pointer;
+}
+.sampleReadout {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-variant-numeric: tabular-nums;
+}
+.sampleReadout span {
+  font-size: 11px;
+  color: var(--c-twin-muted);
+}
+@media (pointer: coarse) {
+  .mode {
+    min-height: 44px;
+  }
+}
 @media (max-width: 768px), (max-height: 500px) and (pointer: coarse) {
-  .measureSummary span, .sampleReadout span { font-size: 13px; }
-  .field select { width: 100%; }
+  .measureSummary span,
+  .sampleReadout span {
+    font-size: 13px;
+  }
+  .field select {
+    width: 100%;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .observation { animation: none; }
-  .panel button, .panel select, .mode { transition: none; }
+  .observation {
+    animation: none;
+  }
+  .panel button,
+  .panel select,
+  .mode {
+    transition: none;
+  }
+}
+.panel {
+  --c-twin-muted: var(--c-text-muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+.panel[aria-label="Dettaglio osservazioni PCR"] .section {
+  padding: 16px 0;
+  gap: 12px;
+  border-color: var(--c-border-soft);
+}
+.panel .field select {
+  height: 44px;
+  min-height: 44px;
+  padding-left: 12px;
+  border-radius: var(--radius-sm);
+}
+.panel .section h3 {
+  font-size: 13px;
+  font-weight: 650;
+}
+.panel .value {
+  font-size: 28px;
+  letter-spacing: -0.5px;
+  font-weight: 650;
+}
+.panel .caption,
+.panel .freshness {
+  font-size: 12px;
+}
+.panel .scenes button,
+.panel .action,
+.panel .nearby button {
+  border-radius: var(--radius-sm);
+  background: var(--c-surface);
+}
+.panel .action:hover,
+.panel .nearby button:hover {
+  background: var(--c-selected);
+  border-color: var(--c-border-strong);
+}
+.panel a {
+  color: var(--c-forest);
+}
+.panel .clearSelection {
+  border-color: transparent;
+  color: var(--c-text-muted);
+}
+.panel .clearSelection:hover {
+  background: var(--c-surface-2);
+  color: var(--c-text);
+}
+@media (max-width: 768px), (pointer: coarse) {
+  .panel .field select {
+    font-size: 16px;
+  }
+  .panel .section h3 {
+    font-size: 13px;
+  }
 }

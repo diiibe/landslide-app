@@ -1,3 +1,4 @@
+import { Icon } from "@/ui/Icon";
 import { useEffect, useRef, type ReactNode } from "react";
 import { useAppStore } from "@/app/store";
 import styles from "./Drawer.module.css";
@@ -10,7 +11,13 @@ interface Props {
   summary?: string | undefined;
 }
 
-export function Drawer({ children, mobileSheet = false, label = "Analisi della mappa", triggerLabel = "Analisi", summary }: Props) {
+export function Drawer({
+  children,
+  mobileSheet = false,
+  label = "Sulla mappa",
+  triggerLabel = "Livelli",
+  summary,
+}: Props) {
   const drawerOpen = useAppStore((s) => s.drawerOpen);
   const toggle = useAppStore((s) => s.toggleDrawer);
   const handle = useRef<HTMLButtonElement>(null);
@@ -25,7 +32,12 @@ export function Drawer({ children, mobileSheet = false, label = "Analisi della m
     if (!drawerOpen) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        if (typeof window !== "undefined" && window.matchMedia("(max-width: 768px), (max-height: 500px) and (pointer: coarse)").matches) {
+        if (
+          typeof window !== "undefined" &&
+          window.matchMedia(
+            "(max-width: 768px), (max-height: 500px) and (pointer: coarse)",
+          ).matches
+        ) {
           toggle();
         }
       }
@@ -48,10 +60,15 @@ export function Drawer({ children, mobileSheet = false, label = "Analisi della m
       <button
         type="button"
         ref={handle}
+        hidden={drawerOpen}
         className={styles.handle}
         data-sheet={mobileSheet}
         data-open={drawerOpen}
-        aria-label={drawerOpen ? `Chiudi ${label.toLowerCase()}` : `Apri ${label.toLowerCase()}`}
+        aria-label={
+          drawerOpen
+            ? `Chiudi ${label.toLowerCase()}`
+            : `Apri ${label.toLowerCase()}`
+        }
         aria-expanded={drawerOpen}
         aria-controls="drawer-panel"
         onClick={() => {
@@ -59,17 +76,11 @@ export function Drawer({ children, mobileSheet = false, label = "Analisi della m
           if (!drawerOpen) panel.current?.scrollTo?.({ top: 0 });
         }}
       >
-        <span className={styles.handleLabel}>{triggerLabel}{summary && <span> · {summary}</span>}</span>
-        <svg
-          viewBox="0 0 10 10"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <polyline points="3,2 7,5 3,8" />
-        </svg>
+        <span className={styles.handleLabel}>
+          {triggerLabel}
+          {summary && <span> · {summary}</span>}
+        </span>
+        <Icon name="layers" />
       </button>
       <aside
         ref={panel}
@@ -80,8 +91,18 @@ export function Drawer({ children, mobileSheet = false, label = "Analisi della m
         {...(!drawerOpen ? { inert: "" } : {})}
       >
         <div className={styles.mobileHeader}>
-          <strong>{label}</strong>
-          <button type="button" onClick={toggle}>Mostra mappa <span aria-hidden="true">×</span></button>
+          <div className={styles.heading}>
+            <Icon name="layers" />
+            <strong>{label}</strong>
+          </div>
+          <button
+            type="button"
+            aria-label={`Chiudi ${label.toLowerCase()}`}
+            title="Mostra mappa"
+            onClick={toggle}
+          >
+            <Icon name="close" />
+          </button>
         </div>
         {children}
       </aside>
