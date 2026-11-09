@@ -601,3 +601,106 @@
     min-height: 44px;
   }
 }
+
+.trigger {
+  box-shadow: var(--shadow-control);
+  background-image: linear-gradient(rgb(255 255 255 / 0.07), transparent);
+  transition:
+    background var(--duration-fast),
+    border-color var(--duration-fast),
+    box-shadow var(--duration-fast);
+}
+.trigger:active {
+  box-shadow: var(--shadow-inset);
+}
+.dialog {
+  background: var(--c-surface);
+  border-color: var(--c-edge);
+  box-shadow: var(--shadow-modal);
+}
+.dialog[open] {
+  animation: var(--motion-surface);
+}
+.dialog::backdrop {
+  background: var(--c-scrim);
+  animation: var(--motion-fade);
+}
+.header {
+  background-color: var(--c-surface-raised);
+  background-image: var(--surface-sheen);
+  box-shadow: var(--shadow-edge);
+}
+.header h1 {
+  font-size: 24px;
+  letter-spacing: -0.65px;
+}
+.dialog > .explorer {
+  background: var(--c-surface);
+}
+.filters select {
+  background: var(--c-surface-raised);
+  box-shadow: var(--shadow-control);
+}
+.themes {
+  background: var(--c-surface-2);
+  border: 1px solid var(--c-border-soft);
+  border-radius: var(--radius-md);
+  padding: 6px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-inset);
+}
+.themes button[aria-current="page"] {
+  background: var(--c-surface-raised);
+  box-shadow: var(--shadow-control);
+}
+.row {
+  transition: background var(--duration-fast);
+}
+.row:hover {
+  background: color-mix(in srgb, var(--c-selected) 38%, transparent);
+}
+.add {
+  box-shadow: var(--shadow-control);
+}
+.add:active {
+  box-shadow: var(--shadow-inset);
+}
+.add[aria-pressed="true"] svg {
+  animation: var(--motion-confirm);
+}
+.row[data-compact="true"] .add {
+  box-shadow: none;
+}
+.featured {
+  background-color: var(--c-selected);
+  background-image: var(--surface-sheen);
+  border-color: var(--c-border);
+  box-shadow: var(--shadow-edge);
+}
+.footer {
+  background: var(--c-surface-2);
+  box-shadow: 0 -1px 0 var(--c-border-soft);
+}
+.footer > button {
+  box-shadow: var(--shadow-control);
+}
+.explorer .folders button > svg:last-child {
+  transition: color var(--duration-fast);
+}
+@media (max-width: 768px), (max-height: 500px) and (pointer: coarse) {
+  .header h1 {
+    font-size: 21px;
+  }
+  .themes {
+    border: 0;
+    box-shadow: none;
+    border-radius: 0;
+    margin-bottom: 0;
+    padding: 0 0 12px;
+    background: transparent;
+  }
+  .themes button[aria-current="page"] {
+    background: var(--c-selected);
+    border-color: var(--c-border-strong);
+  }
+}

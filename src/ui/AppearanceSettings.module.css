@@ -1,0 +1,318 @@
+.dialog {
+  padding: 0;
+  width: min(520px, calc(100vw - 32px));
+  max-width: none;
+  max-height: calc(100dvh - 32px);
+  border: 1px solid var(--c-edge);
+  border-radius: var(--radius-lg);
+  background: var(--c-surface);
+  color: var(--c-text);
+  box-shadow: var(--shadow-modal);
+  overflow: hidden;
+  text-align: left;
+}
+.dialog[open] {
+  display: flex;
+  flex-direction: column;
+  animation: var(--motion-surface);
+}
+.dialog::backdrop {
+  background: var(--c-scrim);
+  animation: var(--motion-fade);
+}
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--c-border);
+  background: var(--surface-sheen);
+  box-shadow: var(--shadow-edge);
+  flex-shrink: 0;
+}
+.header > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.header > div > svg {
+  color: var(--c-forest);
+  flex-shrink: 0;
+}
+.header h1 {
+  font-size: 21px;
+  line-height: 1.3;
+  font-weight: 650;
+  letter-spacing: -0.5px;
+  margin: 0;
+}
+.header button {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--c-text-muted);
+  background: transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.header button:hover {
+  color: var(--c-text);
+  background: var(--c-surface-2);
+  border-color: var(--c-border);
+}
+.content {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 24px;
+  display: grid;
+  gap: 28px;
+  min-height: 0;
+}
+.section {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+.section legend {
+  padding: 0;
+  margin-bottom: 10px;
+  font-size: 14px;
+  font-weight: 650;
+}
+.section p {
+  font-size: 12px;
+  color: var(--c-text-muted);
+  line-height: 1.6;
+  margin: -2px 0 14px;
+}
+.segmented {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--c-border);
+  background: var(--c-surface-sunken);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-inset);
+}
+.segmented label {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  cursor: pointer;
+}
+.segmented span {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  border-radius: 5px;
+  color: var(--c-text-muted);
+  border: 1px solid transparent;
+  font-size: 13px;
+  transition:
+    background var(--duration-fast),
+    color var(--duration-fast),
+    box-shadow var(--duration-fast);
+}
+.segmented input:checked + span {
+  background: var(--c-surface-raised);
+  color: var(--c-text);
+  border-color: var(--c-border);
+  box-shadow: var(--shadow-control);
+  font-weight: 650;
+}
+.palettes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.palette {
+  display: block;
+  position: relative;
+  cursor: pointer;
+  min-width: 0;
+}
+.paletteBody {
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-md);
+  background: var(--c-surface-raised);
+  box-shadow: var(--shadow-control);
+  transition:
+    background var(--duration-fast),
+    border-color var(--duration-fast),
+    box-shadow var(--duration-fast);
+}
+.palette:hover .paletteBody {
+  border-color: var(--c-border-strong);
+}
+.palette input:checked + .paletteBody {
+  background: var(--c-selected);
+  border-color: var(--c-action);
+  box-shadow:
+    inset 0 0 0 1px var(--c-action),
+    var(--shadow-edge);
+}
+.swatches {
+  display: flex;
+  height: 32px;
+  overflow: hidden;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  border: 1px solid rgb(0 0 0 / 0.12);
+}
+.swatches i {
+  flex: 1;
+}
+.paletteName {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 650;
+}
+.paletteName svg {
+  width: 16px;
+  height: 16px;
+  color: var(--c-forest);
+  opacity: 0;
+}
+.palette input:checked + .paletteBody .paletteName svg {
+  opacity: 1;
+  animation: var(--motion-confirm);
+}
+.description {
+  font-size: 11px;
+  color: var(--c-text-muted);
+  line-height: 1.5;
+}
+.segmented input,
+.palette input,
+.motion input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  opacity: 0;
+  margin: 0;
+}
+.segmented input:focus-visible + span,
+.palette input:focus-visible + .paletteBody,
+.motion input:focus-visible + .switch {
+  outline: 2px solid var(--c-focus);
+  outline-offset: 3px;
+}
+.motion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding-top: 24px;
+  border-top: 1px solid var(--c-border);
+  cursor: pointer;
+  position: relative;
+  min-height: 68px;
+}
+.motion strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 650;
+}
+.motion small {
+  display: block;
+  margin-top: 6px;
+  line-height: 1.65;
+  font-size: 12px;
+  color: var(--c-text-muted);
+}
+.switch {
+  width: 40px;
+  height: 24px;
+  border-radius: 12px;
+  background: var(--c-border-strong);
+  flex-shrink: 0;
+  padding: 3px;
+  box-shadow: var(--shadow-inset);
+  transition: background var(--duration-fast);
+}
+.switch::after {
+  content: "";
+  display: block;
+  width: 18px;
+  height: 18px;
+  background: var(--c-surface-raised);
+  border-radius: 50%;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.2);
+  transition: transform 180ms var(--e-quart);
+}
+.motion input:checked + .switch {
+  background: var(--c-action);
+}
+.motion input:checked + .switch::after {
+  transform: translateX(16px);
+  background: var(--c-action-text);
+}
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--c-surface-sunken);
+  color: var(--c-text-muted);
+  border-top: 1px solid var(--c-border);
+  padding: 16px 24px;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+.footer svg {
+  width: 14px;
+  height: 14px;
+}
+@media (max-width: 500px) {
+  .dialog {
+    width: calc(100vw - 24px);
+    max-height: calc(100dvh - 24px);
+  }
+  .header {
+    padding: 12px 20px;
+  }
+  .header h1 {
+    font-size: 20px;
+  }
+  .content {
+    padding: 20px;
+    gap: 24px;
+  }
+  .palettes {
+    gap: 8px;
+  }
+  .footer {
+    padding: 12px 20px;
+  }
+}
+@media (max-height: 500px) and (orientation: landscape) {
+  .content {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 20px;
+  }
+  .dialog {
+    width: min(740px, calc(100vw - 32px));
+  }
+  .section:nth-child(2) {
+    grid-row: span 2;
+  }
+  .motion {
+    align-self: start;
+  }
+  .header {
+    padding: 8px 20px;
+  }
+}

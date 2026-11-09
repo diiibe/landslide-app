@@ -199,3 +199,15 @@ input[type="range"] {
     height: 44px;
   }
 }
+
+.maplibregl-ctrl-group {
+  border-color: var(--c-edge);
+  box-shadow: var(--shadow-panel);
+}
+.maplibregl-ctrl-group button {
+  background-image: var(--surface-sheen);
+}
+.maplibregl-popup-content {
+  box-shadow: var(--shadow-panel);
+  border-color: var(--c-edge);
+}

@@ -89,3 +89,26 @@
     height: 12px;
   }
 }
+
+.panel {
+  border-color: var(--c-edge);
+  background-image: var(--surface-sheen);
+}
+.body {
+  background: var(--c-surface-2);
+  border-top: 1px solid var(--c-border-soft);
+  padding-top: 8px;
+}
+.body button {
+  background: var(--c-surface-raised);
+  box-shadow: var(--shadow-control);
+}
+.body button[aria-pressed="true"] {
+  box-shadow: var(--shadow-inset);
+}
+.caret {
+  transition: transform 180ms var(--e-quart);
+}
+.body:not([hidden]) {
+  animation: var(--motion-fade);
+}

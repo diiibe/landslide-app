@@ -176,3 +176,14 @@
     font-size: 11px;
   }
 }
+
+.legend {
+  border-color: var(--c-edge);
+  background-image: var(--surface-sheen);
+}
+.caret {
+  transition: transform 180ms var(--e-quart);
+}
+.legend[data-open="true"] .body {
+  animation: var(--motion-fade);
+}

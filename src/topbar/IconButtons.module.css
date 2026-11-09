@@ -100,3 +100,25 @@
     min-height: 44px;
   }
 }
+
+.btn {
+  transition:
+    background var(--duration-fast),
+    border-color var(--duration-fast),
+    color var(--duration-fast),
+    box-shadow var(--duration-fast);
+}
+.btn:hover {
+  background: var(--c-surface-raised);
+  border-color: var(--c-border);
+  box-shadow: var(--shadow-control);
+}
+.btn:active {
+  background: var(--c-surface-sunken);
+  box-shadow: var(--shadow-inset);
+}
+.menu {
+  background: var(--c-surface-raised);
+  border-color: var(--c-edge);
+  animation: var(--motion-surface);
+}
