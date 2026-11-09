@@ -1,4 +1,4 @@
-# FVG · Territorio
+# FriulView
 
 Mappa unificata del Friuli Venezia Giulia: osservazioni, registri territoriali,
 ambiente, città e infrastrutture in layer tematici indipendenti, insieme ai modelli
@@ -16,22 +16,22 @@ npm run dev
 
 ## One regional map
 
-**FVG · Territorio** puts landslides, floods, regional registries and observations
+**FriulView** puts landslides, floods, regional registries and observations
 on the same map. **Catalogo** opens the central data browser: search by name,
 parameter or source, and filter by theme, provider, data type, update cadence or
 availability. Add multiple independent layers without closing the catalog.
 
 The **Sulla mappa** sidebar keeps search at the top, followed by individual active
 layers and a folder/breadcrumb browser. Select a layer name to inspect its data,
-source and display controls. There is no separate analysis tab or obsolete model
+source and display controls. Specialist tools are available through Spazi. There is no obsolete model
 selector. The two susceptibility mappings use transparent class overlays with
 adjustable minimum class and opacity at both regional and detailed zooms.
 Classes are quantiles of model scores, not event probabilities. The two mappings
 remain mutually exclusive so overlapping colours cannot imply a combined score.
 
 The sidebar overlays a stable WebGL canvas; opening it changes only safe camera
-padding. Saved areas preserve geometry and area; current susceptibility statistics
-are explicitly unavailable rather than sampled from the hidden historical grid.
+padding. Saved areas preserve geometry and area. The Frane FVG space calculates complete
+current statistics from the original grid, independent of visible map tiles.
 Previously saved statistics remain marked as historical. Personal files retain
 colour controls and can return from a historical risk tint to a solid colour.
 
@@ -39,6 +39,21 @@ See [catalog, sources, automatic updates and limits](docs/digital-twin.md).
 Regional snapshots and PMTiles are tracked. Live PCR/OGS observations are read on
 demand; the scheduled pipeline refreshes registries and fallback data every six
 hours. Roads and trails are refreshed on the first deployment of each UTC day.
+
+## Interactive spaces
+
+Open **Spazi** to enter **Frane FVG** or five independent demonstration spaces:
+industry in Buttrio, a Collio vineyard, retail in Martignacco, Tavagnacco traffic,
+and mountain tourism at Sella Nevea. Each space has its own map, sensors, zones
+and inspection sheets; returning to the territory restores the previous view.
+
+Frane FVG supports drawn/saved areas, point probes, coverage and class statistics,
+comparison of the two mappings, roads/trails and contextual structures, and JSON
+analysis export. Demonstrations use deterministic 24/7 simulations, interactive
+series, 24-hour replay and hypothetical scenarios. Company names are geographic
+references; no real company measurements or affiliation are implied.
+
+See [analytical data, simulation assumptions and rebuilding](docs/spaces.md).
 
 ## Test
 

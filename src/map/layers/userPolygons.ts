@@ -1,3 +1,5 @@
+import {isProbeClick} from "@/spaces/interactions";
+import { useAppStore } from "@/app/store";
 /**
  * Render saved user-drawn polygons on the map. Each entry becomes a
  * fill + outline pair tinted with the polygon's stored color. Click on
@@ -162,6 +164,7 @@ export function registerPolygonClicks(
   lookup: () => UserPolygon[],
 ): () => void {
   const onClick = (e: MapMouseEvent) => {
+    if (useAppStore.getState().drawingMode || isProbeClick(e)) return;
     if (!m.getLayer(USER_POLY_FILL)) return;
     const feats = m.queryRenderedFeatures(e.point, {
       layers: [USER_POLY_FILL],
@@ -172,6 +175,8 @@ export function registerPolygonClicks(
     if (!id) return;
     const polygon = lookup().find((p) => p.id === id);
     if (!polygon) return;
+    const event = new CustomEvent("friulview:area", { detail: { id: polygon.id }, cancelable: true });
+    if (!window.dispatchEvent(event)) return;
     new maplibregl.Popup({
       closeButton: true,
       closeOnClick: true,
@@ -190,6 +195,7 @@ export function registerPolygonClicks(
 /** Programmatic popup opener — used by the LayersPanel "Saved areas"
  *  row click via the `fvg:show-polygon-stats` window event. */
 export function openPolygonPopup(m: MLMap, polygon: UserPolygon): void {
+  if (!window.dispatchEvent(new CustomEvent("friulview:area", {detail:{id:polygon.id},cancelable:true}))) return;
   const cx = (polygon.bounds[0][0] + polygon.bounds[1][0]) / 2;
   const cy = (polygon.bounds[0][1] + polygon.bounds[1][1]) / 2;
   new maplibregl.Popup({

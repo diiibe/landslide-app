@@ -1,3 +1,5 @@
+import {isProbeClick} from "@/spaces/interactions";
+import { useExperienceStore } from "@/spaces/store";
 import maplibregl, { type Map as MLMap, type MapMouseEvent } from "maplibre-gl";
 import { SUSCEPT_LAYER } from "./layers/susceptibility";
 import { IFFI_FILL } from "./layers/iffi";
@@ -318,7 +320,7 @@ const V2_IDS: string[] = [V2_LAYER_ID.bodies, V2_LAYER_ID.diffuse];
 
 export function registerPopups(m: MLMap): () => void {
   const onClick = (e: MapMouseEvent) => {
-    if (useAppStore.getState().drawingMode) return;
+    if ((useAppStore.getState().drawingMode || isProbeClick(e))) return;
     const layers = [SUSCEPT_LAYER, ...V2_IDS, IFFI_FILL, HFLOOD_FILL].filter(
       (id) => m.getLayer(id),
     );
@@ -380,11 +382,11 @@ export function registerPopups(m: MLMap): () => void {
   };
 
   const cellEnter = () => {
-    if (useAppStore.getState().drawingMode) return;
+    if ((useAppStore.getState().drawingMode || useExperienceStore.getState().probe)) return;
     m.getCanvas().style.cursor = "pointer";
   };
   const cellLeave = () => {
-    if (useAppStore.getState().drawingMode) return;
+    if ((useAppStore.getState().drawingMode || useExperienceStore.getState().probe)) return;
     m.getCanvas().style.cursor = "";
   };
 

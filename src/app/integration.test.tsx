@@ -6,7 +6,11 @@ vi.mock("@/map/MapView", () => ({
 import App from "./App";
 import { useAppStore } from "./store";
 import { useRegionalStore } from "@/regional/store";
+import { leaveExperience, useExperienceStore } from "@/spaces/store";
 beforeEach(() => {
+  leaveExperience();
+  useExperienceStore.setState({activeId:null,hubOpen:false,selectedId:null,area:null,tab:"overview"});
+  window.history.replaceState(null,"","/");
   useAppStore.getState().reset();
   useRegionalStore.setState({
     catalog: null,
@@ -23,7 +27,7 @@ beforeEach(() => {
   HTMLDialogElement.prototype.close = function () {
     this.removeAttribute("open");
   };
-  vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("{}"));
+  vi.spyOn(globalThis, "fetch").mockImplementation(async () => new Response("{}"));
 });
 describe("Unified catalog experience", () => {
   it("personalizes appearance without changing active data and stops Escape before the drawer", () => {
@@ -49,11 +53,16 @@ describe("Unified catalog experience", () => {
     ).toBeNull();
     expect(useAppStore.getState().drawerOpen).toBe(true);
   });
-  it("shows current mappings and active layers without obsolete model selectors or analysis tabs", () => {
+  it("opens landslide mapping through its own space and retains the unified layer controls", () => {
     render(<App />);
+    expect(useAppStore.getState().layers.v2Bodies).toBe(false);
+    fireEvent.click(screen.getByRole("button",{name:"Spazi"}));
+    fireEvent.click(within(screen.getByRole("dialog",{name:"I tuoi spazi"})).getByRole("button",{name:/Frane FVG/}));
+    expect(useExperienceStore.getState().activeId).toBe("landslides");
+    fireEvent.click(within(screen.getByRole("tablist",{name:"Pannello dello spazio"})).getByRole("tab",{name:"Livelli"}));
     expect(screen.getByText("FriulView")).toBeInTheDocument();
     expect(screen.getByTestId("map-stub")).toBeInTheDocument();
-    expect(screen.queryByRole("tab", { name: "Analisi" })).toBeNull();
+    expect(screen.getByRole("tab", { name: "Analisi" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /^J\.[23]$/ })).toBeNull();
     const active = screen.getByRole("region", { name: "Livelli attivi" });
     expect(
@@ -175,6 +184,7 @@ describe("Unified catalog experience", () => {
     expect(useRegionalStore.getState().refreshKey).toBe(previous + 1);
   });
   it("restores the legend after drawing without changing the saved legend preference", () => {
+    useAppStore.setState(s=>({layers:{...s.layers,v2Bodies:true}}));
     render(<App />);
     const previous = useAppStore.getState().legendOpen;
     const preferredDrawer = useAppStore.getState().drawerOpen;
@@ -201,6 +211,7 @@ describe("Unified catalog experience", () => {
     ).toBeInTheDocument();
   });
   it("closes the overlay drawer without changing which data layers are active", () => {
+    useAppStore.setState(s=>({layers:{...s.layers,v2Bodies:true}}));
     render(<App />);
     fireEvent.click(
       screen.getByRole("button", { name: /chiudi sulla mappa/i }),

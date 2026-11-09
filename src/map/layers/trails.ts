@@ -208,10 +208,11 @@ export function addTrails(m: MLMap, visible: boolean, dark: boolean): void {
     },
   });
 
-  void refreshTrailData(m, useAppStore.getState().model);
+  if (visible) void refreshTrailData(m, useAppStore.getState().model);
 }
 
 export function setTrailsVisible(m: MLMap, v: boolean): void {
+  if (v && m.getSource(TRAILS_SOURCE)) void refreshTrailData(m, useAppStore.getState().model);
   for (const id of [TRAILS_GLOW, TRAILS_HALO, TRAILS_LAYER]) {
     if (m.getLayer(id)) m.setLayoutProperty(id, "visibility", v ? "visible" : "none");
   }

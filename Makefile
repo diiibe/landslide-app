@@ -3,7 +3,7 @@ OUT := public/tiles
 # HazardFVG export of the v2 model (bodies.parquet, diffuse.parquet)
 V2_MAP_DIR := ../HazardFVG/data/processed/model/map
 
-.PHONY: tiles tiles-j2 tiles-j3 tiles-iffi tiles-v2 clean-tiles test-py
+.PHONY: tiles tiles-j2 tiles-j3 tiles-iffi tiles-v2 space-analysis clean-tiles test-py
 
 tiles: tiles-j2 tiles-j3 tiles-iffi
 
@@ -19,6 +19,12 @@ tiles-iffi:
 # Not part of `tiles`: needs the HazardFVG repo; also writes public/data/model_v2.json
 tiles-v2:
 	python -m pipelines.model_v2 --map-dir $(V2_MAP_DIR) --tiles-dir $(OUT) --data-dir public/data
+
+	$(MAKE) space-analysis
+
+# Complete area analysis and current-model road/trail context (requires tippecanoe).
+space-analysis:
+	python -m pipelines.space_analysis --map-dir $(V2_MAP_DIR)
 
 clean-tiles:
 	rm -f $(OUT)/*.pmtiles $(OUT)/*.geojson

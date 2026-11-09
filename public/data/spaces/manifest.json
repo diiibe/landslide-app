@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "grid": {
+    "crs": "EPSG:32633",
+    "x0": 282549.4208,
+    "y0": 5176239.1188,
+    "cell": 120.0,
+    "width": 1180,
+    "height": 1120
+  },
+  "modelGrid": {
+    "file": "model-grid.bin.gz",
+    "sha": "c167f92aec8b228b",
+    "rawSha": "74a5c4035cb9b6a5",
+    "bytes": 1847450
+  },
+  "modelHash": "e89d443e0219ac3c",
+  "modelSource": "HazardFVG \u00b7 model v2 \u00b7 original parquet cells",
+  "networks": {
+    "roads": {
+      "file": "roads.bin.gz",
+      "sha": "1cb1e951191a5bda",
+      "rawSha": "5bc04c8a972060d2",
+      "bytes": 6984107,
+      "segments": 901867,
+      "sourceFeatures": 213068,
+      "skippedDegenerate": 13,
+      "tiles": "space-roads.pmtiles",
+      "tileSha": "fc78cb66d00ec5d9",
+      "source": "OpenStreetMap contributors \u00b7 ODbL",
+      "sourceUrl": "https://www.openstreetmap.org/copyright",
+      "method": "Geometry simplified 3m; segments \u226460m; midpoint sampling on 120m model cells"
+    },
+    "trails": {
+      "file": "trails.bin.gz",
+      "sha": "cd98071a63e7d8d7",
+      "rawSha": "432c3ec4465373e6",
+      "bytes": 9275748,
+      "segments": 1323066,
+      "sourceFeatures": 170856,
+      "skippedDegenerate": 99,
+      "tiles": "space-trails.pmtiles",
+      "tileSha": "825f2bd544c27a59",
+      "source": "OpenStreetMap contributors \u00b7 ODbL",
+      "sourceUrl": "https://www.openstreetmap.org/copyright",
+      "method": "Geometry simplified 3m; segments \u226460m; midpoint sampling on 120m model cells"
+    }
+  }
+}

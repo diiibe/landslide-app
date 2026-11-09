@@ -58,7 +58,15 @@ export function DrawingPanel() {
     <div className={styles.panel} role="dialog" aria-label="Disegno area">
       <div className={styles.head}>
         <span className={styles.dot} aria-hidden="true" />
-        <span className={styles.ttl}>{ready ? "Salva area" : "Disegno…"}</span>
+        <span className={styles.ttl}>
+          {ready
+            ? "Salva area"
+            : preview.phase === "loading"
+              ? "Preparazione mappa…"
+              : preview.phase === "error"
+                ? "Disegno non disponibile"
+                : "Disegno…"}
+        </span>
       </div>
       <div className={styles.body}>
         <div className={styles.kvRow}>
@@ -71,7 +79,17 @@ export function DrawingPanel() {
             {preview.areaKm2 > 0 ? `${preview.areaKm2.toFixed(2)} km²` : "—"}
           </span>
         </div>
-        {!ready && (
+        {preview.phase === "error" && (
+          <p role="alert" className={styles.hint}>
+            {preview.error}
+          </p>
+        )}
+        {preview.phase === "loading" && (
+          <p role="status" className={styles.hint}>
+            Attendi il caricamento della mappa. Potrai poi aggiungere i vertici.
+          </p>
+        )}
+        {preview.phase === "drawing" && (
           <p className={styles.hint}>
             Tocca per aggiungere vertici. Tocca due volte l’ultimo vertice per
             chiudere e salvare l’area geografica.

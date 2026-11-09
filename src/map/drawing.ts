@@ -36,7 +36,8 @@ type DrawFeature = {
 export interface DrawingPreview {
   /** `drawing`: the user is still placing vertices; `ready`: terra-draw
    *  closed the polygon and is waiting for a Save/Discard decision. */
-  phase: "drawing" | "ready";
+  phase: "loading" | "drawing" | "ready" | "error";
+  error?: string;
   vertexCount: number;
   /** Area in km² of the current polygon ring. 0 until ≥ 3 vertices. */
   areaKm2: number;
@@ -46,6 +47,8 @@ export interface DrawingPreview {
 
 type Listener = (p: DrawingPreview) => void;
 const listeners = new Set<Listener>();
+let latest: DrawingPreview = { phase: "drawing", vertexCount: 0, areaKm2: 0 };
+let generation = 0;
 
 let active: TerraDraw | null = null;
 let mapRef: MLMap | null = null;
@@ -55,6 +58,7 @@ let mapRef: MLMap | null = null;
 let readyFeatureId: string | number | null = null;
 
 function publish(p: DrawingPreview): void {
+  latest = p;
   for (const fn of listeners) {
     try {
       fn(p);
@@ -75,9 +79,13 @@ function readPreview(phase: "drawing" | "ready"): DrawingPreview {
     return { phase, vertexCount: 0, areaKm2: 0 };
   }
   const ring = target.geometry.coordinates[0] ?? [];
-  // terra-draw closes the ring by repeating the first vertex; the user-
-  // facing count subtracts that duplicate so "3 points" reads naturally.
-  const vertexCount = Math.max(0, ring.length - (phase === "ready" ? 1 : 0));
+  // During drawing TerraDraw includes a floating cursor coordinate and
+  // the closing coordinate. Initial degenerate rings also repeat vertices.
+  const placed = ring.slice(0, phase === "ready" ? -1 : -2);
+  const vertexCount = placed.filter(
+    (p, i) =>
+      i === 0 || p[0] !== placed[i - 1]![0] || p[1] !== placed[i - 1]![1],
+  ).length;
   const areaKm2 = ring.length >= 3 ? turfArea(target as never) / 1_000_000 : 0;
   const preview: DrawingPreview = { phase, vertexCount, areaKm2 };
   if (phase === "ready") preview.geometry = target.geometry;
@@ -88,8 +96,25 @@ function readPreview(phase: "drawing" | "ready"): DrawingPreview {
  *  terra-draw + its MapLibre adapter are lazy-imported so vitest's
  *  jsdom integration tests — which `vi.mock` the whole MapView away —
  *  don't have to resolve the adapter's CJS/ESM interop. */
-export async function startDrawing(m: MLMap): Promise<void> {
+export function prepareDrawing() {
+  publish({ phase: "loading", vertexCount: 0, areaKm2: 0 });
+}
+export function drawingError() {
+  publish({
+    phase: "error",
+    vertexCount: 0,
+    areaKm2: 0,
+    error:
+      "Il disegno non è pronto. Chiudi lo strumento e riprova dopo il caricamento della mappa.",
+  });
+}
+export async function startDrawing(
+  m: MLMap,
+  isReady: () => boolean = () => true,
+): Promise<void> {
   stopDrawing();
+  prepareDrawing();
+  const request = generation;
   mapRef = m;
   readyFeatureId = null;
 
@@ -101,7 +126,12 @@ export async function startDrawing(m: MLMap): Promise<void> {
 
   // Race: if the user toggled drawing off again while the adapter was
   // resolving, bail without registering anything.
-  if (!useAppStore.getState().drawingMode) return;
+  if (
+    !useAppStore.getState().drawingMode ||
+    request !== generation ||
+    !isReady()
+  )
+    return;
 
   const draw = new TerraDraw({
     adapter: new TerraDrawMapLibreGLAdapter({ map: m as unknown as never }),
@@ -124,6 +154,7 @@ export async function startDrawing(m: MLMap): Promise<void> {
 }
 
 export function stopDrawing(): void {
+  generation++;
   if (active) {
     try {
       active.stop();
@@ -139,6 +170,7 @@ export function stopDrawing(): void {
 
 export function subscribeDrawingPreview(fn: Listener): () => void {
   listeners.add(fn);
+  fn(latest);
   return () => {
     listeners.delete(fn);
   };
@@ -164,7 +196,7 @@ export function commitDrawing(name: string, color?: string): boolean {
   ];
   const trimmed =
     name.trim() || `Area ${useAppStore.getState().userPolygons.length + 1}`;
-  useAppStore.getState().addUserPolygon({
+  const saved = useAppStore.getState().addUserPolygon({
     name: trimmed,
     geometry: geom,
     bounds,
@@ -173,6 +205,12 @@ export function commitDrawing(name: string, color?: string): boolean {
   });
   stopDrawing();
   useAppStore.getState().setDrawingMode(false);
+  window.dispatchEvent(
+    new CustomEvent("friulview:area", {
+      detail: { id: saved.id },
+      cancelable: true,
+    }),
+  );
   return true;
 }
 

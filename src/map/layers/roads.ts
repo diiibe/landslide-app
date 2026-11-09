@@ -244,10 +244,11 @@ export function addRoads(m: MLMap, visible: boolean, dark: boolean): void {
     },
   });
 
-  void refreshRoadData(m, useAppStore.getState().model);
+  if (visible) void refreshRoadData(m, useAppStore.getState().model);
 }
 
 export function setRoadsVisible(m: MLMap, v: boolean): void {
+  if (v && m.getSource(ROADS_SOURCE)) void refreshRoadData(m, useAppStore.getState().model);
   for (const id of [ROADS_GLOW, ROADS_HALO, ROADS_LAYER]) {
     if (m.getLayer(id)) m.setLayoutProperty(id, "visibility", v ? "visible" : "none");
   }

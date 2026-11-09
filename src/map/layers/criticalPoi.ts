@@ -5,8 +5,15 @@ import type {
   FilterSpecification,
 } from "@maplibre/maplibre-gl-style-spec";
 import { useAppStore } from "@/app/store";
-import { POI_CATEGORIES, POI_DEFAULT_COLORS, type PoiCategory } from "@/app/types";
-import { CriticalPoiFeatureCollectionSchema, parseOrThrow } from "@/lib/schemas";
+import {
+  POI_CATEGORIES,
+  POI_DEFAULT_COLORS,
+  type PoiCategory,
+} from "@/app/types";
+import {
+  CriticalPoiFeatureCollectionSchema,
+  parseOrThrow,
+} from "@/lib/schemas";
 
 /**
  * Critical structures + alpine huts overlay rendered as a SINGLE
@@ -34,7 +41,12 @@ export const POI_HUTS = layerId("huts");
 
 const DATA_URL_KEY = "poi_fvg.geojson";
 
-const CRITICAL_CATEGORIES: PoiCategory[] = ["hospital", "fire_station", "police", "school"];
+const CRITICAL_CATEGORIES: PoiCategory[] = [
+  "hospital",
+  "fire_station",
+  "police",
+  "school",
+];
 const HUTS_CATEGORIES: PoiCategory[] = ["alpine_hut", "wilderness_hut"];
 
 let poiRaw: GeoJSON.FeatureCollection | null = null;
@@ -65,12 +77,18 @@ function colorByCategory(): DataDrivenPropertyValueSpecification<string> {
   const expr: unknown = [
     "match",
     ["get", "category"],
-    "hospital", colors.hospital ?? POI_DEFAULT_COLORS.hospital,
-    "fire_station", colors.fire_station ?? POI_DEFAULT_COLORS.fire_station,
-    "police", colors.police ?? POI_DEFAULT_COLORS.police,
-    "school", colors.school ?? POI_DEFAULT_COLORS.school,
-    "alpine_hut", colors.alpine_hut ?? POI_DEFAULT_COLORS.alpine_hut,
-    "wilderness_hut", colors.wilderness_hut ?? POI_DEFAULT_COLORS.wilderness_hut,
+    "hospital",
+    colors.hospital ?? POI_DEFAULT_COLORS.hospital,
+    "fire_station",
+    colors.fire_station ?? POI_DEFAULT_COLORS.fire_station,
+    "police",
+    colors.police ?? POI_DEFAULT_COLORS.police,
+    "school",
+    colors.school ?? POI_DEFAULT_COLORS.school,
+    "alpine_hut",
+    colors.alpine_hut ?? POI_DEFAULT_COLORS.alpine_hut,
+    "wilderness_hut",
+    colors.wilderness_hut ?? POI_DEFAULT_COLORS.wilderness_hut,
     /* default */ POI_DEFAULT_COLORS.school,
   ];
   return expr as DataDrivenPropertyValueSpecification<string>;
@@ -146,10 +164,14 @@ function radiusExpr(scale: number): ExpressionSpecification {
     "interpolate",
     ["linear"],
     ["zoom"],
-    6, ["*", importanceMult, base * 0.45],
-    9, ["*", importanceMult, base * 0.75],
-    12, ["*", importanceMult, base * 1.0],
-    16, ["*", importanceMult, base * 1.35],
+    6,
+    ["*", importanceMult, base * 0.45],
+    9,
+    ["*", importanceMult, base * 0.75],
+    12,
+    ["*", importanceMult, base * 1.0],
+    16,
+    ["*", importanceMult, base * 1.35],
   ];
 }
 
@@ -180,15 +202,36 @@ function addGroup(
 }
 
 let breathAnimationId: number | null = null;
+const compactMaps = new WeakSet<MLMap>();
+
+/** Precise, static context markers in the analytical workspace. */
+export function setPoiCompact(m: MLMap, compact: boolean): void {
+  if (compact) { compactMaps.add(m); stopBreathing(); }
+  else { compactMaps.delete(m); startBreathing(m); }
+  for (const group of ["critical", "huts"] as const) {
+    const id = layerId(group);
+    if (!m.getLayer(id)) continue;
+    m.setPaintProperty(id, "circle-radius", compact ? 5 : radiusExpr(1));
+    m.setPaintProperty(id, "circle-blur", compact ? 0 : 0.85);
+    m.setPaintProperty(
+      id,
+      "circle-opacity",
+      compact ? 0.95 : BREATH_OPACITY_MEAN,
+    );
+    m.setPaintProperty(id, "circle-stroke-width", compact ? 1.5 : 0);
+    m.setPaintProperty(id, "circle-stroke-color", "#ffffff");
+  }
+}
 
 function startBreathing(m: MLMap): void {
-  if (breathAnimationId !== null) return;
+  if (breathAnimationId !== null || compactMaps.has(m)) return;
   const startedAt = performance.now();
   const tick = (now: number) => {
     breathAnimationId = requestAnimationFrame(tick);
     for (const group of ["critical", "huts"] as const) {
       const id = layerId(group);
       if (!m.getLayer(id)) continue;
+      if (compactMaps.has(m)) continue;
       const phase = (now - startedAt) / BREATH_PERIOD;
       const wave = Math.sin(phase * 2 * Math.PI);
       const radiusScale = 1 + BREATH_RADIUS_AMP * wave;
@@ -237,17 +280,20 @@ export function addCriticalPoi(
     src?.setData(fc);
   });
 
+  setPoiCompact(m, compactMaps.has(m));
   startBreathing(m);
 }
 
 export function setCriticalVisible(m: MLMap, v: boolean): void {
   const id = layerId("critical");
-  if (m.getLayer(id)) m.setLayoutProperty(id, "visibility", v ? "visible" : "none");
+  if (m.getLayer(id))
+    m.setLayoutProperty(id, "visibility", v ? "visible" : "none");
 }
 
 export function setHutsVisible(m: MLMap, v: boolean): void {
   const id = layerId("huts");
-  if (m.getLayer(id)) m.setLayoutProperty(id, "visibility", v ? "visible" : "none");
+  if (m.getLayer(id))
+    m.setLayoutProperty(id, "visibility", v ? "visible" : "none");
 }
 
 export function applyPoiModel(): void {
@@ -258,9 +304,10 @@ export function applyPoiModel(): void {
 
 /** Convenience for legend / tests — the canonical set of categories
  *  rendered per group. */
-export const POI_GROUP_CATEGORIES: Record<"critical" | "huts", PoiCategory[]> = {
-  critical: CRITICAL_CATEGORIES,
-  huts: HUTS_CATEGORIES,
-};
+export const POI_GROUP_CATEGORIES: Record<"critical" | "huts", PoiCategory[]> =
+  {
+    critical: CRITICAL_CATEGORIES,
+    huts: HUTS_CATEGORIES,
+  };
 
 void POI_CATEGORIES; // keep types import live for tooling
