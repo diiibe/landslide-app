@@ -9,6 +9,7 @@ import {
   V2_VECTOR_MIN_ZOOM,
 } from "./layers/modelV2";
 import type { V2Layer } from "@/app/types";
+import { useAppStore } from "@/app/store";
 
 export interface CellPopupProps {
   cell_id: number | string;
@@ -33,10 +34,10 @@ export interface IffiPopupProps {
  *  them, plus parse the `event_id` to extract the AOI name. */
 export interface HFloodPopupProps {
   event_id: string;
-  product: string;       // "GRADING" | "DELINEATION"
-  product_kind: string;  // "flood" | "hydro_damage"
-  src_date: string;      // ISO date or "" (only some records carry it)
-  obj_desc: string;      // "Riverine flood" or ""
+  product: string; // "GRADING" | "DELINEATION"
+  product_kind: string; // "flood" | "hydro_damage"
+  src_date: string; // ISO date or "" (only some records carry it)
+  obj_desc: string; // "Riverine flood" or ""
 }
 
 /**
@@ -129,7 +130,10 @@ const HFLOOD_ACTIVATIONS: Record<string, { name: string; when: string }> = {
  *  into `{ activation, aoi }`. The AOI slug is just the human part of
  *  the second segment (`PORDENONE`, `SANVITO`, …) — the leading two
  *  digits are a sequence number that means nothing to the user. */
-function parseHFloodEventId(eventId: string): { activation: string; aoi: string } {
+function parseHFloodEventId(eventId: string): {
+  activation: string;
+  aoi: string;
+} {
   const parts = eventId.split("_");
   const activation = parts[0] ?? "";
   const aoiRaw = parts[1] ?? "";
@@ -154,12 +158,15 @@ export function buildHFloodPopupNode(p: HFloodPopupProps): HTMLElement {
   const title = document.createElement("div");
   title.className = "fvg-popup__title";
   // Headline: human-readable event name, or fall back to the bare code.
-  title.textContent = meta ? `${meta.name} (${meta.when})` : activation || "Alluvione storica";
+  title.textContent = meta
+    ? `${meta.name} (${meta.when})`
+    : activation || "Alluvione storica";
   root.appendChild(title);
 
   // Strong line: kind humanised (Inondazione / Danno idrologico). If we
   // also have a richer Copernicus description we prefer it.
-  const kindLabel = p.obj_desc || HFLOOD_KIND_LABEL[p.product_kind] || p.product_kind;
+  const kindLabel =
+    p.obj_desc || HFLOOD_KIND_LABEL[p.product_kind] || p.product_kind;
   if (kindLabel) {
     const kind = document.createElement("div");
     kind.className = "fvg-popup__strong";
@@ -311,10 +318,13 @@ const V2_IDS: string[] = [V2_LAYER_ID.bodies, V2_LAYER_ID.diffuse];
 
 export function registerPopups(m: MLMap): () => void {
   const onClick = (e: MapMouseEvent) => {
-    const layers = [SUSCEPT_LAYER, ...V2_IDS, IFFI_FILL, HFLOOD_FILL].filter((id) =>
-      m.getLayer(id),
+    if (useAppStore.getState().drawingMode) return;
+    const layers = [SUSCEPT_LAYER, ...V2_IDS, IFFI_FILL, HFLOOD_FILL].filter(
+      (id) => m.getLayer(id),
     );
-    const feats = layers.length ? m.queryRenderedFeatures(e.point, { layers }) : [];
+    const feats = layers.length
+      ? m.queryRenderedFeatures(e.point, { layers })
+      : [];
     const cellFeat = feats.find((f) => f.layer.id === SUSCEPT_LAYER);
     const v2Feat = feats.find((f) => V2_IDS.includes(f.layer.id));
     const iffiFeat = feats.find((f) => f.layer.id === IFFI_FILL);
@@ -331,7 +341,8 @@ export function registerPopups(m: MLMap): () => void {
     const cell: CellPopupProps | null = cellFeat
       ? {
           cell_id:
-            (cellFeat.properties?.cell_id as number | string | undefined) ?? "?",
+            (cellFeat.properties?.cell_id as number | string | undefined) ??
+            "?",
           p: Number(cellFeat.properties?.p ?? 0),
           zone: String(cellFeat.properties?.zone ?? ""),
           sub_zone: String(cellFeat.properties?.sub_zone ?? ""),
@@ -369,9 +380,11 @@ export function registerPopups(m: MLMap): () => void {
   };
 
   const cellEnter = () => {
+    if (useAppStore.getState().drawingMode) return;
     m.getCanvas().style.cursor = "pointer";
   };
   const cellLeave = () => {
+    if (useAppStore.getState().drawingMode) return;
     m.getCanvas().style.cursor = "";
   };
 
