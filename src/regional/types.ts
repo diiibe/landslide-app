@@ -83,6 +83,7 @@ export interface LayerDefinition {
   live?: LiveSource[];
   liveKind?: "erddap" | "earthquakes" | "webcams" | "pcr";
   pcrSensorId?: number;
+  overview?: { file: string; count: number; sourceCount: number; maxCount?: number; resolutionKm?: number; detailZoom?: number; kind: "areas" | "registry" };
   history?: {
     kind: "socrata";
     sourceId: string;

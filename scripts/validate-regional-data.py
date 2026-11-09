@@ -23,6 +23,12 @@ def validate():
   if layer.get('retrievedAt'):assert dt.datetime.fromisoformat(layer['retrievedAt'].replace('Z','+00:00'))<=now+dt.timedelta(minutes=5),lid
   bounds=layer.get('bounds')
   if bounds:assert len(bounds)==2 and all(math.isfinite(n)for p in bounds for n in p)and bounds[0][0]<=bounds[1][0]and bounds[0][1]<=bounds[1][1],lid
+  if layer.get('overview'):
+   overview=layer['overview'];file=OUT/overview['file'];assert file.parent==OUT and file.is_file(),lid
+   features=json.loads(file.read_text())['features'];assert sum(f['properties']['__count']for f in features)==overview['count'],lid
+   assert overview['count']<=layer['count'] and overview['sourceCount']==layer['count'],lid
+   if overview['kind']=='registry':assert overview['count']==layer['count'],lid
+   assert all(f['geometry']['type']=='Point' and f['properties']['__count']>0 for f in features),lid
   kind=layer.get('kind')
   if kind in ['geojson','vector']and layer.get('file'):
    file=OUT/layer['file'];assert file.parent==OUT and file.is_file(),lid

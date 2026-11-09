@@ -15,7 +15,7 @@ export const HAS_MAPBOX_TOKEN =
 /** Street-level context for the demo also works without Mapbox credentials. */
 const FALLBACK_STYLE: StyleSpecification = {
   version: 8,
-  glyphs: "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
+  glyphs: new URL(import.meta.env.BASE_URL, window.location.href).href + "fonts/map/{fontstack}/{range}.pbf",
   sources: {
     osm: {
       type: "raster",

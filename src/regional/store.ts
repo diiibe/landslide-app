@@ -11,6 +11,7 @@ function saved(): {
   enabled: Record<string, boolean>;
   opacity: Record<string, number>;
   open: Record<string, boolean>;
+  display: Record<string, "auto" | "points" | "density">;
 } {
   try {
     const v = JSON.parse(localStorage.getItem(KEY) || "{}");
@@ -18,9 +19,10 @@ function saved(): {
       enabled: v.enabled && typeof v.enabled === "object" ? v.enabled : {},
       opacity: v.opacity && typeof v.opacity === "object" ? v.opacity : {},
       open: v.open && typeof v.open === "object" ? v.open : {},
+      display: Object.fromEntries(Object.entries(v.display && typeof v.display === "object" ? v.display : {}).filter(([, mode]) => ["auto", "points", "density"].includes(String(mode)))) as Record<string, "auto" | "points" | "density">,
     };
   } catch {
-    return { enabled: {}, opacity: {}, open: {} };
+    return { enabled: {}, opacity: {}, open: {}, display: {} };
   }
 }
 const initial = saved();
@@ -34,6 +36,7 @@ interface RegionalState {
   selection: MapSelection | null;
   detailId: string | null;
   filters: Record<string, string>;
+  display: Record<string, "auto" | "points" | "density">;
   tab: "layers" | "analysis";
   catalogOpen: boolean;
   query: string;
@@ -55,9 +58,9 @@ export const useRegionalStore = create<RegionalState>(() => ({
   refreshKey: 0,
 }));
 function persist() {
-  const { enabled, opacity, open } = useRegionalStore.getState();
+  const { enabled, opacity, open, display } = useRegionalStore.getState();
   try {
-    localStorage.setItem(KEY, JSON.stringify({ enabled, opacity, open }));
+    localStorage.setItem(KEY, JSON.stringify({ enabled, opacity, open, display }));
   } catch {
     /* Map stays usable when storage is disabled. */
   }
@@ -71,6 +74,10 @@ export function setRegionalOpacity(id: string, value: number) {
   useRegionalStore.setState((s) => ({
     opacity: { ...s.opacity, [id]: Math.max(0, Math.min(1, value)) },
   }));
+  persist();
+}
+export function setRegionalDisplay(id: string, mode: "auto" | "points" | "density") {
+  useRegionalStore.setState((s) => ({ display: { ...s.display, [id]: mode } }));
   persist();
 }
 export function toggleFolder(id: string) {
@@ -123,6 +130,10 @@ export function parseCatalog(raw: unknown): RegionalCatalog {
       throw Error("Definizione di livello non valida");
     if (l.file && !/^[-a-z0-9]+\.(geojson|pmtiles)$/.test(l.file))
       throw Error("Percorso dati non valido");
+    if (l.overview && (!/^overview-[-a-z0-9]+\.geojson$/.test(l.overview.file) ||
+      !["areas", "registry"].includes(l.overview.kind) || !Number.isFinite(l.overview.count) ||
+      l.overview.count <= 0 || l.overview.count > l.overview.sourceCount || l.overview.sourceCount !== l.count))
+      throw Error("Panoramica del livello non valida");
     ids.add(l.id);
   }
   return c;

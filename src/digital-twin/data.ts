@@ -357,7 +357,12 @@ export function formatTime(ms: number): string {
     : "Ora non disponibile";
 }
 export function formatValue(value: number): string {
-  return value.toLocaleString("it-IT", { maximumFractionDigits: 2 });
+  const magnitude = Math.abs(value);
+  return value.toLocaleString("it-IT", magnitude > 0 && magnitude < 1e-8
+    ? { notation: "scientific", maximumFractionDigits: 2 }
+    : magnitude > 0 && magnitude < 1
+      ? { maximumSignificantDigits: 3 }
+      : { maximumFractionDigits: 2 });
 }
 export function ageLabel(ms: number, now = Date.now()): string {
   const min = Math.floor((now - ms) / 60000);

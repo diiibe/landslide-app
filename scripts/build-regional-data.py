@@ -97,7 +97,13 @@ def save_layer(definition, features, raw_count=None, warnings=()):
     if definition.get('metric'):
         vals=[f['properties'].get(definition['metric']['field'])for f in features];vals=[v for v in vals if isinstance(v,(int,float))and math.isfinite(v)]
         if vals and min(vals)<max(vals):definition['metric'].update({'min':min(vals),'max':max(vals)})
-    if file.stat().st_size>1800000 or count>8000:
+    will_tile=file.stat().st_size>1800000 or count>8000
+    if will_tile:definition['kind']='vector'
+    # Navigation indexes are content-addressed and prepared before publication.
+    # A conversion failure cannot overwrite an index retained by the old catalog.
+    from regional_overviews import publish_overview
+    publish_overview(definition, features)
+    if will_tile:
         tiled=stage/(definition['id']+'.pmtiles')
         proc=subprocess.run(['tippecanoe','-o',str(tiled),'-l','data','-Z','5','-z','14','--drop-densest-as-needed','--maximum-tile-bytes=500000','--force',str(file)],stdout=subprocess.DEVNULL,stderr=subprocess.PIPE,text=True)
         if proc.returncode:raise RuntimeError('Conversione PMTiles fallita: '+proc.stderr[-400:])

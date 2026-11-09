@@ -12,8 +12,9 @@ import {
   variableMeasures,
 } from "@/digital-twin/data";
 import { enableLayer, isLayerEnabled } from "./builtins";
-import { setRegionalOpacity, useRegionalStore } from "./store";
+import { setRegionalOpacity, setRegionalDisplay, useRegionalStore } from "./store";
 import { metricRange, defaultOpacity } from "./data";
+import { presentation, type DisplayMode } from "./presentation";
 import type { LayerDefinition } from "./types";
 import { CatalogExplorer, CatalogRow } from "./CatalogBrowser";
 import { catalogItems } from "./catalog";
@@ -279,7 +280,8 @@ function LayerInfo({ layer: l }: { layer: LayerDefinition }) {
         f.properties?.__featureId === selection.feature.properties?.__featureId,
     )
   );
-  const range = metricRange(l, entry?.data),
+  const view = presentation(l);
+  const range = !view.local && view.type !== "direction" ? metricRange(l, entry?.data) : null,
     depths = entry?.data
       ? [
           ...new Set(
@@ -416,6 +418,19 @@ function LayerInfo({ layer: l }: { layer: LayerDefinition }) {
             unitOverride={l.metric?.unit ?? ""}
           />
         )}
+      <div className={styles.representation}>
+        <strong>{view.title}</strong>
+        <p>{view.description}</p>
+        {l.overview && <p>Panoramica: {l.overview.count.toLocaleString("it-IT")} {l.overview.kind === "areas" ? "piccole aree" : "record"}. {l.overview.resolutionKm === 0 ? "I riferimenti indicano posizioni interne ai perimetri, non la loro estensione." : `I gruppi sono riferimenti di navigazione raggruppati su celle di circa ${l.overview.resolutionKm ?? 7} km; non indicano posizioni esatte.`}</p>}
+        {(view.density && l.kind === "geojson" || l.overview) && <label className={styles.field}>Rappresentazione
+          <Select label="Rappresentazione sulla mappa" value={s.display[l.id] ?? "auto"} onChange={(value) => setRegionalDisplay(l.id, value as DisplayMode)} options={[
+            { value: "auto", label: l.kind === "buildings" ? "Panoramica → edifici" : l.overview?.kind === "areas" ? "Riferimenti → perimetri" : "Gruppi → singoli elementi" },
+            { value: "points", label: l.kind === "buildings" ? "Solo edifici al dettaglio" : l.overview?.kind === "areas" ? "Solo perimetri" : "Singoli elementi" },
+            ...(view.density ? [{ value: "density", label: "Densità dei record censiti" }] : []),
+          ]} />
+        </label>}
+        {s.display[l.id] === "density" && <p>Densità relativa: indica dove si concentrano i record del censimento. Non rappresenta un’intensità misurata, una copertura completa o un livello di rischio.</p>}
+      </div>
       <p>{l.description}</p>
       <p className={styles.caption}>{l.note}</p>
       {l.status === "blocked" ? (
@@ -447,7 +462,7 @@ function LayerInfo({ layer: l }: { layer: LayerDefinition }) {
       {range && (
         <div
           className={styles.scale}
-          style={{ "--layer-color": l.color } as CSSProperties}
+          style={{ "--layer-low": view.colors[0], "--layer-color": view.colors[1], "--layer-high": view.colors[2], "--layer-midpoint": !l.pcrVariable && range[0] < 0 && range[1] > 0 ? `${-range[0] / (range[1] - range[0]) * 100}%` : "50%" } as CSSProperties}
         >
           <span>{formatValue(range[0])}</span>
           <i aria-hidden="true" />

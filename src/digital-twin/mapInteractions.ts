@@ -1,4 +1,5 @@
 import { Popup, type Map as MLMap, type MapGeoJSONFeature, type MapMouseEvent, type GeoJSONSource } from "maplibre-gl";
+import { useAppearance } from "@/ui/appearance";
 import { useAppStore } from "@/app/store";
 import { useTwinStore } from "./store";
 import { variableMeasures, VARIABLES, type Variable } from "./data";
@@ -32,7 +33,7 @@ export function pickTwinFeature(map: MLMap, point: { x: number; y: number }, rad
   }
   return exact[0];
 }
-const reducedMotion = () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? true;
+const reducedMotion = () => !useAppearance.getState().motion || (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? true);
 
 export function mountTwinInteractions(map: MLMap, isReady: () => boolean) {
   let popup: Popup | null = null, ownsCursor = false, frame = 0, lastFocusKey = "";
@@ -106,7 +107,7 @@ export function mountTwinInteractions(map: MLMap, isReady: () => boolean) {
     }
   }
   function hover(event: MapMouseEvent) {
-    if (!isReady() || !useTwinStore.getState().active) return;
+    if (!isReady() || !useTwinStore.getState().active || useAppStore.getState().drawingMode) return;
     if (!(window.matchMedia?.("(hover: hover)").matches ?? false)) return;
     if (map.isMoving()) { clearHover(); return; }
     if (performance.now() - lastHoverTime < 32) return;

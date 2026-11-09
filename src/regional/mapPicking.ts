@@ -8,6 +8,7 @@ export function pickDataFeature(
     .getStyle()
     .layers.filter(
       (l) =>
+        l.type !== "heatmap" &&
         !l.id.startsWith("regional-selection") &&
         (l.id.startsWith("regional-") ||
           l.id.startsWith("twin-sensors") ||

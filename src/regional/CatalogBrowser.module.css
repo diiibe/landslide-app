@@ -456,10 +456,11 @@
     overflow: auto;
   }
   .themes {
-    display: flex;
-    gap: 6px;
-    overflow: auto;
-    padding: 0 0 12px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 16px;
+    overflow: visible;
+    padding: 0 0 20px;
     margin: 0;
     border: 0;
     border-radius: 0;
@@ -467,21 +468,33 @@
     box-shadow: none;
   }
   .themes button {
-    width: auto;
-    flex-shrink: 0;
-    white-space: nowrap;
-    border: 1px solid var(--c-border);
-    background: var(--c-surface-raised);
-    padding: 8px 12px;
-    font-size: var(--text-caption);
+    min-width: 0;
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr);
+    align-items: start;
+    gap: 6px 8px;
+    padding: 14px 0;
+    min-height: 88px;
+    white-space: normal;
+    border: 0;
+    border-bottom: 1px solid var(--c-border);
+    border-radius: 0;
+    background: transparent;
+    font-size: var(--text-body);
   }
-  .themes button span {
-    display: none;
-  }
-  .themes button[aria-current="page"] {
-    background: var(--c-selected);
-    border-color: var(--c-border-strong);
-  }
+  .themes button svg { color: var(--c-action); margin-top: 2px; }
+  .themes button strong { font-weight: 650; line-height: 1.45; }
+  .themes button small { display: block; margin-top: 4px; font-size: var(--text-caption); font-weight: 400; color: var(--c-text-muted); line-height: 1.5; }
+  .themes button span { display: block; grid-column: 2; font-size: var(--text-caption); }
+  .themes button[aria-current="page"] { color: var(--c-action); box-shadow: none; }
+  .themes > button:first-of-type { grid-column: 1 / -1; min-height: 44px; grid-template-columns: 20px 1fr auto; padding: 10px 0; }
+  .themes > button:first-of-type span { grid-column: 3; }
+  .explorer[data-categories="false"] .themes { display: none; }
+  .explorer[data-categories="true"] .results { display: none; }
+  .backCategories { display: inline-flex !important; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .backCategories svg { transform: rotate(180deg); }
+  .categoryHeading { display: block !important; grid-column: 1 / -1; margin: 4px 0 8px; font-size: var(--text-heading); letter-spacing: -.3px; }
+  .filterDisclosure { max-height: 40dvh; overflow: auto; flex-shrink: 0; }
   .results {
     overflow: visible;
   }
@@ -548,3 +561,18 @@
 .catalogState strong { display: block; color: var(--c-text); font-size: var(--text-body); }
 .catalogState p { margin: 6px 0 8px; }
 .catalogState button { font-size: var(--text-caption); }
+
+.filterDisclosure { border-bottom: 1px solid var(--c-border); padding-bottom: 8px; }
+.filterDisclosure > summary { display: flex; align-items: center; gap: 8px; min-height: 44px; cursor: pointer; list-style: none; font-weight: 650; }
+.filterDisclosure > summary::-webkit-details-marker { display: none; }
+.filterDisclosure > summary span { flex: 1; }
+.filterDisclosure[open] > summary > svg:last-child { transform: rotate(90deg); }
+.filterDisclosure .filters { padding: 8px 0; }
+.categoryHeading, .backCategories { display: none; }
+.themes button > svg { flex-shrink: 0; width: 18px; height: 18px; }
+.themes button strong { flex: 1; font-weight: inherit; }
+.themes button small { display: none; }
+@media (max-width: 768px), (max-height: 500px) and (pointer: coarse) {
+  .themes button small { display: block; }
+}
+.themes button strong { min-width: 0; overflow-wrap: anywhere; hyphens: auto; }
