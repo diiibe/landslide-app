@@ -4,6 +4,7 @@ import { UploadButton } from "./UploadButton";
 import { DrawButton } from "./DrawButton";
 import { ExportImportButton } from "./ExportImportButton";
 import { ThreeDButton } from "./ThreeDButton";
+import { AppearanceSettings } from "@/ui/AppearanceSettings";
 
 export function IconButtons() {
   const theme = useAppStore((s) => s.theme);
@@ -15,6 +16,7 @@ export function IconButtons() {
       <ExportImportButton />
       <DrawButton />
       <ThreeDButton />
+      <AppearanceSettings />
       <button
         type="button"
         className={styles.btn}

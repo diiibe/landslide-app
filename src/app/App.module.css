@@ -135,3 +135,11 @@
     right: min(52%, 420px);
   }
 }
+
+/* Fade the panel, never transform its geometry: map safe areas stay stable. */
+.body :global(.drawer) {
+  background: var(--c-surface-2);
+}
+.body[data-drawer="open"] :global(.drawer) {
+  animation: var(--motion-fade);
+}

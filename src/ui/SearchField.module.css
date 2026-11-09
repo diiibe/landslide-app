@@ -75,3 +75,13 @@
     margin-right: -10px;
   }
 }
+
+.field {
+  background: var(--c-surface-sunken);
+  box-shadow: var(--shadow-inset);
+  border-color: var(--c-edge);
+}
+.field:focus-within {
+  background: var(--c-surface-raised);
+  box-shadow: var(--shadow-focus), var(--shadow-inset);
+}

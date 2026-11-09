@@ -157,3 +157,25 @@
     margin-left: auto;
   }
 }
+
+/* The shell is a continuous, lightly lit plane above the map. */
+.bar {
+  background-image: var(--surface-sheen);
+  box-shadow:
+    0 1px 0 var(--c-edge),
+    0 3px 8px rgb(12 24 19 / 0.06);
+}
+.brand {
+  letter-spacing: -0.4px;
+}
+.toolsToggle {
+  box-shadow: var(--shadow-control);
+}
+.spacer[data-open="true"] {
+  animation: var(--motion-fade);
+}
+@media (min-width: 769px) and (min-height: 501px) {
+  .spacer[data-open="true"] {
+    animation: none;
+  }
+}

@@ -121,3 +121,18 @@
     display: none;
   }
 }
+
+.wrap {
+  background: var(--c-surface-sunken);
+  box-shadow: var(--shadow-inset);
+  border-color: var(--c-edge);
+}
+.wrap:focus-within {
+  background: var(--c-surface-raised);
+  box-shadow: var(--shadow-focus), var(--shadow-inset);
+}
+.menu {
+  background: var(--c-surface-raised);
+  border-color: var(--c-edge);
+  animation: var(--motion-surface);
+}

@@ -11,8 +11,25 @@ export type IconName =
   | "arrow"
   | "map"
   | "filter"
-  | "mountain";
+  | "mountain"
+  | "settings"
+  | "sun"
+  | "moon";
 const paths: Record<IconName, ReactNode> = {
+  settings: (
+    <>
+      <path d="M3 5h14M3 15h14M7 2v6m6 4v6" />
+      <circle cx="7" cy="5" r="2" fill="var(--c-surface)" />
+      <circle cx="13" cy="15" r="2" fill="var(--c-surface)" />
+    </>
+  ),
+  sun: (
+    <>
+      <circle cx="10" cy="10" r="3.5" />
+      <path d="M10 1v2m0 14v2M1 10h2m14 0h2M3.6 3.6 5 5m10 10 1.4 1.4M3.6 16.4 5 15M15 5l1.4-1.4" />
+    </>
+  ),
+  moon: <path d="M17 12.4A7.5 7.5 0 0 1 7.6 3 7.5 7.5 0 1 0 17 12.4Z" />,
   search: (
     <>
       <circle cx="8.5" cy="8.5" r="5.5" />

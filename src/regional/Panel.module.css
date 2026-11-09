@@ -317,3 +317,45 @@
 .sectionHead button {
   white-space: nowrap;
 }
+
+.panel {
+  background: transparent;
+}
+.activeSection {
+  background: var(--c-surface-raised);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-md);
+  padding: 8px 12px 0;
+  box-shadow: var(--shadow-control);
+}
+.sectionHead h2 {
+  font-size: 14px;
+  letter-spacing: -0.15px;
+}
+.activeSection > div:last-child > article:last-of-type {
+  border-bottom: 0;
+}
+.browseSection {
+  border-top: 0;
+  padding-top: 0;
+}
+.browseSection > h2 {
+  font-size: 14px;
+  letter-spacing: -0.15px;
+}
+.detail {
+  padding: 16px;
+  margin-inline: -4px;
+  border: 1px solid var(--c-edge);
+  border-radius: var(--radius-md);
+  background: var(--c-surface-raised);
+  box-shadow: var(--shadow-control);
+  animation: var(--motion-fade);
+}
+.detailHead h2 {
+  font-size: 17px;
+}
+.panel select {
+  background: var(--c-surface-raised);
+  box-shadow: var(--shadow-control);
+}

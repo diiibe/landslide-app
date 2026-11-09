@@ -25,6 +25,29 @@ beforeEach(() => {
   vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("{}"));
 });
 describe("Unified catalog experience", () => {
+  it("personalizes appearance without changing active data and stops Escape before the drawer", () => {
+    render(<App />);
+    const before = useAppStore.getState().layers;
+    fireEvent.click(screen.getByRole("button", { name: "Impostazioni" }));
+    const dialog = screen.getByRole("dialog", { name: "Aspetto dell’app" });
+    expect(
+      within(dialog).getByRole("button", { name: "Chiudi impostazioni" }),
+    ).toHaveFocus();
+    fireEvent.click(within(dialog).getByRole("radio", { name: /Laguna/ }));
+    expect(document.documentElement.dataset.palette).toBe("lagoon");
+    fireEvent.click(within(dialog).getByRole("radio", { name: "Scuro" }));
+    expect(useAppStore.getState().theme).toBe("dark");
+    fireEvent.click(
+      within(dialog).getByRole("checkbox", { name: /Animazioni/ }),
+    );
+    expect(document.documentElement.dataset.motion).toBe("reduced");
+    expect(useAppStore.getState().layers).toBe(before);
+    fireEvent.keyDown(dialog, { key: "Escape" });
+    expect(
+      screen.queryByRole("dialog", { name: "Aspetto dell’app" }),
+    ).toBeNull();
+    expect(useAppStore.getState().drawerOpen).toBe(true);
+  });
   it("shows current mappings and active layers without obsolete model selectors or analysis tabs", () => {
     render(<App />);
     expect(screen.getByText("FVG · Territorio")).toBeInTheDocument();

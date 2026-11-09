@@ -112,3 +112,33 @@
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 }
+
+.drawer {
+  background: var(--c-surface-2);
+  box-shadow:
+    -3px 0 8px rgb(10 24 15 / 0.08),
+    -12px 0 32px rgb(10 24 15 / 0.06),
+    var(--shadow-edge);
+}
+.mobileHeader {
+  background-color: var(--c-surface-raised);
+  background-image: var(--surface-sheen);
+  box-shadow:
+    0 1px 3px rgb(12 24 19 / 0.06),
+    var(--shadow-edge);
+}
+.heading > svg {
+  color: var(--c-forest);
+}
+.handle {
+  background-image: var(--surface-sheen);
+  border-color: var(--c-edge);
+}
+@media (max-width: 768px), (max-height: 500px) and (pointer: coarse) {
+  .drawer {
+    box-shadow:
+      0 -3px 8px rgb(10 24 15 / 0.1),
+      0 -16px 36px rgb(10 24 15 / 0.09),
+      var(--shadow-edge);
+  }
+}
