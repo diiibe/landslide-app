@@ -1,171 +1,212 @@
 :root {
   /* ───── light theme (default) ───── */
-  --c-bg-linen: #F5EEDD;
-  --c-surface: #FDFAF0;
-  --c-border: #E0D7BF;
-  --c-border-soft: #E8E2D5;
-  --c-text: #23261F;
-  --c-text-soft: #7A7A6E;
-  --c-text-muted: #5E5E54;
+  --c-bg-linen: #f5f7f4;
+  --c-surface: #fcfdfb;
+  --c-border: #dde3dc;
+  --c-border-soft: #e9ede7;
+  --c-text: #202b24;
+  --c-text-soft: #627066;
+  --c-text-muted: #58665c;
 
+  --c-surface-2: #f4f6f2;
+  --c-action: #2f5d3a;
+  --c-action-hover: #274f31;
+  --c-action-text: #fcfdfb;
+  --c-selected: #ebf1e8;
+  --c-border-strong: #acbaad;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --control-h: 44px;
+  --duration-fast: 140ms ease-out;
+  --shadow-panel: 0 2px 8px rgb(25 43 31 / 0.1);
+  --shadow-focus: 0 0 0 3px rgb(47 93 58 / 0.14);
   /* ramp (susceptibility) — invariant across themes */
-  --c-ramp-0: #E8F0D8;
-  --c-ramp-1: #8BB26B;
-  --c-ramp-2: #D9A441;
-  --c-ramp-3: #D25524;
-  --c-ramp-4: #7A1F10;
+  --c-ramp-0: #e8f0d8;
+  --c-ramp-1: #8bb26b;
+  --c-ramp-2: #d9a441;
+  --c-ramp-3: #d25524;
+  --c-ramp-4: #7a1f10;
 
   /* Pre-composed susceptibility gradient. Single source of truth so legend
    * and threshold slider stay in sync; each theme overrides the stops to
    * match its surface palette. */
   --c-ramp: linear-gradient(
     90deg,
-    #E8F0D8 0%,
-    #8BB26B 25%,
-    #D9A441 50%,
-    #D25524 75%,
-    #7A1F10 100%
+    #e8f0d8 0%,
+    #8bb26b 25%,
+    #d9a441 50%,
+    #d25524 75%,
+    #7a1f10 100%
   );
 
   /* accents per drawer group — light theme values */
-  --c-view: #3E5E8A;     --c-view-stripe: #7A99BE;   --c-view-bg: #F6F9FC;   --c-view-row: #E1E9F3;
-  --c-forest: #2F5D3A;   --c-forest-stripe: #2F5D3A; --c-forest-bg: #F6FAF2; --c-forest-row: #D9E4CF;
-  --c-russet: #7A1F10;   --c-russet-bg: #F7ECE5;     --c-russet-bg-alt: #FAF4EE; --c-russet-row: #E8D0C6;
-  --c-terracotta: #B14615; --c-terracotta-stripe: #D25524; --c-terracotta-bg: #FBF1E9;
-  --c-ochre: #8A6A1E;    --c-ochre-stripe: #D9A441;   --c-ochre-bg: #FCF7E8;   --c-ochre-row: #E8DDB8;
-  --c-sage: #8AA67B;     --c-sage-bg: #F3F7EE;
-  --c-slate: #3E5E72;    --c-slate-stripe: #6B8EA3;   --c-slate-bg: #F1F5F8;   --c-slate-row: #D5DEE5;
+  --c-view: #3e5e8a;
+  --c-view-stripe: #7a99be;
+  --c-view-bg: #f6f9fc;
+  --c-view-row: #e1e9f3;
+  --c-forest: #2f5d3a;
+  --c-forest-stripe: #2f5d3a;
+  --c-forest-bg: #f6faf2;
+  --c-forest-row: #d9e4cf;
+  --c-russet: #7a1f10;
+  --c-russet-bg: #f7ece5;
+  --c-russet-bg-alt: #faf4ee;
+  --c-russet-row: #e8d0c6;
+  --c-terracotta: #b14615;
+  --c-terracotta-stripe: #d25524;
+  --c-terracotta-bg: #fbf1e9;
+  --c-ochre: #8a6a1e;
+  --c-ochre-stripe: #d9a441;
+  --c-ochre-bg: #fcf7e8;
+  --c-ochre-row: #e8ddb8;
+  --c-sage: #8aa67b;
+  --c-sage-bg: #f3f7ee;
+  --c-slate: #3e5e72;
+  --c-slate-stripe: #6b8ea3;
+  --c-slate-bg: #f1f5f8;
+  --c-slate-row: #d5dee5;
 
-  --c-group-head-bg: #F1EADB;
-  --c-group-head-border: #DCD2B9;
+  --c-group-head-bg: #f0f4ee;
+  --c-group-head-border: #dde3dc;
 
   /* search / topbar tokens (light) */
-  --c-search-hover-border: #C9D7BE;
-  --c-search-hover-bg: #FBF4E3;
-  --c-search-placeholder: #8A8472;
+  --c-search-hover-border: #b1c0af;
+  --c-search-hover-bg: #f0f4ee;
+  --c-search-placeholder: #627066;
 
   /* layers panel hover (light) */
-  --c-panel-head-hover: #F8F2DF;
-  --c-panel-item-hover: #F0F4EC;
+  --c-panel-head-hover: #f0f4ee;
+  --c-panel-item-hover: #ebf1e8;
 
   /* analytics table tokens (light) */
-  --c-analytics-row-border: #E8D0C6;
-  --c-analytics-use: #8A7A6E;
+  --c-analytics-row-border: #e8d0c6;
+  --c-analytics-use: #8a7a6e;
 
   /* calibration plot tokens (light) */
-  --c-plot-bg: #FFFFFF;
-  --c-plot-grid: #EEF1F4;
-  --c-plot-tick: #9CA48C;
+  --c-plot-bg: #ffffff;
+  --c-plot-grid: #eef1f4;
+  --c-plot-tick: #9ca48c;
 
   /* focus ring — adapts per theme */
   --c-focus: var(--c-forest);
 
   /* easing */
   --e-quart: cubic-bezier(0.25, 1, 0.5, 1);
-  --e-expo:  cubic-bezier(0.16, 1, 0.3, 1);
+  --e-expo: cubic-bezier(0.16, 1, 0.3, 1);
 
   /* geometry */
-  --topbar-h: 44px;
-  --drawer-w: 280px;
-  --handle-w: 18px;
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
+  --topbar-h: 64px;
+  --drawer-w: 384px;
+  --handle-w: 20px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
 
   /* type — Manrope is loaded via Google Fonts in index.html; the
      system stack stays as fallback while the webfont is in flight or
      if the user is offline. */
-  --font-stack: "Manrope", system-ui, -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-stack:
+    "Manrope", system-ui, -apple-system, "Helvetica Neue", Helvetica, Arial,
+    sans-serif;
 
   color-scheme: light;
 }
 
-/* ───── dark theme (default) — Palantir-inspired operative palette ─────
- *
- * Design intent: a control-room surface that recedes so the data reads.
- * Flat neutral-grey surfaces (no blue cast), one operative cyan-teal
- * accent, a small functional palette for status.
- *
- * Surface stack (neutral, no hue):
- *   bg     → #0D0D0D (deepest, behind everything)
- *   surface→ #161616 (drawer, topbar, map cards)
- *   row    → #1F1F1F (alternating rows, hover bgs)
- *   border → #2A2A2A (1 px hairlines, soft)
- *
- * Accent palette (status-driven, not decorative):
- *   accent  → cyan-teal #5EBFCC : primary indicator (active, selected, model)
- *   slate   → #7E94B0          : secondary / informational
- *   amber   → #E0B361          : threshold / operational warning
- *   red     → #D26A66          : critical / IFFI mismatch
- *   green   → #7BAF8A          : nominal / success / forest
- *
- * Group sections do NOT get distinct tinted backgrounds anymore — they all
- * use the flat surface. Identity comes from the 3 px stripe + the section
- * value color.
- */
+/* Dark surfaces use the same hierarchy and interaction semantics. */
 [data-theme="dark"] {
-  --c-bg-linen: #0D0D0D;
-  --c-surface: #161616;
-  --c-surface-2: #1F1F1F;
-  --c-border: #2A2A2A;
-  --c-border-soft: #1A1A1A;
-  --c-text: #E8E8E8;
-  --c-text-soft: #9A9A9A;
-  --c-text-muted: #707070;
+  --c-action: #a5cca9;
+  --c-action-hover: #b7d9ba;
+  --c-action-text: #142219;
+  --c-selected: #293a2d;
+  --c-border-strong: #718672;
+  --shadow-panel: 0 2px 8px rgb(0 0 0 / 0.2);
+  --shadow-focus: 0 0 0 3px rgb(165 204 169 / 0.22);
+  --c-bg-linen: #111914;
+  --c-surface: #1a241e;
+  --c-surface-2: #222f26;
+  --c-border: #37473b;
+  --c-border-soft: #2c3a30;
+  --c-text: #edf3ec;
+  --c-text-soft: #b0bfaf;
+  --c-text-muted: #a2b2a2;
 
   /* Drawer group accents — operative palette, all on flat surface */
-  --c-view: #7E94B0;        --c-view-stripe: #5A6E89;     --c-view-bg: #161616;   --c-view-row: #1F1F1F;
-  --c-forest: #7BAF8A;      --c-forest-stripe: #4F8268;   --c-forest-bg: #161616; --c-forest-row: #1F1F1F;
-  --c-russet: #D26A66;      --c-russet-bg: #161616;       --c-russet-bg-alt: #161616; --c-russet-row: #1F1F1F;
-  --c-terracotta: #E0B361;  --c-terracotta-stripe: #B0863F; --c-terracotta-bg: #161616;
-  --c-ochre: #E0B361;       --c-ochre-stripe: #B0863F;    --c-ochre-bg: #161616;  --c-ochre-row: #1F1F1F;
-  --c-sage: #7BAF8A;        --c-sage-bg: #161616;
-  --c-slate: #5EBFCC;       --c-slate-stripe: #3F8C97;    --c-slate-bg: #161616;  --c-slate-row: #1F1F1F;
+  --c-view: #7e94b0;
+  --c-view-stripe: #5a6e89;
+  --c-view-bg: #1a241e;
+  --c-view-row: #222f26;
+  --c-forest: #a5cca9;
+  --c-forest-stripe: #4f8268;
+  --c-forest-bg: #1a241e;
+  --c-forest-row: #222f26;
+  --c-russet: #d26a66;
+  --c-russet-bg: #1a241e;
+  --c-russet-bg-alt: #1a241e;
+  --c-russet-row: #222f26;
+  --c-terracotta: #e0b361;
+  --c-terracotta-stripe: #b0863f;
+  --c-terracotta-bg: #1a241e;
+  --c-ochre: #e0b361;
+  --c-ochre-stripe: #b0863f;
+  --c-ochre-bg: #1a241e;
+  --c-ochre-row: #222f26;
+  --c-sage: #7baf8a;
+  --c-sage-bg: #1a241e;
+  --c-slate: #a5cca9;
+  --c-slate-stripe: #3f8c97;
+  --c-slate-bg: #1a241e;
+  --c-slate-row: #222f26;
 
-  --c-group-head-bg: #0D0D0D;
-  --c-group-head-border: #1F1F1F;
+  --c-group-head-bg: #111914;
+  --c-group-head-border: #222f26;
 
   /* search / topbar tokens (dark) */
-  --c-search-hover-border: #2D3A2F;
-  --c-search-hover-bg: #1F252D;
-  --c-search-placeholder: #6E7886;
+  --c-search-hover-border: #2d3a2f;
+  --c-search-hover-bg: #293a2d;
+  --c-search-placeholder: #a2b2a2;
 
   /* layers panel hover (dark) */
-  --c-panel-head-hover: #1F252D;
-  --c-panel-item-hover: #1F252D;
+  --c-panel-head-hover: #293a2d;
+  --c-panel-item-hover: #293a2d;
 
   /* analytics table tokens (dark) */
   --c-analytics-row-border: #232932;
-  --c-analytics-use: #6E7886;
+  --c-analytics-use: #a2b2a2;
 
   /* calibration plot tokens (dark) */
-  --c-plot-bg: #161B22;
+  --c-plot-bg: #161b22;
   --c-plot-grid: #232932;
-  --c-plot-tick: #6E7886;
+  --c-plot-tick: #a2b2a2;
 
   /* focus ring — green is hard to see on deep navy; use cyan-teal accent */
-  --c-focus: #5EBFCC;
+  --c-focus: #a5cca9;
 
   /* Susceptibility gradient — muted variant for the dark control-room
    * surface. The bright #E8F0D8 cream of the light ramp punches a hole in
    * the neutral palette; replace it with a deep olive. Mid hues are kept
    * close to their light counterparts so the perceptual ordering survives;
-   * the top end is desaturated to avoid blowing out on a #0D0D0D surface. */
+   * the top end is desaturated to avoid blowing out on a #111914 surface. */
   --c-ramp: linear-gradient(
     90deg,
-    #2A2E22 0%,
-    #5E7A48 25%,
-    #B0863F 50%,
-    #A04A28 75%,
-    #5A3329 100%
+    #2a2e22 0%,
+    #5e7a48 25%,
+    #b0863f 50%,
+    #a04a28 75%,
+    #5a3329 100%
   );
 
   color-scheme: dark;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: .01ms !important;
-    transition-duration: .01ms !important;
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
   }
 }

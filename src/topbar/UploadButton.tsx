@@ -53,8 +53,8 @@ export function UploadButton() {
       <button
         type="button"
         className={styles.btn}
-        title="Upload track or overlay (GPX, GeoJSON, KML)"
-        aria-label="Upload track or overlay"
+        title="Carica un file GPX, GeoJSON o KML"
+        aria-label="Carica un file"
         aria-busy={busy}
         disabled={busy}
         onClick={() => fileRef.current?.click()}

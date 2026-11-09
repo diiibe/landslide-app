@@ -6,7 +6,7 @@
   background: var(--c-bg-linen);
 }
 .body {
-  --drawer-w: 340px;
+  --drawer-w: 384px;
   flex: 1;
   display: flex;
   position: relative;

@@ -1,54 +1,44 @@
-/* Theme toggle button. 44×44 minimum tap target on touch devices, tightened
- * to 28×28 on hover-capable pointers (mouse/trackpad). */
 .btn {
-  min-width: 44px;
-  min-height: 44px;
+  min-width: 36px;
+  min-height: 40px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   background: transparent;
   border: 1px solid transparent;
-  border-radius: var(--radius-md);
-  color: var(--c-text-soft);
+  border-radius: var(--radius-sm);
+  color: var(--c-text-muted);
   cursor: pointer;
   padding: 0;
   position: relative;
-  transition: background .15s var(--e-quart), border-color .15s var(--e-quart), color .15s var(--e-quart), transform .18s var(--e-expo);
+  transition:
+    background var(--duration-fast),
+    border-color var(--duration-fast),
+    color var(--duration-fast);
 }
-.btn svg { width: 18px; height: 18px; display: block; }
-
-/* Touch feedback (works on every pointer type). */
-.btn:active {
-  background: var(--c-bg-linen);
-  border-color: var(--c-border);
+.btn svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+  stroke-width: 1.5;
+}
+.btn:hover {
+  background: var(--c-surface-2);
   color: var(--c-text);
-  transform: translateY(0) scale(.94);
 }
-
-/* Active state (used by DrawButton when drawing mode is on). */
-.btn[data-active="true"] {
-  background: var(--c-bg-linen);
-  border-color: var(--c-forest);
+.btn:active {
+  background: var(--c-selected);
+}
+.btn[data-active="true"],
+.btn[aria-pressed="true"] {
+  background: var(--c-selected);
   color: var(--c-forest);
+  border-color: var(--c-border-strong);
 }
 .btn[aria-busy="true"] {
-  opacity: 0.5;
+  opacity: 0.55;
   cursor: progress;
 }
-
-/* Hover-only affordances on devices that actually have hover. */
-@media (hover: hover) {
-  .btn { min-width: 28px; min-height: 28px; }
-  .btn svg { width: 16px; height: 16px; }
-  .btn:hover {
-    background: var(--c-bg-linen);
-    border-color: var(--c-border);
-    color: var(--c-text);
-    transform: translateY(-1px);
-  }
-}
-
-/* Compact menu popover for the Export/Import button. */
 .menuWrap {
   position: relative;
 }
@@ -60,45 +50,53 @@
 }
 .menu {
   position: absolute;
-  top: 100%;
+  top: calc(100% + 8px);
   right: 0;
-  margin-top: 4px;
-  min-width: 160px;
+  min-width: 184px;
   display: flex;
   flex-direction: column;
   background: var(--c-surface);
   border: 1px solid var(--c-border);
-  border-radius: var(--radius-sm);
-  box-shadow: 0 6px 18px rgba(35, 38, 31, .18);
-  z-index: 40;
-  padding: 4px 0;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-panel);
+  z-index: 50;
+  padding: 4px;
 }
 .menuItem {
   text-align: left;
   border: 0;
+  border-radius: var(--radius-sm);
   background: transparent;
-  padding: 8px 12px;
-  font: inherit;
+  min-height: 44px;
+  padding: 10px 12px;
   font-size: 13px;
   color: var(--c-text);
   cursor: pointer;
-  transition: background .12s var(--e-quart);
 }
-.menuItem:hover { background: var(--c-panel-item-hover); }
-.menuItem:disabled { color: var(--c-text-soft); cursor: not-allowed; }
-
-/* Inline upload error — sits below the topbar as a transient toast. */
+.menuItem:hover {
+  background: var(--c-selected);
+}
+.menuItem:disabled {
+  color: var(--c-text-muted);
+  cursor: default;
+}
 .uploadErr {
   position: fixed;
-  top: 64px;
-  right: 12px;
+  top: 76px;
+  right: 16px;
   z-index: 50;
-  max-width: 360px;
-  padding: 8px 12px;
+  max-width: min(360px, calc(100vw - 32px));
+  padding: 12px 16px;
   background: var(--c-surface);
   border: 1px solid var(--c-russet);
   color: var(--c-russet);
-  border-radius: var(--radius-sm);
-  font-size: 12px;
-  box-shadow: 0 6px 18px rgba(122, 31, 16, .25);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  box-shadow: var(--shadow-panel);
+}
+@media (pointer: coarse), (max-width: 768px) {
+  .btn {
+    min-width: 44px;
+    min-height: 44px;
+  }
 }

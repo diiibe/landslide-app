@@ -1,3 +1,4 @@
+import { Icon } from "@/ui/Icon";
 import { useEffect, useMemo, useState } from "react";
 import { useAppStore } from "@/app/store";
 import {
@@ -17,21 +18,19 @@ interface Props {
 }
 
 const FORMAT_LABEL: Record<ExportFormat, string> = {
-  bundle: "FVG bundle (re-importable)",
-  geojson: "GeoJSON (flat, for QGIS / viewers)",
-  gpx: "GPX (tracks + waypoints)",
-  png: "PNG screenshot of the current map",
+  bundle: "Archivio FVG · reimportabile",
+  geojson: "GeoJSON · per QGIS e visualizzatori",
+  gpx: "GPX · tracce e punti",
+  png: "PNG · immagine della mappa",
 };
 
 const FORMAT_HINT: Record<ExportFormat, string> = {
   bundle:
-    "Includes per-polygon stats and the magic key required by Import bundle.",
+    "Conserva i file personali, le aree e le informazioni salvate per poterli reimportare.",
   geojson:
-    "Flat FeatureCollection. Polygons carry their stats as fvg:* properties.",
-  gpx:
-    "Lines become tracks, points become waypoints, polygons become a closed ring track. Stats and risk tinting are dropped.",
-  png:
-    "Captures whatever is currently visible on the map canvas. No selection needed.",
+    "Esporta geometrie e attributi, incluse le informazioni associate alle aree.",
+  gpx: "Le linee diventano tracce, i punti tappe, le aree tracciati chiusi. Statistiche e colorazione non sono incluse.",
+  png: "Salva quanto è visibile sulla mappa, senza richiedere una selezione.",
 };
 
 /**
@@ -47,7 +46,9 @@ export function ExportPanel({ open, onClose }: Props) {
 
   const [format, setFormat] = useState<ExportFormat>("bundle");
   const [selectedLayers, setSelectedLayers] = useState<Set<string>>(new Set());
-  const [selectedPolygons, setSelectedPolygons] = useState<Set<string>>(new Set());
+  const [selectedPolygons, setSelectedPolygons] = useState<Set<string>>(
+    new Set(),
+  );
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -102,14 +103,18 @@ export function ExportPanel({ open, onClose }: Props) {
     try {
       if (format === "png") {
         const map = (window as unknown as { __mlmap?: maplibregl.Map }).__mlmap;
-        if (!map) throw new Error("Map not available yet.");
+        if (!map) throw new Error("La mappa non è ancora disponibile.");
         const { blob, filename } = await exportPng(map);
         downloadBlob(blob, filename);
       } else if (format === "bundle") {
         const { blob, filename } = exportBundle(userLayers, userPolygons, sel);
         downloadBlob(blob, filename);
       } else if (format === "geojson") {
-        const { blob, filename } = exportFlatGeoJson(userLayers, userPolygons, sel);
+        const { blob, filename } = exportFlatGeoJson(
+          userLayers,
+          userPolygons,
+          sel,
+        );
         downloadBlob(blob, filename);
       } else if (format === "gpx") {
         const { blob, filename } = exportGpx(userLayers, userPolygons, sel);
@@ -136,24 +141,24 @@ export function ExportPanel({ open, onClose }: Props) {
       <div
         className={styles.panel}
         role="dialog"
-        aria-label="Export data"
+        aria-label="Esporta dati"
         aria-modal="true"
       >
         <div className={styles.head}>
-          <span className={styles.ttl}>Export</span>
+          <span className={styles.ttl}>Esporta</span>
           <button
             type="button"
             className={styles.close}
-            aria-label="Close export dialog"
+            aria-label="Chiudi esportazione"
             onClick={onClose}
           >
-            ×
+            <Icon name="close" />
           </button>
         </div>
 
         <div className={styles.body}>
           <fieldset className={styles.section}>
-            <legend className={styles.sectionTitle}>Format</legend>
+            <legend className={styles.sectionTitle}>Formato</legend>
             {(Object.keys(FORMAT_LABEL) as ExportFormat[]).map((f) => (
               <label key={f} className={styles.radioRow}>
                 <input
@@ -172,27 +177,27 @@ export function ExportPanel({ open, onClose }: Props) {
           {needsSelection && hasData && (
             <fieldset className={styles.section}>
               <legend className={styles.sectionTitle}>
-                What to include
+                Dati da includere
                 <span className={styles.sectionActions}>
                   <button
                     type="button"
                     className={styles.linkBtn}
                     onClick={selectAll}
                   >
-                    All
+                    Tutti
                   </button>
                   <button
                     type="button"
                     className={styles.linkBtn}
                     onClick={selectNone}
                   >
-                    None
+                    Nessuno
                   </button>
                 </span>
               </legend>
               {userLayers.length > 0 && (
                 <div className={styles.subSection}>
-                  <div className={styles.subTitle}>Uploaded tracks</div>
+                  <div className={styles.subTitle}>File personali</div>
                   {userLayers.map((l) => (
                     <label key={l.id} className={styles.checkRow}>
                       <input
@@ -212,7 +217,7 @@ export function ExportPanel({ open, onClose }: Props) {
               )}
               {userPolygons.length > 0 && (
                 <div className={styles.subSection}>
-                  <div className={styles.subTitle}>Saved areas</div>
+                  <div className={styles.subTitle}>Aree salvate</div>
                   {userPolygons.map((p) => (
                     <label key={p.id} className={styles.checkRow}>
                       <input
@@ -235,8 +240,8 @@ export function ExportPanel({ open, onClose }: Props) {
 
           {needsSelection && !hasData && (
             <p className={styles.hint}>
-              No tracks or saved areas yet. Upload a GPX or draw a polygon
-              first.
+              Non ci sono ancora file o aree salvate. Carica un file oppure
+              disegna un’area sulla mappa.
             </p>
           )}
 
@@ -249,7 +254,7 @@ export function ExportPanel({ open, onClose }: Props) {
 
         <div className={styles.actions}>
           <button type="button" className={styles.cancel} onClick={onClose}>
-            Cancel
+            Annulla
           </button>
           <button
             type="button"
@@ -257,7 +262,7 @@ export function ExportPanel({ open, onClose }: Props) {
             onClick={handleExport}
             disabled={busy || selectionEmpty}
           >
-            {busy ? "Exporting…" : "Export"}
+            {busy ? "Esportazione…" : "Esporta"}
           </button>
         </div>
       </div>

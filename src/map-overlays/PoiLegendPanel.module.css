@@ -8,7 +8,7 @@
   border: 1px solid var(--c-border);
   border-radius: var(--radius-md);
   overflow: clip;
-  transition: box-shadow .2s var(--e-quart);
+  transition: box-shadow 0.2s var(--e-quart);
 }
 
 .panel:active {
@@ -32,7 +32,7 @@
   width: 100%;
   text-align: left;
   border-bottom: 1px solid var(--c-border);
-  transition: background .18s var(--e-quart);
+  transition: background 0.18s var(--e-quart);
   font: inherit;
   color: inherit;
 }
@@ -57,7 +57,7 @@
 .caret {
   color: var(--c-text-soft);
   font-size: 11px;
-  transition: transform .28s var(--e-expo);
+  transition: transform 0.28s var(--e-expo);
 }
 
 .panel[data-open="false"] .caret {
@@ -67,7 +67,7 @@
 .wrap {
   display: grid;
   grid-template-rows: 1fr;
-  transition: grid-template-rows .35s var(--e-expo);
+  transition: grid-template-rows 0.35s var(--e-expo);
 }
 
 .wrap > .body {
@@ -77,7 +77,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  transition: opacity .28s var(--e-quart);
+  transition: opacity 0.28s var(--e-quart);
 }
 
 .panel[data-open="false"] .wrap {
@@ -104,7 +104,7 @@
   font-size: 11px;
   color: var(--c-text-soft);
   font-weight: 600;
-  letter-spacing: .03em;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
 }
 
@@ -142,9 +142,17 @@
   overflow: hidden;
 }
 
-.swatch::-webkit-color-swatch-wrapper { padding: 0; }
-.swatch::-webkit-color-swatch { border: 0; border-radius: 50%; }
-.swatch::-moz-color-swatch { border: 0; border-radius: 50%; }
+.swatch::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+.swatch::-webkit-color-swatch {
+  border: 0;
+  border-radius: 50%;
+}
+.swatch::-moz-color-swatch {
+  border: 0;
+  border-radius: 50%;
+}
 
 .name {
   font-size: 12px;
@@ -177,4 +185,38 @@
     width: 28px;
     height: 28px;
   }
+}
+.panel {
+  border-color: var(--c-border);
+  box-shadow: none;
+}
+.panel:hover,
+.panel:active {
+  box-shadow: none;
+}
+.head {
+  min-height: 44px;
+}
+.ttl {
+  font-size: 13px;
+  font-weight: 600;
+}
+.groupTitle {
+  font-size: 12px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.row {
+  min-height: 44px;
+}
+.group + .group {
+  border-top-style: solid;
+}
+.wrap > .body {
+  gap: 12px;
+  padding: 12px;
+}
+.reset {
+  min-height: 44px;
+  font-size: 12px;
 }

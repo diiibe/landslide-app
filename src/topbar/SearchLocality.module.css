@@ -2,128 +2,122 @@
   position: relative;
   display: flex;
   align-items: center;
-  height: 28px;
-  /* Fluid: shrinks to fit narrow topbars (down to ~120 px), grows to a sane
-   * max so it doesn't dominate wider viewports. */
+  height: var(--control-h);
   width: 100%;
-  min-width: 120px;
-  max-width: 240px;
-  background: var(--c-bg-linen);
+  min-width: 0;
+  background: var(--c-surface-2);
   border: 1px solid var(--c-border);
   border-radius: var(--radius-md);
-  padding: 0 8px 0 30px;
-  transition: border-color .18s var(--e-quart), background .18s var(--e-quart), box-shadow .18s var(--e-quart);
+  padding: 0 10px 0 38px;
+  transition:
+    border-color var(--duration-fast),
+    background var(--duration-fast),
+    box-shadow var(--duration-fast);
 }
-
-/* On phones the kbd hint hogs precious horizontal real estate. */
-@media (max-width: 480px) {
-  .kbd { display: none; }
+.wrap:hover {
+  border-color: var(--c-border-strong);
 }
-.wrap:hover { border-color: var(--c-search-hover-border); background: var(--c-search-hover-bg); }
 .wrap:focus-within {
   border-color: var(--c-forest);
   background: var(--c-surface);
-  box-shadow: 0 0 0 3px rgba(47,93,58,.12);
+  box-shadow: var(--shadow-focus);
 }
 .ico {
   position: absolute;
-  left: 9px;
+  left: 12px;
   top: 50%;
   transform: translateY(-50%);
   color: var(--c-text-soft);
-  width: 14px;
-  height: 14px;
+  width: 18px;
+  height: 18px;
   pointer-events: none;
-  transition: color .18s var(--e-quart);
 }
-.wrap:focus-within .ico { color: var(--c-forest); }
+.wrap:focus-within .ico {
+  color: var(--c-forest);
+}
 .input {
   flex: 1;
   border: 0;
   outline: 0;
   background: transparent;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--c-text);
   padding: 0;
   min-width: 0;
 }
-.input::placeholder { color: var(--c-search-placeholder); }
+.input::placeholder {
+  color: var(--c-search-placeholder);
+  opacity: 1;
+}
+.input:focus-visible {
+  outline: none;
+}
 .kbd {
   font-size: 10px;
-  font-weight: 600;
-  letter-spacing: .04em;
-  color: var(--c-search-placeholder);
-  background: var(--c-surface);
+  font-weight: 500;
+  color: var(--c-text-soft);
   border: 1px solid var(--c-border);
-  border-radius: 3px;
-  padding: 1px 5px;
-  transition: opacity .18s var(--e-quart);
+  border-radius: 4px;
+  padding: 2px 5px;
+  white-space: nowrap;
 }
-.wrap:focus-within .kbd { opacity: 0; }
-
+.wrap:focus-within .kbd {
+  visibility: hidden;
+}
 .menu {
   position: absolute;
-  top: calc(100% + 4px);
+  top: calc(100% + 8px);
   left: 0;
   right: 0;
   margin: 0;
-  padding: 4px 0;
+  padding: 4px;
   list-style: none;
   background: var(--c-surface);
   border: 1px solid var(--c-border);
   border-radius: var(--radius-md);
-  box-shadow: 0 8px 24px rgba(35, 38, 31, .12);
+  box-shadow: var(--shadow-panel);
   z-index: 50;
-  max-height: 280px;
+  max-height: 320px;
   overflow-y: auto;
 }
 .opt {
   display: flex;
   flex-direction: column;
-  gap: 1px;
-  padding: 5px 10px;
+  gap: 2px;
+  padding: 10px 12px;
+  min-height: 48px;
   cursor: pointer;
-  transition: background .12s var(--e-quart);
+  border-radius: var(--radius-sm);
+  transition: background var(--duration-fast);
 }
-.opt[data-active="true"] { background: var(--c-surface-2); }
+.opt[data-active="true"] {
+  background: var(--c-selected);
+}
 .optName {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--c-text);
-  font-weight: 500;
+  font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .optCtx {
-  font-size: 10px;
-  color: var(--c-text-soft);
+  font-size: 12px;
+  color: var(--c-text-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-/* P2.16: empty-state row, intentionally non-interactive and visually
- * de-emphasised so it reads as a status message rather than a result. */
 .optEmpty {
-  padding: 6px 10px;
-  font-size: 11px;
-  font-style: italic;
-  color: var(--c-text-soft);
-  cursor: default;
+  padding: 12px;
+  font-size: 12px;
+  color: var(--c-text-muted);
 }
-
-/* P2.16: WCAG 2.5.8 — pointer targets must be ≥ 24×24, recommended 44×44.
- * Desktop keeps the dense 32 px row; phones get the larger tap area. */
-@media (max-width: 768px), (max-height: 500px) and (pointer: coarse) {
-  .wrap { min-width: 0; max-width: none; height: 44px; }
-  .input { font-size: 16px; }
-  .opt {
-    min-height: 44px;
-    padding: 10px 12px;
+@media (max-width: 768px), (pointer: coarse) {
+  .input {
+    font-size: 16px;
   }
-  .optEmpty {
-    min-height: 44px;
-    padding: 10px 12px;
-    display: flex;
-    align-items: center;
+  .kbd {
+    display: none;
   }
 }

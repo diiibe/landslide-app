@@ -1,3 +1,5 @@
+import { Icon } from "@/ui/Icon";
+import { SearchField } from "@/ui/SearchField";
 import { useEffect, useRef, type CSSProperties } from "react";
 import { useAppStore } from "@/app/store";
 import { TwinPanel, Series } from "@/digital-twin/Panel";
@@ -61,24 +63,26 @@ export function RegionalPanel() {
   };
   return (
     <div className={styles.panel}>
-      <label className={styles.field}>
-        Cerca nei livelli
-        <input
-          type="search"
-          placeholder="Nome, parametro, fonte…"
+      <div className={styles.panelSearch}>
+        <SearchField
+          label="Cerca nei livelli"
           value={state.query}
-          onChange={(e) => useRegionalStore.setState({ query: e.target.value })}
+          onChange={(query) => useRegionalStore.setState({ query })}
         />
-      </label>
+      </div>
       <section className={styles.activeSection} aria-label="Livelli attivi">
         <div className={styles.sectionHead}>
           <h2>
-            Sulla mappa <span>{active.length}</span>
+            Livelli attivi <span>{active.length}</span>
           </h2>
           <button
-            onClick={() => useRegionalStore.setState({ catalogOpen: true })}
+            onClick={(event) => {
+              event.currentTarget.focus({ preventScroll: true });
+              useRegionalStore.setState({ catalogOpen: true });
+            }}
           >
-            + Aggiungi dati
+            <Icon name="plus" />
+            Aggiungi dati
           </button>
         </div>
         {!active.length && (
@@ -104,7 +108,13 @@ export function RegionalPanel() {
         >
           <div className={styles.detailHead}>
             <h2>{selected.layer.title}</h2>
-            <button onClick={close}>Chiudi dettaglio</button>
+            <button
+              onClick={close}
+              aria-label="Chiudi dettaglio"
+              title="Chiudi dettaglio"
+            >
+              <Icon name="close" />
+            </button>
           </div>
           {selected.mapKey || selected.userId ? (
             <>
