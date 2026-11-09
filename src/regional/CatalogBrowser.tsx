@@ -1,7 +1,9 @@
-import { Icon, type IconName } from "@/ui/Icon";
+import { Icon } from "@/ui/Icon";
 import { SearchField } from "@/ui/SearchField";
 import { Select } from "@/ui/Select";
 import { FileExplorer } from "./FileExplorer";
+import { CategoryIcon, LayerSymbol } from "./CatalogSymbols";
+import { CATEGORY } from "./catalogAppearance";
 import { useEffect, useId, useRef, useState } from "react";
 import { useAppStore } from "@/app/store";
 import { useRegionalStore } from "./store";
@@ -100,29 +102,20 @@ export function CatalogBrowser() {
       </div>
       {open && <CatalogExplorer mode="catalog" />}
       <footer className={styles.footer}>
-        <span>I dati conservano frequenza, fonte e data di osservazione.</span>
+        <span>Fonte, frequenza e data sempre consultabili nel dettaglio.</span>
         <button
           onClick={() => {
             useRegionalStore.setState({ catalogOpen: false });
             useAppStore.setState({ drawerOpen: true });
           }}
         >
-          Vedi i livelli sulla mappa
+          Torna alla mappa
         </button>
       </footer>
     </dialog>
   );
 }
 const mobileCatalogQuery = "(max-width: 768px), (max-height: 500px) and (pointer: coarse)";
-const categoryIcons: Record<ThemeId, IconName> = { frane: "mountain", alluvioni: "water", meteo: "weather", mare: "waves", aria: "air", energia: "energy", trasformazioni: "territory", attivita: "factory", ambiente: "recycle", acqua: "water", verde: "leaf", servizi: "services", mobilita: "mobility", infrastrutture: "network", contesto: "layers", personali: "folder" };
-const categoryNotes: Record<ThemeId, string> = {
-  frane: "Suscettibilità e inventari", alluvioni: "Mappe e fasce di pericolosità",
-  meteo: "Stazioni e precipitazioni", mare: "Boe, onde e costa", aria: "Misure e campionamenti",
-  energia: "Impianti e reti", trasformazioni: "Uso e trasformazioni del suolo", attivita: "Imprese, turismo e porto",
-  ambiente: "Rifiuti e monitoraggi", acqua: "Risorsa idrica e analisi", verde: "Habitat, parchi e suoli",
-  servizi: "Luoghi e servizi pubblici", mobilita: "Strade, sentieri e ciclovie",
-  infrastrutture: "Reti e telecomunicazioni", contesto: "Immagini, rilievi ed edifici", personali: "File caricati da te",
-};
 const emptyFilters: CatalogFilters = {
   query: "",
   theme: "",
@@ -138,7 +131,8 @@ export function CatalogExplorer({ mode }: { mode: "catalog" | "sidebar" }) {
   const items = catalogItems(s.catalog?.layers ?? []);
   const [filters, setFilters] = useState<CatalogFilters>(emptyFilters),
     [limit, setLimit] = useState(40);
-  const [filtersOpen, setFiltersOpen] = useState(() => !window.matchMedia?.(mobileCatalogQuery).matches);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const filterId = useId();
   const [browseAll, setBrowseAll] = useState(false);
   const resultRef = useRef<HTMLDivElement>(null);
   const refinementCount = [filters.provider, filters.type, filters.cadence, filters.availability].filter(Boolean).length;
@@ -204,17 +198,18 @@ export function CatalogExplorer({ mode }: { mode: "catalog" | "sidebar" }) {
     );
   return (
     <div className={styles.explorer} data-mode={mode} data-categories={showCategories}>
-      {mode === "catalog" && (
+      <div className={styles.searchTools}>
         <SearchField
           label="Cerca nel catalogo"
-          placeholder="Cerca dati, sensori e fonti…"
+          placeholder="Cerca dati…"
           value={filters.query}
           onChange={(value) => set("query", value)}
         />
-      )}
-      <details className={styles.filterDisclosure} open={filtersOpen} onToggle={(event) => setFiltersOpen(event.currentTarget.open)}>
-        <summary><Icon name="filter" /><span>Filtri{refinementCount ? ` · ${refinementCount} attivi` : ""}</span><Icon name="chevron" /></summary>
-      <div className={styles.filters}>
+        <button className={styles.filterToggle} aria-expanded={filtersOpen} aria-controls={filterId} onClick={(event) => { event.currentTarget.focus({ preventScroll: true }); setFiltersOpen(!filtersOpen); }}>
+          <Icon name="filter" /><span>Filtri</span>{refinementCount > 0 && <b>{refinementCount}</b>}
+        </button>
+      </div>
+      <div className={styles.filters} id={filterId} hidden={!filtersOpen}>
         <label>
           Fonte
           <Select
@@ -272,7 +267,7 @@ export function CatalogExplorer({ mode }: { mode: "catalog" | "sidebar" }) {
           />
         </label>
       </div>
-      </details>
+
       {s.catalogError && (
         <div className={styles.catalogState} role="alert">
           <strong>Catalogo regionale non raggiungibile</strong>
@@ -289,7 +284,7 @@ export function CatalogExplorer({ mode }: { mode: "catalog" | "sidebar" }) {
               aria-current={!theme ? "page" : undefined}
               onClick={() => chooseTheme("")}
             >
-              <Icon name="layers" /><strong>Tutti i dati</strong><span>{items.length}</span>
+              <Icon name="catalog" /><strong>Tutti i dati</strong><span>{items.length}</span>
             </button>
             {Object.entries(THEMES).map(([id, label]) => (
               <button
@@ -297,8 +292,8 @@ export function CatalogExplorer({ mode }: { mode: "catalog" | "sidebar" }) {
                 aria-current={theme === id ? "page" : undefined}
                 onClick={() => chooseTheme(id)}
               >
-                <Icon name={categoryIcons[id as ThemeId]} />
-                <strong>{label}<small>{categoryNotes[id as ThemeId]}</small></strong>
+                <CategoryIcon theme={id as ThemeId} />
+                <strong>{label}<small>{CATEGORY[id as ThemeId].note}</small></strong>
                 <span>{items.filter((i) => i.theme === id).length}</span>
               </button>
             ))}
@@ -345,17 +340,11 @@ export function CatalogExplorer({ mode }: { mode: "catalog" | "sidebar" }) {
             !filters.type &&
             !filters.cadence &&
             !filters.availability && (
-              <div className={styles.featured}>
-                <strong>Mappature dei versanti</strong>
-                <p>
-                  Esplora la suscettibilità ai corpi di frana e alle zone
-                  diffuse, con soglia e trasparenza regolabili.
-                </p>
-                <button onClick={() => set("theme", "frane")}>
-                  Esplora le mappature
-                  <Icon name="arrow" />
-                </button>
-              </div>
+              <button className={styles.featured} onClick={() => set("theme", "frane")}>
+                <CategoryIcon theme="frane" />
+                <span><strong>Mappature dei versanti</strong><small>Corpi di frana e zone diffuse</small></span>
+                <Icon name="arrow" />
+              </button>
             )}
           {list.slice(0, limit).map((item) => (
             <CatalogRow key={item.layer.id} item={item} />
@@ -399,6 +388,7 @@ export function CatalogRow({
       data-active={on}
       data-compact={compact}
       data-detail={current}
+      data-context={context}
     >
       <div className={styles.rowInfo}>
         <button
@@ -407,11 +397,12 @@ export function CatalogRow({
           aria-describedby={metadataId}
           onClick={() => showDetails(item)}
         >
-          <i aria-hidden="true" style={{ background: l.color }} />
+          <LayerSymbol item={item} />
           <span>{l.title}</span>
           <small id={metadataId} title={`${itemType(item)} · ${l.provider}`}>
-            {itemType(item)} · {displayProvider(l)}
+            {itemType(item)} · {displayProvider(l).replace(/^Protezione Civile della Regione Friuli Venezia Giulia$/, "Protezione Civile FVG")}
           </small>
+          <Icon name="chevron" className={styles.detailsCaret} />
         </button>
         {!compact && <p>{l.description}</p>}
         {l.status === "blocked" && <span>Da revisionare · {l.problem}</span>}
@@ -421,24 +412,18 @@ export function CatalogRow({
         disabled={l.status !== "ready"}
         aria-pressed={on}
         aria-label={
-          (on ? "Rimuovi dalla mappa · " : "Aggiungi alla mappa · ") + l.title
+          (l.status !== "ready" ? "Da revisionare · " : on ? "Rimuovi dalla mappa · " : "Aggiungi alla mappa · ") + l.title
         }
         onClick={() => enableLayer(l, !on)}
       >
         {l.status === "blocked" ? (
-          "Non disponibile"
+          <><Icon name="close" />{!compact && <span>Da revisionare</span>}</>
         ) : (
           <>
             <Icon
-              name={
-                on
-                  ? compact && context === "active"
-                    ? "close"
-                    : "check"
-                  : "plus"
-              }
+              name={on && compact && context === "active" ? "eye" : on ? "check" : "plus"}
             />
-            {!compact && (on ? "Sulla mappa" : "Aggiungi")}
+            {!compact && <span>{on ? "Sulla mappa" : "Aggiungi"}</span>}
           </>
         )}
       </button>

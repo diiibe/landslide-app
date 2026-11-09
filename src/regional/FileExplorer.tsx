@@ -1,6 +1,7 @@
 import { useId, useState, type ReactNode } from "react";
 import { Icon } from "@/ui/Icon";
 import { THEMES, filterItems, type CatalogItem, type ThemeId } from "./catalog";
+import { CategoryIcon } from "./CatalogSymbols";
 import { isLayerEnabled } from "./builtins";
 import styles from "./FileExplorer.module.css";
 
@@ -76,7 +77,7 @@ export function FileExplorer({
   );
   return (
     <div className={styles.explorer}>
-      <nav className={styles.path} aria-label="Percorso del catalogo">
+      {(theme || searching) && <nav className={styles.path} aria-label="Percorso del catalogo">
         <button
           onClick={() => {
             setTheme(null);
@@ -109,7 +110,7 @@ export function FileExplorer({
             </span>
           </>
         )}
-      </nav>
+      </nav>}
       {searching ? (
         <section
           aria-label="Risultati della ricerca"
@@ -147,13 +148,14 @@ export function FileExplorer({
                       setSource(null);
                       setLimit(40);
                     }}
+                    data-theme-folder
                   >
-                    <Icon name="chevron" />
-                    <Icon name={expanded ? "folderOpen" : "folder"} />
+                    <CategoryIcon theme={key as ThemeId} />
                     <span>{label}</span>
                     <small aria-label={`${entries.length} livelli`}>
                       {entries.length}
                     </small>
+                    <Icon name="chevron" />
                   </button>
                   {expanded && (
                     <div

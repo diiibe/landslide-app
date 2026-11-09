@@ -85,3 +85,6 @@
   background: var(--c-surface-raised);
   box-shadow: var(--shadow-focus), var(--shadow-inset);
 }
+
+.field > svg { transition: color 140ms; }
+.field:focus-within > svg { color: var(--c-action); }

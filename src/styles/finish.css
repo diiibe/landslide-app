@@ -17,3 +17,6 @@ textarea,
 select {
   font-family: var(--font-stack);
 }
+
+:root { --c-status-attention: #89501c; }
+:root[data-theme="dark"] { --c-status-attention: #e6b58d; }

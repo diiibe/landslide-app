@@ -192,3 +192,6 @@
     font-size: var(--text-body);
   }
 }
+
+.toolsToggle > svg { width: 18px; height: 18px; flex-shrink: 0; }
+.toolsToggle[aria-expanded="true"] > svg { color: var(--c-action); }
