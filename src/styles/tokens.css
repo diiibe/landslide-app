@@ -25,22 +25,21 @@
   --shadow-panel: 0 2px 8px rgb(25 43 31 / 0.1);
   --shadow-focus: 0 0 0 3px rgb(47 93 58 / 0.14);
   /* ramp (susceptibility) — invariant across themes */
-  --c-ramp-0: #e8f0d8;
-  --c-ramp-1: #8bb26b;
-  --c-ramp-2: #d9a441;
-  --c-ramp-3: #d25524;
-  --c-ramp-4: #7a1f10;
+  --c-ramp-0: #fff1b8;
+  --c-ramp-1: #ffd166;
+  --c-ramp-2: #ff9a3c;
+  --c-ramp-3: #ff5b2e;
+  --c-ramp-4: #ff1f1f;
 
   /* Pre-composed susceptibility gradient. Single source of truth so legend
-   * and threshold slider stay in sync; each theme overrides the stops to
-   * match its surface palette. */
+   * and threshold slider stay in sync; data colours stay identical in both themes. */
   --c-ramp: linear-gradient(
     90deg,
-    #e8f0d8 0%,
-    #8bb26b 25%,
-    #d9a441 50%,
-    #d25524 75%,
-    #7a1f10 100%
+    #fff1b8 0%,
+    #ffd166 25%,
+    #ff9a3c 50%,
+    #ff5b2e 75%,
+    #ff1f1f 100%
   );
 
   /* accents per drawer group — light theme values */
@@ -185,19 +184,7 @@
   /* focus ring — green is hard to see on deep navy; use cyan-teal accent */
   --c-focus: #a5cca9;
 
-  /* Susceptibility gradient — muted variant for the dark control-room
-   * surface. The bright #E8F0D8 cream of the light ramp punches a hole in
-   * the neutral palette; replace it with a deep olive. Mid hues are kept
-   * close to their light counterparts so the perceptual ordering survives;
-   * the top end is desaturated to avoid blowing out on a #111914 surface. */
-  --c-ramp: linear-gradient(
-    90deg,
-    #2a2e22 0%,
-    #5e7a48 25%,
-    #b0863f 50%,
-    #a04a28 75%,
-    #5a3329 100%
-  );
+  /* Data colours retain the same class meaning in both themes. */
 
   color-scheme: dark;
 }

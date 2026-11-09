@@ -64,11 +64,11 @@ export const FVG_CENTER: [number, number] = [13.15, 46.35];
 
 /** 5-stop ramp mapped to MapLibre `interpolate` paint expression. */
 export const RAMP_STOPS: Array<[number, string]> = [
-  [0.0, "#E8F0D8"],
-  [0.25, "#8BB26B"],
-  [0.5, "#D9A441"],
-  [0.75, "#D25524"],
-  [1.0, "#7A1F10"],
+  [0.0, "#FFF1B8"],
+  [0.25, "#FFD166"],
+  [0.5, "#FF9A3C"],
+  [0.75, "#FF5B2E"],
+  [1.0, "#FF1F1F"],
 ];
 
 export function rampPaint(): unknown {
