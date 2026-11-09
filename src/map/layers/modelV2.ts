@@ -66,29 +66,42 @@ const CLASS_FILL = [
   ...RAMP_STOPS.flat(),
 ] as unknown as ExpressionSpecification;
 
-export function addModelV2Layer(m: MLMap, which: V2Layer, beforeId?: string): void {
+export interface SusceptibilityStyle {
+  minClass: number;
+  opacity: number;
+}
+const rasterThresholds = new WeakMap<MLMap, Partial<Record<V2Layer, number>>>();
+export function addModelV2Layer(
+  m: MLMap,
+  which: V2Layer,
+  beforeId?: string,
+  settings: SusceptibilityStyle = { minClass: 1, opacity: 0.45 },
+): void {
   const rasterSrc = V2_RASTER_SOURCE_ID[which];
   const rasterId = V2_RASTER_LAYER_ID[which];
   if (!m.getSource(rasterSrc)) {
     m.addSource(rasterSrc, {
       type: "raster",
-      url: `pmtiles://${import.meta.env.BASE_URL}tiles/v2_${which}_raster.pmtiles`,
+      url: `pmtiles://${import.meta.env.BASE_URL}tiles/v2_${which}_raster${settings.minClass > 1 ? `_min${settings.minClass}` : ""}.pmtiles`,
       tileSize: 256,
     });
   }
   if (!m.getLayer(rasterId)) {
-    m.addLayer({
-      id: rasterId,
-      type: "raster",
-      source: rasterSrc,
-      maxzoom: V2_VECTOR_MIN_ZOOM,
-      paint: {
-        "raster-opacity": 0.85,
-        // Stretching a z9 tile must not blend neighbouring classes.
-        "raster-resampling": "nearest",
-        "raster-fade-duration": 0,
+    m.addLayer(
+      {
+        id: rasterId,
+        type: "raster",
+        source: rasterSrc,
+        maxzoom: V2_VECTOR_MIN_ZOOM,
+        paint: {
+          "raster-opacity": settings.opacity,
+          // Stretching a z9 tile must not blend neighbouring classes.
+          "raster-resampling": "nearest",
+          "raster-fade-duration": 0,
+        },
       },
-    }, beforeId);
+      beforeId,
+    );
   }
 
   const src = V2_SOURCE_ID[which];
@@ -100,18 +113,21 @@ export function addModelV2Layer(m: MLMap, which: V2Layer, beforeId?: string): vo
     });
   }
   if (!m.getLayer(id)) {
-    m.addLayer({
-      id,
-      type: "fill",
-      source: src,
-      "source-layer": "cells",
-      minzoom: V2_VECTOR_MIN_ZOOM,
-      paint: {
-        "fill-color": CLASS_FILL,
-        "fill-opacity": 0.85,
-        "fill-outline-color": "rgba(0,0,0,0)",
+    m.addLayer(
+      {
+        id,
+        type: "fill",
+        source: src,
+        "source-layer": "cells",
+        minzoom: V2_VECTOR_MIN_ZOOM,
+        paint: {
+          "fill-color": CLASS_FILL,
+          "fill-opacity": settings.opacity,
+          "fill-outline-color": "rgba(0,0,0,0)",
+        },
       },
-    }, beforeId);
+      beforeId,
+    );
   }
 }
 
@@ -123,9 +139,31 @@ export function setModelV2Visible(
   which: V2Layer,
   visible: boolean,
   beforeId?: string,
+  settings: SusceptibilityStyle = { minClass: 1, opacity: 0.45 },
 ): void {
-  if (visible && !m.getLayer(V2_LAYER_ID[which])) addModelV2Layer(m, which, beforeId);
+  if (visible) {
+    const previous = rasterThresholds.get(m)?.[which];
+    if (previous !== undefined && previous !== settings.minClass) {
+      if (m.getLayer(V2_RASTER_LAYER_ID[which]))
+        m.removeLayer(V2_RASTER_LAYER_ID[which]);
+      if (m.getSource(V2_RASTER_SOURCE_ID[which]))
+        m.removeSource(V2_RASTER_SOURCE_ID[which]);
+    }
+    addModelV2Layer(m, which, beforeId, settings);
+    rasterThresholds.set(m, {
+      ...rasterThresholds.get(m),
+      [which]: settings.minClass,
+    });
+    m.setFilter(V2_LAYER_ID[which], [">=", ["get", "cls"], settings.minClass]);
+    m.setPaintProperty(V2_LAYER_ID[which], "fill-opacity", settings.opacity);
+    m.setPaintProperty(
+      V2_RASTER_LAYER_ID[which],
+      "raster-opacity",
+      settings.opacity,
+    );
+  }
   for (const id of v2LayerIds(which)) {
-    if (m.getLayer(id)) m.setLayoutProperty(id, "visibility", visible ? "visible" : "none");
+    if (m.getLayer(id))
+      m.setLayoutProperty(id, "visibility", visible ? "visible" : "none");
   }
 }

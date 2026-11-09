@@ -27,40 +27,47 @@ const V2_LEGEND: Record<V2Layer, { title: string; copy: string }> = {
 export function Legend() {
   const open = useAppStore((s) => s.legendOpen);
   const toggle = useAppStore((s) => s.toggleLegend);
+  const iffiOn = useAppStore((s) => s.layers.iffi);
   const comuniOn = useAppStore((s) => s.layers.comuni);
   const v2Layer = useAppStore((s): V2Layer | null =>
     s.layers.v2Bodies ? "bodies" : s.layers.v2Diffuse ? "diffuse" : null,
   );
+  if (!v2Layer && !iffiOn) return null;
   return (
     <div className={styles.legend} data-open={open}>
-      <button type="button" className={styles.head} aria-expanded={open} onClick={toggle}>
-        <span className={styles.ttl}>{v2Layer ? "Modello v2" : "Susceptibility"}</span>
+      <button
+        type="button"
+        className={styles.head}
+        aria-expanded={open}
+        onClick={toggle}
+      >
+        <span className={styles.ttl}>
+          {v2Layer ? "Suscettibilità frane" : "Frane censite"}
+        </span>
         <span className={styles.miniRamp} aria-hidden="true" />
-        <span className={styles.caret} aria-hidden="true">▾</span>
+        <span className={styles.caret} aria-hidden="true">
+          ▾
+        </span>
       </button>
       <div className={styles.wrap}>
         <div className={styles.body}>
-          {v2Layer ? (
-            <V2LegendBody layer={v2Layer} />
-          ) : (
-            <>
-              <div className={styles.ramp} />
-              <div className={styles.ticks}>
-                <span>0.0</span><span>0.3</span><span>0.5</span><span>0.7</span><span>1.0</span>
-              </div>
-            </>
+          {v2Layer && <V2LegendBody layer={v2Layer} />}
+          {iffiOn && (
+            <div className={styles.iffiRow}>
+              <i />
+              <span>Frana censita · IFFI</span>
+            </div>
           )}
-          <div className={styles.iffiRow}>
-            <i />
-            <span>Catalogued landslide (IFFI)</span>
-          </div>
           {comuniOn && (
             <section className={styles.section}>
               <h4 className={styles.title}>Comune choropleth</h4>
-              <p className={styles.sub}>Mean susceptibility (p) across each comune.</p>
+              <p className={styles.sub}>
+                Mean susceptibility (p) across each comune.
+              </p>
               <div className={styles.ramp} aria-hidden="true" />
               <div className={styles.rampLabels}>
-                <span>low</span><span>high</span>
+                <span>low</span>
+                <span>high</span>
               </div>
             </section>
           )}
@@ -78,27 +85,39 @@ const pct = (share: number) => `${Math.round(share * 100)}%`;
 function V2LegendBody({ layer }: { layer: V2Layer }) {
   const { title, copy } = V2_LEGEND[layer];
   const v2 = useModelV2();
+  const cutoff = useAppStore((s) => s.susceptibilityStyle[layer].minClass);
   const stats = v2.status === "ready" ? v2.data.layers[layer] : null;
   const n = stats?.classes ?? 5;
   return (
     <section className={styles.v2} aria-label={title}>
       <h4 className={styles.title}>{title}</h4>
-      <ol className={styles.v2Classes} style={{ gridTemplateColumns: `repeat(${n}, 1fr)` }}>
+      <ol
+        className={styles.v2Classes}
+        style={{ gridTemplateColumns: `repeat(${n}, 1fr)` }}
+      >
         {Array.from({ length: n }, (_, i) => (
-          <li key={i}>
-            <i style={{ background: v2ClassColor(i + 1, n) }} aria-hidden="true" />
+          <li key={i} style={{ opacity: i + 1 < cutoff ? 0.3 : 1 }}>
+            <i
+              style={{ background: v2ClassColor(i + 1, n) }}
+              aria-hidden="true"
+            />
             <span>{i + 1}</span>
           </li>
         ))}
       </ol>
       <div className={styles.rampLabels}>
-        <span>meno simile</span><span>più simile</span>
+        <span>meno simile</span>
+        <span>più simile</span>
       </div>
+      <p className={styles.v2Copy}>
+        Visibili le classi da {Math.min(cutoff, n)} a {n}.
+      </p>
       <p className={styles.v2Copy}>{copy}</p>
       <p className={styles.v2Note}>{V2_FULL_FIT_NOTE}</p>
       {stats && (
         <p className={styles.v2Note}>
-          Classi per quantili; quote effettive: {stats.shares.map(pct).join(", ")}.
+          Classi per quantili; quote effettive:{" "}
+          {stats.shares.map(pct).join(", ")}.
         </p>
       )}
     </section>

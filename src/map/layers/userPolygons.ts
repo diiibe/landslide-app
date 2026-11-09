@@ -21,7 +21,9 @@ export const USER_POLY_SOURCE = "user-polygons";
 export const USER_POLY_FILL = "user-polygons-fill";
 export const USER_POLY_LINE = "user-polygons-line";
 
-function toFeatureCollection(polygons: UserPolygon[]): GeoJSON.FeatureCollection {
+function toFeatureCollection(
+  polygons: UserPolygon[],
+): GeoJSON.FeatureCollection {
   return {
     type: "FeatureCollection",
     features: polygons.map((p) => ({
@@ -83,7 +85,10 @@ export function setupUserPolygons(m: MLMap, polygons: UserPolygon[]): void {
   });
 }
 
-export function updateUserPolygonsData(m: MLMap, polygons: UserPolygon[]): void {
+export function updateUserPolygonsData(
+  m: MLMap,
+  polygons: UserPolygon[],
+): void {
   const src = m.getSource(USER_POLY_SOURCE) as GeoJSONSource | undefined;
   if (!src) return;
   src.setData(toFeatureCollection(polygons));
@@ -117,7 +122,11 @@ export function buildPolygonStatsNode(p: UserPolygon): HTMLElement {
 
   const meta = document.createElement("div");
   meta.className = "fvg-popup__muted fvg-popup__meta";
-  meta.textContent = `${p.stats.model.toUpperCase()} · saved at p ≥ ${p.stats.threshold.toFixed(2)}`;
+  meta.textContent =
+    p.stats.model === null
+      ? (p.stats.unavailableReason ??
+        "Statistiche di suscettibilità non calcolate.")
+      : `Archivio precedente · superficie storica, soglia ${p.stats.threshold?.toFixed(2) ?? "—"}. Queste statistiche non descrivono la mappatura corrente.`;
   root.appendChild(meta);
 
   const dl = document.createElement("dl");
@@ -133,11 +142,15 @@ export function buildPolygonStatsNode(p: UserPolygon): HTMLElement {
     dl.append(dt, dd);
   };
   row("Area", `${p.stats.areaKm2.toFixed(2)} km²`);
-  row("Cells", `${p.stats.cellsVisible}`);
-  row("Above thr", `${p.stats.cellsAboveThreshold}`);
-  row("Mean p", p.stats.meanP.toFixed(3));
-  row("Median p", p.stats.medianP.toFixed(3));
-  row("IFFI", `${p.stats.iffiCount}`);
+  if (p.stats.cellsVisible !== null)
+    row("Celle storiche visibili", `${p.stats.cellsVisible}`);
+  if (p.stats.cellsAboveThreshold !== null)
+    row("Oltre soglia storica", `${p.stats.cellsAboveThreshold}`);
+  if (p.stats.meanP !== null) row("Media storica", p.stats.meanP.toFixed(3));
+  if (p.stats.medianP !== null)
+    row("Mediana storica", p.stats.medianP.toFixed(3));
+  if (p.stats.iffiCount !== null)
+    row("IFFI nel campione visibile", `${p.stats.iffiCount}`);
   root.appendChild(dl);
   return root;
 }
@@ -150,7 +163,9 @@ export function registerPolygonClicks(
 ): () => void {
   const onClick = (e: MapMouseEvent) => {
     if (!m.getLayer(USER_POLY_FILL)) return;
-    const feats = m.queryRenderedFeatures(e.point, { layers: [USER_POLY_FILL] });
+    const feats = m.queryRenderedFeatures(e.point, {
+      layers: [USER_POLY_FILL],
+    });
     const feat = feats[0];
     if (!feat) return;
     const id = feat.properties?.id as string | undefined;

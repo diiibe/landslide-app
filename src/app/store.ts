@@ -106,9 +106,17 @@ function clampParams(p: Partial<RiskParams> | undefined): RiskParams {
       SENS_MIN,
       SENS_MAX,
     ),
-    gamma: clamp(coerceFinite(p?.gamma, DEFAULT_PARAMS.gamma), GAMMA_MIN, GAMMA_MAX),
+    gamma: clamp(
+      coerceFinite(p?.gamma, DEFAULT_PARAMS.gamma),
+      GAMMA_MIN,
+      GAMMA_MAX,
+    ),
     radius: Math.round(
-      clamp(coerceFinite(p?.radius, DEFAULT_PARAMS.radius), RADIUS_MIN, RADIUS_MAX),
+      clamp(
+        coerceFinite(p?.radius, DEFAULT_PARAMS.radius),
+        RADIUS_MIN,
+        RADIUS_MAX,
+      ),
     ),
   };
 }
@@ -118,7 +126,9 @@ function loadSensDefaults(): RiskParamsMap {
   try {
     const raw = window.localStorage.getItem(SENS_DEFAULTS_KEY);
     if (!raw) return HARD_DEFAULT;
-    const parsed = JSON.parse(raw) as Partial<Record<LayerNetwork, Partial<Record<ModelId, Partial<RiskParams>>>>>;
+    const parsed = JSON.parse(raw) as Partial<
+      Record<LayerNetwork, Partial<Record<ModelId, Partial<RiskParams>>>>
+    >;
     return {
       roads: {
         j2: clampParams(parsed.roads?.j2),
@@ -166,7 +176,10 @@ function loadUserData(): PersistedUserData {
     if (parsed.poiColors && typeof parsed.poiColors === "object") {
       base.poiColors = parsed.poiColors;
     }
-    if (parsed.poiCategoryVisible && typeof parsed.poiCategoryVisible === "object") {
+    if (
+      parsed.poiCategoryVisible &&
+      typeof parsed.poiCategoryVisible === "object"
+    ) {
       base.poiCategoryVisible = parsed.poiCategoryVisible;
     }
     return base;
@@ -318,6 +331,10 @@ function applyTheme(t: Theme): void {
 }
 
 export interface AppState {
+  susceptibilityStyle: Record<
+    "bodies" | "diffuse",
+    { minClass: number; opacity: number }
+  >;
   model: ModelId;
   basemap: Basemap;
   threshold: Threshold;
@@ -436,7 +453,10 @@ export interface AppState {
   clearComuni: () => void;
   /* user uploads + drawings */
   addUserLayer: (
-    layer: Omit<UserLayer, "id" | "color" | "opacity" | "visible" | "createdAt"> & {
+    layer: Omit<
+      UserLayer,
+      "id" | "color" | "opacity" | "visible" | "createdAt"
+    > & {
       color?: string;
     },
   ) => UserLayer;
@@ -466,24 +486,57 @@ const userData = loadUserData();
 
 const initial: Omit<
   AppState,
-  | "setModel" | "setBasemap" | "setThreshold" | "setSelectedZones" | "toggleZone"
-  | "toggleLayer" | "setFloodView" | "setFloodOpacity" | "setPaiOpacity" | "setDiffOpacity" | "setRiskParam" | "lockRiskParams"
-  | "setTheme" | "toggleTheme" | "toggleDrawer" | "toggleLegend"
-  | "toggleLayersPanel" | "toggleBasemapPanel" | "toggleSensitivityPanel" | "toggleComuneFilterPanel"
-  | "setSelectedComuni" | "toggleComune" | "clearComuni"
-  | "addUserLayer" | "removeUserLayer" | "updateUserLayer"
-  | "addUserPolygon" | "removeUserPolygon" | "updateUserPolygon" | "setDrawingMode"
-  | "setView3D" | "toggleView3D"
-  | "setPoiColor" | "resetPoiColors" | "togglePoiCategory"
-  | "toggleGroup" | "toggleOverlayGroup" | "setSearch" | "reset"
+  | "setModel"
+  | "setBasemap"
+  | "setThreshold"
+  | "setSelectedZones"
+  | "toggleZone"
+  | "toggleLayer"
+  | "setFloodView"
+  | "setFloodOpacity"
+  | "setPaiOpacity"
+  | "setDiffOpacity"
+  | "setRiskParam"
+  | "lockRiskParams"
+  | "setTheme"
+  | "toggleTheme"
+  | "toggleDrawer"
+  | "toggleLegend"
+  | "toggleLayersPanel"
+  | "toggleBasemapPanel"
+  | "toggleSensitivityPanel"
+  | "toggleComuneFilterPanel"
+  | "setSelectedComuni"
+  | "toggleComune"
+  | "clearComuni"
+  | "addUserLayer"
+  | "removeUserLayer"
+  | "updateUserLayer"
+  | "addUserPolygon"
+  | "removeUserPolygon"
+  | "updateUserPolygon"
+  | "setDrawingMode"
+  | "setView3D"
+  | "toggleView3D"
+  | "setPoiColor"
+  | "resetPoiColors"
+  | "togglePoiCategory"
+  | "toggleGroup"
+  | "toggleOverlayGroup"
+  | "setSearch"
+  | "reset"
 > = {
+  susceptibilityStyle: {
+    bodies: { minClass: 3, opacity: 0.45 },
+    diffuse: { minClass: 3, opacity: 0.45 },
+  },
   model: "j3",
   basemap: "outdoors",
   threshold: 0.5,
   selectedZones: [],
   layers: {
-    susceptibility: true,
-    smoothHeatmap: true,
+    susceptibility: false,
+    smoothHeatmap: false,
     iffi: true,
     zoneBoundaries: false,
     roads: false,
@@ -497,7 +550,7 @@ const initial: Omit<
     pai: false,
     diff: false,
     floodHistorical: false,
-    v2Bodies: false,
+    v2Bodies: true,
     v2Diffuse: false,
   },
   floodView: "combined",
@@ -505,8 +558,14 @@ const initial: Omit<
   paiOpacity: 0.85,
   diffOpacity: 0.9,
   riskParams: {
-    roads: { j2: { ...riskDefaults.roads.j2 }, j3: { ...riskDefaults.roads.j3 } },
-    trails: { j2: { ...riskDefaults.trails.j2 }, j3: { ...riskDefaults.trails.j3 } },
+    roads: {
+      j2: { ...riskDefaults.roads.j2 },
+      j3: { ...riskDefaults.roads.j3 },
+    },
+    trails: {
+      j2: { ...riskDefaults.trails.j2 },
+      j3: { ...riskDefaults.trails.j3 },
+    },
   },
   riskParamsDefaults: riskDefaults,
   theme: initialTheme(),
@@ -526,18 +585,25 @@ const initial: Omit<
     ...((userData.poiColors ?? {}) as Partial<Record<PoiCategory, string>>),
   },
   poiCategoryVisible: (() => {
-    const base = Object.fromEntries(POI_CATEGORIES.map((c) => [c, true])) as Record<
-      PoiCategory,
-      boolean
+    const base = Object.fromEntries(
+      POI_CATEGORIES.map((c) => [c, true]),
+    ) as Record<PoiCategory, boolean>;
+    const stored = (userData.poiCategoryVisible ?? {}) as Partial<
+      Record<PoiCategory, boolean>
     >;
-    const stored = (userData.poiCategoryVisible ?? {}) as Partial<Record<PoiCategory, boolean>>;
     for (const c of POI_CATEGORIES) {
       const v = stored[c];
       if (typeof v === "boolean") base[c] = v;
     }
     return base;
   })(),
-  groupOpen: { view: true, monitoring: true, analytics: true, model: true, modelV2: true },
+  groupOpen: {
+    view: true,
+    monitoring: true,
+    analytics: true,
+    model: true,
+    modelV2: true,
+  },
   overlayGroupOpen: { landslide: true, flood: false, context: false },
   search: { query: "", placeName: null },
 };
@@ -561,7 +627,8 @@ export const useAppStore = create<AppState>((set) => ({
     set((s) => {
       const on = !s.layers[k];
       const next = { ...s.layers, [k]: on };
-      if (on) for (const other of SURFACE_EXCLUDES[k] ?? []) next[other] = false;
+      if (on)
+        for (const other of SURFACE_EXCLUDES[k] ?? []) next[other] = false;
       return { layers: next };
     }),
   setFloodView: (v) => set({ floodView: v }),
@@ -603,8 +670,10 @@ export const useAppStore = create<AppState>((set) => ({
     }),
   toggleDrawer: () => set((s) => ({ drawerOpen: !s.drawerOpen })),
   toggleLegend: () => set((s) => ({ legendOpen: !s.legendOpen })),
-  toggleLayersPanel: () => set((s) => ({ layersPanelOpen: !s.layersPanelOpen })),
-  toggleBasemapPanel: () => set((s) => ({ basemapPanelOpen: !s.basemapPanelOpen })),
+  toggleLayersPanel: () =>
+    set((s) => ({ layersPanelOpen: !s.layersPanelOpen })),
+  toggleBasemapPanel: () =>
+    set((s) => ({ basemapPanelOpen: !s.basemapPanelOpen })),
   toggleSensitivityPanel: () =>
     set((s) => ({ sensitivityPanelOpen: !s.sensitivityPanelOpen })),
   toggleComuneFilterPanel: () =>
@@ -645,7 +714,9 @@ export const useAppStore = create<AppState>((set) => ({
     }),
   updateUserLayer: (id, patch) =>
     set((s) => {
-      const next = s.userLayers.map((l) => (l.id === id ? { ...l, ...patch } : l));
+      const next = s.userLayers.map((l) =>
+        l.id === id ? { ...l, ...patch } : l,
+      );
       persistFromState({ ...s, userLayers: next });
       return { userLayers: next };
     }),
@@ -675,7 +746,9 @@ export const useAppStore = create<AppState>((set) => ({
     }),
   updateUserPolygon: (id, patch) =>
     set((s) => {
-      const next = s.userPolygons.map((p) => (p.id === id ? { ...p, ...patch } : p));
+      const next = s.userPolygons.map((p) =>
+        p.id === id ? { ...p, ...patch } : p,
+      );
       persistFromState({ ...s, userPolygons: next });
       return { userPolygons: next };
     }),
@@ -696,7 +769,10 @@ export const useAppStore = create<AppState>((set) => ({
     }),
   togglePoiCategory: (category) =>
     set((s) => {
-      const next = { ...s.poiCategoryVisible, [category]: !s.poiCategoryVisible[category] };
+      const next = {
+        ...s.poiCategoryVisible,
+        [category]: !s.poiCategoryVisible[category],
+      };
       persistFromState({ ...s, poiCategoryVisible: next });
       return { poiCategoryVisible: next };
     }),

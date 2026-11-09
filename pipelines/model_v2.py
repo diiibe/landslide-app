@@ -242,6 +242,8 @@ def build_layer(
         min_zoom=RASTER_ZOOMS[0],
         max_zoom=RASTER_ZOOMS[1],
     )
+    from pipelines.threshold_tiles import write_threshold_tiles
+    write_threshold_tiles(tiles_dir / f"v2_{name}_raster.pmtiles", len(edges) - 1)
     for z, st in sorted(raster.items()):
         print(f"{name} raster z{z}: {st['tiles']} tiles, max {st['max_bytes'] / 1024:.0f} KB")
 

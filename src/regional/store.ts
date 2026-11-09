@@ -35,11 +35,13 @@ interface RegionalState {
   detailId: string | null;
   filters: Record<string, string>;
   tab: "layers" | "analysis";
+  catalogOpen: boolean;
   query: string;
   activeOnly: boolean;
   refreshKey: number;
 }
 export const useRegionalStore = create<RegionalState>(() => ({
+  catalogOpen: false,
   catalog: null,
   catalogError: null,
   ...initial,

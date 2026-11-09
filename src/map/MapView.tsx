@@ -211,7 +211,7 @@ const V2_LAYER_KEY: Record<V2Layer, "v2Bodies" | "v2Diffuse"> = {
 function applyModelV2(m: maplibregl.Map, which: V2Layer): void {
   const on = useAppStore.getState().layers[V2_LAYER_KEY[which]];
   try {
-    setModelV2Visible(m, which, on, v2BeforeId(m));
+    setModelV2Visible(m, which, on, v2BeforeId(m), useAppStore.getState().susceptibilityStyle[which]);
   } catch {
     // Style still loading: the next `style.load` runs setupModelLayers,
     // which applies the current toggle state.
@@ -295,6 +295,7 @@ export function MapView() {
   const floodHistoricalOn = useAppStore((s) => s.layers.floodHistorical);
   const zoneBoundariesOn = useAppStore((s) => s.layers.zoneBoundaries);
   const heatOn = useAppStore((s) => s.layers.smoothHeatmap);
+  const susceptibilityStyle = useAppStore((s) => s.susceptibilityStyle);
   const v2BodiesOn = useAppStore((s) => s.layers.v2Bodies);
   const v2DiffuseOn = useAppStore((s) => s.layers.v2Diffuse);
   const roadsOn = useAppStore((s) => s.layers.roads);
@@ -477,11 +478,11 @@ export function MapView() {
 
   useEffect(() => {
     if (mapRef.current) applyModelV2(mapRef.current, "bodies");
-  }, [v2BodiesOn]);
+  }, [v2BodiesOn, susceptibilityStyle.bodies]);
 
   useEffect(() => {
     if (mapRef.current) applyModelV2(mapRef.current, "diffuse");
-  }, [v2DiffuseOn]);
+  }, [v2DiffuseOn, susceptibilityStyle.diffuse]);
 
   useEffect(() => {
     if (mapRef.current) setRoadsVisible(mapRef.current, roadsOn);

@@ -220,7 +220,7 @@ export function buildV2PopupNode(p: V2PopupProps): HTMLElement {
 
   const title = document.createElement("div");
   title.className = "fvg-popup__title";
-  title.textContent = `Modello v2 · ${V2_LAYER_LABEL[p.layer]}`;
+  title.textContent = `Suscettibilità · ${V2_LAYER_LABEL[p.layer]}`;
   root.appendChild(title);
 
   const cls = document.createElement("div");

@@ -55,14 +55,14 @@ export function DrawingPanel() {
 
   const ready = preview.phase === "ready";
   return (
-    <div className={styles.panel} role="dialog" aria-label="Drawing controls">
+    <div className={styles.panel} role="dialog" aria-label="Disegno area">
       <div className={styles.head}>
         <span className={styles.dot} aria-hidden="true" />
-        <span className={styles.ttl}>{ready ? "Save area" : "Drawing…"}</span>
+        <span className={styles.ttl}>{ready ? "Salva area" : "Disegno…"}</span>
       </div>
       <div className={styles.body}>
         <div className={styles.kvRow}>
-          <span className={styles.kvLabel}>Vertices</span>
+          <span className={styles.kvLabel}>Vertici</span>
           <span className={styles.kvValue}>{preview.vertexCount}</span>
         </div>
         <div className={styles.kvRow}>
@@ -73,14 +73,14 @@ export function DrawingPanel() {
         </div>
         {!ready && (
           <p className={styles.hint}>
-            Tap to add vertices. Double-tap the last vertex to close the
-            polygon and save its stats.
+            Tocca per aggiungere vertici. Tocca due volte l’ultimo vertice per
+            chiudere e salvare l’area geografica.
           </p>
         )}
         {ready && (
           <>
             <label className={styles.formRow}>
-              <span className={styles.kvLabel}>Name</span>
+              <span className={styles.kvLabel}>Nome</span>
               <input
                 type="text"
                 className={styles.input}
@@ -91,7 +91,7 @@ export function DrawingPanel() {
               />
             </label>
             <div className={styles.formRow}>
-              <span className={styles.kvLabel}>Colour</span>
+              <span className={styles.kvLabel}>Colore</span>
               <ColorButton
                 value={color}
                 onChange={setColor}
@@ -107,7 +107,7 @@ export function DrawingPanel() {
             className={styles.cancel}
             onClick={cancelDrawing}
           >
-            {ready ? "Discard" : "Cancel"}
+            {ready ? "Scarta" : "Annulla"}
           </button>
           {ready && (
             <button
@@ -116,7 +116,7 @@ export function DrawingPanel() {
               onClick={() => commitDrawing(name, color)}
               disabled={!preview.geometry}
             >
-              Save area
+              Salva area
             </button>
           )}
         </div>

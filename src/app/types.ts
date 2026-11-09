@@ -76,16 +76,17 @@ export interface UserPolygonStats {
   /** km² of the polygon itself. */
   areaKm2: number;
   /** Susceptibility cells visible *inside* the polygon at save time. */
-  cellsVisible: number;
-  cellsAboveThreshold: number;
-  meanP: number;
-  medianP: number;
+  cellsVisible: number | null;
+  cellsAboveThreshold: number | null;
+  meanP: number | null;
+  medianP: number | null;
   /** IFFI feature count whose centroid falls inside the polygon. */
-  iffiCount: number;
+  iffiCount: number | null;
   /** Threshold + model in force when the stats were computed — without
    *  this the numbers above are meaningless out of context. */
-  threshold: number;
-  model: ModelId;
+  threshold: number | null;
+  model: ModelId | null;
+  unavailableReason?: string;
 }
 
 export interface UserPolygon {
@@ -114,7 +115,6 @@ export const MODEL_ZONE_COUNT: Record<ModelId, number> = {
 /** The two v2 layers. Read apart: never merged into one map. */
 export type V2Layer = "bodies" | "diffuse";
 export const V2_LAYERS: V2Layer[] = ["bodies", "diffuse"];
-
 
 export type Basemap = "outdoors" | "light" | "satellite" | "dark";
 export type Theme = "light" | "dark";
@@ -180,7 +180,12 @@ export interface ViewStats {
   captured_above_threshold: number;
   hit_rate: number;
   precision: number;
-  prob: { mean: number; median: number; p99: number; above_threshold_pct: number };
+  prob: {
+    mean: number;
+    median: number;
+    p99: number;
+    above_threshold_pct: number;
+  };
   /** 10 bins, each is the share of visible cells in that p-range. */
   histogram: number[];
   /** Per-zone mean probability, scaled 0..1, in the order returned by ModelStats.zones. */

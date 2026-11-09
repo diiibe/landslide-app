@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useState, type ComponentType } from "react";
 import styles from "./App.module.css";
-import { RegionalPanel, LayerButton } from "@/regional/Panel";
+import { RegionalPanel } from "@/regional/Panel";
+import { CatalogButton, CatalogBrowser } from "@/regional/CatalogBrowser";
 import { RegionalRuntime } from "@/regional/Runtime";
 import { TwinRuntime } from "@/digital-twin/Runtime";
 import { parseUserFile } from "@/lib/upload";
@@ -16,32 +17,18 @@ import { IconButtons } from "@/topbar/IconButtons";
 // the stub synchronously without dealing with Suspense fallbacks. The
 // production build dead-code-eliminates this branch because
 // `import.meta.env.MODE` is statically replaced by Vite.
-const MapView: ComponentType = import.meta.env.MODE === "test"
-  ? (await import("@/map/MapView")).MapView
-  : lazy(() =>
-      import("@/map/MapView").then((m) => ({ default: m.MapView })),
-    );
-import { ZonesPill } from "@/map-overlays/ZonesPill";
+const MapView: ComponentType =
+  import.meta.env.MODE === "test"
+    ? (await import("@/map/MapView")).MapView
+    : lazy(() => import("@/map/MapView").then((m) => ({ default: m.MapView })));
 import { BasemapPanel } from "@/map-overlays/BasemapPanel";
-import { SensitivityPanel } from "@/map-overlays/SensitivityPanel";
-import { ComuneFilterPanel } from "@/map-overlays/ComuneFilterPanel";
-import { PoiLegendPanel } from "@/map-overlays/PoiLegendPanel";
 import { DrawingPanel } from "@/map-overlays/DrawingPanel";
 import { Legend } from "@/map-overlays/Legend";
-import { ThresholdControl } from "@/map-overlays/ThresholdControl";
 import { Drawer } from "@/drawer/Drawer";
-import { Group } from "@/drawer/Group";
-import { ViewPanel } from "@/drawer/ViewPanel";
-import { MonitoringPanel } from "@/drawer/MonitoringPanel";
-import { AnalyticsPanel } from "@/drawer/AnalyticsPanel";
-import { ModelPanel } from "@/drawer/ModelPanel";
-import { ModelV2Panel } from "@/drawer/ModelV2Panel";
-import { JStatsNote } from "@/drawer/JStatsNote";
 import { useAppStore } from "@/app/store";
 
 export default function App() {
   const drawerOpen = useAppStore((s) => s.drawerOpen);
-  const v2On = useAppStore((s) => s.layers.v2Bodies || s.layers.v2Diffuse);
   const addUserLayer = useAppStore((s) => s.addUserLayer);
 
   // Drag & drop on the map area: accept the same file types as the
@@ -115,33 +102,30 @@ export default function App() {
       )}
       <TwinRuntime />
       <RegionalRuntime />
-      <TopBar tabs={<LayerButton />} search={<SearchLocality />} icons={<IconButtons />} />
-      <div className={styles.body} data-workspace="unified" data-drawer={drawerOpen ? "open" : "closed"}>
+      <CatalogBrowser />
+      <TopBar
+        tabs={<CatalogButton />}
+        search={<SearchLocality />}
+        icons={<IconButtons />}
+      />
+      <div
+        className={styles.body}
+        data-workspace="unified"
+        data-drawer={drawerOpen ? "open" : "closed"}
+      >
         <div className={styles.map}>
           <Suspense fallback={<MapSkeleton />}>
             <MapView />
           </Suspense>
-          <ZonesPill /><ThresholdControl />
           <div className={styles.rightStack}>
             <BasemapPanel />
           </div>
-          {<div className={styles.rightOverlays}>
-            <SensitivityPanel />
-            <ComuneFilterPanel />
-            <PoiLegendPanel />
-          </div>}
-          <Legend /><DrawingPanel />
+
+          <Legend />
+          <DrawingPanel />
         </div>
-        <Drawer mobileSheet label="Livelli e analisi" triggerLabel="Livelli">
-          <RegionalPanel analysis={<>
-            {v2On ? <JStatsNote /> : <>
-              <Group id="view" label="View"><ViewPanel /></Group>
-              <Group id="monitoring" label="Monitoring"><MonitoringPanel /></Group>
-              <Group id="analytics" label="Analytics"><AnalyticsPanel /></Group>
-              <Group id="model" label="Model"><ModelPanel /></Group>
-            </>}
-            <Group id="modelV2" label="Metriche v2"><ModelV2Panel /></Group>
-          </>} />
+        <Drawer mobileSheet label="Sulla mappa" triggerLabel="Livelli">
+          <RegionalPanel />
         </Drawer>
       </div>
     </div>
