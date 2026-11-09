@@ -4,6 +4,7 @@ export type IconName =
   | "catalog"
   | "layers"
   | "folder"
+  | "folderOpen"
   | "chevron"
   | "close"
   | "plus"
@@ -50,6 +51,7 @@ const paths: Record<IconName, ReactNode> = {
       <path d="m3 10.5 7 4 7-4M3 14l7 4 7-4" />
     </>
   ),
+  folderOpen: <path d="M2.5 8V4.5h5l2 2h8V9M2.5 8h15l-2 8.5h-13Z" />,
   folder: <path d="M2.5 6V4.5h5l2 2h8v10h-15Z" />,
   chevron: <path d="m8 5 5 5-5 5" />,
   close: <path d="m5 5 10 10M15 5 5 15" />,

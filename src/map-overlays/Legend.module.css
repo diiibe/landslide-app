@@ -187,3 +187,15 @@
 .legend[data-open="true"] .body {
   animation: var(--motion-fade);
 }
+
+.legend,
+.ttl {
+  font-size: var(--text-caption);
+}
+.title,
+.v2Copy,
+.v2Note,
+.reading summary {
+  font-size: var(--text-caption);
+  line-height: 1.6;
+}

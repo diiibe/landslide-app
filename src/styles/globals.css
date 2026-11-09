@@ -165,7 +165,8 @@ button:disabled {
   background: var(--c-selected);
   color: var(--c-text);
 }
-input[type="checkbox"] {
+input[type="checkbox"],
+input[type="radio"] {
   accent-color: var(--c-action);
 }
 input[type="range"] {

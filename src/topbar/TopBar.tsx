@@ -54,7 +54,22 @@ export function TopBar({ tabs, search, icons }: Props) {
           <Icon name="filter" />
           Strumenti
         </button>
-        <div id="map-tools" className={styles.spacer} data-open={toolsOpen}>
+        <div
+          id="map-tools"
+          className={styles.spacer}
+          data-open={toolsOpen}
+          onClick={(event) => {
+            if (
+              toolsOpen &&
+              (event.target as Element).closest("button[data-close-tools]")
+            ) {
+              setToolsOpen(false);
+              tools.current
+                ?.querySelector("button")
+                ?.focus({ preventScroll: true });
+            }
+          }}
+        >
           {icons}
         </div>
       </div>

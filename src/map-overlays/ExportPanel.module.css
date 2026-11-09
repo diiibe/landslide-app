@@ -301,3 +301,26 @@
   font-size: 12px;
   color: var(--c-text-muted);
 }
+
+.panel {
+  border-color: var(--c-edge);
+  box-shadow: var(--shadow-modal);
+}
+.backdrop {
+  background: var(--c-scrim);
+}
+.ttl {
+  font-size: var(--text-heading);
+  font-weight: 700;
+}
+.radioName,
+.rowName,
+.export {
+  font-size: var(--text-body);
+}
+.hint,
+.sectionTitle,
+.subTitle {
+  font-size: var(--text-caption);
+  line-height: 1.6;
+}

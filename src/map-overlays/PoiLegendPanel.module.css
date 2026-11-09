@@ -220,3 +220,10 @@
   min-height: 44px;
   font-size: 12px;
 }
+
+.name {
+  font-size: var(--text-body);
+}
+.groupTitle {
+  font-size: var(--text-caption);
+}

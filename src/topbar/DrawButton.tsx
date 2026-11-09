@@ -13,6 +13,7 @@ export function DrawButton() {
   return (
     <button
       type="button"
+      data-close-tools="true"
       className={styles.btn}
       data-active={drawing}
       title={drawing ? "Termina disegno" : "Disegna e salva un’area geografica"}

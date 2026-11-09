@@ -143,3 +143,22 @@
 .body[data-drawer="open"] :global(.drawer) {
   animation: var(--motion-fade);
 }
+
+.body :global(.drawer) {
+  background-color: var(--c-surface-2);
+  background-image: var(--surface-texture);
+}
+@supports (backdrop-filter: blur(16px)) {
+  .body :global(.drawer) {
+    background-color: color-mix(in srgb, var(--c-surface-2) 97%, transparent);
+  }
+}
+
+.body :global(.drawer) {
+  scroll-padding-top: 144px;
+}
+@media (max-width: 768px), (max-height: 500px) and (pointer: coarse) {
+  .body :global(.drawer) {
+    scroll-padding-top: 128px;
+  }
+}

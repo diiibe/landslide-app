@@ -29,6 +29,7 @@ import { useAppStore } from "@/app/store";
 
 export default function App() {
   const drawerOpen = useAppStore((s) => s.drawerOpen);
+  const drawingMode = useAppStore((s) => s.drawingMode);
   const addUserLayer = useAppStore((s) => s.addUserLayer);
 
   // Drag & drop on the map area: accept the same file types as the
@@ -111,7 +112,7 @@ export default function App() {
       <div
         className={styles.body}
         data-workspace="unified"
-        data-drawer={drawerOpen ? "open" : "closed"}
+        data-drawer={drawerOpen && !drawingMode ? "open" : "closed"}
       >
         <div className={styles.map}>
           <Suspense fallback={<MapSkeleton />}>
@@ -121,7 +122,7 @@ export default function App() {
             <BasemapPanel />
           </div>
 
-          <Legend />
+          {!drawingMode && <Legend />}
           <DrawingPanel />
         </div>
         <Drawer mobileSheet label="Sulla mappa" triggerLabel="Livelli">

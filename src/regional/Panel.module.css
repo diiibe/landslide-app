@@ -359,3 +359,59 @@
   background: var(--c-surface-raised);
   box-shadow: var(--shadow-control);
 }
+
+.panel {
+  font-size: var(--text-body);
+  gap: 24px;
+}
+.panelSearch {
+  position: sticky;
+  top: 64px;
+  z-index: 2;
+  margin: -20px -20px 0;
+  padding: 16px 20px;
+  background: var(--c-surface-2);
+  background-image: var(--surface-texture);
+  border-bottom: 1px solid var(--c-border);
+}
+.sectionHead h2,
+.browseSection > h2 {
+  font-size: var(--text-body);
+  font-weight: 700;
+}
+.sourceState {
+  font-size: var(--text-caption);
+  padding-left: 22px;
+}
+.detailHead h2 {
+  font-size: var(--text-heading);
+  line-height: 1.4;
+  font-weight: 700;
+}
+.toolbar > p:first-child {
+  font-size: var(--text-body);
+}
+.caption,
+.field,
+.metadata dt,
+.metadata dd,
+.panel summary {
+  font-size: var(--text-caption);
+}
+.metadata dd {
+  font-size: var(--text-body);
+}
+.activeSection {
+  padding: 8px 12px 0;
+}
+@media (max-width: 768px), (max-height: 500px) and (pointer: coarse) {
+  .panelSearch {
+    top: 56px;
+    margin: -16px -16px 0;
+    padding: 12px 16px;
+  }
+}
+
+.detail {
+  scroll-margin-top: 12px;
+}

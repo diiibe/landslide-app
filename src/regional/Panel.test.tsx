@@ -5,6 +5,13 @@ import { useRegionalStore } from "./store";
 import { useTwinStore } from "@/digital-twin/store";
 import type { LayerDefinition } from "./types";
 vi.mock("@/map-overlays/LayersPanel", () => ({ LayersPanel: () => null }));
+vi.stubGlobal(
+  "ResizeObserver",
+  class {
+    observe() {}
+    disconnect() {}
+  },
+);
 afterEach(() => {
   useRegionalStore.setState({
     catalog: null,
@@ -31,18 +38,16 @@ it("lets the user inspect separate observations at identical coordinates and lab
     cadence: "",
     color: "#222222",
   };
-  const features = ["A", "B"].map(
-    (id, i): GeoJSON.Feature => ({
-      type: "Feature",
-      geometry: { type: "Point", coordinates: [13.7, 45.7] },
-      properties: {
-        __featureId: id,
-        __name: id,
-        __value: i,
-        __displayValue: String(i),
-      },
-    }),
-  );
+  const features = ["A", "B"].map((id, i): GeoJSON.Feature => ({
+    type: "Feature",
+    geometry: { type: "Point", coordinates: [13.7, 45.7] },
+    properties: {
+      __featureId: id,
+      __name: id,
+      __value: i,
+      __displayValue: String(i),
+    },
+  }));
   useTwinStore.setState({ selection: null });
   useRegionalStore.setState({
     catalog: { generatedAt: "2026-01-01", layers: [layer] },
@@ -62,7 +67,8 @@ it("lets the user inspect separate observations at identical coordinates and lab
   });
   render(<RegionalPanel />);
   const choose = screen.getByLabelText("Elementi nello stesso punto");
-  fireEvent.change(choose, { target: { value: "B" } });
+  fireEvent.click(choose);
+  fireEvent.click(screen.getByRole("option", { name: /^2\. B/ }));
   expect(
     useRegionalStore.getState().selection?.feature.properties?.__name,
   ).toBe("B");

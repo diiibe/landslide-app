@@ -94,6 +94,20 @@ export const MAP_LAYERS: {
     description: "Rifugi e bivacchi da OpenStreetMap.",
   },
 ];
+/** Only replace machine codes when the recorded source URL identifies the portal. */
+export function displayProvider(layer: LayerDefinition): string {
+  if (/^[a-z0-9]{4}-[a-z0-9]{4}$/.test(layer.provider)) {
+    try {
+      if (
+        new URL(layer.sourceUrl).hostname === "www.dati.friuliveneziagiulia.it"
+      )
+        return "Open Data FVG";
+    } catch {
+      /* Keep the original attribution if its origin is unknown. */
+    }
+  }
+  return layer.provider;
+}
 export interface CatalogItem {
   layer: LayerDefinition;
   theme: ThemeId;
@@ -225,6 +239,7 @@ export function filterItems(
         l.description,
         l.sourceId,
         l.provider,
+        displayProvider(l),
         l.subfolder,
         THEMES[i.theme],
         l.metric?.unit,
@@ -233,7 +248,7 @@ export function filterItems(
     return (
       words.every((w) => text.includes(w)) &&
       (!f.theme || f.theme === i.theme) &&
-      (!f.provider || f.provider === l.provider) &&
+      (!f.provider || f.provider === displayProvider(l)) &&
       (!f.type || f.type === itemType(i)) &&
       (!f.cadence || f.cadence === itemCadence(i)) &&
       (!f.availability ||

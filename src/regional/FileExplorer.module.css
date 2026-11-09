@@ -1,0 +1,174 @@
+.explorer {
+  min-width: 0;
+  font-size: var(--text-body);
+}
+.path {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-wrap: wrap;
+  padding: 0 0 12px;
+  min-height: 40px;
+  color: var(--c-text-muted);
+  font-size: var(--text-caption);
+  line-height: 1.5;
+}
+.path button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px !important;
+  min-height: 32px !important;
+  font-size: inherit !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--c-text-muted) !important;
+}
+.path button:hover {
+  color: var(--c-action) !important;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.path > svg {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+}
+.path button svg {
+  width: 14px;
+  height: 14px;
+}
+.path [aria-current] {
+  color: var(--c-text) !important;
+  font-weight: 600;
+}
+.path > span {
+  overflow-wrap: anywhere;
+  padding: 4px 6px;
+}
+.tree {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 3px;
+}
+.folder {
+  display: grid !important;
+  grid-template-columns: 12px 18px minmax(0, 1fr) auto;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  align-items: center;
+  min-height: 48px !important;
+  padding: 10px 8px !important;
+  border: 1px solid transparent !important;
+  background: transparent !important;
+  border-radius: var(--radius-sm) !important;
+  text-align: left;
+  box-shadow: none !important;
+  font-size: var(--text-body) !important;
+  line-height: 1.5 !important;
+  font-weight: 500 !important;
+}
+.folder > svg {
+  width: 18px;
+  height: 18px;
+  color: var(--c-text-muted);
+}
+.folder > svg:first-child {
+  width: 12px;
+  height: 12px;
+  transition: transform 160ms var(--e-quart);
+}
+.folder > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.folder > small {
+  font-size: var(--text-caption);
+  font-variant-numeric: tabular-nums;
+  color: var(--c-text-muted);
+  text-align: right;
+  padding-left: 4px;
+}
+.folder:hover {
+  background: color-mix(
+    in srgb,
+    var(--c-surface-raised) 68%,
+    transparent
+  ) !important;
+  border-color: var(--c-border) !important;
+}
+.folder[aria-expanded="true"] {
+  background: var(--c-selected) !important;
+  color: var(--c-action) !important;
+  border-color: var(--c-border) !important;
+  font-weight: 650 !important;
+}
+.folder[aria-expanded="true"] > svg {
+  color: var(--c-action);
+}
+.folder[aria-expanded="true"] > svg:first-child {
+  transform: rotate(90deg);
+}
+.branch {
+  margin: 4px 0 8px 14px;
+  padding-left: 10px;
+  border-left: 1px solid var(--c-border-strong);
+  min-width: 0;
+}
+.collection {
+  grid-template-columns: 12px minmax(0, 1fr) auto;
+  font-size: var(--text-caption) !important;
+  gap: 7px;
+}
+.collection > svg:nth-child(2) {
+  display: none;
+}
+.leaf {
+  position: relative;
+  min-width: 0;
+}
+.leaf::before {
+  content: "";
+  position: absolute;
+  left: -10px;
+  top: 30px;
+  width: 7px;
+  border-top: 1px solid var(--c-border-strong);
+}
+.more {
+  width: 100%;
+  margin: 8px 0;
+  font-size: var(--text-caption) !important;
+}
+.resultHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-bottom: 8px;
+  font-size: var(--text-caption);
+  color: var(--c-text-muted);
+}
+.resultHead button {
+  border: 0 !important;
+  background: transparent !important;
+  min-height: 36px !important;
+  padding: 6px !important;
+  font-size: inherit !important;
+}
+.empty {
+  font-size: var(--text-body);
+  line-height: 1.7;
+  color: var(--c-text-muted);
+  padding: 8px 4px;
+}
+@media (pointer: coarse) {
+  .path button,
+  .resultHead button {
+    min-height: 44px !important;
+  }
+}

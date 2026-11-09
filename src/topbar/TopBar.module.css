@@ -179,3 +179,16 @@
     animation: none;
   }
 }
+
+.bar {
+  background-image: var(--surface-sheen);
+}
+.brand {
+  font-size: var(--text-reading);
+  letter-spacing: -0.45px;
+}
+@media (max-width: 360px) {
+  .brand {
+    font-size: var(--text-body);
+  }
+}

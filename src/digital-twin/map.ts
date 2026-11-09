@@ -91,6 +91,7 @@ export function mountTwinMap(map: MLMap): () => void {
     if (
       panel &&
       useAppStore.getState().drawerOpen &&
+      !useAppStore.getState().drawingMode &&
       getComputedStyle(panel).position === "absolute"
     ) {
       const r = panel.getBoundingClientRect();
@@ -519,7 +520,8 @@ export function mountTwinMap(map: MLMap): () => void {
     }),
     unsubA = useAppStore.subscribe((s, p) => {
       if (s.view3D !== p.view3D) sync();
-      if (s.drawerOpen !== p.drawerOpen) layout();
+      if (s.drawerOpen !== p.drawerOpen || s.drawingMode !== p.drawingMode)
+        layout();
     });
   const timer = setInterval(() => {
     if (!document.hidden) sync();
