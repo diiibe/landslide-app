@@ -1,7 +1,8 @@
+import { metricTone } from "./mapStyle";
 import { Popup, type Map as MLMap, type MapGeoJSONFeature, type MapMouseEvent, type GeoJSONSource } from "maplibre-gl";
 import { useAppearance } from "@/ui/appearance";
 import { useAppStore } from "@/app/store";
-import { VARIABLES, formatTime, formatValue, type Variable } from "@/digital-twin/data";
+import { sensorTone, VARIABLES, formatTime, formatValue, type Variable } from "@/digital-twin/data";
 import { useTwinStore } from "@/digital-twin/store";
 import { selectObject, useExperienceStore } from "@/spaces/store";
 import { isProbeClick } from "@/spaces/interactions";
@@ -38,7 +39,7 @@ export function readingText(feature: MapGeoJSONFeature) {
     p.__censored ? "Valore censurato" : "",
     entry?.error || feed?.error ? "Aggiornamento non riuscito" : entry?.snapshot || feed?.snapshot ? "Copia salvata" : "",
   ].filter(Boolean).join(" · ");
-  return { title, value, detail, color: variable ? VARIABLES[variable].colors[1] : layer?.color ?? "#b68c4c" };
+  return { title, value, detail, color: variable ? sensorTone(Number(p.value),variable,p.stale===true) : layer ? metricTone(layer,p,entry?.data) : "#b68c4c" };
 }
 export function selectPointReading(feature: MapGeoJSONFeature) {
   const p = feature.properties ?? {}, layer = readingLayer(feature);

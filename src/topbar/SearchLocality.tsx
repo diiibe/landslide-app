@@ -1,182 +1,139 @@
-import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
 import { useAppStore } from "@/app/store";
+import { asSuggestion, geocodingURL, type Suggestion } from "./geocoding";
 import styles from "./SearchLocality.module.css";
-
 const TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string | undefined;
-const FVG_BBOX = "12.3,45.5,13.95,46.65";
-const DEBOUNCE_MS = 220;
-
-interface Suggestion {
-  id: string;
-  name: string;
-  context: string;
-  lng: number;
-  lat: number;
-}
-
-function flyTo(s: Suggestion): void {
-  window.dispatchEvent(
-    new CustomEvent("fvg:flyto", { detail: { lng: s.lng, lat: s.lat } }),
-  );
-}
-
-/**
- * P1.7: validate the geocoder payload before consuming it. Mapbox can
- * reply with a partial / malformed feature shape; without this guard a
- * crashy NaN coord could be passed to flyTo and lock the camera.
- */
-function asSuggestion(value: unknown): Suggestion | null {
-  if (!value || typeof value !== "object") return null;
-  const f = value as {
-    id?: unknown;
-    text?: unknown;
-    place_name?: unknown;
-    center?: unknown;
-  };
-  if (typeof f.id !== "string" && typeof f.id !== "number") return null;
-  if (typeof f.text !== "string") return null;
-  if (typeof f.place_name !== "string") return null;
-  if (!Array.isArray(f.center) || f.center.length < 2) return null;
-  const lng = f.center[0];
-  const lat = f.center[1];
-  if (typeof lng !== "number" || typeof lat !== "number") return null;
-  if (!Number.isFinite(lng) || !Number.isFinite(lat)) return null;
-  return {
-    id: String(f.id),
-    name: f.text,
-    // Strip the leading "X, " so the context line doesn't repeat the name.
-    context: f.place_name.replace(/^[^,]+,\s*/, ""),
-    lng,
-    lat,
-  };
-}
-
 export function SearchLocality() {
-  const query = useAppStore((s) => s.search.query);
-  const setSearch = useAppStore((s) => s.setSearch);
-
-  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
-  const [activeIdx, setActiveIdx] = useState(-1);
-  const [open, setOpen] = useState(false);
-  // P2.16: distinguish "fetched, zero matches" from "still typing /
-  // debounced". `loading` is true between a 2+ char query landing in
-  // state and the next fetch resolving. We need this to decide whether
-  // to render the "No matches" status row.
-  const [loading, setLoading] = useState(false);
-  const [fetchedFor, setFetchedFor] = useState<string>("");
-  const wrapRef = useRef<HTMLDivElement>(null);
-  // P1.7: AbortController keyed to the in-flight request. Each new debounced
-  // fetch aborts its predecessor so out-of-order responses can't update the
-  // dropdown after a newer query has been issued.
-  const inflightRef = useRef<AbortController | null>(null);
-
-  // Cancel any pending fetch on unmount.
+  const { query, placeName } = useAppStore((s) => s.search),
+    setSearch = useAppStore((s) => s.setSearch);
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]),
+    [active, setActive] = useState(-1),
+    [open, setOpen] = useState(false),
+    [loading, setLoading] = useState(false),
+    [fetchedFor, setFetchedFor] = useState(""),
+    [error, setError] = useState(""),
+    [retry, setRetry] = useState(0);
+  const wrap = useRef<HTMLDivElement>(null),
+    input = useRef<HTMLInputElement>(null),
+    listId = useId(),
+    dismissVersion = useRef(0);
+  const trimmed = query.trim();
   useEffect(() => {
-    return () => inflightRef.current?.abort();
-  }, []);
-
-  // Debounced autocomplete fetch.
-  useEffect(() => {
-    if (!TOKEN) return;
-    const q = query.trim();
-    // Always defer setState into setTimeout so we don't trigger a synchronous
-    // re-render from inside the effect (lint: react-hooks/set-state-in-effect).
+    const ctrl = new AbortController(),
+      version = dismissVersion.current;
+    if (!TOKEN || (placeName && placeName === query)) return () => ctrl.abort();
     const timer = setTimeout(async () => {
-      if (q.length < 2) {
+      setActive(-1);
+      setError("");
+      if (trimmed.length < 2) {
         setSuggestions([]);
-        setActiveIdx(-1);
         setLoading(false);
         setFetchedFor("");
         return;
       }
-      inflightRef.current?.abort();
-      const ctrl = new AbortController();
-      inflightRef.current = ctrl;
       setLoading(true);
-      const url =
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(q)}.json` +
-        `?access_token=${TOKEN}&country=it&bbox=${FVG_BBOX}` +
-        `&types=place,locality,neighborhood,address,poi&autocomplete=true&limit=6`;
       try {
-        const res = await fetch(url, { signal: ctrl.signal });
-        if (!res.ok) return;
-        const data = (await res.json()) as { features?: unknown[] };
-        // Drop the response if a newer request has superseded us.
-        if (inflightRef.current !== ctrl) return;
-        const next = (data.features ?? [])
-          .map(asSuggestion)
-          .filter((s): s is Suggestion => s !== null);
-        setSuggestions(next);
-        setActiveIdx(next.length > 0 ? 0 : -1);
-        setOpen(true);
-        setFetchedFor(q);
-      } catch {
-        // network failure or aborted request — silently drop
+        const res = await fetch(geocodingURL(trimmed, TOKEN), {
+          signal: ctrl.signal,
+        });
+        if (!res.ok)
+          throw new Error(`Ricerca non disponibile (${res.status}). Riprova.`);
+        const data = (await res.json()) as { features?: unknown };
+        if (!Array.isArray(data.features))
+          throw new Error("Risposta della ricerca non valida. Riprova.");
+        if (ctrl.signal.aborted) return;
+        setSuggestions(
+          data.features.map(asSuggestion).filter((s): s is Suggestion => !!s),
+        );
+        setFetchedFor(trimmed);
+        if (dismissVersion.current === version) setOpen(true);
+      } catch (e) {
+        if (!ctrl.signal.aborted) {
+          setSuggestions([]);
+          setFetchedFor(trimmed);
+          setError(
+            e instanceof Error && /^(Ricerca non disponibile|Risposta della ricerca)/.test(e.message)
+              ? e.message
+              : "Ricerca non raggiungibile. Verifica la connessione e riprova.",
+          );
+          if (dismissVersion.current === version) setOpen(true);
+        }
       } finally {
-        if (inflightRef.current === ctrl) setLoading(false);
+        if (!ctrl.signal.aborted) setLoading(false);
       }
-    }, DEBOUNCE_MS);
-    return () => clearTimeout(timer);
-  }, [query]);
-
-  // Click-outside to close. P1.14: listen on `pointerdown` (covers
-  // mouse + touch + pen). On iOS Safari / Android Chrome with the on-
-  // screen keyboard open, taps outside the dropdown don't reliably
-  // synthesise `mousedown` so the menu stays stuck open. PointerEvents
-  // are supported in every browser we ship to today.
+    }, 220);
+    return () => {
+      clearTimeout(timer);
+      ctrl.abort();
+    };
+  }, [trimmed, query, placeName, retry]);
   useEffect(() => {
     if (!open) return;
-    const onDown = (e: Event) => {
-      if (!wrapRef.current?.contains(e.target as Node)) setOpen(false);
+    const outside = (e: PointerEvent) => {
+      if (!wrap.current?.contains(e.target as Node)) {
+        dismissVersion.current++;
+        setOpen(false);
+      }
     };
-    document.addEventListener("pointerdown", onDown);
-    return () => document.removeEventListener("pointerdown", onDown);
+    document.addEventListener("pointerdown", outside);
+    return () => document.removeEventListener("pointerdown", outside);
   }, [open]);
-
-  const pick = (s: Suggestion) => {
-    setSearch({ query: s.name, placeName: s.name });
+  const current = fetchedFor === trimmed ? suggestions : [];
+  const unavailable = !TOKEN && trimmed.length >= 2;
+  const showStatus =
+    trimmed.length >= 2 &&
+    (unavailable || (!loading && fetchedFor === trimmed));
+  const menuOpen =
+    open &&
+    (current.length > 0 || showStatus || (loading && trimmed.length >= 2));
+  function pick(s: Suggestion) {
+    setSearch({ query: s.fullName, placeName: s.fullName });
     setSuggestions([]);
-    setActiveIdx(-1);
+    setActive(-1);
     setOpen(false);
     setLoading(false);
     setFetchedFor("");
-    flyTo(s);
-  };
-
-  // P2.16: render an empty-state status row when the latest *resolved*
-  // fetch returned zero matches for a 2+ char query. We require
-  // `fetchedFor === query.trim()` so we don't flash a "no matches"
-  // message while the user is still typing past a debounce.
-  const trimmed = query.trim();
-  const hasResults = suggestions.length > 0;
-  const showEmptyState =
-    !loading && trimmed.length >= 2 && !hasResults && fetchedFor === trimmed;
-  const menuOpen = open && (hasResults || showEmptyState);
-
-  const onKey = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "ArrowDown") {
+    setError("");
+    window.dispatchEvent(
+      new CustomEvent("fvg:flyto", {
+        detail: {
+          lng: s.lng,
+          lat: s.lat,
+          zoom: s.zoom,
+          label: s.fullName,
+          precision: s.precision,
+        },
+      }),
+    );
+    if (window.matchMedia?.("(pointer: coarse)").matches) input.current?.blur();
+  }
+  function key(e: KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
       e.preventDefault();
-      if (suggestions.length === 0) return;
-      setActiveIdx((i) => (i + 1) % suggestions.length);
-      setOpen(true);
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      if (suggestions.length === 0) return;
-      setActiveIdx((i) => (i - 1 + suggestions.length) % suggestions.length);
+      if (!current.length) return;
+      setActive((i) =>
+        e.key === "ArrowDown"
+          ? (i + 1) % current.length
+          : i <= 0
+            ? current.length - 1
+            : i - 1,
+      );
       setOpen(true);
     } else if (e.key === "Enter") {
-      const target = activeIdx >= 0 ? suggestions[activeIdx] : suggestions[0];
-      if (target) {
+      const s = current[active >= 0 ? active : 0];
+      if (s && menuOpen) {
         e.preventDefault();
-        pick(target);
+        pick(s);
       }
-    } else if (e.key === "Escape") {
+    } else if (e.key === "Escape" && open) {
+      e.preventDefault();
+      e.stopPropagation();
+      dismissVersion.current++;
       setOpen(false);
     }
-  };
-
+  }
   return (
-    <div className={styles.wrap} ref={wrapRef}>
+    <div className={styles.wrap} ref={wrap}>
       <svg
         className={styles.ico}
         viewBox="0 0 16 16"
@@ -184,63 +141,89 @@ export function SearchLocality() {
         stroke="currentColor"
         strokeWidth="1.6"
         strokeLinecap="round"
-        strokeLinejoin="round"
         aria-hidden="true"
       >
         <circle cx="7" cy="7" r="5" />
         <path d="m14 14-3.1-3.1" />
       </svg>
       <input
+        ref={input}
         className={styles.input}
-        type="text"
-        placeholder="Cerca una località…"
-        aria-label="Cerca una località"
+        type="search"
+        role="combobox"
+        placeholder="Cerca località, via o civico…"
+        aria-label="Cerca località, vie e civici"
         aria-autocomplete="list"
-        aria-expanded={menuOpen}
+        aria-busy={loading}
+        aria-controls={menuOpen && current.length > 0 ? listId : undefined}
+        aria-expanded={menuOpen && current.length > 0}
         aria-activedescendant={
-          activeIdx >= 0 ? `sl-opt-${activeIdx}` : undefined
+          menuOpen && current[active] ? `${listId}-${active}` : undefined
         }
         value={query}
-        onChange={(e) => setSearch({ query: e.target.value, placeName: null })}
-        onFocus={() => suggestions.length > 0 && setOpen(true)}
-        onKeyDown={onKey}
+        onChange={(e) => {
+          setSearch({ query: e.target.value, placeName: null });
+          setOpen(true);
+        }}
+        onFocus={() => setOpen(true)}
+        onKeyDown={key}
       />
       {menuOpen && (
-        <ul className={styles.menu} role="listbox">
-          {hasResults &&
-            suggestions.map((s, i) => (
-              <li
-                id={`sl-opt-${i}`}
-                key={s.id}
-                role="option"
-                aria-selected={i === activeIdx}
-                data-active={i === activeIdx}
-                // P2.16: surface the full locality name on hover/long-press
-                // when ellipsised. iOS Safari shows `title` on long-press
-                // via the action sheet preview; desktop browsers via tooltip.
-                title={s.name}
-                className={styles.opt}
-                onMouseEnter={() => setActiveIdx(i)}
-                onMouseDown={(e) => {
-                  // mousedown (not click) so the input's blur doesn't close
-                  // the list before the selection lands.
-                  e.preventDefault();
-                  pick(s);
-                }}
-              >
-                <span className={styles.optName}>{s.name}</span>
-                <span className={styles.optCtx}>{s.context}</span>
-              </li>
-            ))}
-          {/* P2.16: screen-reader-friendly empty state. `role="status"`
-              announces politely so users typing fast aren't spammed; the
-              row is not selectable as an option. */}
-          {showEmptyState && (
-            <li role="status" className={styles.optEmpty}>
-              Nessun risultato in Friuli Venezia Giulia
-            </li>
+        <div className={styles.menu}>
+          {loading && !current.length && (
+            <div className={styles.optEmpty} role="status">
+              Cerco località, vie e civici…
+            </div>
           )}
-        </ul>
+          {current.length > 0 && (
+            <ul
+              id={listId}
+              role="listbox"
+              aria-label="Indirizzi e località trovati"
+            >
+              {current.map((s, i) => (
+                <li
+                  id={`${listId}-${i}`}
+                  key={s.id}
+                  role="option"
+                  aria-selected={i === active}
+                  data-active={i === active}
+                  title={s.fullName}
+                  className={styles.opt}
+                  onMouseEnter={() => setActive(i)}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => pick(s)}
+                >
+                  <span className={styles.optName}>{s.name}</span>
+                  <span className={styles.optCtx}>
+                    {s.kind} · {s.context}
+                  </span>
+                  {s.precision && (
+                    <span className={styles.precision}>{s.precision}</span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+          {!current.length && showStatus && (
+            <div className={styles.optEmpty} role={error ? "alert" : "status"}>
+              {unavailable
+                ? "Ricerca indirizzi non configurata."
+                : error ||
+                  "Nessuna località, via o civico trovato nell’area di ricerca."}
+              {error && (
+                <button
+                  onClick={() => {
+                    setRetry((v) => v + 1);
+                    input.current?.focus();
+                  }}
+                >
+                  Riprova ricerca
+                </button>
+              )}
+            </div>
+          )}
+        </div>
       )}
     </div>
   );

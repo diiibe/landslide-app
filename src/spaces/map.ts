@@ -1,3 +1,4 @@
+import { createHoverCard } from "@/map/hoverCard";
 import { isPointReadingClick } from "@/regional/pointReadings";
 import { consumeProbeClick } from "./interactions";
 import maplibregl, {
@@ -162,9 +163,7 @@ export function mountExperienceMap(m: MLMap): () => void {
     const asset = scene.sensors.find((a) => a.id === hovered);
     if (!popup || !asset) return;
     const v = reading(scene, asset, at, useExperienceStore.getState().scenario);
-    popup.setText(
-      `${asset.name} · ${v.value.toLocaleString("it-IT", { maximumFractionDigits: 1 })} ${asset.unit} · simulato`,
-    );
+    popup.setDOMContent(createHoverCard(asset.name,`${v.value.toLocaleString("it-IT",{maximumFractionDigits:1})} ${asset.unit} · simulato`,v.status==="alert"?"#ee5143":v.status==="watch"?"#dda13b":scene.tone));
   }
   function sync() {
     clearHover();
@@ -600,11 +599,10 @@ export function mountExperienceMap(m: MLMap): () => void {
           closeOnClick: false,
           offset: 16,
           maxWidth: "230px",
+          className: "fvg-sensor-hover",
         })
           .setLngLat(sensor.coordinates)
-          .setText(
-            `${sensor.name} · ${v.value.toLocaleString("it-IT", { maximumFractionDigits: 1 })} ${sensor.unit} · simulato`,
-          )
+          .setDOMContent(createHoverCard(sensor.name,`${v.value.toLocaleString("it-IT",{maximumFractionDigits:1})} ${sensor.unit} · simulato`,v.status==="alert"?"#ee5143":v.status==="watch"?"#dda13b":scene.tone))
           .addTo(m);
       }
     }

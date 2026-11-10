@@ -440,3 +440,5 @@
 }
 
 .panelSearch { background-size: var(--material-size); background-position: var(--material-position); }
+
+.panel .emptyMap { max-width: 32ch; margin: 0 auto; padding: 20px 8px 24px; text-align: center; text-wrap: balance; color: var(--c-text-muted); font-size: var(--text-body); line-height: 1.7; }

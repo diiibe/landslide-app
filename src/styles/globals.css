@@ -212,3 +212,12 @@ input[type="range"] {
   box-shadow: var(--shadow-panel);
   border-color: var(--c-edge);
 }
+
+.fvg-search-pin { width: 22px; height: 22px; border: 2px solid var(--c-action); border-radius: 50%; background: var(--c-surface); box-shadow: 0 0 0 4px color-mix(in srgb, var(--c-action) 25%, transparent), 0 2px 6px rgb(0 0 0 / .2); pointer-events: none; }
+.fvg-search-pin::after { content: ""; position: absolute; inset: 6px; background: var(--c-action); border-radius: 50%; }
+
+.fvg-sensor-hover .maplibregl-popup-content { padding: 0; border: 0; border-radius: 10px; background: transparent; overflow: hidden; }
+.fvg-sensor-hover .maplibregl-popup-tip { display: none; }
+.fvg-hover-card { --reading-color: #83b990; padding: 11px 13px; border: 1px solid color-mix(in srgb, var(--reading-color) 70%, var(--c-border)); border-radius: 10px; background: color-mix(in srgb, var(--reading-color) 14%, var(--c-surface-raised)); color: var(--c-text); font: 400 12px/1.6 var(--font-stack); overflow-wrap: anywhere; }
+.fvg-hover-card strong { display: block; font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+.fvg-hover-card strong::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--reading-color); margin-right: 7px; }

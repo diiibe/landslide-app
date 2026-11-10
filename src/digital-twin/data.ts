@@ -1,3 +1,4 @@
+import { rampColor } from "@/map/hoverCard";
 /** PCR timestamps are UTC even though the API omits the timezone suffix. */
 export const PCR_API = "https://monitor.protezionecivile.fvg.it/api";
 export const TWIN_DATA = `${import.meta.env.BASE_URL}data/twin/`;
@@ -508,4 +509,11 @@ export function distanceKm(a: [number, number], b: [number, number]): number {
       Math.sin(dlat / 2) ** 2 +
       Math.cos(a[1] * rad) * Math.cos(b[1] * rad) * Math.sin(dlon / 2) ** 2;
   return 6371 * 2 * Math.atan2(Math.sqrt(v), Math.sqrt(1 - v));
+}
+
+export function sensorTone(value: number, variable: Variable, stale=false) {
+  const v=VARIABLES[variable];
+  if(stale)return "#888888";
+  if(!v.comparable)return "#5ebfcc";
+  return rampColor([[v.min,v.colors[0]],[(v.min+v.max)/2,v.colors[1]],[v.max,v.colors[2]]],value);
 }

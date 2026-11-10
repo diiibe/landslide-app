@@ -99,8 +99,7 @@ aggiornamenti dei sensori. I dati e la camera conservano il comportamento esiste
 
 ## Materiale cartografico condiviso
 
-La texture è un’incisione dei confini comunali FVG, ricavata dal GeoJSON locale
-con `scripts/build-interface-material.py`. Il motivo è semplificato e decorativo:
+La texture è un collage di contorni esterni della regione FVG: i comuni del GeoJSON locale vengono uniti, senza bordi comunali interni, e il profilo viene ripetuto con rotazioni e scale controllate da `scripts/build-interface-material.py`. Il motivo è semplificato e decorativo:
 non comunica misure, stati o copertura dei dati. Sostituisce grana casuale e onde
 regolari con una firma direttamente legata al territorio di FriulView.
 
@@ -224,3 +223,21 @@ con la vecchia soglia minima conservano l’insieme cumulativo corrispondente.
 La ricerca Stazione centra direttamente la camera e chiude lo sheet mobile,
 attivando il relativo livello. Le frecce direzionali sono simboli in pixel CSS
 con dimensioni limitate, non segmenti lunghi un numero fisso di metri.
+
+
+## Dettagli di navigazione e ricerca · 0.5.2
+
+- Impostazioni usa una rotella, Disegna area un poligono con vertici, Estensioni
+  un insieme di moduli. Carica percorso distingue l'importazione di tracciati
+  dalle funzioni generali di import/export.
+- Catalogo e Spazi hanno hover confinati al pulsante, distanziati anche da
+  telefono. Le tre azioni a destra conservano target touch di 44 px e più aria.
+- La ricerca Mapbox v6 distingue località, vie e civici, conserva numero e
+  contesto, qualifica le posizioni stimate, porta la camera alla scala adatta e
+  lascia un riferimento visivo. Le risposte obsolete vengono abortite, Escape
+  non riapre risultati in ritardo, errori e retry sono distinti da zero risultati.
+- L'hover dei punti usa la tinta effettiva della misura/stato e angoli arrotondati;
+  rampe, valori mancanti e QC restano coerenti con i simboli della mappa. Il colore
+  non sostituisce i testi. Nessun HTML della fonte viene interpretato.
+- Il messaggio di mappa vuota ha centratura e lunghezza di riga proprie, senza
+  cambiare gli allineamenti dei metadati delle schede.

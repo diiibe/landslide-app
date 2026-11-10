@@ -1,3 +1,4 @@
+import { mountSearchNavigation } from "./searchNavigation";
 import { mountNatureMap } from "@/spaces/nature/map";
 import { mountExperienceMap } from "@/spaces/map";
 import { useExperienceStore } from "@/spaces/store";
@@ -633,12 +634,8 @@ export function MapView() {
   }, [theme]);
 
   useEffect(() => {
-    const onFly = (e: Event) => {
-      const d = (e as CustomEvent<{ lng: number; lat: number }>).detail;
-      mapRef.current?.flyTo({ center: [d.lng, d.lat], zoom: 11, essential: true });
-    };
-    window.addEventListener("fvg:flyto", onFly);
-    return () => window.removeEventListener("fvg:flyto", onFly);
+    const map=mapRef.current;
+    if(map)return mountSearchNavigation(map);
   }, []);
 
   // fitBounds dispatch (e.g. from ComuneFilterPanel). The detail carries

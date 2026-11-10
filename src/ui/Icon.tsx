@@ -1,7 +1,7 @@
 import type { ReactNode, SVGProps } from "react";
 export type IconName =
   | "fire" | "camera" | "tree" | "paw"
-  | "spaces" | "profile" | "brand" | "extensions"
+  | "spaces" | "profile" | "brand" | "extensions" | "drawPolygon"
   | "fileData"
   | "sensor" | "lineData" | "pointData" | "areaData" | "rasterData" | "eye" | "tools"
   | "search"
@@ -26,7 +26,8 @@ const paths: Record<IconName, ReactNode> = {
   camera: <><path d="M3 6h3l1-3h6l1 3h3v11H3Z"/><circle cx="10" cy="11" r="3"/><path d="M15 8h.1"/></>,
   tree: <><path d="M10 2 4 9h3l-5 6h16l-5-6h3ZM10 15v4"/></>,
   paw: <><ellipse cx="10" cy="14" rx="4" ry="3"/><ellipse cx="4" cy="9" rx="1.5" ry="2"/><ellipse cx="8" cy="5" rx="1.5" ry="2"/><ellipse cx="13" cy="5" rx="1.5" ry="2"/><ellipse cx="17" cy="9" rx="1.5" ry="2"/></>,
-  extensions: <path d="M3 4h4V3a2 2 0 0 1 4 0v1h5v4h1a2 2 0 0 1 0 4h-1v5h-5v-1a2 2 0 0 0-4 0v1H3v-5h1a2 2 0 0 0 0-4H3Z"/>,
+  extensions: <><rect x="2.5" y="2.5" width="5.5" height="5.5" rx="1"/><rect x="2.5" y="11.5" width="5.5" height="5.5" rx="1"/><rect x="11.5" y="11.5" width="5.5" height="5.5" rx="1"/><path d="m14.5 1.5 4 4-4 4-4-4Z"/></>,
+  drawPolygon: <><path d="m4 4 11 2 1 9-10 2Z"/><circle cx="4" cy="4" r="1.5" fill="var(--c-surface-raised)"/><circle cx="15" cy="6" r="1.5" fill="var(--c-surface-raised)"/><circle cx="16" cy="15" r="1.5" fill="var(--c-surface-raised)"/><circle cx="6" cy="17" r="1.5" fill="var(--c-surface-raised)"/></>,
   brand: <><path d="m2 15 5-10 4 7 3-5 4 8"/><path d="M2 18h16M5 11l2 2 2-3"/></>,
   spaces: <><rect x="2" y="3" width="10" height="10" rx="1.5"/><path d="M6 16h11V7M6 7h2m-2 3h3"/></>,
   profile: <><circle cx="10" cy="6" r="3"/><path d="M3.5 18v-2a6.5 6.5 0 0 1 13 0v2"/></>,
@@ -50,13 +51,7 @@ const paths: Record<IconName, ReactNode> = {
   services: <><path d="M2 18h16M4 18V7h12v11M2 7l8-5 8 5M8 18v-5h4v5M7 10h1m4 0h1"/></>,
   mobility: <><path d="m7 2-4 16M13 2l4 16M10 3v3m0 3v3m0 3v3"/></>,
   network: <><circle cx="10" cy="10" r="2"/><circle cx="4" cy="3" r="2"/><circle cx="17" cy="5" r="2"/><circle cx="4" cy="17" r="2"/><circle cx="17" cy="17" r="2"/><path d="m5 5 4 4m3 0 3-3M6 15l3-3m3 0 3 3"/></>,
-  settings: (
-    <>
-      <path d="M3 5h14M3 15h14M7 2v6m6 4v6" />
-      <circle cx="7" cy="5" r="2" fill="var(--c-surface)" />
-      <circle cx="13" cy="15" r="2" fill="var(--c-surface)" />
-    </>
-  ),
+  settings: <><path d="M8.07 3.27L8.52 1.63L11.48 1.63L11.93 3.27L13.39 3.88L14.88 3.04L16.96 5.12L16.12 6.61L16.73 8.07L18.37 8.52L18.37 11.48L16.73 11.93L16.12 13.39L16.96 14.88L14.88 16.96L13.39 16.12L11.93 16.73L11.48 18.37L8.52 18.37L8.07 16.73L6.61 16.12L5.12 16.96L3.04 14.88L3.88 13.39L3.27 11.93L1.63 11.48L1.63 8.52L3.27 8.07L3.88 6.61L3.04 5.12L5.12 3.04L6.61 3.88Z"/><circle cx="10" cy="10" r="2.8"/></>,
   sun: (
     <>
       <circle cx="10" cy="10" r="3.5" />

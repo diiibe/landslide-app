@@ -88,7 +88,7 @@ export function RegionalPanel() {
           </button>
         </div>
         {!active.length && (
-          <p className={styles.caption}>
+          <p className={styles.emptyMap}>
             La mappa è libera. Cerca un dato nel catalogo e aggiungilo per
             confrontarlo con il territorio.
           </p>

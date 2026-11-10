@@ -7,7 +7,7 @@
   /* Shared material roles: navigation/headers, quiet panel ground, clear content. */
   --material-chrome-image: url("../assets/materials/territory-chrome-light.svg");
   --surface-texture: url("../assets/materials/territory-panel-light.svg");
-  --material-size: 720px 560px;
+  --material-size: 720px 210px;
   --material-position: center 46%;
   --material-chrome: var(--c-surface-raised) var(--material-chrome-image) var(--material-position) / var(--material-size) repeat;
   --material-panel: var(--c-surface-2) var(--surface-texture) var(--material-position) / var(--material-size) repeat;
