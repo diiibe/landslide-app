@@ -9,13 +9,16 @@ import { useAppStore } from "@/app/store";
 import { useExperienceStore, selectObject } from "../store";
 import { isNatureSpace } from "../types";
 import { AIR_OBSERVATIONS, AIR_SITES, FIRE_DAYS, airValue } from "./fire";
-import { CAMERAS, cameraOnline, captures } from "./wildlife";
+import { CAMERAS, cameraOnline, captures, cameraSector } from "./wildlife";
 import { useNatureStore, treeId, treeMatches, treeFamilyColor } from "./store";
 const EMPTY: GeoJSON.FeatureCollection = {
   type: "FeatureCollection",
   features: [],
 };
 const ids = [
+  "nature-camera-tracks",
+  "nature-camera-view",
+  "nature-camera-ray",
   "nature-footprint",
   "nature-footprint-line",
   "nature-cluster",
@@ -25,7 +28,12 @@ const ids = [
   "nature-label",
   "nature-hit",
 ];
-const sources = ["nature-footprints", "nature-nodes"];
+const sources = [
+  "nature-footprints",
+  "nature-nodes",
+  "nature-camera-tracks",
+  "nature-camera-view",
+];
 export function natureNodes(now: number): GeoJSON.FeatureCollection {
   const s = useNatureStore.getState(),
     e = useExperienceStore.getState(),
@@ -82,7 +90,7 @@ export function natureNodes(now: number): GeoJSON.FeatureCollection {
           latest = events.find((d) => d.camera === c.id);
         return point(c.id, c.coordinates, {
           name: c.name,
-          label: `${c.name.slice(-2)} · ${online ? "attiva" : "pausa demo"}`,
+          label: `CAM ${c.name.slice(-2)} · ${online ? "attiva" : "pausa demo"}`,
           readingDetail: "Rete dimostrativa · nessuna telemetria reale",
           radius: 7,
           color: !online
@@ -191,6 +199,45 @@ export function mountNatureMap(m: MLMap) {
     if (footprintKey !== footprints) {
       source("nature-footprints", footprints);
       footprintKey = footprints;
+    }
+    if (e.activeId === "wildlife") {
+      if (!m.getSource("nature-camera-tracks"))
+        m.addSource("nature-camera-tracks", {
+          type: "geojson",
+          data: `${import.meta.env.BASE_URL}data/spaces/nature/camera-tracks.geojson`,
+          attribution:
+            '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        });
+      const camera = CAMERAS.find((c) => c.id === (e.selectedId ?? s.camera));
+      source("nature-camera-view", {
+        type: "FeatureCollection",
+        features: camera ? [cameraSector(camera)] : [],
+      });
+      if (!m.getLayer("nature-camera-tracks")) {
+        m.addLayer({
+          id: "nature-camera-tracks",
+          type: "line",
+          source: "nature-camera-tracks",
+          paint: {
+            "line-color": "#b6ba93",
+            "line-width": 1.5,
+            "line-opacity": 0.7,
+            "line-dasharray": [3, 2],
+          },
+        });
+        m.addLayer({
+          id: "nature-camera-view",
+          type: "fill",
+          source: "nature-camera-view",
+          paint: { "fill-color": "#d5b77b", "fill-opacity": 0.28 },
+        });
+        m.addLayer({
+          id: "nature-camera-ray",
+          type: "line",
+          source: "nature-camera-view",
+          paint: { "line-color": "#e3c58b", "line-width": 1.5 },
+        });
+      }
     }
     if (!m.getLayer("nature-footprint")) {
       m.addLayer({

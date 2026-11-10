@@ -25,7 +25,9 @@ numerico delle cinque precedenti demo.
 
 ## Tracce nel bosco
 
-- Otto camere inventate. Catture determinate da camera e ora assoluta: stesse
+- Otto camere virtuali riposizionate rispetto al Sentiero Fassoz e alle piste OSM adiacenti. La geometria di riferimento è un estratto statico API OSM del 10 novembre 2026, ODbL, con identificativi way e tag conservati in `camera-tracks.geojson`. Esclusi ponti, accessi privati dichiarati e difficoltà alpine dichiarate. Nessuna verifica sul terreno o autorizzazione è implicita.
+- Bersaglio sul tracciato a circa 5 m, quota camera ipotizzata 50 cm, settore ottico 40°/12 m della sola postazione scelta. Non è una misura di copertura o rilevabilità. Distanza minima fra postazioni 250 m circa; rete mirata ai passaggi, non protocollo di densità casuale.
+- Catture determinate da camera e ora assoluta: stesse
   identità e valori dopo riapertura o scorrimento della finestra.
 - Notte/giorno in Europa/Roma, indisponibilità simulate, sforzo integrato sulle
   effettive porzioni di ore; finestre di 6, 24 o 72 ore aggiornate ogni minuto.
@@ -58,3 +60,29 @@ quando la pagina non è visibile e tornano all'istante pertinente alla riapertur
 La timeline storica conserva il proprio giorno; i valori degli altri Spazi non
 sono congelati. I pannelli usano Manrope, selettori interni, target touch 44px,
 focus sulla scheda selezionata e movimento ridotto.
+
+## Estensioni operative · 0.5.1
+
+Ogni pannello apre un compito distinto con controlli e risultato nello stesso
+contesto. La selezione di una scheda o di record coincidenti conserva il compito.
+
+- Amariana: confronto di due campioni della stessa località, conservando gli
+  intervalli. Differenza [B.min-A.max, B.max-A.min], zero per lo stesso campione;
+  nessun valore medio inventato o limite normativo. Azione mappa = località e
+  giorno finale, con tutti i campioni di quel giorno. Confronto JSON esportabile.
+  Schede finali EFFIS consultabili separatamente, senza trasformare quattro
+  eventi vicini in fasi dello stesso incendio. Non è stata verificata una serie
+  storica di geometrie successive per questi eventi. La guida EFFIS documenta
+  l'evoluzione «quando disponibile», non una disponibilità garantita per Amariana.
+- Fauna: revisione con conferma/correzione ed avanzamento alla cattura successiva,
+  distinta dal controllo della rete. Checklist di batterie/memoria, ottica/fissaggio,
+  orologio/scatto, con nota e timestamp; esercitazione locale esportabile, nessuna
+  modifica della disponibilità sintetica. Il settore metrico e i tracciati non
+  diventano territori di animali o stime di abbondanza. Fotografie illustrative
+  riusate, senza riquadri fittizi di rilevamento; notte resa monocromatica.
+- Villa Manin: aggiunta dei risultati filtrati al giro (primi 20, dichiarati),
+  scheda/annotazione aperta direttamente nel compito, ordine per prossimità e CSV
+  della lista di lavoro con coordinate, etichetta, rilievo storico e note separate.
+  Campi testuali CSV quotati, prefissi formula neutralizzati. Nessun ETA pedonale
+  o diagnosi fitostatica attuale. Lo stato di lavoro resta nella sessione e può
+  essere esportato prima di chiuderla.

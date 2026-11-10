@@ -1,3 +1,5 @@
+import { inspectNatureObject } from "./selection";
+import { parkWorklist, downloadWorklist } from "./worklist";
 import { useState } from "react";
 import { Icon } from "@/ui/Icon";
 import { SearchField } from "@/ui/SearchField";
@@ -13,14 +15,15 @@ import {
   addToPlan,
   type TreeFeature,
 } from "./store";
-import { Header, Method, Stats, InspectBack, Locate } from "./common";
+import { Header, Method, Stats, InspectBack, Locate, ToolNav } from "./common";
 import { date, number } from "./format";
 import { groupTrees, orderPlan } from "./park";
 import css from "./Nature.module.css";
 export function ParkPanel({ tools }: { tools: boolean }) {
   const s = useNatureStore(),
     selected = useExperienceStore((e) => e.selectedId),
-    [limit, setLimit] = useState(15);
+    [limit, setLimit] = useState(15),
+    [tool, setTool] = useState<"visit" | "archive">("visit");
   const trees = s.trees.filter((t) => treeMatches(t, s)),
     tree = s.trees.find((t) => treeId(t) === selected),
     families = groupTrees(s.trees, "familia"),
@@ -43,22 +46,28 @@ export function ParkPanel({ tools }: { tools: boolean }) {
         <Icon name="tree" />
         ERPAC · archivio reale / gestione demo
       </span>
-      <Header
-        title={tools ? "Taccuino del parco" : "Villa Manin · patrimonio vivo"}
-        icon={tools ? "extensions" : "tree"}
-      >
-        {tools
-          ? "Organizza un giro di ispezione virtuale senza riscrivere il censimento."
-          : "Esplora specie e caratteri documentati degli alberi geolocalizzati."}
-      </Header>
-      <details className={css.notice}>
-        <summary>Rilievi 2001–2002 · come leggerli</summary>
-        <p>
-          Le condizioni riportate sono quelle dell’archivio, non diagnosi
-          attuali. Le nuove annotazioni sono un’esercitazione e restano
-          separate.
-        </p>
-      </details>
+      {!tools && (
+        <Header
+          title={
+            tools ? "Organizza i sopralluoghi" : "Villa Manin · patrimonio vivo"
+          }
+          icon={tools ? "extensions" : "tree"}
+        >
+          {tools
+            ? "Seleziona esemplari, registra le verifiche e scarica una lista di lavoro."
+            : "Esplora specie e caratteri documentati degli alberi geolocalizzati."}
+        </Header>
+      )}
+      {!tools && (
+        <details className={css.notice}>
+          <summary>Rilievi 2001–2002 · come leggerli</summary>
+          <p>
+            Le condizioni riportate sono quelle dell’archivio, non diagnosi
+            attuali. Le nuove annotazioni sono un’esercitazione e restano
+            separate.
+          </p>
+        </details>
+      )}
       {s.treeLoading && <p role="status">Verifica del censimento ERPAC…</p>}
       {s.treeError && (
         <div role="alert">
@@ -91,323 +100,409 @@ export function ParkPanel({ tools }: { tools: boolean }) {
           ]}
         />
       )}
-      {!tools && tree && (
+      {tools && (
+        <ToolNav
+          value={tool}
+          onChange={setTool}
+          items={[
+            {
+              id: "visit",
+              title: "Prepara sopralluogo",
+              description: "Seleziona, annota e scarica la lista di lavoro",
+              icon: "tree",
+            },
+            {
+              id: "archive",
+              title: "Verifica archivio",
+              description: "Date e coordinate disponibili nella fonte",
+              icon: "fileData",
+            },
+          ]}
+        />
+      )}
+      {tree && (!tools || tool === "visit") && (
         <section className={css.section}>
-          <InspectBack />
+          {tools ? (
+            <button
+              className={css.back}
+              onClick={() => useExperienceStore.setState({ selectedId: null })}
+            >
+              <Icon name="arrow" />
+              Torna al giro
+            </button>
+          ) : (
+            <InspectBack />
+          )}
           <TreeDetails key={treeId(tree)} tree={tree} />
         </section>
       )}
       {tools ? (
         <>
-          <section className={css.section}>
-            <div className={css.sectionHead}>
-              <h3>Il giro di sopralluogo</h3>
-              <small>Simulazione · questa sessione</small>
-            </div>
-            <div
-              className={css.progress}
-              role="progressbar"
-              aria-label="Sopralluoghi demo completati"
-              aria-valuemin={0}
-              aria-valuemax={plan.length || 1}
-              aria-valuenow={completed}
-            >
-              <i
-                style={{
-                  transform: `scaleX(${completed / Math.max(1, plan.length)})`,
-                }}
-              />
-            </div>
-            <p>
-              <strong>
-                {completed} di {plan.length}
-              </strong>{" "}
-              schede annotate nell’esercitazione
-            </p>
-            <label>
-              Tempo ipotizzato per esemplare · {s.minutes} minuti
-              <input
-                type="range"
-                min={3}
-                max={30}
-                step={1}
-                aria-label="Minuti ipotizzati per sopralluogo"
-                value={s.minutes}
-                onChange={(e) =>
-                  useNatureStore.setState({ minutes: Number(e.target.value) })
-                }
-              />
-            </label>
-            <Stats
-              items={[
-                [
-                  "Tempo di sola attività",
-                  <>
-                    {plan.length * s.minutes}
-                    <small>min · trasferimenti esclusi</small>
-                  </>,
-                ],
-                [
-                  "Distanza nell’ordine proposto",
-                  <>
-                    {number(prox.distance)}
-                    <small>m in linea d’aria, non percorso</small>
-                  </>,
-                ],
-              ]}
-            />
-            <small>
-              L’ordine di prossimità parte dal primo albero inserito. Non
-              verifica sentieri, accessi, ostacoli o condizioni di sicurezza.
-            </small>
-            <div className={css.actions}>
-              <button
-                disabled={plan.length < 2}
-                onClick={() =>
-                  useNatureStore.setState({
-                    plan: [
-                      ...prox.ids,
-                      ...s.plan.filter((id) => !prox.ids.includes(id)),
-                    ],
-                  })
-                }
-              >
-                <Icon name="map" />
-                Ordina per prossimità
-              </button>
-              <button
-                disabled={!s.plan.length}
-                onClick={() => useNatureStore.setState({ plan: [] })}
-              >
-                Svuota il giro
-              </button>
-            </div>
-            {orphaned > 0 && (
-              <p role="status">
-                {orphaned} riferimenti non sono nella versione corrente:
-                conservati nell’esportazione, esclusi dai calcoli.
-              </p>
-            )}
-            {!plan.length ? (
-              <p className={css.empty}>
-                Cerca un albero qui sotto o toccalo sulla mappa, poi scegli
-                «Aggiungi al giro». Nessun intervento reale sarà programmato.
-              </p>
-            ) : (
-              <div className={css.list}>
-                {plan.map((t, i) => (
-                  <button
-                    className={css.row}
-                    key={treeId(t)}
-                    onClick={() => selectObject(treeId(t))}
-                  >
-                    <span>
-                      <strong>
-                        {i + 1}.{" "}
-                        {String(t.properties.specie ?? "Specie non indicata")}
-                      </strong>
-                      <small>
-                        Etichetta {String(t.properties.prog ?? "—")} ·{" "}
-                        {String(t.properties.dove ?? "Località non indicata")}
-                      </small>
-                    </span>
-                    <span>
-                      <Icon
-                        name={s.inspections[treeId(t)] ? "check" : "chevron"}
-                      />
-                      <small>
-                        {s.inspections[treeId(t)]
-                          ? "Annotato demo"
-                          : "Da simulare"}
-                      </small>
-                    </span>
-                  </button>
-                ))}
+          {tool === "visit" ? (
+            <section className={css.section}>
+              <div className={css.sectionHead}>
+                <h3>Il giro di sopralluogo</h3>
+                <small>Simulazione · questa sessione</small>
               </div>
-            )}
-          </section>
-          <section className={css.section}>
-            <h3>Qualità e copertura dell’archivio</h3>
-            <p className={css.muted}>
-              {s.treeInputRows - s.trees.length} righe non hanno coordinate
-              utilizzabili. Non le posizioniamo artificialmente e non deduciamo
-              che siano alberi mancanti o abbattuti.
-            </p>
-            <div
-              className={css.progress}
-              role="img"
-              aria-label={`${s.trees.length} posizioni su ${s.treeInputRows} righe`}
-            >
-              <i
-                style={{
-                  transform: `scaleX(${s.trees.length / Math.max(1, s.treeInputRows)})`,
-                }}
-              />
-            </div>
-            <p>
-              {number((s.trees.length / Math.max(1, s.treeInputRows)) * 100)}%
-              delle righe è localizzabile
-            </p>
-            <small>
-              Una riga incompleta può anche essere un frammento del rilievo: il
-              numero di righe non è un conteggio certo di alberi.
-            </small>
-            <div className={css.facts}>
-              {dates.slice(0, 5).map((d) => (
-                <div key={d.label}>
-                  <dt>
-                    {d.label === "Non indicato"
-                      ? "Data assente"
-                      : d.label.slice(0, 10)}
-                  </dt>
-                  <dd>{d.count} posizioni</dd>
-                </div>
-              ))}
-            </div>
-          </section>
-        </>
-      ) : null}
-      <section className={css.section}>
-        <h3>
-          {tools ? "Aggiungi esemplari al giro" : "Esplora il censimento"}
-        </h3>
-        <SearchField
-          label="Cerca alberi nel censimento"
-          value={s.treeQuery}
-          onChange={(v) => {
-            useNatureStore.setState({ treeQuery: v });
-            setLimit(15);
-          }}
-          placeholder="Specie, famiglia, etichetta, zona…"
-        />
-        <div className={css.toolbar}>
-          <label>
-            Famiglia botanica
-            <Select
-              label="Famiglia botanica"
-              value={s.family}
-              onChange={(v) => {
-                useNatureStore.setState({ family: v });
-                setLimit(15);
-              }}
-              options={[
-                { value: "all", label: "Tutte le famiglie" },
-                ...families.map((a) => ({
-                  value: a.label,
-                  label: `${a.label} · ${a.count}`,
-                })),
-              ]}
-            />
-          </label>
-          <label>
-            Colore sulla mappa
-            <Select
-              label="Colore degli alberi"
-              value={s.treeMode}
-              onChange={(v) =>
-                useNatureStore.setState({
-                  treeMode: v as "family" | "condition",
-                })
-              }
-              options={[
-                { value: "family", label: "Famiglia botanica" },
-                { value: "condition", label: "Condizione storica" },
-              ]}
-            />
-          </label>
-        </div>
-        {s.treeMode === "family" ? (
-          <div className={css.legend}>
-            {familiesShown.slice(0, 6).map((f) => (
-              <span key={f.label}>
+              <div
+                className={css.progress}
+                role="progressbar"
+                aria-label="Sopralluoghi demo completati"
+                aria-valuemin={0}
+                aria-valuemax={plan.length || 1}
+                aria-valuenow={completed}
+              >
                 <i
                   style={{
-                    background: treeFamilyColor({
-                      properties: { familia: f.label },
-                    }),
+                    transform: `scaleX(${completed / Math.max(1, plan.length)})`,
                   }}
                 />
-                {f.label} · {f.count}
-              </span>
-            ))}
-            {familiesShown.length > 6 && (
+              </div>
+              <p>
+                <strong>
+                  {completed} di {plan.length}
+                </strong>{" "}
+                schede annotate nell’esercitazione
+              </p>
+              <label>
+                Tempo ipotizzato per esemplare · {s.minutes} minuti
+                <input
+                  type="range"
+                  min={3}
+                  max={30}
+                  step={1}
+                  aria-label="Minuti ipotizzati per sopralluogo"
+                  value={s.minutes}
+                  onChange={(e) =>
+                    useNatureStore.setState({ minutes: Number(e.target.value) })
+                  }
+                />
+              </label>
+              <Stats
+                items={[
+                  [
+                    "Tempo di sola attività",
+                    <>
+                      {plan.length * s.minutes}
+                      <small>min · trasferimenti esclusi</small>
+                    </>,
+                  ],
+                  [
+                    "Distanza nell’ordine proposto",
+                    <>
+                      {number(prox.distance)}
+                      <small>m in linea d’aria, non percorso</small>
+                    </>,
+                  ],
+                ]}
+              />
+              <small>
+                L’ordine di prossimità parte dal primo albero inserito. Non
+                verifica sentieri, accessi, ostacoli o condizioni di sicurezza.
+              </small>
+              <div className={css.actions}>
+                <button
+                  disabled={plan.length < 2}
+                  onClick={() =>
+                    useNatureStore.setState({
+                      plan: [
+                        ...prox.ids,
+                        ...s.plan.filter((id) => !prox.ids.includes(id)),
+                      ],
+                    })
+                  }
+                >
+                  <Icon name="map" />
+                  Ordina per prossimità
+                </button>
+                <button
+                  disabled={!s.plan.length}
+                  onClick={() => useNatureStore.setState({ plan: [] })}
+                >
+                  Svuota il giro
+                </button>
+              </div>
+              {orphaned > 0 && (
+                <p role="status">
+                  {orphaned} riferimenti non sono nella versione corrente:
+                  conservati nell’esportazione, esclusi dai calcoli.
+                </p>
+              )}
+              {!plan.length ? (
+                <p className={css.empty}>
+                  Cerca un albero qui sotto o toccalo sulla mappa, poi scegli
+                  «Aggiungi al giro». Nessun intervento reale sarà programmato.
+                </p>
+              ) : (
+                <div className={css.list}>
+                  {plan.map((t, i) => (
+                    <button
+                      className={css.row}
+                      key={treeId(t)}
+                      onClick={() =>
+                        useExperienceStore.setState({
+                          selectedId: treeId(t),
+                          inspectionRequest:
+                            useExperienceStore.getState().inspectionRequest + 1,
+                        })
+                      }
+                    >
+                      <span>
+                        <strong>
+                          {i + 1}.{" "}
+                          {String(t.properties.specie ?? "Specie non indicata")}
+                        </strong>
+                        <small>
+                          Etichetta {String(t.properties.prog ?? "—")} ·{" "}
+                          {String(t.properties.dove ?? "Località non indicata")}
+                        </small>
+                      </span>
+                      <span>
+                        <Icon
+                          name={s.inspections[treeId(t)] ? "check" : "chevron"}
+                        />
+                        <small>
+                          {s.inspections[treeId(t)]
+                            ? "Annotato demo"
+                            : "Da simulare"}
+                        </small>
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
+              <button
+                disabled={!plan.length}
+                onClick={() =>
+                  downloadWorklist(parkWorklist(plan, s.inspections, s.minutes))
+                }
+              >
+                <Icon name="fileData" />
+                Scarica lista di lavoro CSV
+              </button>
+            </section>
+          ) : (
+            <section className={css.section}>
+              <h3>Qualità e copertura dell’archivio</h3>
+              <p className={css.muted}>
+                {s.treeInputRows - s.trees.length} righe non hanno coordinate
+                utilizzabili. Non le posizioniamo artificialmente e non
+                deduciamo che siano alberi mancanti o abbattuti.
+              </p>
+              <div
+                className={css.progress}
+                role="img"
+                aria-label={`${s.trees.length} posizioni su ${s.treeInputRows} righe`}
+              >
+                <i
+                  style={{
+                    transform: `scaleX(${s.trees.length / Math.max(1, s.treeInputRows)})`,
+                  }}
+                />
+              </div>
+              <p>
+                {number((s.trees.length / Math.max(1, s.treeInputRows)) * 100)}%
+                delle righe è localizzabile
+              </p>
+              <small>
+                Una riga incompleta può anche essere un frammento del rilievo:
+                il numero di righe non è un conteggio certo di alberi.
+              </small>
+              <div className={css.facts}>
+                {dates.slice(0, 5).map((d) => (
+                  <div key={d.label}>
+                    <dt>
+                      {d.label === "Non indicato"
+                        ? "Data assente"
+                        : d.label.slice(0, 10)}
+                    </dt>
+                    <dd>{d.count} posizioni</dd>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+        </>
+      ) : null}
+      {(!tools || tool === "visit") && (
+        <section className={css.section}>
+          <h3>
+            {tools ? "Aggiungi esemplari al giro" : "Esplora il censimento"}
+          </h3>
+          <SearchField
+            label="Cerca alberi nel censimento"
+            value={s.treeQuery}
+            onChange={(v) => {
+              useNatureStore.setState({ treeQuery: v });
+              setLimit(15);
+            }}
+            placeholder="Specie, famiglia, etichetta, zona…"
+          />
+          <div className={css.toolbar}>
+            <label>
+              Famiglia botanica
+              <Select
+                label="Famiglia botanica"
+                value={s.family}
+                onChange={(v) => {
+                  useNatureStore.setState({ family: v });
+                  setLimit(15);
+                }}
+                options={[
+                  { value: "all", label: "Tutte le famiglie" },
+                  ...families.map((a) => ({
+                    value: a.label,
+                    label: `${a.label} · ${a.count}`,
+                  })),
+                ]}
+              />
+            </label>
+            <label>
+              Colore sulla mappa
+              <Select
+                label="Colore degli alberi"
+                value={s.treeMode}
+                onChange={(v) =>
+                  useNatureStore.setState({
+                    treeMode: v as "family" | "condition",
+                  })
+                }
+                options={[
+                  { value: "family", label: "Famiglia botanica" },
+                  { value: "condition", label: "Condizione storica" },
+                ]}
+              />
+            </label>
+          </div>
+          {s.treeMode === "family" ? (
+            <div className={css.legend}>
+              {familiesShown.slice(0, 6).map((f) => (
+                <span key={f.label}>
+                  <i
+                    style={{
+                      background: treeFamilyColor({
+                        properties: { familia: f.label },
+                      }),
+                    }}
+                  />
+                  {f.label} · {f.count}
+                </span>
+              ))}
+              {familiesShown.length > 6 && (
+                <span>
+                  Altre {familiesShown.length - 6} famiglie · vedi scheda
+                </span>
+              )}
+            </div>
+          ) : (
+            <div className={css.legend}>
               <span>
-                Altre {familiesShown.length - 6} famiglie · vedi scheda
+                <i style={{ background: "#89b89d" }} />
+                Indicazione storica stabile / sicura
               </span>
+              <span>
+                <i style={{ background: "#d7a76b" }} />
+                Indicazione storica di instabilità
+              </span>
+              <span>
+                <i style={{ background: "#a2a9ba" }} />
+                Altro / non indicato
+              </span>
+            </div>
+          )}
+          <div className={css.sectionHead}>
+            <small>{trees.length} posizioni corrispondenti</small>
+            {(s.treeQuery || s.family !== "all") && (
+              <button
+                onClick={() => {
+                  useNatureStore.setState({ treeQuery: "", family: "all" });
+                  setLimit(15);
+                }}
+              >
+                Azzera filtri
+              </button>
             )}
           </div>
-        ) : (
-          <div className={css.legend}>
-            <span>
-              <i style={{ background: "#89b89d" }} />
-              Indicazione storica stabile / sicura
-            </span>
-            <span>
-              <i style={{ background: "#d7a76b" }} />
-              Indicazione storica di instabilità
-            </span>
-            <span>
-              <i style={{ background: "#a2a9ba" }} />
-              Altro / non indicato
-            </span>
-          </div>
-        )}
-        <div className={css.sectionHead}>
-          <small>{trees.length} posizioni corrispondenti</small>
-          {(s.treeQuery || s.family !== "all") && (
+          {tools && (
             <button
-              onClick={() => {
-                useNatureStore.setState({ treeQuery: "", family: "all" });
-                setLimit(15);
-              }}
+              className={css.primaryAction}
+              disabled={
+                !trees.slice(0, 20).some((t) => !s.plan.includes(treeId(t)))
+              }
+              onClick={() =>
+                useNatureStore.setState((state) => ({
+                  plan: [
+                    ...new Set([
+                      ...state.plan,
+                      ...trees.slice(0, 20).map(treeId),
+                    ]),
+                  ],
+                }))
+              }
             >
-              Azzera filtri
+              <Icon name="plus" />
+              Aggiungi {Math.min(20, trees.length)}{" "}
+              {trees.length === 1 ? "risultato" : "risultati"} al giro
             </button>
           )}
-        </div>
-        <div className={css.list}>
-          {trees.slice(0, limit).map((t) => (
-            <button
-              className={css.row}
-              aria-pressed={selected === treeId(t)}
-              key={treeId(t)}
-              onClick={() => selectObject(treeId(t))}
-            >
-              <span>
-                <strong>
-                  <i
-                    className={css.dot}
-                    style={{ background: treeFamilyColor(t) }}
-                  />
-                  {String(t.properties.specie ?? "Specie non indicata")}
-                </strong>
-                <small>
-                  {String(t.properties.familia ?? "Famiglia assente")} ·
-                  etichetta {String(t.properties.prog ?? "—")}
-                </small>
-              </span>
-              <span>
-                {s.plan.includes(treeId(t)) ? (
-                  <Icon name="check" />
-                ) : (
-                  <Icon name="chevron" />
-                )}
-              </span>
+          {tools && trees.length > 20 && (
+            <small>
+              Si aggiungono i primi 20 risultati. Restringi la ricerca per
+              preparare un giro mirato.
+            </small>
+          )}
+          <div className={css.list}>
+            {trees.slice(0, limit).map((t) => (
+              <button
+                className={css.row}
+                aria-pressed={selected === treeId(t)}
+                key={treeId(t)}
+                onClick={() =>
+                  tools
+                    ? useExperienceStore.setState({
+                        selectedId: treeId(t),
+                        inspectionRequest:
+                          useExperienceStore.getState().inspectionRequest + 1,
+                      })
+                    : selectObject(treeId(t))
+                }
+              >
+                <span>
+                  <strong>
+                    <i
+                      className={css.dot}
+                      style={{ background: treeFamilyColor(t) }}
+                    />
+                    {String(t.properties.specie ?? "Specie non indicata")}
+                  </strong>
+                  <small>
+                    {String(t.properties.familia ?? "Famiglia assente")} ·
+                    etichetta {String(t.properties.prog ?? "—")}
+                  </small>
+                </span>
+                <span>
+                  {s.plan.includes(treeId(t)) ? (
+                    <Icon name="check" />
+                  ) : (
+                    <Icon name="chevron" />
+                  )}
+                </span>
+              </button>
+            ))}
+          </div>
+          {!trees.length && !s.treeLoading && (
+            <p className={css.empty}>
+              Nessuna posizione disponibile con questi filtri. Prova un’altra
+              specie o azzera la ricerca.
+            </p>
+          )}
+          {trees.length > limit && (
+            <button onClick={() => setLimit(limit + 20)}>
+              Mostra altri esemplari · {trees.length - limit} rimanenti
             </button>
-          ))}
-        </div>
-        {!trees.length && !s.treeLoading && (
-          <p className={css.empty}>
-            Nessuna posizione disponibile con questi filtri. Prova un’altra
-            specie o azzera la ricerca.
-          </p>
-        )}
-        {trees.length > limit && (
-          <button onClick={() => setLimit(limit + 20)}>
-            Mostra altri esemplari · {trees.length - limit} rimanenti
-          </button>
-        )}
-      </section>
+          )}
+        </section>
+      )}
       <Method>
         <p>
           Fonte: ERPAC / Open Data Regione FVG, «Alberi di Villa Manin», dataset
@@ -498,7 +593,7 @@ export function TreeDetails({ tree: t }: { tree: TreeFeature }) {
           <Select
             label="Esemplari nella stessa posizione"
             value={id}
-            onChange={selectObject}
+            onChange={inspectNatureObject}
             options={coincident.map((f) => ({
               value: treeId(f),
               label: `${f.properties.prog ?? treeId(f)} · ${f.properties.specie ?? "Specie assente"}`,
@@ -508,6 +603,10 @@ export function TreeDetails({ tree: t }: { tree: TreeFeature }) {
       )}
       <Locate
         coordinates={t.geometry.coordinates.slice(0, 2) as [number, number]}
+        beforeLocate={() => {
+          if (!treeMatches(t, useNatureStore.getState()))
+            useNatureStore.setState({ treeQuery: "", family: "all" });
+        }}
         zoom={18}
       />
       <dl className={css.facts}>

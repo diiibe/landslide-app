@@ -27,6 +27,7 @@ interface State {
   camera: string;
   species: string;
   reviews: Record<string, Review>;
+  cameraChecks: Record<string, { at: number; note: string }>;
   captureId: string | null;
 }
 export const useNatureStore = create<State>(() => ({
@@ -52,6 +53,7 @@ export const useNatureStore = create<State>(() => ({
   camera: "all",
   species: "all",
   reviews: {},
+  cameraChecks: {},
   captureId: null,
 }));
 export function treeId(f: TreeFeature) {

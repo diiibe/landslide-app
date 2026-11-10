@@ -26,9 +26,9 @@ export function SpacePanel() {
       (previous.current.selected !== selected ||
         previous.current.areaId !== areaId || previous.current.inspectionRequest !== inspectionRequest);
     previous.current = { active, selected, areaId, inspectionRequest };
-    if (!changed || tab !== "overview") return;
+    if (!changed || tab === "layers") return;
     const frame = requestAnimationFrame(() => {
-      const heading = (selected ? content.current?.querySelector<HTMLElement>("[data-space-inspection]") : null) ?? content.current?.querySelector<HTMLElement>("h2");
+      const heading = (selected ? content.current?.querySelector<HTMLElement>("[data-space-inspection]") : null) ?? content.current?.querySelector<HTMLElement>("h2,h3");
       if (!heading) return;
       heading.tabIndex = -1;
       heading.focus({ preventScroll: true });

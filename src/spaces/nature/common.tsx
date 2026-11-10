@@ -55,12 +55,19 @@ export function InspectBack() {
 export function Locate({
   coordinates,
   zoom = 16,
+  beforeLocate,
 }: {
   coordinates: [number, number];
   zoom?: number;
+  beforeLocate?: () => void;
 }) {
   return (
-    <button onClick={() => focusAt(coordinates, zoom)}>
+    <button
+      onClick={() => {
+        beforeLocate?.();
+        focusAt(coordinates, zoom);
+      }}
+    >
       <Icon name="map" />
       Mostra sulla mappa
     </button>
@@ -80,5 +87,35 @@ export function Toggle({
       {label}
       <Icon name={value ? "check" : "plus"} />
     </button>
+  );
+}
+
+/** Select one concrete task; keep controls and results in the same panel. */
+export function ToolNav<T extends string>({
+  value,
+  onChange,
+  items,
+}: {
+  value: T;
+  onChange: (value: T) => void;
+  items: { id: T; title: string; description: string; icon: IconName }[];
+}) {
+  return (
+    <nav className={css.toolNav} aria-label="Strumenti dello Spazio">
+      {items.map((item) => (
+        <button
+          key={item.id}
+          aria-pressed={item.id === value}
+          onClick={() => onChange(item.id)}
+        >
+          <Icon name={item.icon} />
+          <span>
+            <strong>{item.title}</strong>
+            <small>{item.description}</small>
+          </span>
+          <Icon name={item.id === value ? "check" : "chevron"} />
+        </button>
+      ))}
+    </nav>
   );
 }

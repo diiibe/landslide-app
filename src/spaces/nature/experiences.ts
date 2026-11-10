@@ -1,21 +1,4 @@
 import type { Experience, NatureId } from "../types";
-const bounds = (
-  w: number,
-  s: number,
-  e: number,
-  n: number,
-): GeoJSON.Polygon => ({
-  type: "Polygon",
-  coordinates: [
-    [
-      [w, s],
-      [e, s],
-      [e, n],
-      [w, n],
-      [w, s],
-    ],
-  ],
-});
 export const natureLabel = (id: string | null) =>
   id === "fire"
     ? "Archivio documentato · agosto 2026"
@@ -55,12 +38,12 @@ export const NATURE_EXPERIENCES: Experience[] = [
     title: "Tracce nel bosco",
     subtitle: "Carnia · laboratorio di fototrappolaggio",
     description:
-      "Esplora catture sintetiche, proposte del classificatore e revisione umana. Confronta specie, ore di attività e sforzo di campionamento.",
+      "Otto postazioni dimostrative lungo tracciati OSM: verifica la posa, revisiona le catture sintetiche e prepara i controlli della rete.",
     icon: "camera",
     tone: "#bd9c62",
-    center: [13.177, 46.471],
-    zoom: 13.6,
-    perimeter: bounds(13.165, 46.463, 13.189, 46.48),
+    center: [13.177, 46.472],
+    zoom: 13.2,
+
     reference: {
       name: "Rete dimostrativa indipendente",
       url: "https://lila.science/datasets",

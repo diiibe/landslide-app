@@ -23,3 +23,14 @@ wildlife-atlas.png: generated synthetic visual asset, November 2026.
 Six species examples, reused in simulated captures. Not real trail-camera
 photos or outputs of an executed vision classifier. Camera locations, events,
 identifications and scores are simulated. No affiliation with real reserves.
+
+CAMERA GEOGRAPHIC REFERENCE (0.5.1)
+© OpenStreetMap contributors, ODbL https://www.openstreetmap.org/copyright
+camera-tracks.geojson is a static clipped extract of mapped paths/forest tracks
+near Sentiero Fassoz, obtained through the OSM API on 10 November 2026.
+Original way IDs/tags and acquisition request are in provenance. Private access,
+bridges and explicitly alpine difficulties were excluded. This does not certify
+access, habitat, slope or deployment permission. All camera placements remain
+fictional, with a target on the mapped line about 5m away; view sectors are optical
+illustrations, not effective sampling coverage. Source geometry and virtual
+installation/maintenance records remain distinct.
