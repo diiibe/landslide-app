@@ -1,0 +1,17 @@
+.popup { z-index: 8; }
+.popup :global(.maplibregl-popup-content) { padding: 0; overflow: hidden; }
+.sheet { display: flex; flex-direction: column; max-height: var(--point-readings-height); width: min(328px, calc(100vw - 58px)); color: var(--c-text); }
+.sheet header { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 8px 0 16px; }
+.sheet h2 { margin: 0; font-size: 15px; line-height: 1.4; font-weight: 700; }
+.sheet header button { border: 0; background: transparent; color: var(--c-text-muted); font: inherit; font-size: 24px; min-width: 44px; min-height: 44px; cursor: pointer; }
+.sheet > p { flex-shrink: 0; margin: 0; padding: 0 16px 12px; font-size: 12px; line-height: 1.5; color: var(--c-text-muted); }
+.sheet ol { min-height: 0; list-style: none; padding: 0 8px 8px; margin: 0; max-height: min(44dvh, 360px); overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
+.sheet li + li { border-top: 1px solid var(--c-border); }
+.sheet li button { width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; text-align: left; border: 0; background: transparent; color: var(--c-text); padding: 12px 8px; min-height: 60px; border-radius: 4px; font: inherit; cursor: pointer; }
+.sheet li button:hover { background: var(--c-surface-2); }
+.sheet button:focus-visible { outline: 2px solid var(--c-forest); outline-offset: -2px; }
+.sheet strong { font-size: 13px; font-weight: 650; line-height: 1.5; overflow-wrap: anywhere; }
+.sheet strong::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--reading-color); box-shadow: 0 0 0 1px var(--c-border-strong); margin-right: 7px; }
+.sheet li span { font-size: 13px; line-height: 1.5; font-weight: 700; font-variant-numeric: tabular-nums; max-width: 136px; overflow-wrap: anywhere; }
+.sheet small { grid-column: 1 / -1; color: var(--c-text-muted); font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+@media (max-height: 500px) { .sheet ol { max-height: 33dvh; } }

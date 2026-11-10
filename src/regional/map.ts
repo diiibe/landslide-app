@@ -14,6 +14,8 @@ import { regionalStyle, layerSuffixes, OVERVIEW_ZOOM } from "./mapStyle";
 import { useAppearance } from "@/ui/appearance";
 import { layerURL, patchEntry, useRegionalStore } from "./store";
 import { pickDataFeature } from "./mapPicking";
+import { hasPointReadings, isPointReadingClick } from "./pointReadings";
+import { isProbeClick } from "@/spaces/interactions";
 import type { LayerDefinition } from "./types";
 const prefix = (id: string) => "regional-" + id;
 const EMPTY: GeoJSON.FeatureCollection = {
@@ -242,7 +244,8 @@ export function mountRegionalMap(map: MLMap): () => void {
       : undefined;
   }
   function clicked(e: MapMouseEvent) {
-    if (!ready || disposed || useAppStore.getState().drawingMode) return;
+    if (isPointReadingClick(e)) { hideHover(); return; }
+    if (!ready || disposed || useAppStore.getState().drawingMode || isProbeClick(e)) return;
     const hit = selectionHit(
       e,
       window.matchMedia("(pointer: coarse)").matches ? 22 : 8,
@@ -293,6 +296,7 @@ export function mountRegionalMap(map: MLMap): () => void {
     useAppStore.setState({ drawerOpen: true });
   }
   function hovered(e: MapMouseEvent) {
+    if (hasPointReadings(map)) { hideHover(); return; }
     if (
       !ready ||
       disposed ||

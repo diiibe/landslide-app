@@ -8,6 +8,7 @@ import { variableMeasures, VARIABLES, type Variable } from "./data";
 import { isPCREnabled } from "@/regional/builtins";
 import { useRegionalStore } from "@/regional/store";
 import { pickDataFeature } from "@/regional/mapPicking";
+import { hasPointReadings, isPointReadingClick } from "@/regional/pointReadings";
 
 const SENSOR = "twin-sensors", AIA = "twin-aia";
 const FOCUS = "twin-selection", OUTLINE = "twin-selection-outline", PULSE = "twin-selection-feedback";
@@ -109,6 +110,7 @@ export function mountTwinInteractions(map: MLMap, isReady: () => boolean) {
     }
   }
   function hover(event: MapMouseEvent) {
+    if (hasPointReadings(map)) { clearHover(); return; }
     if (!isReady() || !useTwinStore.getState().active || (useAppStore.getState().drawingMode || useExperienceStore.getState().probe)) return;
     if (!(window.matchMedia?.("(hover: hover)").matches ?? false)) return;
     if (map.isMoving()) { clearHover(); return; }
@@ -137,6 +139,7 @@ export function mountTwinInteractions(map: MLMap, isReady: () => boolean) {
     } else popup.setLngLat(event.lngLat).setDOMContent(node);
   }
   function click(event: MapMouseEvent) {
+    if (isPointReadingClick(event)) { clearHover(); return; }
     if (!isReady() || !useTwinStore.getState().active || (useAppStore.getState().drawingMode || isProbeClick(event))) return;
     const touch = window.matchMedia?.("(pointer: coarse)").matches ?? false;
     const hit = pickDataFeature(map, event.point, touch ? 22 : 8);

@@ -1,3 +1,4 @@
+import { isPointReadingClick } from "@/regional/pointReadings";
 import {isProbeClick} from "@/spaces/interactions";
 import { useAppStore } from "@/app/store";
 /**
@@ -164,7 +165,7 @@ export function registerPolygonClicks(
   lookup: () => UserPolygon[],
 ): () => void {
   const onClick = (e: MapMouseEvent) => {
-    if (useAppStore.getState().drawingMode || isProbeClick(e)) return;
+    if (useAppStore.getState().drawingMode || (isProbeClick(e) || isPointReadingClick(e))) return;
     if (!m.getLayer(USER_POLY_FILL)) return;
     const feats = m.queryRenderedFeatures(e.point, {
       layers: [USER_POLY_FILL],

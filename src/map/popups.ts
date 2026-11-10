@@ -1,3 +1,4 @@
+import { isPointReadingClick } from "@/regional/pointReadings";
 import {isProbeClick} from "@/spaces/interactions";
 import { useExperienceStore } from "@/spaces/store";
 import maplibregl, { type Map as MLMap, type MapMouseEvent } from "maplibre-gl";
@@ -320,7 +321,7 @@ const V2_IDS: string[] = [V2_LAYER_ID.bodies, V2_LAYER_ID.diffuse];
 
 export function registerPopups(m: MLMap): () => void {
   const onClick = (e: MapMouseEvent) => {
-    if ((useAppStore.getState().drawingMode || isProbeClick(e))) return;
+    if ((useAppStore.getState().drawingMode || (isProbeClick(e) || isPointReadingClick(e)))) return;
     const layers = [SUSCEPT_LAYER, ...V2_IDS, IFFI_FILL, HFLOOD_FILL].filter(
       (id) => m.getLayer(id),
     );

@@ -1,3 +1,4 @@
+import { isPointReadingClick } from "@/regional/pointReadings";
 import { consumeProbeClick } from "./interactions";
 import maplibregl, {
   type Map as MLMap,
@@ -530,7 +531,7 @@ export function mountExperienceMap(m: MLMap): () => void {
   }
   function click(e: MapMouseEvent) {
     const s = useExperienceStore.getState();
-    if (useAppStore.getState().drawingMode || !s.activeId) return;
+    if (useAppStore.getState().drawingMode || !s.activeId || isPointReadingClick(e)) return;
     if (s.activeId === "landslides") {
       if (s.probe) {
         consumeProbeClick(e);
