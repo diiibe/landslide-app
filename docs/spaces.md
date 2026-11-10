@@ -31,6 +31,12 @@ decompression, with the appropriate hash verified in either case.
 
 ## Demonstration spaces
 
+Fresh entry into any of the five demonstration Spaces selects the dark basemap
+when the Mapbox style is available. The UI theme is independent and can remain
+light. Users can change the basemap within the Space; leaving restores the
+original territory view. Frane FVG starts on the relief basemap. Saved views
+continue to restore their explicitly saved basemap.
+
 Industry, vineyard, retail, Tavagnacco traffic and mountain tourism are independent
 simulations. Company/place names are geographic references only. Their boundaries,
 assets, sensors, capacities, measurements and scenarios are fictional, with no

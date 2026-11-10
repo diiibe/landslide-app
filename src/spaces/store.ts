@@ -111,7 +111,7 @@ export function openExperience(id: SpaceId) {
           basemap:
             id === "landslides"
               ? ("outdoors" as const)
-              : ("satellite" as const),
+              : ("dark" as const),
         }
       : {}),
     drawerOpen: !(

@@ -9,6 +9,11 @@ import {
   useExperienceStore,
 } from "./store";
 
+vi.mock("@/map/style", async (importOriginal) => ({
+  ...await importOriginal<typeof import("@/map/style")>(),
+  HAS_MAPBOX_TOKEN: true,
+}));
+
 beforeEach(() => {
   leaveExperience();
   useAppStore.getState().reset();
@@ -105,4 +110,25 @@ it("requests fresh real feeds on every entry without replacing observations or r
  expect(useExperienceStore.getState().replayTime).toBeNull();
  expect(useTwinStore.getState().refreshKey).toBe(a+2);
  expect(useTwinStore.getState().measures).toBe(original);
+});
+
+it.each(["industry", "vineyard", "retail", "traffic", "mountain"] as const)(
+  "opens %s on the dark basemap and restores the territory basemap on exit",
+  (id) => {
+    useAppStore.setState({ basemap: "light", theme: "light" });
+    openExperience(id);
+    expect(useAppStore.getState().basemap).toBe("dark");
+    expect(useAppStore.getState().theme).toBe("light");
+    useAppStore.getState().setBasemap("satellite");
+    expect(useAppStore.getState().basemap).toBe("satellite");
+    openExperience(id);
+    expect(useAppStore.getState().basemap).toBe("dark");
+    leaveExperience();
+    expect(useAppStore.getState().basemap).toBe("light");
+  },
+);
+
+it("keeps the landslide Space on the relief basemap", () => {
+  openExperience("landslides");
+  expect(useAppStore.getState().basemap).toBe("outdoors");
 });
