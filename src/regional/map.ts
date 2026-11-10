@@ -1,3 +1,4 @@
+import { createHoverCard } from "@/map/hoverCard";
 import {
   Popup,
   type Map as MLMap,
@@ -10,7 +11,7 @@ import { formatTime, formatValue } from "@/digital-twin/data";
 import { directionIcon, DIRECTION_IMAGE } from "./directionIcon";
 import { defaultOpacity, mapLabelData } from "./data";
 import { presentation } from "./presentation";
-import { regionalStyle, layerSuffixes, OVERVIEW_ZOOM } from "./mapStyle";
+import { metricTone, regionalStyle, layerSuffixes, OVERVIEW_ZOOM } from "./mapStyle";
 import { useAppearance } from "@/ui/appearance";
 import { layerURL, patchEntry, useRegionalStore } from "./store";
 import { pickDataFeature } from "./mapPicking";
@@ -146,6 +147,7 @@ export function mountRegionalMap(map: MLMap): () => void {
         entry?.data &&
         dataRefs.get(l.id) !== entry.data
       ) {
+        if (hoverId.startsWith(src + "-")) hideHover();
         (map.getSource(src) as GeoJSONSource).setData(mapLabelData(l, entry.data));
         dataRefs.set(l.id, entry.data);
       }
@@ -311,20 +313,18 @@ export function mountRegionalMap(map: MLMap): () => void {
       hideHover();
       return;
     }
+    const layer=[...installed.values()].find(l=>hit.layer.id.startsWith(prefix(l.id)+"-"));
+    const tone=layer?metricTone(layer,hit.properties ?? {},useRegionalStore.getState().entries[layer.id]?.data):"#83b990";
     const key =
-      hit.layer.id + ":" + String(hit.properties?.__featureId ?? hit.properties?.cluster_id ?? hit.properties?.__bounds ?? hit.id) + ":" + String(hit.properties?.__count ?? hit.properties?.point_count ?? hit.properties?.__displayValue) + ":" + String(hit.properties?.__observedAt ?? "");
+      hit.layer.id + ":" + String(hit.properties?.__featureId ?? hit.properties?.cluster_id ?? hit.properties?.__bounds ?? hit.id) + ":" + String(hit.properties?.__count ?? hit.properties?.point_count ?? hit.properties?.__displayValue) + ":" + String(hit.properties?.__observedAt ?? "") + ":" + tone;
     if (key === hoverId && popup) {
       popup.setLngLat(e.lngLat);
       return;
     }
     hoverId = key;
-    const node = document.createElement("div"),
-      name = document.createElement("strong"),
-      p = hit.properties ?? {};
-    name.textContent = p.cluster || p.__overview ? `${String(p.__count ?? p.point_count)} ${p.__overview ? "record nella panoramica" : "elementi nel gruppo"}` : String(p.__name ?? "Elemento territoriale");
-    node.append(name);
-    const detail = document.createElement("div");
-    detail.textContent = p.cluster || p.__overview ? "Tocca per avvicinarti e leggere i singoli elementi" : [
+    const p = hit.properties ?? {};
+    const title = p.cluster || p.__overview ? `${String(p.__count ?? p.point_count)} ${p.__overview ? "record nella panoramica" : "elementi nel gruppo"}` : String(p.__name ?? "Elemento territoriale");
+    const detail = p.cluster || p.__overview ? "Tocca per avvicinarti e leggere i singoli elementi" : [
       p.__displayValue ??
         (typeof p.__value === "number" ? formatValue(p.__value) : ""),
       p.__unit ?? "",
@@ -333,13 +333,14 @@ export function mountRegionalMap(map: MLMap): () => void {
     ]
       .filter(Boolean)
       .join(" · ");
-    node.append(detail);
+    const node=createHoverCard(title,detail,tone);
     if (!popup)
       popup = new Popup({
         closeButton: false,
         closeOnClick: false,
         offset: 16,
         maxWidth: "280px",
+        className: "fvg-sensor-hover",
       })
         .setLngLat(e.lngLat)
         .setDOMContent(node)

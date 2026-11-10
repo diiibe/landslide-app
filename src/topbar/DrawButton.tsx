@@ -1,3 +1,4 @@
+import { Icon } from "@/ui/Icon";
 import { useAppStore } from "@/app/store";
 import styles from "./IconButtons.module.css";
 
@@ -21,18 +22,7 @@ export function DrawButton({ labeled = false }: { labeled?: boolean } = {}) {
       aria-pressed={drawing}
       onClick={() => setDrawingMode(!drawing)}
     >
-      <svg
-        viewBox="0 0 16 16"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-      >
-        <path d="M2.5 3l3 11 3-4 4 1z" />
-        <path d="M11.5 11l1.5 1.5" />
-      </svg>
+      <Icon name="drawPolygon" />
       {labeled && <span>Disegna area</span>}
     </button>
   );

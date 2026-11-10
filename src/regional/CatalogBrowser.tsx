@@ -39,6 +39,7 @@ export function CatalogButton() {
   return (
     <button
       className={styles.trigger}
+      aria-label="Catalogo"
       aria-haspopup="dialog"
       aria-controls="data-catalog"
       aria-expanded={open}

@@ -1,10 +1,11 @@
+import { createHoverCard } from "@/map/hoverCard";
 import {isProbeClick} from "@/spaces/interactions";
 import { useExperienceStore } from "@/spaces/store";
 import { Popup, type Map as MLMap, type MapGeoJSONFeature, type MapMouseEvent, type GeoJSONSource } from "maplibre-gl";
 import { useAppearance } from "@/ui/appearance";
 import { useAppStore } from "@/app/store";
 import { useTwinStore } from "./store";
-import { variableMeasures, VARIABLES, type Variable } from "./data";
+import { sensorTone, variableMeasures, VARIABLES, type Variable } from "./data";
 import { isPCREnabled } from "@/regional/builtins";
 import { useRegionalStore } from "@/regional/store";
 import { pickDataFeature } from "@/regional/mapPicking";
@@ -120,21 +121,16 @@ export function mountTwinInteractions(map: MLMap, isReady: () => boolean) {
     const feature = hit && !hit.layer.id.startsWith("regional-") ? hit : undefined;
     if (!feature) { clearHover(); return; }
     map.getCanvas().style.cursor = "pointer"; ownsCursor = true;
-    const p = feature.properties ?? {}, node = document.createElement("div");
+    const p = feature.properties ?? {};
     const key = `${feature.layer.id}:${String(feature.id ?? p.stationId ?? p.name ?? p.id)}:${String(p.label)}:${String(p.observedAt)}:${String(p.freshness)}`;
     if (popup && key === hoverKey) { popup.setLngLat(event.lngLat); return; }
     hoverKey = key;
-    node.setAttribute("role", "tooltip");
-    const title = document.createElement("strong");
-    title.textContent = String(p.name || p.ragione_sociale || (feature.geometry.type === "Point" ? "Punto osservato" : "Edificio"));
-    node.append(title);
-    const detail = document.createElement("div");
-    detail.textContent = feature.layer.id.startsWith(SENSOR)
-      ? `${String(p.label)} · ${String(p.observedAt)} · ${String(p.freshness)}`
-      : feature.layer.id === AIA ? "Registro AIA · tocca per i dettagli" : "Edificato 2017–2020 · tocca per i dettagli";
-    node.append(detail);
+    const variable=typeof p.variable==="string"&&p.variable in VARIABLES?p.variable as Variable:useTwinStore.getState().variable;
+    const node=createHoverCard(String(p.name||p.ragione_sociale||(feature.geometry.type==="Point"?"Punto osservato":"Edificio")),
+      feature.layer.id.startsWith(SENSOR)?`${String(p.label)} · ${String(p.observedAt)} · ${String(p.freshness)}`:feature.layer.id===AIA?"Registro AIA · tocca per i dettagli":"Edificato 2017–2020 · tocca per i dettagli",
+      feature.layer.id.startsWith(SENSOR)?sensorTone(Number(p.value),variable,p.stale===true):"#e0b361");
     if (!popup) {
-      popup = new Popup({ closeButton: false, closeOnClick: false, offset: 16, maxWidth: "260px" });
+      popup = new Popup({ closeButton: false, closeOnClick: false, offset: 16, maxWidth: "260px", className: "fvg-sensor-hover" });
       popup.setLngLat(event.lngLat).setDOMContent(node).addTo(map);
     } else popup.setLngLat(event.lngLat).setDOMContent(node);
   }

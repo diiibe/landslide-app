@@ -54,8 +54,8 @@ export function UploadButton({ labeled = false }: { labeled?: boolean } = {}) {
       <button
         type="button"
         className={styles.btn}
-        title="Carica un file GPX, GeoJSON o KML"
-        aria-label="Carica un file"
+        title="Carica un percorso GPX, GeoJSON o KML"
+        aria-label="Carica percorso"
         aria-busy={busy}
         disabled={busy}
         onClick={() => fileRef.current?.click()}
@@ -73,7 +73,7 @@ export function UploadButton({ labeled = false }: { labeled?: boolean } = {}) {
           <path d="M4.6 5.8L8 2.4l3.4 3.4" />
           <path d="M2.5 11.5v1.4a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-1.4" />
         </svg>
-        {labeled && <span>Carica file</span>}
+        {labeled && <span>Carica percorso</span>}
       </button>
       <input
         ref={fileRef}
