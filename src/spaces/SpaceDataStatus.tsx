@@ -1,3 +1,5 @@
+import { isNatureSpace } from "./types";
+import { natureLabel } from "./nature/experiences";
 import { useAppStore } from "@/app/store";
 import { useRegionalStore } from "@/regional/store";
 import { BUILTIN_LAYERS, isLayerEnabled } from "@/regional/builtins";
@@ -14,9 +16,9 @@ export function SpaceDataStatus() {
  const layers=[...new Map([...BUILTIN_LAYERS,...(regional.catalog?.layers??[])].map(l=>[l.id,l])).values()].filter(l=>isLayerEnabled(l));
  const shown=replay??clock;
  return <section className={styles.status} aria-label="Stato e aggiornamento dei dati">
-  <div className={styles.line}><strong>{active==="landslides"?"Mappatura reale versionata":replay===null?"Simulazione in corso":"Replay della simulazione"}</strong>{active!=="landslides"&&<time dateTime={new Date(shown).toISOString()}>{new Date(shown).toLocaleTimeString("it-IT",{timeZone:"Europe/Rome",hour:"2-digit",minute:"2-digit",second:"2-digit"})} · Roma</time>}</div>
+  <div className={styles.line}><strong>{isNatureSpace(active)?natureLabel(active):active==="landslides"?"Mappatura reale versionata":replay===null?"Simulazione in corso":"Replay della simulazione"}</strong>{active!=="landslides"&&!isNatureSpace(active)&&<time dateTime={new Date(shown).toISOString()}>{new Date(shown).toLocaleTimeString("it-IT",{timeZone:"Europe/Rome",hour:"2-digit",minute:"2-digit",second:"2-digit"})} · Roma</time>}</div>
   <details><summary>Catalogo e aggiornamenti · {layers.length} livelli attivi</summary>
-   <p>{active==="landslides"?"La mappa delle frane è un modello pubblicato, non un rilevamento di frane in corso. La prima analisi dopo ogni accesso verifica la versione dell’indice; se è cambiata, viene ricaricata.":"Le misure della demo sono generate dall’orologio: nessun sensore aziendale è collegato. In riapertura viene ricostruito lo stato corrente; il replay conserva il suo istante."}</p>
+   <p>{isNatureSpace(active)?"Le fonti e le date dello Spazio sono riportate nelle schede. Gli archivi non sono misure attuali; proposte e simulazioni restano contrassegnate. I livelli reali aggiuntivi del catalogo mantengono le proprie cadenze.":active==="landslides"?"La mappa delle frane è un modello pubblicato, non un rilevamento di frane in corso. La prima analisi dopo ogni accesso verifica la versione dell’indice; se è cambiata, viene ricaricata.":"Le misure della demo sono generate dall’orologio: nessun sensore aziendale è collegato. In riapertura viene ricostruito lo stato corrente; il replay conserva il suo istante."}</p>
    {!layers.length&&<p>Nessuna fonte aggiuntiva del catalogo attiva. Puoi aggiungerla dalla scheda Livelli, separatamente dai dati propri dello Spazio.</p>}
    <ul>{layers.map(l=>{
     const e=regional.entries[l.id],feed=l.pcrVariable?twin.sensorsFeed:l.kind==="radar"?twin.radarFeed:null;

@@ -1,3 +1,5 @@
+import { isNatureSpace } from "./types";
+import { natureSummary, natureLabel } from "./nature/experiences";
 import { useState } from "react";
 import { Icon } from "@/ui/Icon";
 import { SearchField } from "@/ui/SearchField";
@@ -18,7 +20,7 @@ export function SpaceHub() {
   const scenes = EXPERIENCES.filter(
     (s) =>
       (filter === "all" ||
-        (filter === "real" ? s.id === "landslides" : s.id !== "landslides")) &&
+        (filter === "real" ? ["landslides","fire","park"].includes(s.id) : !["landslides","fire","park"].includes(s.id))) &&
       `${s.title} ${s.subtitle} ${s.reference.name} ${s.description}`
         .toLocaleLowerCase("it")
         .includes(query.toLocaleLowerCase("it")),
@@ -55,13 +57,13 @@ export function SpaceHub() {
                 leggerli.
               </p>
             </div>
-            <span className={styles.hubCount}>6 esperienze</span>
+            <span className={styles.hubCount}>{EXPERIENCES.length} esperienze</span>
           </div>
           <SearchField
             label="Cerca uno spazio"
             value={query}
             onChange={setQuery}
-            placeholder="Frane, industria, vigneto, viabilità…"
+            placeholder="Frane, incendio, fauna, parchi…"
           />
           <div
             className={styles.filters}
@@ -96,7 +98,7 @@ export function SpaceHub() {
                 <div className={styles.preview}>
                   <MiniMap scene={s} />
                   <span className={styles.kind}>
-                    {s.id === "landslides" ? "Dati reali" : "Demo simulata"}
+                    {s.id === "landslides" ? "Dati reali" : isNatureSpace(s.id) ? natureLabel(s.id) : "Demo simulata"}
                   </span>
                 </div>
                 <div className={styles.cardCopy}>
@@ -110,7 +112,7 @@ export function SpaceHub() {
                     <span>
                       {s.id === "landslides"
                         ? "2 mappature · griglia 120 m"
-                        : `${s.sensors.length} sensori · ${s.zones.length} zone`}
+                        : isNatureSpace(s.id) ? natureSummary[s.id] : `${s.sensors.length} sensori · ${s.zones.length} zone`}
                     </span>
                     <Icon name="arrow" />
                   </span>

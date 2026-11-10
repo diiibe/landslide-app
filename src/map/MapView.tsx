@@ -1,3 +1,4 @@
+import { mountNatureMap } from "@/spaces/nature/map";
 import { mountExperienceMap } from "@/spaces/map";
 import { useExperienceStore } from "@/spaces/store";
 import { useEffect, useRef } from "react";
@@ -390,11 +391,13 @@ export function MapView() {
     const unmountTwin = mountTwinMap(m);
     const unmountRegional = mountRegionalMap(m);
     const unmountExperience = mountExperienceMap(m);
+    const unmountNature = mountNatureMap(m);
     mapRef.current = m;
     setMap(m);
     return () => {
       unmountPointReadings();
       unmountExperience();
+      unmountNature();
       unmountRegional();
       unmountTwin();
       setMap(null);

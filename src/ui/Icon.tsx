@@ -1,5 +1,6 @@
 import type { ReactNode, SVGProps } from "react";
 export type IconName =
+  | "fire" | "camera" | "tree" | "paw"
   | "spaces" | "profile" | "brand" | "extensions"
   | "fileData"
   | "sensor" | "lineData" | "pointData" | "areaData" | "rasterData" | "eye" | "tools"
@@ -21,6 +22,10 @@ export type IconName =
   | "moon"
   | "weather" | "waves" | "air" | "energy" | "territory" | "factory" | "recycle" | "water" | "leaf" | "services" | "mobility" | "network";
 const paths: Record<IconName, ReactNode> = {
+  fire: <path d="M11 2c1 5-4 5-3 9 1-2 3-2 4-4 4 4 5 10-2 11C1 17 3 9 6 6c-1 4 1 4 2 4-1-4 4-4 3-8Z"/>,
+  camera: <><path d="M3 6h3l1-3h6l1 3h3v11H3Z"/><circle cx="10" cy="11" r="3"/><path d="M15 8h.1"/></>,
+  tree: <><path d="M10 2 4 9h3l-5 6h16l-5-6h3ZM10 15v4"/></>,
+  paw: <><ellipse cx="10" cy="14" rx="4" ry="3"/><ellipse cx="4" cy="9" rx="1.5" ry="2"/><ellipse cx="8" cy="5" rx="1.5" ry="2"/><ellipse cx="13" cy="5" rx="1.5" ry="2"/><ellipse cx="17" cy="9" rx="1.5" ry="2"/></>,
   extensions: <path d="M3 4h4V3a2 2 0 0 1 4 0v1h5v4h1a2 2 0 0 1 0 4h-1v5h-5v-1a2 2 0 0 0-4 0v1H3v-5h1a2 2 0 0 0 0-4H3Z"/>,
   brand: <><path d="m2 15 5-10 4 7 3-5 4 8"/><path d="M2 18h16M5 11l2 2 2-3"/></>,
   spaces: <><rect x="2" y="3" width="10" height="10" rx="1.5"/><path d="M6 16h11V7M6 7h2m-2 3h3"/></>,

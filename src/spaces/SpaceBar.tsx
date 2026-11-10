@@ -1,3 +1,5 @@
+import { isNatureSpace } from "./types";
+import { natureLabel } from "./nature/experiences";
 import { Icon } from "@/ui/Icon";
 import { useAppStore } from "@/app/store";
 import { experience } from "./experiences";
@@ -42,7 +44,7 @@ export function SpaceBar() {
           <small>
             {id === "landslides"
               ? "Mappe reali · analisi delle zone"
-              : `${replay === null ? "Demo · ora simulata" : "Demo · replay"} ${new Date(time).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Rome" })}`}
+              : isNatureSpace(id) ? natureLabel(id) : `${replay === null ? "Demo · ora simulata" : "Demo · replay"} ${new Date(time).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Rome" })}`}
           </small>
         </span>
         <Icon name="chevron" />

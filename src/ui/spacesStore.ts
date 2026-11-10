@@ -10,7 +10,7 @@ const KEY = "friulview:spaces:v1";
 const flags = z.record(z.string().max(180), z.boolean());
 const style = z.object({ classes: z.array(z.number().int().min(1).max(5)).max(5).optional(), minClass: z.number().int().min(1).max(5), opacity: z.number().min(0).max(1) });
 const schema = z.object({
-  experienceId: z.enum(["landslides","industry","vineyard","retail","traffic","mountain"]).optional(),
+  experienceId: z.enum(["landslides","industry","vineyard","retail","traffic","mountain","fire","wildlife","park"]).optional(),
   id: z.string().max(100), name: z.string().trim().min(1).max(70), savedAt: z.number().finite(),
   layers: flags, enabled: flags,
   opacity: z.record(z.string(), z.number().min(0).max(1)),

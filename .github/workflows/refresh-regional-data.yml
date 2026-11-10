@@ -44,6 +44,8 @@ jobs:
           python scripts/build-regional-products.py
       - name: Sincronizza edifici, suolo e dati di riserva
         run: python scripts/build-regional-supplement.py
+      - name: Sincronizza archivio satellitare Amariana
+        run: python scripts/build-nature-archives.py
       - name: Sincronizza immagini cartografiche
         run: python scripts/build-regional-raster.py
       - name: Verifica e assembla il catalogo
@@ -52,11 +54,12 @@ jobs:
           python scripts/build-regional-overviews.py
           python scripts/validate-regional-data.py
           python scripts/test_regional_pipeline.py
+          python scripts/test_nature_archives.py
       - name: Pubblica i dati aggiornati
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add public/data/regional public/data/twin
+          git add public/data/regional public/data/twin public/data/spaces/nature
           if ! git diff --cached --quiet; then
             git commit -m 'Aggiorna dati regionali e provenienza delle fonti'
             git pull --rebase origin main

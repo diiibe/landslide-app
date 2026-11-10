@@ -1,3 +1,4 @@
+import { NATURE_EXPERIENCES } from "./nature/experiences";
 import industryBoundary from "./data/industry-boundary.json";
 import trafficGeometry from "./data/traffic-routes.json";
 import type {
@@ -1671,6 +1672,7 @@ export const EXPERIENCES: Experience[] = [
   retail,
   traffic,
   mountain,
+  ...NATURE_EXPERIENCES,
 ];
 export const experience = (id: string | null) =>
   EXPERIENCES.find((s) => s.id === id) ?? null;

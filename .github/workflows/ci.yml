@@ -53,4 +53,5 @@ jobs:
           cache-dependency-path: scripts/regional-requirements.txt
       - run: python -m pip install -r scripts/regional-requirements.txt
       - run: python scripts/test_regional_pipeline.py
+      - run: python scripts/test_nature_archives.py
       - run: python scripts/validate-regional-data.py

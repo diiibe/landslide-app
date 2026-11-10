@@ -3,7 +3,7 @@ import { useAppearance } from "@/ui/appearance";
 import { useAppStore } from "@/app/store";
 import { VARIABLES, formatTime, formatValue, type Variable } from "@/digital-twin/data";
 import { useTwinStore } from "@/digital-twin/store";
-import { useExperienceStore } from "@/spaces/store";
+import { selectObject, useExperienceStore } from "@/spaces/store";
 import { isProbeClick } from "@/spaces/interactions";
 import { dataFeatureKey, pickDataFeatures } from "./mapPicking";
 import { useRegionalStore } from "./store";
@@ -20,6 +20,7 @@ export function readingLayer(feature: MapGeoJSONFeature) {
 }
 export function readingText(feature: MapGeoJSONFeature) {
   const p = feature.properties ?? {}, layer = readingLayer(feature);
+  if (feature.source === "nature-nodes") return {title:String(p.name??"Dato dello Spazio"),value:p.natureSpace==="park"?"Censimento storico ERPAC":String(p.label??""),detail:String(p.readingDetail??""),color:String(p.color??"#83b990")};
   const variable = typeof p.variable === "string" && p.variable in VARIABLES ? p.variable as Variable : null;
   const title = variable ? VARIABLES[variable].label : layer?.title ?? (feature.layer.id === "twin-aia" ? "Attività autorizzata AIA" : "Dato territoriale");
   const unit = String(p.__unit ?? layer?.metric?.unit ?? "");
@@ -41,6 +42,8 @@ export function readingText(feature: MapGeoJSONFeature) {
 }
 export function selectPointReading(feature: MapGeoJSONFeature) {
   const p = feature.properties ?? {}, layer = readingLayer(feature);
+  if (feature.source === "nature-nodes") { selectObject(String(p.id??feature.id)); return; }
+  if (useExperienceStore.getState().activeId) useExperienceStore.setState({tab:"layers"});
   if (layer) {
     useTwinStore.setState({ selection: null });
     useRegionalStore.setState({ selection: { layerId: layer.id, feature: { type: "Feature", geometry: feature.geometry, properties: { ...p }, ...(feature.id !== undefined ? { id: feature.id } : {}) } }, detailId: layer.id, tab: "layers" });
@@ -149,7 +152,7 @@ export function mountPointReadings(map: MLMap) {
       const zoom = await source.getClusterExpansionZoom(Number(group.properties.cluster_id));
       if (disposed || serial !== request || map.getSource(group.source) !== source || group.geometry.type !== "Point") return;
       const animate = useAppearance.getState().motion && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      map.easeTo({ center: group.geometry.coordinates.slice(0, 2) as [number, number], zoom: Math.min(16, zoom + .1), duration: animate ? 400 : 0 });
+      map.easeTo({ center: group.geometry.coordinates.slice(0, 2) as [number, number], zoom: Math.min(group.source==="nature-nodes"?18:16, zoom + .1), duration: animate ? 400 : 0 });
     } catch { if (!disposed && serial === request) close(); /* Source may refresh while reading leaves. */ }
   }
   function click(event: MapMouseEvent) {

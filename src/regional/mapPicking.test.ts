@@ -31,3 +31,9 @@ it("preserves polygon picking when there are no points at the target", () => {
   const polygon = { ...feature("regional-a", "a"), geometry: { type: "Polygon", coordinates: [] } } as unknown as MapGeoJSONFeature;
   expect(pickDataFeatures(mapWith([polygon]), { x: 130, y: 460 }, 8)).toEqual([polygon]);
 });
+it("keeps Nature records distinct when clustered GeoJSON exposes numeric zero IDs",()=>{
+ const a={...feature("nature-nodes","tree-a"),id:0,layer:{id:"nature-node"}} as MapGeoJSONFeature,b={...feature("nature-nodes","tree-b"),id:0,layer:{id:"nature-node"}} as MapGeoJSONFeature;
+ const halo={...a,layer:{id:"nature-hit"}} as MapGeoJSONFeature;
+ const m=mapWith([a,halo,b]);(m.getStyle as unknown as (()=>unknown))=()=>({layers:[{id:"nature-node",type:"circle"},{id:"nature-hit",type:"circle"}]});
+ expect(pickDataFeatures(m,{x:130,y:460},22)).toEqual([a,b]);
+});
