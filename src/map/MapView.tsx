@@ -56,6 +56,7 @@ import {
 } from "./layers/comuni";
 import {
   addCriticalPoi,
+  uninstallIconLoader,
   setPoiCompact,
   applyPoiCategoryFilter,
   applyPoiColors,
@@ -104,6 +105,7 @@ import { rewriteMapboxUrl } from "./mapboxUrl";
 import styles from "./MapView.module.css";
 import { mountTwinMap } from "@/digital-twin/map";
 import { mountRegionalMap } from "@/regional/map";
+import { mountPointReadings } from "@/regional/pointReadings";
 
 const TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string | undefined;
 
@@ -384,18 +386,21 @@ export function MapView() {
         polygonUnsub();
       };
     });
+    const unmountPointReadings = mountPointReadings(m);
     const unmountTwin = mountTwinMap(m);
     const unmountRegional = mountRegionalMap(m);
     const unmountExperience = mountExperienceMap(m);
     mapRef.current = m;
     setMap(m);
     return () => {
+      unmountPointReadings();
       unmountExperience();
       unmountRegional();
       unmountTwin();
       setMap(null);
       popupsUnsubRef.current?.();
       popupsUnsubRef.current = null;
+      uninstallIconLoader();
       m.remove();
       mapRef.current = null;
       styleReady.current = false;
