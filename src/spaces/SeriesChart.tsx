@@ -8,6 +8,7 @@ export function SeriesChart({
   label,
   limit,
   comparison,
+  comparisonLabel,
 }: {
   points: { time: number; value: number }[];
   unit: string;
@@ -15,6 +16,7 @@ export function SeriesChart({
   label: string;
   limit?: number;
   comparison?: { time: number; value: number }[];
+  comparisonLabel?: string;
 }) {
   const [index, setIndex] = useState<number | null>(null),
     id = useId();
@@ -64,8 +66,7 @@ export function SeriesChart({
       </div>
       {comparison && (
         <p className={styles.caption}>
-          Linea continua: ipotesi selezionata · tratteggio: ciclo ordinario allo
-          stesso istante.
+          {comparisonLabel ?? "Linea continua: ipotesi selezionata · tratteggio: ciclo ordinario allo stesso istante."}
         </p>
       )}
       <div className={styles.axis}>

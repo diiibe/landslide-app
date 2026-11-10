@@ -24,7 +24,8 @@ let gridPromise: Promise<{ grid: Grid; manifest: Manifest }> | null = null;
 const networks = new Map<string, Promise<ArrayBuffer>>();
 let pois: Promise<GeoJSON.FeatureCollection> | null = null;
 async function response(url: string) {
-  const r = await fetch(url);
+  const metadata = url.endsWith("/manifest.json") || url.endsWith("/model_v2.json");
+  const r = await fetch(url, metadata ? { cache: "no-cache" } : undefined);
   if (!r.ok) throw new Error(`Dati non disponibili (${r.status}). Riprova.`);
   return r;
 }

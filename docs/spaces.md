@@ -50,3 +50,54 @@ vehicle positions use stable entry slots and elapsed travel time.
 Retail entries are passages, not unique visitors. Occupancy is synthesized from
 arrivals and dwell time and allocated to zones within demonstrative capacity.
 Counts, speed, parking and energy must never be presented as observed facts.
+
+## Decision tools
+
+Each workspace exposes a **Strumenti** tab. Five simulation tools operate on the
+same clock/scenario as the map and replay; calculations recompute at the current
+minute and on input changes. Hypotheses remain in memory for this browser session,
+not on equipment. JSON exports preserve the as-of time, global scenario, tool
+parameters, results and whether the data are simulated or versioned real data.
+
+- **Industry:** historical 1/6/24-hour electricity balance, integrated at 5-minute
+  intervals. A uniform hypothetical load reduction is compared to the same scope
+  and scenario. PV is credited within that scope only; import is bounded at zero.
+  The manual tariff excludes fixed charges, taxes and export revenue. Disjoint
+  power meters and unchanged production are assumptions, not business findings.
+- **Vineyard:** volumetric soil deficit by sensor-equipped parcel. Effective rain
+  and root depth are manual assumptions; deficit × illustrative area / irrigation
+  efficiency gives gross volume. Reserve is a separate manual m³ input; a tank
+  percentage is never converted to volume without a known capacity. Runtime is
+  an equivalent at the demo valve's nominal flow, not its current on/off reading.
+- **Retail:** presence and service staffing ratios by zone or site, with sampled
+  historical peaks. Gate passages and shop occupancy are not added together, and
+  illustrative capacity/people-per-staff ratios are not regulatory requirements.
+- **Traffic:** a capacity what-if using the existing demand/speed/queue model,
+  retaining the same arrival demand and weather. At 100% it reproduces the map's
+  baseline. Geometry length / speed is a section indicator, not a routing ETA;
+  queues are synthetic demand-capacity indicators rather than microscopic traffic.
+- **Mountain:** 2-hour projection of the synthetic access/lift model at 5-minute
+  intervals, with zero initial queue. Absolute offered counts accumulate fractional
+  expected arrivals; quotas defer visitors outside the site rather than erasing
+  demand. Service-slot fractional remainders stay below one and do not bank unused
+  seats. Offered = admitted + deferred; admitted = served + final queue. The
+  illustrative 07:30–18:00 schedule/wind threshold do not indicate actual lift
+  operations or safety. Baseline capacity remains the configured demo capacity.
+- **Landslides:** side-by-side analysis of two presets, current or saved polygons,
+  using the complete index, selected model and class cutoff. Optional context
+  includes full roads/trails. Nodata is explicit and excluded from class shares;
+  tiny positive surfaces/lengths retain significant digits instead of rounding
+  to zero. Failures are reported independently per area.
+
+Opening a Space requests fresh real sensor/catalog checks, restores automatic
+polling and clears any prior replay. Observation polling is serial every 60s
+(after a request finishes); catalog checks run every 5 minutes. Publication dates,
+source cadence and snapshot/error states remain separate from the simulation
+clock. A successful poll does not make old observations current.
+
+Entering the landslide Space invalidates a lightweight manifest version check.
+The next analysis revalidates metadata; unchanged indices reuse the current
+worker, while changed model/network hashes replace it. Concurrent stale version
+responses cannot roll a newer worker back. This is publication-version checking,
+not a live landslide monitoring service. Simulated realism is profile/coherence
+based and has not been calibrated against these companies' operational telemetry.

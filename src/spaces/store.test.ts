@@ -93,3 +93,16 @@ it("reveals a selected sensor hidden by a different metric filter and stops play
     probe: false,
   });
 });
+
+it("requests fresh real feeds on every entry without replacing observations or replaying an old demo instant",()=>{
+ const original=useTwinStore.getState().measures;
+ useTwinStore.setState({autoRefresh:false});
+ const a=useTwinStore.getState().refreshKey,b=useRegionalStore.getState().refreshKey;
+ openExperience("industry");
+ expect(useTwinStore.getState()).toMatchObject({autoRefresh:true,refreshKey:a+1});
+ expect(useRegionalStore.getState().refreshKey).toBe(b+1);
+ useExperienceStore.setState({replayTime:1000});openExperience("retail");
+ expect(useExperienceStore.getState().replayTime).toBeNull();
+ expect(useTwinStore.getState().refreshKey).toBe(a+2);
+ expect(useTwinStore.getState().measures).toBe(original);
+});

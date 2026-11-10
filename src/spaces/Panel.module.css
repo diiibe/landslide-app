@@ -146,6 +146,9 @@
   margin-bottom: 18px;
 }
 .panelTabs button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   min-height: 44px;
   padding: 8px 0;
   border: 0;

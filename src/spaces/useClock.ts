@@ -5,7 +5,7 @@ export function useSpaceClock(wall = false) {
     active = useExperienceStore((s) => s.activeId);
   const [now, setNow] = useState(Date.now);
   useEffect(() => {
-    if (!active || active === "landslides" || replay !== null) return;
+    if (!active || (active === "landslides" && !wall) || replay !== null) return;
     let timer: ReturnType<typeof setInterval> | undefined;
     const sync = () => {
       if (timer) clearInterval(timer);
@@ -21,6 +21,6 @@ export function useSpaceClock(wall = false) {
       document.removeEventListener("visibilitychange", sync);
       window.removeEventListener("focus", sync);
     };
-  }, [active, replay]);
+  }, [active, replay, wall]);
   return replay ?? now;
 }
