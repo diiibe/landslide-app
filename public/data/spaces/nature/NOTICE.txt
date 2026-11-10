@@ -1,0 +1,25 @@
+EFFIS study extract: European Commission / Copernicus Emergency Management
+Service / Joint Research Centre (JRC), European Forest Fire Information System.
+CC BY 4.0. https://forest-fire.emergency.copernicus.eu/about-effis/data-license
+Changes: selection of study bbox and August 2026 FIREDATE, GML -> GeoJSON.
+Original source coordinates and attributes preserved. No attribution of all
+records to one fire; these final geometries are not a fire-spread time series.
+Exact request, acquisition, selection and failure state: GeoJSON provenance.
+The space-fire.svg preview is projected from the same EFFIS shapes.
+
+Villa Manin archive reused from public/data/regional/open-uqpq-dr8x.geojson:
+ERPAC / Regione autonoma Friuli Venezia Giulia, Italian Open Data License 2.0.
+Historical surveys 2001-2002, not current tree condition. Source and metadata:
+https://www.dati.friuliveneziagiulia.it/Ambiente/Alberi-di-Villa-Manin/uqpq-dr8x
+The space-park.svg preview is derived from the same georeferenced points.
+
+PM10 numerical facts: ARPA FVG public bulletin, 14-19 August 2026, three
+localities. Source, method, original intervals and times are cited in the app.
+No ARPA photos, logos or full prose articles are republished. Locality anchors
+are indicative; no sampling GPS precision is claimed.
+https://www.arpa.fvg.it/temi/temi/aria/news/incendio-sul-monte-amariana-alpi-tolmezzine-orientali-carnia/
+
+wildlife-atlas.png: generated synthetic visual asset, November 2026.
+Six species examples, reused in simulated captures. Not real trail-camera
+photos or outputs of an executed vision classifier. Camera locations, events,
+identifications and scores are simulated. No affiliation with real reserves.

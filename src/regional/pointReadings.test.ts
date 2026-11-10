@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import type { Map as MLMap, MapGeoJSONFeature, MapMouseEvent } from "maplibre-gl";
+import {useExperienceStore} from "@/spaces/store";
 import { useAppStore } from "@/app/store";
 import { useRegionalStore } from "./store";
 import { useTwinStore } from "@/digital-twin/store";
@@ -19,6 +20,7 @@ function feature(id: string, depth: number, value: string) {
 let teardown: (() => void) | undefined;
 beforeEach(() => {
   nodes.length = 0;
+  useExperienceStore.setState({activeId:null});
   vi.stubGlobal("matchMedia", () => ({matches:false}));
   useAppStore.setState({drawingMode:false,drawerOpen:false});
   useRegionalStore.setState({catalog:{generatedAt:"2026-01-01",layers:[layer]},selection:null,enabled:{salinity:true},entries:{}});
@@ -101,4 +103,12 @@ it("continues normal geographic cluster expansion when leaves are at different p
   h.handlers.get("click")!(h.event);
   await vi.waitFor(()=>expect(h.map.easeTo).toHaveBeenCalled());
   expect(nodes).toHaveLength(0);
+});
+
+it("opens the Space layers tab for an additional real source, and the own inspector for a Nature record",()=>{
+ useExperienceStore.setState({activeId:"park",tab:"tools"});
+ const tree={...feature("tree-a",0,""),source:"nature-nodes",layer:{id:"nature-node"},properties:{id:"tree-a",__featureId:"tree-a",natureSpace:"park",name:"Larix decidua",readingDetail:"ERPAC · rilievo storico"}} as unknown as MapGeoJSONFeature;
+ const h=harness([tree,feature("other",0,"37")]);h.handlers.get("click")!(h.event);nodes.at(-1)!.querySelectorAll("ol button")[0]!.dispatchEvent(new MouseEvent("click"));
+ expect(useExperienceStore.getState().selectedId).toBe("tree-a");expect(useExperienceStore.getState().tab).toBe("overview");
+ h.handlers.get("click")!(h.event);nodes.at(-1)!.querySelectorAll("ol button")[1]!.dispatchEvent(new MouseEvent("click"));expect(useExperienceStore.getState().tab).toBe("layers");expect(useRegionalStore.getState().selection?.layerId).toBe("salinity");useExperienceStore.setState({activeId:null});
 });

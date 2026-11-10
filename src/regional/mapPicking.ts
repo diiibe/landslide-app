@@ -22,7 +22,7 @@ export function pickDataFeatures(
 ): MapGeoJSONFeature[] {
   const layers = (map.getStyle()?.layers ?? []).filter(l =>
     l.type !== "heatmap" && !l.id.startsWith("regional-selection") &&
-    (l.id.startsWith("regional-") || l.id.startsWith("twin-sensors") ||
+    (l.id.startsWith("regional-") || l.id.startsWith("twin-sensors") || ["nature-node","nature-node-ring","nature-hit","nature-label","nature-cluster","nature-cluster-label"].includes(l.id) ||
       ["twin-aia", "twin-buildings", "twin-buildings-3d"].includes(l.id)),
   ).map(l => l.id);
   if (!layers.length) return [];

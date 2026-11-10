@@ -1,3 +1,5 @@
+import { NaturePanel } from "./nature/Panel";
+import { isNatureSpace } from "./types";
 import { useEffect, useRef } from "react";
 import { Icon } from "@/ui/Icon";
 import { RegionalPanel } from "@/regional/Panel";
@@ -26,7 +28,7 @@ export function SpacePanel() {
     previous.current = { active, selected, areaId, inspectionRequest };
     if (!changed || tab !== "overview") return;
     const frame = requestAnimationFrame(() => {
-      const heading = content.current?.querySelector<HTMLElement>("h2");
+      const heading = (selected ? content.current?.querySelector<HTMLElement>("[data-space-inspection]") : null) ?? content.current?.querySelector<HTMLElement>("h2");
       if (!heading) return;
       heading.tabIndex = -1;
       heading.focus({ preventScroll: true });
@@ -58,8 +60,8 @@ export function SpacePanel() {
         </button>
         <button role="tab" aria-selected={tab === "tools"} onClick={() => useExperienceStore.setState({ tab: "tools" })}><Icon name="extensions" />Estensioni</button>
       </div>
-      <SpaceDataStatus />
-      {tab === "tools" ? <Workbench /> : tab === "overview" ? (
+      {(!isNatureSpace(active) || tab === "layers") && <SpaceDataStatus />}
+      {isNatureSpace(active) && tab !== "layers" ? <NaturePanel tools={tab === "tools"}/> : tab === "tools" ? <Workbench /> : tab === "overview" ? (
         active === "landslides" ? (
           <FranePanel />
         ) : (
@@ -67,10 +69,10 @@ export function SpacePanel() {
         )
       ) : (
         <>
-          {active !== "landslides" && (
+          {active !== "landslides" && !isNatureSpace(active) && (
             <div className={styles.panel}>
               <section className={styles.section}>
-                <h3>Livelli della demo</h3>
+                <h3>Livelli dello Spazio</h3>
                 <div className={styles.actions}>
                   {(
                     [
