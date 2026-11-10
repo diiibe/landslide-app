@@ -190,3 +190,11 @@
   .body[data-drawer="open"] .rightStack { left: auto; right: calc(min(52%, 420px) + 8px); }
   .body[data-drawer="open"] .map :global([data-map-legend]) { max-width: calc(100% - min(52%, 420px) - 184px); }
 }
+
+/* Leave the compact command column clear when the mobile sheet is open.
+   Only move zoom controls; attribution keeps its full available width. */
+@media (max-width: 768px), (max-height: 500px) and (pointer: coarse) {
+  .body[data-drawer="open"] .map :global(.maplibregl-ctrl-bottom-right .maplibregl-ctrl-group) {
+    margin-right: 172px;
+  }
+}

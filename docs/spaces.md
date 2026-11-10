@@ -53,7 +53,11 @@ Counts, speed, parking and energy must never be presented as observed facts.
 
 ## Decision tools
 
-Each workspace exposes a **Strumenti** tab. Five simulation tools operate on the
+The **Estensioni** map command sits below **Strumenti** and opens the current
+workspace's dedicated tools in the right panel (also reachable via its
+**Estensioni** tab). Outside a workspace it opens the Space picker. **Strumenti**
+retains the general upload, drawing and import/export actions.
+Five simulation tools operate on the
 same clock/scenario as the map and replay; calculations recompute at the current
 minute and on input changes. Hypotheses remain in memory for this browser session,
 not on equipment. JSON exports preserve the as-of time, global scenario, tool

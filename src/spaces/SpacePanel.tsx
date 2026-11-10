@@ -56,7 +56,7 @@ export function SpacePanel() {
         >
           Livelli
         </button>
-        <button role="tab" aria-selected={tab === "tools"} onClick={() => useExperienceStore.setState({ tab: "tools" })}><Icon name="tools" />Strumenti</button>
+        <button role="tab" aria-selected={tab === "tools"} onClick={() => useExperienceStore.setState({ tab: "tools" })}><Icon name="extensions" />Estensioni</button>
       </div>
       <SpaceDataStatus />
       {tab === "tools" ? <Workbench /> : tab === "overview" ? (
