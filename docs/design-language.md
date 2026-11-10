@@ -97,6 +97,24 @@ riattivarlo contro `prefers-reduced-motion`. Entrambi i percorsi coprono anche i
 fondali nativi `::backdrop`. Nessuna pulsazione continua suggerisce nuove misure o
 aggiornamenti dei sensori. I dati e la camera conservano il comportamento esistente.
 
+## Materiale della navbar
+
+La testata ha una finitura minerale satinata: tinta opaca della palette,
+micrograna monocromatica, linee di livello decorative e una luce verticale
+contenuta. Il bordo inferiore separa la navigazione dalla mappa. La trama è
+statica e locale (`src/assets/materials`); i fondi CSS non introducono un nuovo
+containing block per menu o dialoghi. Nessun dato cartografico è codificato nella
+trama. Con contrasto aumentato o colori forzati le immagini decorative sono
+rimosse.
+
+Riferimenti: [Microsoft Acrylic](https://learn.microsoft.com/en-us/windows/apps/design/style/acrylic)
+descrive tinta, rumore e profondità con attenzione alla leggibilità;
+[Apple Materials](https://developer.apple.com/design/human-interface-guidelines/materials)
+raccomanda un uso mirato dei materiali nella navigazione;
+[MDN feTurbulence](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feTurbulence)
+documenta la generazione della microtrama SVG. La finitura di FriulView usa questi
+principi con un fondo opaco e texture leggere, adattate alla testata esistente.
+
 ## Esplora, tipografia e menu dell’app
 
 Manrope variabile è ospitato in `public/fonts/manrope-variable.woff2` (SIL OFL,
