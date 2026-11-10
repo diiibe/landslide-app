@@ -11,3 +11,5 @@
 .body > details > div[role="menu"] { position: static; margin: 0 0 8px; min-width: 0; box-shadow: none; animation: none; border: 0; border-left: 1px solid var(--c-border); border-radius: 0; padding-left: 6px; }
 .body p { font-size: 12px; line-height: 1.5; color: var(--c-text-muted); padding: 8px; margin: 0; }
 @media (max-width: 768px), (max-height: 500px) and (pointer: coarse) { .head { font-size: 12px; } .body > button, .body > details > summary { font-size: 12px; } }
+
+.panel { background-image: var(--surface-texture); background-size: var(--material-size); background-position: var(--material-position); }

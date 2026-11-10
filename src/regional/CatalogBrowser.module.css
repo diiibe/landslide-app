@@ -693,3 +693,6 @@
   .themes button > span:last-child { grid-column: 3; grid-row: 1; align-self: center; }
   .themes > button:first-of-type { min-height: 44px; }
 }
+
+/* Shared regional navigation material; content remains unpatterned. */
+.header { background: var(--material-chrome); }

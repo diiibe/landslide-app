@@ -4,7 +4,13 @@
   --text-reading: 1rem;
   --text-heading: 1.125rem;
   --text-title: 1.5rem;
-  --surface-texture: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' opacity='.025' filter='url(%23n)'/%3E%3C/svg%3E");
+  /* Shared material roles: navigation/headers, quiet panel ground, clear content. */
+  --material-chrome-image: url("../assets/materials/territory-chrome-light.svg");
+  --surface-texture: url("../assets/materials/territory-panel-light.svg");
+  --material-size: 720px 560px;
+  --material-position: center 46%;
+  --material-chrome: var(--c-surface-raised) var(--material-chrome-image) var(--material-position) / var(--material-size) repeat;
+  --material-panel: var(--c-surface-2) var(--surface-texture) var(--material-position) / var(--material-size) repeat;
 }
 body {
   font-family: var(--font-stack);
@@ -20,3 +26,15 @@ select {
 
 :root { --c-status-attention: #713f13; }
 :root[data-theme="dark"] { --c-status-attention: #e6b58d; }
+
+:root[data-theme="dark"] {
+  --material-chrome-image: url("../assets/materials/territory-chrome-dark.svg");
+  --surface-texture: url("../assets/materials/territory-panel-dark.svg");
+}
+/* Decorative geography must disappear when stronger contrast is requested. */
+@media (forced-colors: active), (prefers-contrast: more) {
+  :root, :root[data-theme="dark"] {
+    --material-chrome-image: none;
+    --surface-texture: none;
+  }
+}

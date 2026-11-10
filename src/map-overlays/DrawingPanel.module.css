@@ -201,3 +201,5 @@
   font-size: var(--text-caption);
   line-height: 1.6;
 }
+
+.head { background: var(--material-chrome); }

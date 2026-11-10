@@ -171,3 +171,8 @@
 @media (max-width: 768px), (max-height: 500px) and (pointer: coarse) { .stackTrigger { font-size: 12px; } }
 
 .backdrop[data-interactive="true"]{pointer-events:none;background:transparent}
+
+/* Shared regional navigation material; content remains unpatterned. */
+.mobileHeader { background: var(--material-chrome); }
+
+.drawer { background-size: var(--material-size); background-position: var(--material-position); }

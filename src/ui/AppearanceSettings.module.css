@@ -316,3 +316,6 @@
     padding: 8px 20px;
   }
 }
+
+/* Shared regional navigation material; content remains unpatterned. */
+.header { background: var(--material-chrome); }

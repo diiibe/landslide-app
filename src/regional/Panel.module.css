@@ -370,8 +370,7 @@
   z-index: 2;
   margin: -20px -20px 0;
   padding: 16px 20px;
-  background: var(--c-surface-2);
-  background-image: var(--surface-texture);
+  background: var(--material-panel);
   border-bottom: 1px solid var(--c-border);
 }
 .sectionHead h2,
@@ -439,3 +438,5 @@
   .panel { gap: 16px; }
   .sectionHead { min-height: 44px; }
 }
+
+.panelSearch { background-size: var(--material-size); background-position: var(--material-position); }
