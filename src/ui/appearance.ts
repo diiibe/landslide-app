@@ -5,25 +5,25 @@ export const PALETTES = [
     id: "forest",
     name: "Bosco",
     description: "Verdi minerali",
-    swatches: ["#f4f6f2", "#d2ddcc", "#789871", "#2f5d3a"],
+    swatches: ["#f1f7f2", "#d0dbd1", "#7d8f80", "#24522f"],
   },
   {
     id: "lagoon",
     name: "Laguna",
     description: "Toni di costa",
-    swatches: ["#f0f6f6", "#cfdfdf", "#658e97", "#285c6a"],
+    swatches: ["#eff7f9", "#cbdbdf", "#758e95", "#1c515f"],
   },
   {
     id: "earth",
     name: "Terra",
     description: "Sabbia e argilla",
-    swatches: ["#f8f4ef", "#e2d5c6", "#b68c68", "#815131"],
+    swatches: ["#faf4f0", "#e2d5cd", "#988579", "#6a3c1b"],
   },
   {
     id: "graphite",
     name: "Grafite",
     description: "Neutri essenziali",
-    swatches: ["#f4f4f5", "#d9d9de", "#90909a", "#51515e"],
+    swatches: ["#f4f4fa", "#d6d6e3", "#87879b", "#464653"],
   },
 ] as const;
 export type Palette = (typeof PALETTES)[number]["id"];

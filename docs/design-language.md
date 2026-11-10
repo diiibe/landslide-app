@@ -69,7 +69,15 @@ un’ombra a ogni riga del catalogo: la superficie definisce il gruppo, i diviso
 mantengono leggibili gli elementi. La selezione combina tinta, bordo e segno di
 spunta; il colore non è l’unico indizio.
 
-Il comando «Impostazioni» nella navbar (su telefono dentro «Strumenti») apre un
+Le quattro palette usano gli stessi gradini percettivi OKLCH. Nel tema chiaro:
+campi incassati81%, pannello88%, controlli93%, schede rialzate97% di luminosità.
+Nel tema scuro:14,5%,19%,24%,31%. Fondo e selezioni hanno livelli dedicati.
+I riflessi bianchi sono attenuati e i bordi più definiti: lo stacco deriva anzitutto
+dalle superfici. Il drawer è al99% di opacità per tenere leggibili i dettagli sopra
+la cartografia. I colori dei testi secondari e degli stati sono adattati ai nuovi
+fondi; le anteprime delle palette nelle impostazioni mostrano i toni aggiornati.
+
+Il comando «Impostazioni» nella navbar apre un
 dialogo nativo con tema, palette e animazioni. Le scelte sono immediate e si salvano
 nel dispositivo, in `fvg:appearance`; il tema conserva la chiave `fvg:theme`.
 Valori precedenti assenti o non validi ricadono su Bosco e movimento attivo. Se lo
