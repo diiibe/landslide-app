@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, within } from "@testing-library/react";
+import { render, screen, fireEvent, within, waitFor } from "@testing-library/react";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 vi.mock("@/map/MapView", () => ({
   MapView: () => <div data-testid="map-stub" />,
@@ -30,6 +30,36 @@ beforeEach(() => {
   vi.spyOn(globalThis, "fetch").mockImplementation(async () => new Response("{}"));
 });
 describe("Unified catalog experience", () => {
+  it("opens space extensions below the general tools and preserves the layer and simulation state", async () => {
+    render(<App />);
+    const commands = screen.getByRole("group", { name: "Comandi mappa" });
+    const extensions = within(commands).getByRole("button", { name: "Estensioni" });
+    const tools = within(commands).getByRole("button", { name: "Strumenti" });
+    expect(tools.compareDocumentPosition(extensions) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    fireEvent.click(extensions);
+    fireEvent.click(within(screen.getByRole("dialog", { name: "I tuoi spazi" })).getByRole("button", { name: /Officina connessa/ }));
+    const layers = useAppStore.getState().layers;
+    const scenario = useExperienceStore.getState().scenario;
+    fireEvent.click(extensions);
+    const heading = screen.getByRole("heading", { name: "Bilancio energetico" });
+    await waitFor(() => expect(heading).toHaveFocus());
+    expect(extensions).toHaveAttribute("aria-expanded", "true");
+    expect(document.getElementById("layers-trigger")).toHaveAttribute("aria-expanded", "false");
+    expect(screen.getByRole("tab", { name: "Estensioni" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.queryByRole("tab", { name: "Strumenti" })).toBeNull();
+    expect(useAppStore.getState().layers).toBe(layers);
+    expect(useExperienceStore.getState().scenario).toBe(scenario);
+    fireEvent.click(screen.getByRole("button", { name: "Chiudi estensioni" }));
+    expect(useAppStore.getState().drawerOpen).toBe(false);
+    expect(extensions).toHaveFocus();
+    fireEvent.click(extensions);
+    await waitFor(() => expect(screen.getByRole("heading", { name: "Bilancio energetico" })).toHaveFocus());
+    fireEvent.click(within(commands).getByRole("button", { name: "Mostra i livelli dello spazio" }));
+    expect(extensions).toHaveAttribute("aria-expanded", "false");
+    expect(screen.getByRole("tab", { name: "Livelli" })).toHaveAttribute("aria-selected", "true");
+    fireEvent.click(tools);
+    expect(screen.getByRole("button", { name: "Disegna un’area" })).toBeInTheDocument();
+  });
   it("personalizes appearance without changing active data and stops Escape before the drawer", () => {
     render(<App />);
     const before = useAppStore.getState().layers;

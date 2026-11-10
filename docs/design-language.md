@@ -161,11 +161,15 @@ FriulView sostituisce il nome della testata. Catalogo (atlante aperto) e Spazi
 impostazioni, profilo locale e tema. Su telefono i due ingressi usano le stesse
 icone e nomi accessibili, con ricerca subito accanto.
 
-Sfondo mappa, Livelli e Strumenti appartengono al medesimo gruppo ancorato alla
+Sfondo mappa, Livelli, Strumenti ed Estensioni appartengono al medesimo gruppo ancorato alla
 mappa, quindi condividono tutti gli offset del drawer. Strumenti ospita caricamento,
 disegno, esportazione e importazione. L'esportazione usa un dialogo nativo sul top
 layer, con opener visibile e ritorno focus; non è vincolata al contenitore scorrevole
-dei comandi. Il3D è in basso a sinistra, con spazio riservato all'attribuzione.
+dei comandi. Estensioni segue Strumenti e apre le funzioni specifiche dello Spazio
+corrente nel drawer; senza uno Spazio apre il selettore Spazi. Il relativo comando
+è evidenziato solo quando le estensioni sono aperte. Il3D è in basso a sinistra,
+con spazio riservato all'attribuzione. Su mobile lo zoom rimane a fianco della
+colonna dei comandi, senza sovrapporsi al nuovo pulsante.
 
 Spazi salva sul dispositivo fino a30configurazioni di catalogo e camera, comprese
 classi/opacità e visibilità/colori POI. Le osservazioni dei sensori non sono mai

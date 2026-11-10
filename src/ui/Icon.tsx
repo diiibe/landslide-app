@@ -1,6 +1,6 @@
 import type { ReactNode, SVGProps } from "react";
 export type IconName =
-  | "spaces" | "profile" | "brand"
+  | "spaces" | "profile" | "brand" | "extensions"
   | "fileData"
   | "sensor" | "lineData" | "pointData" | "areaData" | "rasterData" | "eye" | "tools"
   | "search"
@@ -21,6 +21,7 @@ export type IconName =
   | "moon"
   | "weather" | "waves" | "air" | "energy" | "territory" | "factory" | "recycle" | "water" | "leaf" | "services" | "mobility" | "network";
 const paths: Record<IconName, ReactNode> = {
+  extensions: <path d="M3 4h4V3a2 2 0 0 1 4 0v1h5v4h1a2 2 0 0 1 0 4h-1v5h-5v-1a2 2 0 0 0-4 0v1H3v-5h1a2 2 0 0 0 0-4H3Z"/>,
   brand: <><path d="m2 15 5-10 4 7 3-5 4 8"/><path d="M2 18h16M5 11l2 2 2-3"/></>,
   spaces: <><rect x="2" y="3" width="10" height="10" rx="1.5"/><path d="M6 16h11V7M6 7h2m-2 3h3"/></>,
   profile: <><circle cx="10" cy="6" r="3"/><path d="M3.5 18v-2a6.5 6.5 0 0 1 13 0v2"/></>,

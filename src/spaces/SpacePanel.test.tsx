@@ -36,3 +36,17 @@ it("moves keyboard focus into a sensor sheet and back to the overview heading", 
     ).toHaveFocus(),
   );
 });
+
+it.each([
+  ["landslides", "Confronta due zone"],
+  ["industry", "Bilancio energetico"],
+  ["vineyard", "Piano irriguo"],
+  ["retail", "Presenze e presidio"],
+  ["traffic", "Laboratorio di viabilità"],
+  ["mountain", "Accessi e coda all’impianto"],
+] as const)("shows the extension for %s", (activeId, title) => {
+  useExperienceStore.setState({ activeId, tab: "tools", replayTime: null });
+  render(<SpacePanel />);
+  expect(screen.getByRole("heading", { name: title })).toBeInTheDocument();
+  expect(screen.getByRole("tab", { name: "Estensioni" })).toHaveAttribute("aria-selected", "true");
+});
