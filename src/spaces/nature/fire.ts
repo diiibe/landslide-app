@@ -140,3 +140,10 @@ export const FIRE_DAYS = [
 ].sort();
 export const airValue = (o: AirObservation) =>
   o.low === o.high ? String(o.low).replace(".", ",") : `${o.low}–${o.high}`;
+
+/** Difference of measured intervals; the same observation is correlated with itself. */
+export function compareAir(a: AirObservation, b: AirObservation) {
+  if (a.site === b.site && a.date === b.date && a.time === b.time)
+    return { low: 0, high: 0 };
+  return { low: b.low - a.high, high: b.high - a.low };
+}

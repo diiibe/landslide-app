@@ -576,3 +576,71 @@
 .root h3:focus {
   outline: none;
 }
+
+.toolNav {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: stretch;
+}
+.root .toolNav button {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  justify-content: start;
+  align-items: start;
+  gap: 7px;
+  padding: 10px;
+}
+.toolNav span {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+.toolNav strong {
+  font-size: 13px;
+  display: block;
+  line-height: 1.35;
+}
+.toolNav small {
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.45;
+}
+.toolNav svg {
+  width: 17px;
+  height: 17px;
+}
+.result {
+  background: var(--c-surface-2);
+  border-block: 1px solid var(--c-border-strong);
+  padding: 14px 12px;
+  display: grid;
+  gap: 8px;
+}
+.result output {
+  font-size: 21px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+.result p {
+  font-size: 12px;
+}
+.root .primaryAction {
+  background: var(--c-selected);
+  border-color: var(--c-action);
+}
+.root .installDiagram {
+  width: 100%;
+  height: auto;
+  background: var(--c-surface-2);
+  border: 1px solid var(--c-border);
+  border-radius: 6px;
+}
+.installDiagram text {
+  fill: var(--c-text);
+  font: 12px var(--font-stack);
+}
+
+.toolNav button > svg:last-child {
+  display: none;
+}

@@ -86,7 +86,7 @@ it("keeps the extension open when filtering the camera", async () => {
   fireEvent.click(screen.getByRole("option", { name: "Fototrappola 01" }));
   expect(useExperienceStore.getState().tab).toBe("tools");
   expect(
-    screen.getByRole("heading", { name: "Laboratorio di identificazione" }),
+    screen.getByRole("button", { name: /Revisiona catture/ }),
   ).toBeTruthy();
   useExperienceStore.setState({ activeId: null });
 });

@@ -1,3 +1,6 @@
+import { inspectNatureObject } from "./selection";
+import bbox from "@turf/bbox";
+import { FireComparison } from "./FireComparison";
 import { useState } from "react";
 import { Icon } from "@/ui/Icon";
 import { Select } from "@/ui/Select";
@@ -13,13 +16,21 @@ import {
   airValue,
 } from "./fire";
 import { useNatureStore } from "./store";
-import { Header, Method, Stats, InspectBack, Locate, Toggle } from "./common";
+import {
+  Header,
+  Method,
+  Stats,
+  InspectBack,
+  Locate,
+  Toggle,
+  ToolNav,
+} from "./common";
 import { date, number } from "./format";
 import css from "./Nature.module.css";
 export function FirePanel({ tools }: { tools: boolean }) {
   const s = useNatureStore(),
     selected = useExperienceStore((e) => e.selectedId),
-    [station, setStation] = useState("pissebus");
+    [tool, setTool] = useState<"air" | "perimeters">("air");
   const day = FIRE_DAYS[s.fireDay]!,
     observations = AIR_OBSERVATIONS.filter((o) => o.date === day),
     perimeters = s.fireData?.features ?? [];
@@ -43,60 +54,69 @@ export function FirePanel({ tools }: { tools: boolean }) {
         <Icon name="fire" />
         Archivio documentato · agosto 2026
       </span>
-      <Header
-        title={tools ? "Atlante dell’evento" : "Amariana · dopo il fuoco"}
-        icon={tools ? "extensions" : "fire"}
-      >
-        {tools
-          ? "Confronta le misure e consulta ogni perimetro satellitare."
-          : "Tolmezzo–Amaro. Luoghi, misure e decisioni durante l’emergenza."}
-      </Header>
-      <details className={css.notice}>
-        <summary>Evento storico · guida alla lettura</summary>
-        <p>
-          Le date di agosto restano visibili durante l’esplorazione. Le
-          superfici EFFIS sono contorni finali; non descrivono il fronte del
-          fuoco in ogni giornata. Non è un’allerta attuale.
-        </p>
-      </details>
+      {!tools && (
+        <Header
+          title={tools ? "Strumenti dell’evento" : "Amariana · dopo il fuoco"}
+          icon={tools ? "extensions" : "fire"}
+        >
+          {tools
+            ? "Scegli un’attività. Ogni strumento lavora su dati e date documentati."
+            : "Tolmezzo–Amaro. Luoghi, misure e decisioni durante l’emergenza."}
+        </Header>
+      )}
+      {!tools && (
+        <details className={css.notice}>
+          <summary>Evento storico · guida alla lettura</summary>
+          <p>
+            Le date di agosto restano visibili durante l’esplorazione. Le
+            superfici EFFIS sono contorni finali; non descrivono il fronte del
+            fuoco in ogni giornata. Non è un’allerta attuale.
+          </p>
+        </details>
+      )}
       {s.fireError && (
         <p role="alert">
           {s.fireError}
           {s.fireData ? " · Conservata la copia precedente." : ""}
         </p>
       )}
-      <div className={css.actions}>
-        <Toggle
-          label="Superfici EFFIS"
-          value={s.showPerimeters}
-          onChange={() =>
-            useNatureStore.setState({ showPerimeters: !s.showPerimeters })
-          }
-        />
-        <Toggle
-          label="Misure dell’aria"
-          value={s.showAir}
-          onChange={() => useNatureStore.setState({ showAir: !s.showAir })}
-        />
-      </div>
-      {tools ? (
-        <label>
-          Giorno mostrato sulla mappa
-          <Select
-            label="Giorno ARPA sulla mappa"
-            value={String(s.fireDay)}
-            onChange={(v) => changeDay(Number(v))}
-            options={FIRE_DAYS.map((d, i) => ({
-              value: String(i),
-              label: date(d, {
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-              }),
-            }))}
+      {!tools && (
+        <div className={css.actions}>
+          <Toggle
+            label="Superfici EFFIS"
+            value={s.showPerimeters}
+            onChange={() =>
+              useNatureStore.setState({ showPerimeters: !s.showPerimeters })
+            }
           />
-        </label>
-      ) : (
+          <Toggle
+            label="Misure dell’aria"
+            value={s.showAir}
+            onChange={() => useNatureStore.setState({ showAir: !s.showAir })}
+          />
+        </div>
+      )}
+      {tools && (
+        <ToolNav
+          value={tool}
+          onChange={setTool}
+          items={[
+            {
+              id: "air",
+              title: "Confronta PM10",
+              description: "Due campioni, differenza e scheda esportabile",
+              icon: "air",
+            },
+            {
+              id: "perimeters",
+              title: "Consulta perimetri",
+              description: "Localizza le quattro schede finali EFFIS",
+              icon: "areaData",
+            },
+          ]}
+        />
+      )}
+      {!tools && (
         <section
           className={css.timeline}
           aria-label="Cronologia delle misure ARPA"
@@ -152,9 +172,18 @@ export function FirePanel({ tools }: { tools: boolean }) {
           </div>
         </section>
       )}
-      {!tools && polygon ? (
+      {polygon && (!tools || tool === "perimeters") ? (
         <section className={css.section}>
-          <InspectBack />
+          {tools ? (
+            <button
+              className={css.back}
+              onClick={() => useExperienceStore.setState({ selectedId: null })}
+            >
+              Torna ai perimetri
+            </button>
+          ) : (
+            <InspectBack />
+          )}
           <Header
             inspection
             title={`Scheda EFFIS ${polygon.properties?.id}`}
@@ -162,6 +191,19 @@ export function FirePanel({ tools }: { tools: boolean }) {
           >
             {String(polygon.properties?.COMMUNE)} · rilevamento satellitare
           </Header>
+          <Locate
+            coordinates={(() => {
+              const b = bbox(polygon);
+              return [(b[0]! + b[2]!) / 2, (b[1]! + b[3]!) / 2] as [
+                number,
+                number,
+              ];
+            })()}
+            beforeLocate={() =>
+              useNatureStore.setState({ showPerimeters: true })
+            }
+            zoom={13.5}
+          />
           <Stats
             items={[
               [
@@ -196,7 +238,7 @@ export function FirePanel({ tools }: { tools: boolean }) {
               <Select
                 label="Schede satellitari sovrapposte"
                 value={selected ?? ""}
-                onChange={selectObject}
+                onChange={inspectNatureObject}
                 options={s.coincidentIds.map((id) => ({
                   value: id,
                   label: `EFFIS ${id.replace("fire-", "")}`,
@@ -218,51 +260,69 @@ export function FirePanel({ tools }: { tools: boolean }) {
       ) : null}
       {tools ? (
         <>
-          <section className={css.section}>
-            <h3>Confronto fra giornate</h3>
-            <label>
-              Località
-              <Select
-                label="Località del confronto PM10"
-                value={station}
-                onChange={setStation}
-                options={AIR_SITES.map((a) => ({ value: a.id, label: a.name }))}
-              />
-            </label>
-            <AirChart station={station} />
-          </section>
-          <section className={css.section}>
-            <div className={css.sectionHead}>
-              <h3>Superfici satellitari finali</h3>
-              <small>{perimeters.length} schede</small>
-            </div>
-            <p className={css.muted}>
-              Riquadro Tolmezzo–Amaro, agosto 2026. Gli eventi vicini sono
-              mantenuti distinti: non sommiamo questi record come ettari unici
-              dell’Amariana.
-            </p>
-            <div className={css.list}>
-              {perimeters.map((f) => (
-                <button
-                  className={css.row}
-                  key={String(f.properties?.id)}
-                  onClick={() => selectObject(`fire-${f.properties?.id}`)}
+          {tool === "air" ? (
+            <FireComparison />
+          ) : (
+            <>
+              <div className={css.notice} role="note">
+                <strong>
+                  Evoluzione del contorno: non disponibile nei dati importati
+                </strong>
+                <p>
+                  Queste geometrie sono finali. Le date nelle schede non sono
+                  versioni successive dello stesso fronte. La cronologia ARPA
+                  cambia le misure dell’aria, non il perimetro.
+                </p>
+                <a
+                  href="https://forest-fire.emergency.copernicus.eu/about-effis/technical-background/rapid-damage-assessment"
+                  target="_blank"
+                  rel="noreferrer"
                 >
-                  <span>
-                    <strong>EFFIS {String(f.properties?.id)}</strong>
-                    <small>
-                      {String(f.properties?.COMMUNE)} ·{" "}
-                      {String(f.properties?.FIREDATE).slice(0, 10)}
-                    </small>
-                  </span>
-                  <span>
-                    <strong>{number(Number(f.properties?.AREA_HA))} ha</strong>
-                    <small>AREA_HA della fonte</small>
-                  </span>
-                </button>
-              ))}
-            </div>
-          </section>
+                  Come EFFIS rileva le superfici
+                </a>
+              </div>
+              <section className={css.section}>
+                <div className={css.sectionHead}>
+                  <h3>Superfici satellitari finali</h3>
+                  <small>{perimeters.length} schede</small>
+                </div>
+                <p className={css.muted}>
+                  Riquadro Tolmezzo–Amaro, agosto 2026. Gli eventi vicini sono
+                  mantenuti distinti: non sommiamo questi record come ettari
+                  unici dell’Amariana.
+                </p>
+                <div className={css.list}>
+                  {perimeters.map((f) => (
+                    <button
+                      className={css.row}
+                      key={String(f.properties?.id)}
+                      onClick={() =>
+                        useExperienceStore.setState({
+                          selectedId: `fire-${f.properties?.id}`,
+                          inspectionRequest:
+                            useExperienceStore.getState().inspectionRequest + 1,
+                        })
+                      }
+                    >
+                      <span>
+                        <strong>EFFIS {String(f.properties?.id)}</strong>
+                        <small>
+                          {String(f.properties?.COMMUNE)} ·{" "}
+                          {String(f.properties?.FIREDATE).slice(0, 10)}
+                        </small>
+                      </span>
+                      <span>
+                        <strong>
+                          {number(Number(f.properties?.AREA_HA))} ha
+                        </strong>
+                        <small>AREA_HA della fonte</small>
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </section>
+            </>
+          )}
         </>
       ) : (
         <>

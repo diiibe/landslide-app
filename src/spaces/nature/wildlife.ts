@@ -43,17 +43,166 @@ export const SPECIES = [
   },
 ] as const;
 export type SpeciesId = (typeof SPECIES)[number]["id"];
-export const CAMERAS = Array.from({ length: 8 }, (_, i) => ({
-  id: `cam-${i + 1}`,
-  name: `Fototrappola ${String(i + 1).padStart(2, "0")}`,
-  coordinates: [
-    13.168 + (i % 4) * 0.005,
-    46.466 + Math.floor(i / 4) * 0.009,
-  ] as [number, number],
-  habitat: ["Margine del bosco", "Radura", "Bosco misto", "Sentiero forestale"][
-    i % 4
-  ]!,
-}));
+export const CAMERAS: CameraStation[] = [
+  {
+    id: "cam-1",
+    name: "Fototrappola 01",
+    coordinates: [13.1883319, 46.4647818],
+    target: [13.1883302, 46.4647369],
+    bearing: 181,
+    heightCm: 50,
+    targetDistanceM: 5,
+    rangeM: 12,
+    fov: 40,
+    habitat: "Pista mappata OSM",
+    wayId: "211093642",
+    installation:
+      "Posa virtuale a lato del passaggio, ripresa trasversale. Verificare su terreno pendenza, vegetazione, neve e autorizzazioni.",
+  },
+  {
+    id: "cam-2",
+    name: "Fototrappola 02",
+    coordinates: [13.1899857, 46.4682088],
+    target: [13.1899227, 46.4682204],
+    bearing: 285,
+    heightCm: 50,
+    targetDistanceM: 5,
+    rangeM: 12,
+    fov: 40,
+    habitat: "Pista mappata OSM",
+    wayId: "211093645",
+    installation:
+      "Posa virtuale a lato del passaggio, ripresa trasversale. Verificare su terreno pendenza, vegetazione, neve e autorizzazioni.",
+  },
+  {
+    id: "cam-3",
+    name: "Fototrappola 03",
+    coordinates: [13.1852343, 46.4683767],
+    target: [13.185179, 46.4684004],
+    bearing: 302,
+    heightCm: 50,
+    targetDistanceM: 5,
+    rangeM: 12,
+    fov: 40,
+    habitat: "Sentiero Fassoz",
+    wayId: "211093633",
+    installation:
+      "Posa virtuale a lato del passaggio, ripresa trasversale. Verificare su terreno pendenza, vegetazione, neve e autorizzazioni.",
+  },
+  {
+    id: "cam-4",
+    name: "Fototrappola 04",
+    coordinates: [13.1797997, 46.468761],
+    target: [13.1797353, 46.4687545],
+    bearing: 262,
+    heightCm: 50,
+    targetDistanceM: 5,
+    rangeM: 12,
+    fov: 40,
+    habitat: "Sentiero Fassoz",
+    wayId: "926253441",
+    installation:
+      "Posa virtuale a lato del passaggio, ripresa trasversale. Verificare su terreno pendenza, vegetazione, neve e autorizzazioni.",
+  },
+  {
+    id: "cam-5",
+    name: "Fototrappola 05",
+    coordinates: [13.1783727, 46.4723277],
+    target: [13.1784208, 46.4723581],
+    bearing: 48,
+    heightCm: 50,
+    targetDistanceM: 5,
+    rangeM: 12,
+    fov: 40,
+    habitat: "Sentiero Fassoz",
+    wayId: "926253441",
+    installation:
+      "Posa virtuale a lato del passaggio, ripresa trasversale. Verificare su terreno pendenza, vegetazione, neve e autorizzazioni.",
+  },
+  {
+    id: "cam-6",
+    name: "Fototrappola 06",
+    coordinates: [13.1765932, 46.4757527],
+    target: [13.1765292, 46.4757444],
+    bearing: 259,
+    heightCm: 50,
+    targetDistanceM: 5,
+    rangeM: 12,
+    fov: 40,
+    habitat: "Sentiero Fassoz",
+    wayId: "926253441",
+    installation:
+      "Posa virtuale a lato del passaggio, ripresa trasversale. Verificare su terreno pendenza, vegetazione, neve e autorizzazioni.",
+  },
+  {
+    id: "cam-7",
+    name: "Fototrappola 07",
+    coordinates: [13.1872811, 46.4765941],
+    target: [13.1873411, 46.4765766],
+    bearing: 113,
+    heightCm: 50,
+    targetDistanceM: 5,
+    rangeM: 12,
+    fov: 40,
+    habitat: "Pista mappata OSM",
+    wayId: "211093632",
+    installation:
+      "Posa virtuale a lato del passaggio, ripresa trasversale. Verificare su terreno pendenza, vegetazione, neve e autorizzazioni.",
+  },
+  {
+    id: "cam-8",
+    name: "Fototrappola 08",
+    coordinates: [13.1793491, 46.4769221],
+    target: [13.1792887, 46.4769389],
+    bearing: 292,
+    heightCm: 50,
+    targetDistanceM: 5,
+    rangeM: 12,
+    fov: 40,
+    habitat: "Sentiero Fassoz",
+    wayId: "998228373",
+    installation:
+      "Posa virtuale a lato del passaggio, ripresa trasversale. Verificare su terreno pendenza, vegetazione, neve e autorizzazioni.",
+  },
+];
+export interface CameraStation {
+  id: string;
+  name: string;
+  coordinates: [number, number];
+  target: [number, number];
+  bearing: number;
+  heightCm: number;
+  targetDistanceM: number;
+  rangeM: number;
+  fov: number;
+  wayId: string;
+  habitat: string;
+  installation: string;
+}
+/** A local viewing sector, not a survey coverage estimate. Metres stay metres at any zoom. */
+export function cameraSector(
+  camera: CameraStation,
+): GeoJSON.Feature<GeoJSON.Polygon> {
+  const origin = camera.coordinates,
+    ring = [origin];
+  for (let i = 0; i <= 16; i++) {
+    const angle =
+      ((camera.bearing - camera.fov / 2 + (camera.fov * i) / 16) * Math.PI) /
+      180;
+    ring.push([
+      origin[0] +
+        (Math.sin(angle) * camera.rangeM) /
+          (111320 * Math.cos((origin[1] * Math.PI) / 180)),
+      origin[1] + (Math.cos(angle) * camera.rangeM) / 110574,
+    ]);
+  }
+  ring.push(origin);
+  return {
+    type: "Feature",
+    properties: { id: camera.id },
+    geometry: { type: "Polygon", coordinates: [ring] },
+  };
+}
 const HOUR = 3600000;
 const hourFormatter = new Intl.DateTimeFormat("en-GB", {
   hour: "2-digit",
