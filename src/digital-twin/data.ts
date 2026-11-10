@@ -414,13 +414,13 @@ export function sensorGeoJSON(
     })),
   };
 }
-/** Vectors describe measured wind at stations; they are not a particle simulation. */
+/** Observed wind, anchored at the station. Bearing points toward destination. */
 export function windGeoJSON(
   all: Measure[],
   variable: Variable,
   now = Date.now(),
-): GeoJSON.FeatureCollection<GeoJSON.LineString> {
-  const features: GeoJSON.Feature<GeoJSON.LineString>[] = [];
+): GeoJSON.FeatureCollection<GeoJSON.Point> {
+  const features: GeoJSON.Feature<GeoJSON.Point>[] = [];
   if (variable !== "wind") return { type: "FeatureCollection", features };
   const dirs = new Map(
     all.filter((m) => m.sensorId === 5).map((m) => [m.stationId, m]),
@@ -436,34 +436,11 @@ export function windGeoJSON(
       m.value <= 0
     )
       continue;
-    const a = ((dir.value + 180) * Math.PI) / 180,
-      dx = (Math.sin(a) * 0.009) / Math.cos((m.lat * Math.PI) / 180),
-      dy = Math.cos(a) * 0.009,
-      tip: [number, number] = [m.lon + dx, m.lat + dy];
-    const line = (coordinates: number[][]) =>
-      features.push({
-        type: "Feature",
-        geometry: { type: "LineString", coordinates },
-        properties: {
-          stale:
-            freshness(m.ms, now) !== "recent" ||
-            freshness(dir.ms, now) !== "recent",
-        },
-      });
-    line([[m.lon, m.lat], tip]);
-    line([
-      [
-        tip[0] -
-          (Math.sin(a - 0.5) * 0.003) / Math.cos((m.lat * Math.PI) / 180),
-        tip[1] - Math.cos(a - 0.5) * 0.003,
-      ],
-      tip,
-      [
-        tip[0] -
-          (Math.sin(a + 0.5) * 0.003) / Math.cos((m.lat * Math.PI) / 180),
-        tip[1] - Math.cos(a + 0.5) * 0.003,
-      ],
-    ]);
+    features.push({ type: "Feature", id: m.stationId,
+      geometry: { type: "Point", coordinates: [m.lon, m.lat] },
+      properties: { stationId: m.stationId, bearing: (dir.value + 180) % 360,
+        stale: freshness(m.ms, now) !== "recent" || freshness(dir.ms, now) !== "recent" },
+    });
   }
   return { type: "FeatureCollection", features };
 }

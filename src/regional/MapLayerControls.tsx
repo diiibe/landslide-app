@@ -1,3 +1,5 @@
+import { LandslideClassPicker } from "@/ui/LandslideClassPicker";
+import { selectedClasses, withClasses } from "@/lib/landslideClasses";
 import { Select } from "@/ui/Select";
 import { FVG_BOUNDS } from "@/map/style";
 import { ColorButton } from "@/map-overlays/ColorButton";
@@ -16,44 +18,15 @@ export function MapLayerControls({ item }: { item: CatalogItem }) {
   const settings = which ? s.susceptibilityStyle[which] : null;
   const n =
     which && model.status === "ready" ? model.data.layers[which].classes : 5;
-  const edges =
-    which && model.status === "ready" ? model.data.layers[which].edges : null;
   return (
     <div className={styles.toolbar}>
       <p>{item.layer.description}</p>
       {settings && which && (
         <>
-          <label className={styles.field}>
-            Soglia minima · classe {Math.min(settings.minClass, n)} di {n}
-            <input
-              aria-label={"Soglia · " + item.layer.title}
-              type="range"
-              min="1"
-              max={n}
-              step="1"
-              value={Math.min(settings.minClass, n)}
-              onChange={(e) =>
-                useAppStore.setState((v) => ({
-                  susceptibilityStyle: {
-                    ...v.susceptibilityStyle,
-                    [which]: {
-                      ...v.susceptibilityStyle[which],
-                      minClass: Number(e.target.value),
-                    },
-                  },
-                }))
-              }
-            />
-          </label>
-          <p className={styles.caption}>
-            {settings.minClass === 1
-              ? "Tutte le classi"
-              : `Visibili le classi da ${Math.min(settings.minClass, n)} a ${n}`}
-            {edges
-              ? ` · punteggio minimo ${edges[Math.min(settings.minClass, n) - 1]!.toLocaleString("it-IT", { maximumFractionDigits: 6 })}`
-              : ""}
-            . I valori inferiori sono trasparenti.
-          </p>
+          <LandslideClassPicker value={selectedClasses(settings, n)} count={n}
+            onChange={classes => useAppStore.setState(v => ({ susceptibilityStyle: {
+              ...v.susceptibilityStyle, [which]: withClasses(v.susceptibilityStyle[which], classes),
+            } }))}/>
           <label className={styles.field}>
             Opacità · {Math.round(settings.opacity * 100)}%
             <input

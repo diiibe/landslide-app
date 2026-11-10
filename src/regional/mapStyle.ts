@@ -1,4 +1,4 @@
-import { DIRECTION_IMAGE } from "./directionIcon";
+import { DIRECTION_IMAGE, directionSize } from "./directionIcon";
 import type { ExpressionSpecification as Expr, LayerSpecification } from "maplibre-gl";
 import type { LayerDefinition } from "./types";
 import { presentation, type DisplayMode } from "./presentation";
@@ -33,7 +33,7 @@ export function regionalStyle(l: LayerDefinition, opacity: number, mode: Display
   ];
   if (l.overview?.kind === "registry" && mode !== "points") styles.find((v)=>v.id.endsWith("-halo"))!.minzoom = OVERVIEW_ZOOM;
   if (p.type === "measurement" || p.type === "earthquake") styles.push({ id: src+"-labels", type: "symbol", ...common, filter: point, minzoom: (l.count ?? 99) <= 5 ? 5 : 10, layout: { "text-field": ["concat", ["coalesce", ["get", "__mapLabel"], ["get", "__displayValue"], ""], " ", ["coalesce", ["get", "__unit"], l.metric?.unit ?? ""]], "text-font": fonts, "text-size": 12, "text-max-width": 10, "text-offset": [0, 1.35], "text-anchor": "top" }, paint: { "text-color": "#172d25", "text-halo-color": "#f6f5ed", "text-halo-width": 2, "text-opacity": opacity } });
-  if (p.type === "direction") styles.push({ id: src+"-direction", type: "symbol", ...common, filter: ["all", point, ["==", ["typeof", ["get", "__value"]], "number"], ["!=", ["get", "__invalidTime"], true], ["!=", ["get", "__censored"], true], ["!", ["in", ["get", "qualita_qc"], ["literal", [3, 4]]]], [">=", ["get", "__value"], 0], ["<=", ["get", "__value"], 360]], layout: { "icon-image": DIRECTION_IMAGE, "icon-size": zoom(.8, 1.15), "icon-rotate": ["get", "__value"], "icon-rotation-alignment": "map" }, paint: { "icon-opacity": opacity } });
+  if (p.type === "direction") styles.push({ id: src+"-direction", type: "symbol", ...common, filter: ["all", point, ["==", ["typeof", ["get", "__value"]], "number"], ["!=", ["get", "__invalidTime"], true], ["!=", ["get", "__censored"], true], ["!", ["in", ["get", "qualita_qc"], ["literal", [3, 4]]]], [">=", ["get", "__value"], 0], ["<=", ["get", "__value"], 360]], layout: { "icon-image": DIRECTION_IMAGE, "icon-size": directionSize(), "icon-rotate": ["get", "__value"], "icon-rotation-alignment": "map", "icon-pitch-alignment": "viewport" }, paint: { "icon-opacity": opacity } });
   const grouped = (source: string, property: "point_count" | "__count", overview: boolean) => {
     const id = src + (overview ? "-overview" : "-groups"), count: Expr = ["get", property];
     const density = mode === "density", areas = overview && l.overview?.kind === "areas";

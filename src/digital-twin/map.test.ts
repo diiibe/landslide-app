@@ -101,6 +101,8 @@ function harness() {
     jumpTo,
     setPaintProperty: paint,
     setLayoutProperty: vi.fn(),
+    hasImage: () => false,
+    addImage: vi.fn(),
     getSource: (id: string) => sources.get(id),
     addSource: (id: string) => sources.set(id, { setData: vi.fn() }),
     getLayer: (id: string) => layers.get(id),
@@ -109,6 +111,7 @@ function harness() {
   dispose = mountTwinMap(map as unknown as MLMap);
   return {
     paint,
+    layers,
     jumpTo,
     flyTo,
     fitBounds,
@@ -253,4 +256,17 @@ it("releases and restores the drawer inset during drawing without resizing the c
   h.drain();
   expect(h.getPadding().bottom).toBe(434);
   expect(h.resize).toHaveBeenCalledTimes(resizes);
+});
+
+it("navigates to a station with another available variable and lets the last request replace old bounds", () => {
+  const h = harness();h.emit("style.load");
+  useTwinStore.setState({ active:true, variable:"hydro", measures:[{ stationId:212,sensorId:6,name:"Trieste",lon:13.75,lat:45.65,value:3,time:"2026-11-08 18:00:00",ms:Date.UTC(2026,10,8,18) }] });
+  window.dispatchEvent(new CustomEvent("fvg:regional-fit",{detail:[[12,45],[13,46]]}));
+  window.dispatchEvent(new CustomEvent("fvg:twin-station",{detail:212}));h.drain();
+  expect(h.fitBounds).not.toHaveBeenCalled();
+  expect(h.flyTo).toHaveBeenCalledWith(expect.objectContaining({center:[13.75,45.65]}));
+});
+it("renders wind as a bounded screen symbol rather than a ground-distance line", () => {
+  const h=harness();h.emit("style.load");useTwinStore.setState({active:true});
+  expect(h.layers.get("twin-wind")).toMatchObject({ type:"symbol",layout:{ "icon-pitch-alignment":"viewport", "icon-rotate":["get","bearing"] } });
 });

@@ -16,7 +16,7 @@ export function FraneComparison() {
   if(current&&!list.some(p=>p.id===current.id))list.push(current);
   return list;
  },[saved,current]);
- const [a,setA]=useState("venzone"),[b,setB]=useState("gemona"),[which,setWhich]=useState<"bodies"|"diffuse">("bodies"),[min,setMin]=useState(3),[context,setContext]=useState(false);
+ const [a,setA]=useState("venzone"),[b,setB]=useState("gemona"),[which,setWhich]=useState<"bodies"|"diffuse">("bodies"),[min,setMin]=useState(4),[context,setContext]=useState(false);
  const [record,setRecord]=useState<{key:string;pending:boolean;rows:{id:string;name:string;result?:AnalysisResult;error?:string}[]}>({key:"",pending:false,rows:[]});
  const first=options.find(o=>o.id===a),second=options.find(o=>o.id===b);
  const key=JSON.stringify([first?.geometry,second?.geometry,context]);

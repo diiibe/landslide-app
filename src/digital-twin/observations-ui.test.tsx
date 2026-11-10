@@ -119,3 +119,21 @@ it("uses the agreed fit and station event contracts", async () => {
   await screen.findByText(/Serie non disponibile/);
   vi.unstubAllGlobals();
 });
+
+it("centres the map when a station is selected from search and closes the mobile sheet", async () => {
+  const {useAppStore}=await import("@/app/store");
+  vi.stubGlobal("matchMedia",()=>({matches:true}));
+  vi.stubGlobal("ResizeObserver",class {observe(){} disconnect(){}});
+  vi.spyOn(globalThis,"fetch").mockImplementation(async()=>new Response("",{status:503}));
+  useAppStore.setState({drawerOpen:true});
+  useTwinStore.setState({variable:"wind",measures:[rows[1]!],selection:null});
+  const station=vi.fn();window.addEventListener("fvg:twin-station",station);
+  render(<TwinPanel/>);
+  fireEvent.click(screen.getByRole("combobox",{name:"Stazione"}));
+  fireEvent.click(screen.getByRole("option",{name:/Trieste/}));
+  expect(station).toHaveBeenCalledOnce();expect(station.mock.calls[0]![0].detail).toBe(212);
+  expect(useAppStore.getState().drawerOpen).toBe(false);
+  expect(useTwinStore.getState().selection).toEqual({kind:"sensor",stationId:212});
+  window.removeEventListener("fvg:twin-station",station);
+  await screen.findByText(/Serie non disponibile/);
+});

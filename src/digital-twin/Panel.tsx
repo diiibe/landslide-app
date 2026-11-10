@@ -130,6 +130,13 @@ export function TwinPanel({
     );
     return id !== s.variable && measure ? [{ id, definition, measure }] : [];
   });
+  const showStation = (id: number) => {
+    useTwinStore.setState({ selection: { kind: "sensor", stationId: id } });
+    setRegionalEnabled("pcr-" + s.variable, true);
+    window.dispatchEvent(new CustomEvent("fvg:twin-station", { detail: id }));
+    if (window.matchMedia?.("(max-width: 768px), (max-height: 500px) and (pointer: coarse)").matches)
+      useAppStore.setState({ drawerOpen: false });
+  };
   const request = () =>
     useTwinStore.setState((state) => ({ refreshKey: state.refreshKey + 1 }));
   return (
@@ -362,13 +369,7 @@ export function TwinPanel({
             <Select
               label="Stazione"
               value={stationId === null ? "" : String(stationId)}
-              onChange={(value) =>
-                useTwinStore.setState({
-                  selection: value
-                    ? { kind: "sensor", stationId: Number(value) }
-                    : null,
-                })
-              }
+              onChange={value => value ? showStation(Number(value)) : useTwinStore.setState({ selection: null })}
               options={[
                 {
                   value: "",
@@ -410,20 +411,7 @@ export function TwinPanel({
             <button
               type="button"
               className={styles.action}
-              onClick={() => {
-                setRegionalEnabled("pcr-" + s.variable, true);
-                window.dispatchEvent(
-                  new CustomEvent("fvg:twin-station", {
-                    detail: sensor.stationId,
-                  }),
-                );
-                if (
-                  window.matchMedia(
-                    "(max-width: 768px), (max-height: 500px) and (pointer: coarse)",
-                  ).matches
-                )
-                  useAppStore.setState({ drawerOpen: false });
-              }}
+              onClick={() => showStation(sensor.stationId)}
             >
               Mostra sulla mappa
             </button>

@@ -105,7 +105,12 @@ describe("Unified catalog experience", () => {
         name: "Corpi di frana · Suscettibilità",
       }),
     );
-    expect(screen.getByRole("slider", { name: /Soglia/ })).toHaveValue("3");
+    expect(screen.getByRole("checkbox", { name: "Classe 4" })).toBeChecked();
+    expect(screen.getByRole("checkbox", { name: "Classe 5" })).toBeChecked();
+    expect(screen.getByRole("checkbox", { name: "Classe 3" })).not.toBeChecked();
+    fireEvent.click(screen.getByRole("checkbox", { name: "Classe 2" }));
+    fireEvent.click(screen.getByRole("checkbox", { name: "Classe 4" }));
+    expect(useAppStore.getState().susceptibilityStyle.bodies.classes).toEqual([2, 5]);
   });
   it("focuses the catalog search after opening and returns focus to the input after clearing", () => {
     render(<App />);

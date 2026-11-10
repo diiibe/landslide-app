@@ -1,3 +1,4 @@
+import { selectedClasses, withClasses } from "@/lib/landslideClasses";
 import { create } from "zustand";
 import { z } from "zod";
 import type { Map } from "maplibre-gl";
@@ -7,7 +8,7 @@ import { BUILTIN_LAYERS, isLayerEnabled } from "@/regional/builtins";
 import { useRegionalStore } from "@/regional/store";
 const KEY = "friulview:spaces:v1";
 const flags = z.record(z.string().max(180), z.boolean());
-const style = z.object({ minClass: z.number().int().min(1).max(5), opacity: z.number().min(0).max(1) });
+const style = z.object({ classes: z.array(z.number().int().min(1).max(5)).max(5).optional(), minClass: z.number().int().min(1).max(5), opacity: z.number().min(0).max(1) });
 const schema = z.object({
   experienceId: z.enum(["landslides","industry","vineyard","retail","traffic","mountain"]).optional(),
   id: z.string().max(100), name: z.string().trim().min(1).max(70), savedAt: z.number().finite(),
@@ -56,7 +57,7 @@ export function restoreSpace(space: Space) {
     if (layers.v2Bodies) layers.v2Diffuse = false;
     layers.susceptibility = false; layers.smoothHeatmap = false;
   }
-  useAppStore.setState({ layers, floodView: s.floodView, floodOpacity: s.floodOpacity, paiOpacity: s.paiOpacity, diffOpacity: s.diffOpacity, poiColors: { ...a.poiColors, ...s.poiColors }, poiCategoryVisible: { ...a.poiCategoryVisible, ...s.poiCategoryVisible }, basemap: s.basemap, view3D: s.view3D, cameraRequest: s.camera, susceptibilityStyle: s.susceptibilityStyle });
+  useAppStore.setState({ layers, floodView: s.floodView, floodOpacity: s.floodOpacity, paiOpacity: s.paiOpacity, diffOpacity: s.diffOpacity, poiColors: { ...a.poiColors, ...s.poiColors }, poiCategoryVisible: { ...a.poiCategoryVisible, ...s.poiCategoryVisible }, basemap: s.basemap, view3D: s.view3D, cameraRequest: s.camera, susceptibilityStyle: { bodies: withClasses(s.susceptibilityStyle.bodies, selectedClasses(s.susceptibilityStyle.bodies)), diffuse: withClasses(s.susceptibilityStyle.diffuse, selectedClasses(s.susceptibilityStyle.diffuse)) } });
   useRegionalStore.setState({ enabled: s.enabled, opacity: s.opacity, display: s.display, detailId: null, selection: null });
   try { localStorage.setItem("fvg:regional-layers:v1", JSON.stringify({ enabled: s.enabled, opacity: s.opacity, display: s.display, open: useRegionalStore.getState().open })); } catch { useSpaces.setState({ storageError: true }); }
 }

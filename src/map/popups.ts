@@ -8,7 +8,7 @@ import { HFLOOD_FILL } from "./layers/historicalFloods";
 import {
   v2ClassColor,
   V2_LAYER_ID,
-  V2_RASTER_LAYER_ID,
+  v2RasterLayerIds,
   V2_VECTOR_MIN_ZOOM,
 } from "./layers/modelV2";
 import type { V2Layer } from "@/app/types";
@@ -271,7 +271,7 @@ export function v2ZoomHintApplies(
   m: Pick<MLMap, "getLayer" | "getLayoutProperty" | "getZoom">,
 ): boolean {
   if (m.getZoom() >= V2_VECTOR_MIN_ZOOM) return false;
-  return Object.values(V2_RASTER_LAYER_ID).some(
+  return (["bodies", "diffuse"] as const).flatMap(v2RasterLayerIds).some(
     (id) => m.getLayer(id) && m.getLayoutProperty(id, "visibility") !== "none",
   );
 }

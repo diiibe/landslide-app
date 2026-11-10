@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import type { LandslideStyle } from "@/lib/landslideClasses";
 import {
   POI_CATEGORIES,
   POI_DEFAULT_COLORS,
@@ -333,7 +334,7 @@ function applyTheme(t: Theme): void {
 export interface AppState {
   susceptibilityStyle: Record<
     "bodies" | "diffuse",
-    { minClass: number; opacity: number }
+    LandslideStyle
   >;
   model: ModelId;
   basemap: Basemap;
@@ -528,8 +529,8 @@ const initial: Omit<
   | "reset"
 > = {
   susceptibilityStyle: {
-    bodies: { minClass: 3, opacity: 0.45 },
-    diffuse: { minClass: 3, opacity: 0.45 },
+    bodies: { minClass: 4, classes: [4, 5], opacity: 0.45 },
+    diffuse: { minClass: 4, classes: [4, 5], opacity: 0.45 },
   },
   model: "j3",
   basemap: "outdoors",
