@@ -97,23 +97,26 @@ riattivarlo contro `prefers-reduced-motion`. Entrambi i percorsi coprono anche i
 fondali nativi `::backdrop`. Nessuna pulsazione continua suggerisce nuove misure o
 aggiornamenti dei sensori. I dati e la camera conservano il comportamento esistente.
 
-## Materiale della navbar
+## Materiale cartografico condiviso
 
-La testata ha una finitura minerale satinata: tinta opaca della palette,
-micrograna monocromatica, linee di livello decorative e una luce verticale
-contenuta. Il bordo inferiore separa la navigazione dalla mappa. La trama è
-statica e locale (`src/assets/materials`); i fondi CSS non introducono un nuovo
-containing block per menu o dialoghi. Nessun dato cartografico è codificato nella
-trama. Con contrasto aumentato o colori forzati le immagini decorative sono
-rimosse.
+La texture è un’incisione dei confini comunali FVG, ricavata dal GeoJSON locale
+con `scripts/build-interface-material.py`. Il motivo è semplificato e decorativo:
+non comunica misure, stati o copertura dei dati. Sostituisce grana casuale e onde
+regolari con una firma direttamente legata al territorio di FriulView.
 
-Riferimenti: [Microsoft Acrylic](https://learn.microsoft.com/en-us/windows/apps/design/style/acrylic)
-descrive tinta, rumore e profondità con attenzione alla leggibilità;
-[Apple Materials](https://developer.apple.com/design/human-interface-guidelines/materials)
-raccomanda un uso mirato dei materiali nella navigazione;
-[MDN feTurbulence](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feTurbulence)
-documenta la generazione della microtrama SVG. La finitura di FriulView usa questi
-principi con un fondo opaco e texture leggere, adattate alla testata esistente.
+- **Navigazione rialzata**: navbar, intestazioni di catalogo, Spazi/profilo,
+  impostazioni, drawer, export e barra dello Spazio usano lo stesso fondo
+  `--c-surface-raised` e `--material-chrome`, con la stessa scala e intensità.
+- **Fondo pannello**: drawer, ricerca ancorata e involucri dei comandi mappa
+  usano lo stesso disegno molto attenuato (`--surface-texture`). I comandi
+  conservano il proprio colore di superficie per distinguerne il ruolo.
+- **Contenuto**: campi, opzioni, righe dati, schede e grafici restano puliti.
+
+I due livelli di intensità sono tarati separatamente per chiaro/scuro; tutte le
+palette mantengono i propri colori. Nessuna animazione, filtro o elemento sopra
+i controlli. Con contrasto aumentato o colori forzati le texture scompaiono.
+I token condivisi sono in `src/styles/finish.css`; i quattro SVG sono locali,
+senza richieste o elaborazioni geografiche a runtime.
 
 ## Esplora, tipografia e menu dell’app
 

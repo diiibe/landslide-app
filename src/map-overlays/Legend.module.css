@@ -207,3 +207,5 @@
 .legend { bottom: var(--map-legend-bottom, 96px); }
 
 .legend { max-height: max(44px, calc(100% - var(--map-legend-bottom, 96px) - 16px)); }
+
+.legend { background-image: var(--surface-texture); background-size: var(--material-size); background-position: var(--material-position); }

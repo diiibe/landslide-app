@@ -198,3 +198,5 @@
     margin-right: 172px;
   }
 }
+
+.body :global(.drawer) { background-size: var(--material-size); background-position: var(--material-position); }

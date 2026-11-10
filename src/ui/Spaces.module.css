@@ -33,3 +33,6 @@
 .form button:not(:disabled):hover { background: var(--c-action-hover); border-color: var(--c-action-hover); }
 
 .wide{width:min(1040px,calc(100vw - 32px))}.wide .content{padding:20px 24px}@media(max-width:600px){.wide{width:calc(100vw - 16px);max-height:calc(100dvh - 16px)}.wide .content{padding:14px}.wide header{padding:14px}.wide h1{font-size:19px}}
+
+/* Shared regional navigation material; content remains unpatterned. */
+.dialog header { background: var(--material-chrome); }

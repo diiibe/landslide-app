@@ -758,3 +758,6 @@
 .panel h2[tabindex="-1"] {
   scroll-margin-top: 100px;
 }
+
+/* Shared regional navigation material; content remains unpatterned. */
+.spaceBar { background: var(--material-chrome); }
