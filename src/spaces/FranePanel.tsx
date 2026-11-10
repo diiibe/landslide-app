@@ -1,10 +1,12 @@
+import { LandslideClassPicker } from "@/ui/LandslideClassPicker";
+import { selectedClasses, withClasses, classSum, classSelectionText } from "@/lib/landslideClasses";
 import { useEffect, useState } from "react";
 import { useAppStore } from "@/app/store";
 import { Icon } from "@/ui/Icon";
 import { v2ClassColor } from "@/map/layers/modelV2";
 import { ModelV2Panel } from "@/drawer/ModelV2Panel";
 import { analyseArea } from "./analysis/client";
-import type { AnalysisResult, LayerAnalysis } from "./analysis/core";
+import type { AnalysisResult } from "./analysis/core";
 import {
   AREA_PRESETS,
   drawArea,
@@ -24,8 +26,6 @@ const number = (n: number, d = 2) =>
 const km = (m: number) => number(m / 1e6, m < 1e6 ? 3 : 2);
 const percent = (a: number, b: number) =>
   b ? `${number((a / b) * 100, 1)}%` : "—";
-const above = (l: LayerAnalysis, min: number) =>
-  l.classes.slice(min - 1).reduce((a, b) => a + b, 0);
 function exportArea(area: AreaSelection, result: AnalysisResult) {
   const blob = new Blob(
     [
@@ -61,10 +61,14 @@ export function FranePanel() {
   const area = useExperienceStore((s) => s.area),
     probe = useExperienceStore((s) => s.probe),
     polygons = useAppStore((s) => s.userPolygons);
+  const which = useAppStore(s => s.layers.v2Diffuse ? "diffuse" : "bodies");
+  const settings = useAppStore(s => s.susceptibilityStyle[which]);
   return (
     <div className={styles.panel}>
       <section className={styles.intro}>
         <span className={styles.badge}>Mappature reali · griglia 120 m</span>
+        <LandslideClassPicker value={selectedClasses(settings)} onChange={classes =>
+          useAppStore.setState(s => ({ susceptibilityStyle: { ...s.susceptibilityStyle, [which]: withClasses(s.susceptibilityStyle[which], classes) } }))}/>
         {!area && (
           <>
             <h2>Leggi il territorio, zona per zona.</h2>
@@ -258,12 +262,12 @@ function AreaInspector({ area }: { area: AreaSelection }) {
   const data = record.result,
     loading = record.key !== key,
     current = data?.layers[which],
-    min = settings.minClass;
-  const setMin = (value: number) =>
+    chosen = selectedClasses(settings);
+  const setClasses = (classes: number[]) =>
     useAppStore.setState((s) => ({
       susceptibilityStyle: {
         ...s.susceptibilityStyle,
-        [which]: { ...s.susceptibilityStyle[which], minClass: value },
+        [which]: withClasses(s.susceptibilityStyle[which], classes),
       },
     }));
   const save = () => {
@@ -358,8 +362,8 @@ function AreaInspector({ area }: { area: AreaSelection }) {
               <span>Coperta dalla mappatura</span>
             </div>
             <div>
-              <strong>{percent(above(current, min), current.coveredM2)}</strong>
-              <span>Area mappata in classi ≥ {min}</span>
+              <strong>{percent(classSum(current.classes, chosen), current.coveredM2)}</strong>
+              <span>Area mappata · {classSelectionText(chosen).toLowerCase()}</span>
             </div>
             <div>
               <strong>{number(current.cells, 0)}</strong>
@@ -399,17 +403,16 @@ function AreaInspector({ area }: { area: AreaSelection }) {
               <div>
                 <h3>Superficie per classe</h3>
                 <p className={styles.caption}>
-                  Tocca una classe per impostarla come soglia minima sulla
-                  mappa.
+                  Tocca una classe per mostrarla o nasconderla sulla mappa.
                 </p>
               </div>
               <div className={styles.classRows}>
                 {current.classes.map((a, i) => (
                   <button
                     key={i}
-                    aria-label={`Mostra dalla classe ${i + 1}`}
-                    aria-pressed={i + 1 >= min}
-                    onClick={() => setMin(i + 1)}
+                    aria-label={`Classe ${i + 1} sulla mappa`}
+                    aria-pressed={chosen.includes(i + 1)}
+                    onClick={() => setClasses(chosen.includes(i + 1) ? chosen.filter(c => c !== i + 1) : [...chosen, i + 1])}
                   >
                     <b>{i + 1}</b>
                     <span className={styles.classTrack}>
@@ -428,18 +431,6 @@ function AreaInspector({ area }: { area: AreaSelection }) {
                   </button>
                 ))}
               </div>
-              <label className={styles.field}>
-                Soglia minima · classe {min}
-                <input
-                  type="range"
-                  aria-label="Soglia della zona"
-                  min="1"
-                  max="5"
-                  step="1"
-                  value={min}
-                  onChange={(e) => setMin(Number(e.target.value))}
-                />
-              </label>
               <table className={styles.table}>
                 <tbody>
                   {[
@@ -483,11 +474,11 @@ function AreaInspector({ area }: { area: AreaSelection }) {
                     ))}
                   </tr>
                   <tr>
-                    <th>Classi ≥ {min}</th>
+                    <th>{classSelectionText(chosen)}</th>
                     {(["bodies", "diffuse"] as const).map((k) => (
                       <td key={k}>
                         {percent(
-                          above(data.layers[k], min),
+                          classSum(data.layers[k].classes, chosen),
                           data.layers[k].coveredM2,
                         )}
                       </td>
@@ -553,8 +544,8 @@ function AreaInspector({ area }: { area: AreaSelection }) {
                           ))}
                       </div>
                       <small>
-                        {number(parts.slice(min).reduce((s, v) => s + v, 0))} km
-                        in classi ≥ {min} · {number(parts[0] ?? 0)} km senza
+                        {number(classSum(parts, chosen, 0))} km
+                        nelle classi selezionate · {number(parts[0] ?? 0)} km senza
                         copertura.
                       </small>
                     </div>

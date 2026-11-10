@@ -4,6 +4,7 @@ import {
   setModelV2Visible,
   v2ClassColor,
   v2LayerIds,
+  v2RasterLayerIds,
   V2_LAYER_ID,
   V2_RASTER_LAYER_ID,
   V2_VECTOR_MIN_ZOOM,
@@ -42,44 +43,26 @@ function fakeMap() {
 }
 
 describe("model v2 map layers", () => {
-  it("applies the same class cutoff and opacity at regional and detailed zooms", () => {
+  it("keeps non-contiguous selections identical at regional and detailed zooms, including none", () => {
     const f = fakeMap();
-    setModelV2Visible(f.m, "bodies", true, undefined, {
-      minClass: 3,
-      opacity: 0.4,
-    });
-    expect(f.layers.get(V2_LAYER_ID.bodies)!.filter).toEqual([
-      ">=",
-      ["get", "cls"],
-      3,
+    setModelV2Visible(f.m,"bodies",true,undefined,{minClass:2,classes:[2,5],opacity:.4});
+    expect(f.layers.get(V2_LAYER_ID.bodies)!.filter).toEqual(["in",["get","cls"],["literal",[2,5]]]);
+    const ids=v2RasterLayerIds("bodies");
+    expect([...f.sources.values()].filter(s=>s.type==="raster").map(s=>s.url)).toEqual([
+      expect.stringContaining("raster_class2.pmtiles"),expect.stringContaining("raster_class5.pmtiles"),
     ]);
-    expect(String(f.sources.get("v2-bodies-raster-src")!.url)).toContain(
-      "_min3.pmtiles",
-    );
-    setModelV2Visible(f.m, "bodies", true, undefined, {
-      minClass: 5,
-      opacity: 0.25,
-    });
-    expect(String(f.sources.get("v2-bodies-raster-src")!.url)).toContain(
-      "_min5.pmtiles",
-    );
-    expect(
-      (f.layers.get(V2_LAYER_ID.bodies)!.paint as Record<string, unknown>)[
-        "fill-opacity"
-      ],
-    ).toBe(0.25);
-    expect(
-      (
-        f.layers.get(V2_RASTER_LAYER_ID.bodies)!.paint as Record<
-          string,
-          unknown
-        >
-      )["raster-opacity"],
-    ).toBe(0.25);
+    const sources=f.sources.size;
+    setModelV2Visible(f.m,"bodies",true,undefined,{minClass:5,classes:[5],opacity:.25});
+    expect(f.visibility.get(ids[1]!)).toBe("none");expect(f.visibility.get(ids[4]!)).toBe("visible");
+    expect(f.sources.size).toBe(sources);
+    expect((f.layers.get(ids[4]!)!.paint as Record<string,unknown>)["raster-opacity"]).toBe(.25);
+    setModelV2Visible(f.m,"bodies",true,undefined,{minClass:1,classes:[],opacity:.25});
+    expect(f.visibility.get(ids[4]!)).toBe("none");expect(f.visibility.get(V2_LAYER_ID.bodies)).toBe("none");
+    expect(f.layers.get(V2_LAYER_ID.bodies)!.filter).toEqual(["in",["get","cls"],["literal",[]]]);
   });
   it("draws z6-9 from the raster pyramid and z10+ from the vector cells", () => {
     const f = fakeMap();
-    setModelV2Visible(f.m, "bodies", true);
+    setModelV2Visible(f.m, "bodies", true, undefined, {minClass:1,classes:[1],opacity:.45});
     const raster = f.layers.get(V2_RASTER_LAYER_ID.bodies)!;
     const vector = f.layers.get(V2_LAYER_ID.bodies)!;
     expect(V2_VECTOR_MIN_ZOOM).toBe(10);
@@ -91,7 +74,7 @@ describe("model v2 map layers", () => {
       "nearest",
     );
     expect(String(f.sources.get(raster.source as string)!.url)).toMatch(
-      /tiles\/v2_bodies_raster\.pmtiles\?palette=red-v1$/,
+      /tiles\/v2_bodies_raster_class1\.pmtiles\?palette=red-v1$/,
     );
     expect(String(f.sources.get(vector.source as string)!.url)).toMatch(
       /tiles\/v2_bodies\.pmtiles$/,
@@ -100,14 +83,11 @@ describe("model v2 map layers", () => {
 
   it("switches the raster and vector halves of a layer exactly together", () => {
     const f = fakeMap();
-    setModelV2Visible(f.m, "diffuse", true);
+    setModelV2Visible(f.m, "diffuse", true, undefined, {minClass:1,opacity:.45});
     const ids = v2LayerIds("diffuse");
-    expect(ids.map((id) => f.visibility.get(id))).toEqual([
-      "visible",
-      "visible",
-    ]);
+    expect(ids.map((id) => f.visibility.get(id))).toEqual(ids.map(()=>"visible"));
     setModelV2Visible(f.m, "diffuse", false);
-    expect(ids.map((id) => f.visibility.get(id))).toEqual(["none", "none"]);
+    expect(ids.map((id) => f.visibility.get(id))).toEqual(ids.map(()=>"none"));
   });
 
   it("adds nothing while a layer stays off", () => {
@@ -120,10 +100,9 @@ describe("model v2 map layers", () => {
   it("places both halves below the given layer", () => {
     const f = fakeMap();
     f.m.addLayer({ id: "iffi-fill", type: "fill", source: "x" } as never);
-    setModelV2Visible(f.m, "bodies", true, "iffi-fill");
+    setModelV2Visible(f.m, "bodies", true, "iffi-fill",{minClass:1,opacity:.45});
     expect(f.order).toEqual([
-      V2_RASTER_LAYER_ID.bodies,
-      V2_LAYER_ID.bodies,
+      ...v2LayerIds("bodies"),
       "iffi-fill",
     ]);
   });

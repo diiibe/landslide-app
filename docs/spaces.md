@@ -111,3 +111,20 @@ worker, while changed model/network hashes replace it. Concurrent stale version
 responses cannot roll a newer worker back. This is publication-version checking,
 not a live landslide monitoring service. Simulated realism is profile/coherence
 based and has not been calibrated against these companies' operational telemetry.
+
+### Independent landslide classes
+
+New views start with classes 4 and 5. Each class can be shown independently,
+including non-contiguous selections and none. Regional rendering uses separate
+class-indexed PNG masks (`v2_*_raster_classN.pmtiles`); detailed cells use the
+same membership filter. Masks change alpha only, preserving palette, pixels,
+indices and tile coordinates. `pipelines.threshold_tiles.write_class_tiles`
+is run by the model builder; `python -m pipelines.threshold_tiles` refreshes
+these masks from the shipped base rasters without recomputing the model.
+Saved legacy minClass views are restored as their cumulative class set.
+The zone inspector sums just the displayed classes; the comparison extension
+keeps its separately labelled analytical minimum-class filter (default 4).
+
+The PMTiles adapter resolves missing raster tiles to a transparent PNG, avoiding
+MapLibre 5.24's unresolved image queue on sparse tile boundaries. Missing vector
+tiles, transport errors and abort handling keep the standard adapter behaviour.

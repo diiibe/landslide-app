@@ -46,9 +46,9 @@ occupare due righe nell’elenco; il nome apre la scheda completa. I campi resta
 nativi per l’uso da tastiera e touch. In landscape basso i filtri si dispongono
 su una riga per lasciare spazio ai risultati.
 
-La legenda mostra prima classi e soglia; la spiegazione estesa si apre con
+La legenda mostra prima classi e selezione; la spiegazione estesa si apre con
 «Come leggere la mappa». Numeri e didascalie mantengono il contrasto anche per le
-classi sotto soglia; si attenuano esclusivamente i campioni di colore.
+classi non selezionate; si attenuano esclusivamente i campioni di colore.
 
 Sfondo mappa, esportazione, scelta colori e schede sensori adottano gli stessi
 bordi, raggi, superfici, focus e gerarchia dei pulsanti. La copia operativa è in
@@ -211,3 +211,16 @@ Polling osservazioni:60secondi tra richieste completate, senza sovrapposizioni;
 pausa nelle schede nascoste, lettura al ritorno in vista, focus e riconnessione.
 Catalogo:5minuti e ripresa su focus/rete. Le cartografie seguono la cadenza della
 fonte e l'importazione programmata: il controllo client non inventa nuove misure.
+
+## Classi e navigazione delle stazioni
+
+Le mappature frane hanno cinque interruttori di classe indipendenti, con 4 e 5
+attive nelle nuove viste. Combinazioni non consecutive e selezione vuota sono
+ammesse; le classi escluse sono trasparenti anche nella panoramica raster.
+Il controllo è condiviso fra dettaglio livello e Spazio Frane; distribuzione,
+legenda e statistiche della zona leggono la stessa selezione. Le viste salvate
+con la vecchia soglia minima conservano l’insieme cumulativo corrispondente.
+
+La ricerca Stazione centra direttamente la camera e chiude lo sheet mobile,
+attivando il relativo livello. Le frecce direzionali sono simboli in pixel CSS
+con dimensioni limitate, non segmenti lunghi un numero fisso di metri.

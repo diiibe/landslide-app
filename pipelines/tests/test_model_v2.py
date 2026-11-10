@@ -219,7 +219,7 @@ def test_build_writes_tiles_and_model_json(map_dir: Path, tmp_path: Path):
 
     expected = [f"v2_{name}.pmtiles" for name in ("bodies", "diffuse")]
     expected += [f"v2_{name}_raster{suffix}.pmtiles" for name in ("bodies", "diffuse")
-                 for suffix in ("", "_min2", "_min3", "_min4", "_min5")]
+                 for suffix in ("", "_min2", "_min3", "_min4", "_min5", "_class1", "_class2", "_class3", "_class4", "_class5")]
     assert sorted(p.name for p in tiles.iterdir()) == sorted(expected)
     tips = [c for c in run.cmds if c[0] == "tippecanoe"]
     assert tips and all(c[c.index("-M") + 1] == str(PART_TILE_BYTES) for c in tips)

@@ -1,3 +1,4 @@
+import { directionIcon, directionSize } from "@/regional/directionIcon";
 import type {
   Map as MLMap,
   GeoJSONSource,
@@ -224,22 +225,19 @@ export function mountTwinMap(map: MLMap): () => void {
     const windOn = s.active && isPCREnabled("wind");
     if (windOn) {
       source(WIND, windData);
-      if (!map.getLayer(WIND))
-        map.addLayer({
-          id: WIND,
-          type: "line",
-          source: WIND,
-          paint: {
-            "line-color": ["case", ["get", "stale"], "#888888", "#5ebfcc"],
-            "line-width": 2.8,
-          },
-        });
+      for (const [id, color] of [[WIND + "-recent", [94, 191, 204]], [WIND + "-stale", [136, 136, 136]]] as const)
+        if (!map.hasImage(id)) map.addImage(id, directionIcon(color));
+      if (!map.getLayer(WIND)) map.addLayer({ id: WIND, type: "symbol", source: WIND,
+        layout: { "icon-image": ["case", ["get", "stale"], WIND + "-stale", WIND + "-recent"],
+          "icon-size": directionSize(), "icon-anchor": "bottom", "icon-rotate": ["get", "bearing"],
+          "icon-rotation-alignment": "map", "icon-pitch-alignment": "viewport", "icon-allow-overlap": true },
+      });
     }
     visible(WIND, windOn);
     if (map.getLayer(WIND))
       map.setPaintProperty(
         WIND,
-        "line-opacity",
+        "icon-opacity",
         useRegionalStore.getState().opacity["pcr-wind"] ?? 1,
       );
     if (s.active && s.buildingsOn) {
@@ -411,8 +409,8 @@ export function mountTwinMap(map: MLMap): () => void {
         pendingBounds = null;
         map.fitBounds(bounds, { padding: 24, maxZoom: 15, pitch: 0, duration });
       } else if (pendingStation !== null) {
-        if (!rows.length) return;
-        const m = rows.find((x) => x.stationId === pendingStation);
+        if (!s.measures.length) return;
+        const m = rows.find((x) => x.stationId === pendingStation) ?? s.measures.find(x => x.stationId === pendingStation);
         pendingStation = null;
         if (m)
           map.flyTo({
@@ -471,6 +469,7 @@ export function mountTwinMap(map: MLMap): () => void {
     const n = (e as CustomEvent<unknown>).detail;
     if (Number.isInteger(n)) {
       pendingStation = n as number;
+      pendingBounds = null;
       pendingFit = false;
       pendingScene = null;
       layout();

@@ -42,3 +42,14 @@ it("records implicit default layers explicitly so space counts and future restor
   saveSpace("Default");
   expect(useSpaces.getState().spaces[0]?.enabled["pcr-wind"]).toBe(true);
 });
+
+it("preserves non-contiguous class visibility, including no classes, in saved views", () => {
+ const style=useAppStore.getState().susceptibilityStyle;
+ useAppStore.setState({susceptibilityStyle:{bodies:{...style.bodies,classes:[2,5],minClass:2},diffuse:{...style.diffuse,classes:[],minClass:1}}});
+ saveSpace("Classi libere");const saved=useSpaces.getState().spaces[0]!;
+ useAppStore.getState().reset();restoreSpace(saved);
+ expect(useAppStore.getState().susceptibilityStyle.bodies.classes).toEqual([2,5]);
+ expect(useAppStore.getState().susceptibilityStyle.diffuse.classes).toEqual([]);
+ const legacy=structuredClone(saved);delete legacy.susceptibilityStyle.bodies.classes;legacy.susceptibilityStyle.bodies.minClass=3;
+ restoreSpace(legacy);expect(useAppStore.getState().susceptibilityStyle.bodies.classes).toEqual([3,4,5]);
+});

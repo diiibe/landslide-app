@@ -1,0 +1,14 @@
+.picker { border: 0; padding: 0; margin: 0; min-width: 0; }
+.picker legend { padding: 0; margin-bottom: 8px; font-size: 14px; font-weight: 650; }
+.options { display: flex; gap: 6px; }
+.options label { position: relative; flex: 1; min-width: 0; cursor: pointer; }
+.options input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
+.options span { display: flex; align-items: center; justify-content: center; gap: 5px; min-height: 44px; border: 1px solid var(--c-border); border-radius: 6px; background: var(--c-surface); color: var(--c-text-muted); transition: background 140ms, border-color 140ms; }
+.options b { font-size: 14px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.options i { width: 6px; height: 18px; border-radius: 2px; box-shadow: inset 0 0 0 1px rgb(0 0 0 / .12); }
+.options svg { width: 10px; height: 10px; fill: none; stroke: currentColor; stroke-width: 1.8; opacity: 0; }
+.options input:checked + span { background: var(--c-selected); border-color: var(--c-action); color: var(--c-text); }
+.options input:checked + span svg { opacity: 1; }
+.options input:focus-visible + span { outline: 2px solid var(--c-focus); outline-offset: 2px; }
+.options label:hover span { border-color: var(--c-border-strong); }
+.picker p { margin: 8px 0 0; color: var(--c-text-muted); font-size: 12px; line-height: 1.5; }

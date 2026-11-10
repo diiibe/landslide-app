@@ -46,7 +46,7 @@ it("updates a report when replay time changes, using that chosen instant",()=>{
 });
 
 it("keeps a small mapped area and a small unmapped remainder visible instead of rounding to zero",async()=>{
- const layer={coveredM2:4000,cells:1,classes:[0,0,4000,0,0],mean:.5,median:.5,p90:.5,min:.5,max:.5};
+ const layer={coveredM2:4000,cells:1,classes:[0,0,0,4000,0],mean:.5,median:.5,p90:.5,min:.5,max:.5};
  vi.mocked(analyseArea).mockResolvedValue({areaM2:8000,layers:{bodies:layer,diffuse:layer},version:"small"});
  render(<FraneComparison/>);fireEvent.click(screen.getByRole("button",{name:"Calcola confronto"}));
  await waitFor(()=>expect(screen.getAllByText("0,004 km²")).toHaveLength(2));

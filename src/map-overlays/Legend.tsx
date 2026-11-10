@@ -1,3 +1,4 @@
+import { selectedClasses, classSelectionText } from "@/lib/landslideClasses";
 import { Icon } from "@/ui/Icon";
 import { useAppStore } from "@/app/store";
 import type { V2Layer } from "@/app/types";
@@ -84,9 +85,10 @@ const pct = (share: number) => `${Math.round(share * 100)}%`;
 function V2LegendBody({ layer }: { layer: V2Layer }) {
   const { title, copy } = V2_LEGEND[layer];
   const v2 = useModelV2();
-  const cutoff = useAppStore((s) => s.susceptibilityStyle[layer].minClass);
+  const settings = useAppStore((s) => s.susceptibilityStyle[layer]);
   const stats = v2.status === "ready" ? v2.data.layers[layer] : null;
   const n = stats?.classes ?? 5;
+  const chosen = selectedClasses(settings, n);
   return (
     <section className={styles.v2} aria-label={title}>
       <h4 className={styles.title}>{title}</h4>
@@ -99,7 +101,7 @@ function V2LegendBody({ layer }: { layer: V2Layer }) {
             <i
               style={{
                 background: v2ClassColor(i + 1, n),
-                opacity: i + 1 < cutoff ? 0.3 : 1,
+                opacity: chosen.includes(i + 1) ? 1 : 0.3,
               }}
               aria-hidden="true"
             />
@@ -112,7 +114,7 @@ function V2LegendBody({ layer }: { layer: V2Layer }) {
         <span>più simile</span>
       </div>
       <p className={styles.v2Copy}>
-        Visibili le classi da {Math.min(cutoff, n)} a {n}.
+        {classSelectionText(chosen)}.
       </p>
       <details className={styles.reading}>
         <summary>Come leggere la mappa</summary>

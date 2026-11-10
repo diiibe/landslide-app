@@ -62,9 +62,9 @@ describe("PCR observations", () => {
       measures: [row, { ...row, sensor_id: 5, value: 0 }],
     });
     const f = windGeoJSON(m, "wind").features[0]!;
-    expect(f.geometry.coordinates[1]![1]).toBeLessThan(
-      f.geometry.coordinates[0]![1]!,
-    );
+    expect(f.geometry.type).toBe("Point");
+    expect(f.geometry.coordinates).toEqual([row.lon, row.lat]);
+    expect(f.properties?.bearing).toBe(180);
     expect(
       windGeoJSON(
         parseMeasures({

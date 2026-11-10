@@ -1,6 +1,7 @@
+import type { ExpressionSpecification } from "maplibre-gl";
 /** A north-pointing navigation symbol, independent of a provider's font glyphs. */
 export const DIRECTION_IMAGE = "regional-direction-arrow";
-export function directionIcon() {
+export function directionIcon(fill: readonly [number, number, number] = [23, 45, 37]) {
   const width = 24, height = 32, data = new Uint8Array(width * height * 4);
   const outer = [[12,1],[23,14],[16,14],[16,31],[8,31],[8,14],[1,14]];
   const inner = [[12,4],[19,12],[14,12],[14,29],[10,29],[10,12],[5,12]];
@@ -21,10 +22,13 @@ export function directionIcon() {
     }
     if (!covered) continue;
     const offset=(y*width+x)*4, ratio=dark/covered;
-    data[offset]=Math.round(246*(1-ratio)+23*ratio);
-    data[offset+1]=Math.round(245*(1-ratio)+45*ratio);
-    data[offset+2]=Math.round(237*(1-ratio)+37*ratio);
+    data[offset]=Math.round(246*(1-ratio)+fill[0]*ratio);
+    data[offset+1]=Math.round(245*(1-ratio)+fill[1]*ratio);
+    data[offset+2]=Math.round(237*(1-ratio)+fill[2]*ratio);
     data[offset+3]=Math.round(255*covered/16);
   }
   return {width,height,data};
 }
+
+/** Icon dimensions stay within 15–29 CSS pixels, independent of ground scale. */
+export const directionSize = (): ExpressionSpecification => ["interpolate", ["linear"], ["zoom"], 5, .6, 10, .8, 14, .9];
