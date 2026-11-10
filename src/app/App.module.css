@@ -150,7 +150,7 @@
 }
 @supports (backdrop-filter: blur(16px)) {
   .body :global(.drawer) {
-    background-color: color-mix(in srgb, var(--c-surface-2) 97%, transparent);
+    background-color: color-mix(in srgb, var(--c-surface-2) var(--surface-panel-opacity), transparent);
   }
 }
 
