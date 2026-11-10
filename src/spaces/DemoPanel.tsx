@@ -677,7 +677,7 @@ function mostRecent(hour: number) {
     if (Math.abs(localTime(t).hour - hour) < 0.001) return t;
   return now;
 }
-function Timeline({ time }: { time: number }) {
+export function Timeline({ time }: { time: number }) {
   const wallNow = useSpaceClock(true);
   const replay = useExperienceStore((s) => s.replayTime),
     playing = useExperienceStore((s) => s.playback),
@@ -768,7 +768,7 @@ function Timeline({ time }: { time: number }) {
     </section>
   );
 }
-function ScenarioControls({ scene }: { scene: Experience }) {
+export function ScenarioControls({ scene }: { scene: Experience }) {
   const s = useExperienceStore((s) => s.scenario);
   return (
     <section className={styles.section}>

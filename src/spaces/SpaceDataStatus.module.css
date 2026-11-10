@@ -1,0 +1,14 @@
+.status { margin: 0 18px 18px; padding: 10px 0 12px; border-bottom: 1px solid var(--c-border); font-family: var(--font-stack); color: var(--c-text); }
+.line { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.line strong { font-size: 12px; font-weight: 650; }
+.line time { font-size: 11px; font-variant-numeric: tabular-nums; color: var(--c-text-muted); }
+.status details { margin-top: 6px; font-size: 11px; color: var(--c-text-muted); }
+.status summary { cursor: pointer; min-height: 28px; line-height: 1.6; }
+.status p { line-height: 1.65; }
+.status ul { margin: 12px 0; list-style: none; padding: 0; display: grid; gap: 12px; }
+.status li { display: grid; gap: 4px; padding-left: 10px; border-left: 2px solid var(--c-border-strong); }
+.status li strong { font-weight: 650; color: var(--c-text); }
+.status li small { font-size: 11px; line-height: 1.5; }
+.status button { font: inherit; font-size: 12px; border: 1px solid var(--c-border-strong); border-radius: 6px; color: var(--c-text); background: var(--c-surface); min-height: 44px; padding: 8px 12px; cursor: pointer; }
+.status button:hover { background: var(--c-selected); }
+@media(pointer:coarse) { .status summary { min-height: 44px; padding-block: 8px; } }

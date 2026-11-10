@@ -1,6 +1,8 @@
 import { create } from "zustand";
+import { invalidateAnalysisVersion } from "./analysis/client";
 import { HAS_MAPBOX_TOKEN } from "@/map/style";
 import { useAppStore } from "@/app/store";
+import { useTwinStore } from "@/digital-twin/store";
 import { useRegionalStore } from "@/regional/store";
 import { BUILTIN_LAYERS } from "@/regional/builtins";
 import { captureView, restoreSpace, type Space } from "@/ui/spacesStore";
@@ -15,8 +17,9 @@ export interface AreaSelection {
 interface State {
   activeId: SpaceId | null;
   hubOpen: boolean;
-  tab: "overview" | "layers";
+  tab: "overview" | "layers" | "tools";
   selectedId: string | null;
+  inspectionRequest: number;
   area: AreaSelection | null;
   analysisTab: "distribution" | "context" | "compare";
   replayTime: number | null;
@@ -35,6 +38,7 @@ export const useExperienceStore = create<State>(() => ({
   hubOpen: false,
   tab: "overview",
   selectedId: null,
+  inspectionRequest: 0,
   area: null,
   analysisTab: "distribution",
   replayTime: null,
@@ -59,6 +63,7 @@ function url(id: SpaceId | null) {
 export function openExperience(id: SpaceId) {
   const scene = experience(id);
   if (!scene) return;
+  if (id === "landslides") invalidateAnalysisVersion();
   if (!useExperienceStore.getState().activeId) {
     territory = captureView("Territorio");
     territoryDrawer = useAppStore.getState().drawerOpen;
@@ -123,6 +128,10 @@ export function openExperience(id: SpaceId) {
     },
     view3D: false,
   });
+  // A Space entry is also a fresh read of real feeds; observations are never
+  // replaced with demo values and the catalog retains its own source cadence.
+  useTwinStore.setState(s => ({ autoRefresh: true, refreshKey: s.refreshKey + 1 }));
+  useRegionalStore.setState(s => ({ refreshKey: s.refreshKey + 1 }));
   url(id);
 }
 export function leaveExperience() {
@@ -167,6 +176,7 @@ export function selectObject(id: string | null) {
     asset = experience(s.activeId)?.sensors.find((a) => a.id === id);
   useExperienceStore.setState({
     selectedId: id,
+    inspectionRequest: s.inspectionRequest + 1,
     tab: "overview",
     ...(asset && s.filter !== "all" && s.filter !== asset.metric
       ? { filter: asset.metric }
@@ -177,6 +187,7 @@ export function selectObject(id: string | null) {
 export function selectArea(area: AreaSelection) {
   useExperienceStore.setState({
     area,
+    inspectionRequest: useExperienceStore.getState().inspectionRequest + 1,
     selectedId: null,
     tab: "overview",
     probe: false,

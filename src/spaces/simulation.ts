@@ -209,12 +209,19 @@ export function zonePeople(
   }
   return result;
 }
+export function roadPerformance(arrivals: number, capacity: number, weatherFactor = 1) {
+  const ratio = Math.max(0, arrivals) / Math.max(1, capacity);
+  return { flow: Math.round(Math.min(Math.max(0, arrivals), capacity * 1.1)),
+    speed: clamp(50 * (1 - .68 * ratio ** 1.5) * weatherFactor, 7, 52),
+    queue: Math.round(Math.max(0, (arrivals - capacity * .67) * .05)), ratio };
+}
+
 export function trafficAt(
   site: Experience,
   t: number,
   s: ScenarioState = NORMAL,
   index = 0,
-): { flow: number; speed: number; queue: number; ratio: number } {
+): { flow: number; speed: number; queue: number; ratio: number; arrivals: number; capacity: number; weatherFactor: number } {
   const h = localTime(t).hour,
     r = ramp(t, s),
     capacity =
@@ -231,17 +238,8 @@ export function trafficAt(
     profile *
     (s.id === "peak" ? 1 + 0.35 * r : 1) *
     (1 + 0.06 * noise(`traffic-${index}`, t));
-  const ratio = arriving / capacity;
-  return {
-    flow: Math.round(Math.min(arriving, capacity * 1.1)),
-    speed: clamp(
-      50 * (1 - 0.68 * ratio ** 1.5) * (s.id === "rain" ? 1 - 0.18 * r : 1),
-      7,
-      52,
-    ),
-    queue: Math.round(Math.max(0, (arriving - capacity * 0.67) * 0.05)),
-    ratio,
-  };
+  const weatherFactor = s.id === "rain" ? 1 - .18 * r : 1;
+  return { ...roadPerformance(arriving, capacity, weatherFactor), arrivals: arriving, capacity, weatherFactor };
 }
 export function reading(
   site: Experience,

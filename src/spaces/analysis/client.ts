@@ -1,14 +1,39 @@
 import type { AnalysisResult } from "./core";
 let worker: Worker | null = null;
 let sequence = 0;
+let checkedVersion: Promise<void> | null = null, workerVersion = "", versionEpoch = 0;
+/** Space entry invalidates only the lightweight version check. Unchanged
+ * analytical binaries stay in the worker instead of being downloaded again. */
+export function invalidateAnalysisVersion() { versionEpoch++; checkedVersion = null; }
+async function ensureVersion(): Promise<void> {
+  if (checkedVersion) return checkedVersion;
+  const epoch = versionEpoch;
+  const pending = (async () => {
+    const response = await fetch(`${import.meta.env.BASE_URL}data/spaces/manifest.json`, { cache: "no-cache", signal: AbortSignal.timeout(20000) });
+    if (!response.ok) throw new Error("Non è stato possibile verificare la versione dell’indice. Riprova.");
+    const m = await response.json() as { modelGrid?: { sha?: string }; modelHash?: string; networks?: { roads?: { sha?: string }; trails?: { sha?: string } } };
+    if (!m.modelGrid?.sha || !m.modelHash || !m.networks?.roads?.sha || !m.networks?.trails?.sha) throw new Error("Manifest dell’analisi non valido.");
+    if (epoch !== versionEpoch) return ensureVersion();
+    const version = [m.modelHash,m.modelGrid.sha,m.networks.roads.sha,m.networks.trails.sha].join(":");
+    if (workerVersion && workerVersion !== version) {
+      worker?.terminate(); worker = null;
+      waiting.forEach(p => p.reject(new Error("È disponibile un nuovo indice. Ricalcola l’analisi.")));
+      waiting.clear();
+    }
+    workerVersion = version;
+  })();
+  checkedVersion = pending;
+  try { return await pending; } catch(error) { if (checkedVersion === pending) checkedVersion = null; throw error; }
+}
 const waiting = new Map<
   number,
   { resolve: (r: AnalysisResult) => void; reject: (e: Error) => void }
 >();
-export function analyseArea(
+export async function analyseArea(
   polygon: GeoJSON.Polygon,
   context = false,
 ): Promise<AnalysisResult> {
+  await ensureVersion();
   return new Promise((resolve, reject) => {
     if (typeof Worker === "undefined") {
       reject(new Error("Analisi non disponibile in questo browser."));

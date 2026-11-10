@@ -3,6 +3,8 @@ import { Icon } from "@/ui/Icon";
 import { RegionalPanel } from "@/regional/Panel";
 import { useExperienceStore } from "./store";
 import { FranePanel } from "./FranePanel";
+import { Workbench } from "./tools/Workbench";
+import { SpaceDataStatus } from "./SpaceDataStatus";
 import { DemoPanel } from "./DemoPanel";
 import styles from "./Panel.module.css";
 export function SpacePanel() {
@@ -13,14 +15,15 @@ export function SpacePanel() {
     vehicles = useExperienceStore((s) => s.showVehicles);
   const selected = useExperienceStore((s) => s.selectedId),
     areaId = useExperienceStore((s) => s.area?.id);
+  const inspectionRequest = useExperienceStore(s=>s.inspectionRequest);
   const content = useRef<HTMLDivElement>(null),
-    previous = useRef({ active, selected, areaId });
+    previous = useRef({ active, selected, areaId, inspectionRequest });
   useEffect(() => {
     const changed =
       previous.current.active === active &&
       (previous.current.selected !== selected ||
-        previous.current.areaId !== areaId);
-    previous.current = { active, selected, areaId };
+        previous.current.areaId !== areaId || previous.current.inspectionRequest !== inspectionRequest);
+    previous.current = { active, selected, areaId, inspectionRequest };
     if (!changed || tab !== "overview") return;
     const frame = requestAnimationFrame(() => {
       const heading = content.current?.querySelector<HTMLElement>("h2");
@@ -30,7 +33,7 @@ export function SpacePanel() {
       heading.scrollIntoView?.({ block: "start", behavior: "instant" });
     });
     return () => cancelAnimationFrame(frame);
-  }, [active, selected, areaId, tab]);
+  }, [active, selected, areaId, tab, inspectionRequest]);
   if (!active) return <RegionalPanel />;
   return (
     <div ref={content}>
@@ -53,8 +56,10 @@ export function SpacePanel() {
         >
           Livelli
         </button>
+        <button role="tab" aria-selected={tab === "tools"} onClick={() => useExperienceStore.setState({ tab: "tools" })}><Icon name="tools" />Strumenti</button>
       </div>
-      {tab === "overview" ? (
+      <SpaceDataStatus />
+      {tab === "tools" ? <Workbench /> : tab === "overview" ? (
         active === "landslides" ? (
           <FranePanel />
         ) : (
