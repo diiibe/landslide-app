@@ -9,12 +9,20 @@ export function TopBar({ tabs, search, icons }: { tabs: ReactNode; search: React
   const brand = useUIText("brand");
   const bar=useRef<HTMLElement>(null),actions=useRef<HTMLDivElement>(null);
   useLayoutEffect(()=>{
-    const measure=()=>{const width=actions.current?.getBoundingClientRect().width;if(width)bar.current?.style.setProperty("--navbar-actions-clearance",`${Math.ceil(width)+12}px`);};
+    let frame=0;
+    const measure=()=>{
+      frame=0;
+      const width=actions.current?.getBoundingClientRect().width,element=bar.current;
+      if(!width||!element)return;
+      const next=`${Math.ceil(width)+12}px`;
+      if(element.style.getPropertyValue("--navbar-actions-clearance")!==next)element.style.setProperty("--navbar-actions-clearance",next);
+    };
+    const schedule=()=>{cancelAnimationFrame(frame);frame=requestAnimationFrame(measure);};
     measure();
-    const observer=typeof ResizeObserver==="undefined"?null:new ResizeObserver(measure);
+    const observer=typeof ResizeObserver==="undefined"?null:new ResizeObserver(schedule);
     if(actions.current)observer?.observe(actions.current);
-    window.addEventListener("resize",measure);
-    return()=>{observer?.disconnect();window.removeEventListener("resize",measure);};
+    window.addEventListener("resize",schedule);
+    return()=>{cancelAnimationFrame(frame);observer?.disconnect();window.removeEventListener("resize",schedule);};
   },[]);
   return (
     <header ref={bar} className={styles.bar} data-ui="navbar">
