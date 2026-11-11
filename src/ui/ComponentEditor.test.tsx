@@ -12,3 +12,12 @@ it("allows replacing the whole label and typing multiword names, then reflects a
  fireEvent.change(field,{target:{value:"Nuovo territorio"}});expect(useInterfaceSettings.getState().config.texts.brand).toBe("Nuovo territorio");
  act(()=>useInterfaceSettings.getState().reset("navbar"));expect(field).toHaveValue("FriulView");
 });
+it("shows the actual 12 percent navbar texture default, also after shading changes and reset",()=>{
+ render(<ComponentEditor component="navbar"/>);
+ const intensity=screen.getByRole("slider",{name:"Intensità texture · Navbar"});
+ expect(intensity).toHaveValue("12");
+ fireEvent.change(screen.getByRole("slider",{name:"Sfumatura di luce · Navbar"}),{target:{value:"10"}});
+ expect(intensity).toHaveValue("12");
+ fireEvent.change(intensity,{target:{value:"20"}});expect(intensity).toHaveValue("20");
+ act(()=>useInterfaceSettings.getState().reset("navbar"));expect(intensity).toHaveValue("12");
+});

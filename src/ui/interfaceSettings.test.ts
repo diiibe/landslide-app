@@ -37,3 +37,24 @@ it("keeps changes active and reports when the browser refuses persistence",()=>{
  const storage=vi.spyOn(Storage.prototype,"setItem").mockImplementation(()=>{throw new Error("storage full")});
  try {useInterfaceSettings.getState().setStyle("search",{depth:3});expect(useInterfaceSettings.getState().persistent).toBe(false);expect(useInterfaceSettings.getState().config.components.search?.depth).toBe(3);} finally {storage.mockRestore();}
 });
+
+it("keeps the user's six-stamp material and original scale when adjusting navbar light shading",()=>{
+ const css=interfaceCSS({version:1,components:{navbar:{shade:10}},texts:{}});
+ const url=css.match(/url\("data:image\/svg\+xml,([^"]+)"\)/)?.[1];
+ expect(url).toBeTruthy();
+ const doc=new DOMParser().parseFromString(decodeURIComponent(url!),"image/svg+xml");
+ const stamps=[...doc.querySelectorAll("use")];
+ expect(stamps).toHaveLength(6);
+ expect(doc.documentElement.getAttribute("viewBox")).toBe("0 0 1200 240");
+ expect(stamps[0]?.getAttribute("transform")).toBe("translate(407.4837341308594 200.5899200439453) rotate(0) scale(2.9210526315789473) translate(-38 -42)");
+ expect(stamps.every(stamp=>stamp.getAttribute("opacity")==="0.12"&&stamp.getAttribute("stroke")==="#edf3e9")).toBe(true);
+ expect(css).toContain("1200px 240px");
+});
+it("adjusts navbar ink and intensity without changing the number or position of stamps",()=>{
+ const css=interfaceCSS({version:1,components:{navbar:{texture:"territory",intensity:20,text:"#aabbcc"}},texts:{}});
+ const url=css.match(/url\("data:image\/svg\+xml,([^"]+)"\)/)?.[1];
+ const doc=new DOMParser().parseFromString(decodeURIComponent(url!),"image/svg+xml");
+ const stamps=[...doc.querySelectorAll("use")];
+ expect(stamps).toHaveLength(6);
+ expect(stamps.every(stamp=>stamp.getAttribute("opacity")==="0.2"&&stamp.getAttribute("stroke")==="#aabbcc")).toBe(true);
+});

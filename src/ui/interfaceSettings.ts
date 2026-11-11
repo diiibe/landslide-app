@@ -1,5 +1,7 @@
 import { create } from "zustand";
+import navbarPattern from "@/assets/materials/navbar-user-pattern.svg?raw";
 import territory from "@/assets/materials/territory-chrome-light.svg?raw";
+export const NAVBAR_PATTERN_INTENSITY = 12;
 export const COMPONENTS = [
   { id: "navbar", name: "Navbar", note: "Marchio, orologio e superficie superiore" },
   { id: "catalogButton", name: "Pulsante Catalogo", note: "Accesso al catalogo · superficie indipendente" },
@@ -69,18 +71,22 @@ export function contrastText(color: string) {
   const luminance = channels[0]! * .2126 + channels[1]! * .7152 + channels[2]! * .0722;
   return luminance > .179 ? "#17251b" : "#f4f7ef";
 }
-function texture(style: ComponentStyle, dark: boolean) {
-  const ink = style.text ?? (style.background ? contrastText(style.background) : dark ? "#edf3e9" : "#202b24");
-  const alpha = (style.intensity ?? 10) / 100;
+function texture(style: ComponentStyle, dark: boolean, component: ComponentId) {
+  const navbar = component === "navbar";
+  const ink = style.text ?? (style.background ? contrastText(style.background) : navbar || dark ? "#edf3e9" : "#202b24");
+  const alpha = (style.intensity ?? (navbar ? NAVBAR_PATTERN_INTENSITY : 10)) / 100;
   if (style.texture === "none") return "none";
   if (style.texture === "grid") return `linear-gradient(${ink}${Math.round(alpha * 255).toString(16).padStart(2,"0")} 1px,transparent 1px),linear-gradient(90deg,${ink}${Math.round(alpha * 255).toString(16).padStart(2,"0")} 1px,transparent 1px)`;
-  const svg = territory.replace('opacity="0.115"', `opacity="${alpha}"`).replace('stroke="#202b24"', `stroke="${ink}"`);
+  const svg = navbar
+    ? navbarPattern.replaceAll('opacity="0.12"', `opacity="${alpha}"`).replaceAll('stroke="#edf3e9"', `stroke="${ink}"`)
+    : territory.replace('opacity="0.115"', `opacity="${alpha}"`).replace('stroke="#202b24"', `stroke="${ink}"`);
   return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
 }
 export function interfaceCSS(config: InterfaceConfig) {
-  const tokens=["surface","surface-raised","surface-2","surface-sunken","text","text-muted","text-soft","border","border-strong","selected"];
+  const tokens=["surface","surface-raised","surface-2","surface-sunken","text","text-muted","text-soft","border","border-strong","selected","focus"];
   let css=":root{--ui-base-text-body:var(--text-body);--ui-base-text-caption:var(--text-caption);--ui-base-material-chrome:var(--material-chrome);--ui-base-material-panel:var(--material-panel);"+tokens.map(t=>`--ui-base-${t}:var(--c-${t})`).join(";")+"}";
   css+=':where([data-ui]){font-family:var(--font-stack);font-size:var(--ui-base-text-body);font-weight:400;}[data-ui]{--text-body:var(--ui-base-text-body);--text-caption:var(--ui-base-text-caption);--font-stack:"Manrope",sans-serif;--material-chrome:var(--ui-base-material-chrome);--material-panel:var(--ui-base-material-panel);'+tokens.map(t=>`--c-${t}:var(--ui-base-${t})`).join(";")+"}";
+  css+='[data-ui="navbar"]{--c-surface:var(--navbar-background);--c-surface-raised:var(--navbar-surface);--c-surface-2:var(--navbar-surface);--c-surface-sunken:var(--navbar-background);--c-text:var(--navbar-text);--c-text-muted:var(--navbar-muted);--c-text-soft:var(--navbar-muted);--c-border:var(--navbar-border);--c-border-strong:var(--navbar-border);--c-selected:var(--navbar-selected);--navbar-focus:var(--c-text);--c-focus:var(--c-text)}';
   for (const item of COMPONENTS) {
     const s = config.components[item.id]; if (!s) continue;
     const selector = `[data-ui="${item.id}"]`, rules: string[] = [];
@@ -110,9 +116,9 @@ export function interfaceCSS(config: InterfaceConfig) {
     if (s.size !== undefined) css += `@media(pointer:coarse){${selector} :is(input,textarea):not(${selector} [data-ui],${selector} [data-ui] *){font-size:${Math.max(16,s.size)}px!important}}`;
     if (s.texture !== undefined || s.intensity !== undefined || s.shade !== undefined) {
       for (const dark of [false,true]) {
-        const pattern = texture({...s,texture:s.texture ?? (["navbar","drawer","catalog"].includes(item.id)?"territory":"none")},dark);
+        const pattern = texture({...s,texture:s.texture ?? (["navbar","drawer","catalog"].includes(item.id)?"territory":"none")},dark,item.id);
         const shade = `linear-gradient(120deg,rgb(255 255 255 / ${(s.shade ?? 0)/100}),transparent 70%)`;
-        css += `${dark ? ':root[data-theme="dark"] ' : ""}${selector}{background-image:${shade},${pattern}!important;background-size:auto,${s.texture==="grid"?"18px 18px,18px 18px":"720px 210px"}!important;background-position:center!important}`;
+        css += `${dark ? ':root[data-theme="dark"] ' : ""}${selector}{background-image:${shade},${pattern}!important;background-size:auto,${s.texture==="grid"?"18px 18px,18px 18px":(item.id==="navbar"?"1200px 240px":"720px 210px")}!important;background-position:center!important}`;
       }
     }
   }

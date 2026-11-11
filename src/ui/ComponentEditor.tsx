@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Select } from "./Select";
 import { Icon } from "./Icon";
-import { COMPONENTS, UI_TEXT, contrastText, useInterfaceSettings, type ComponentId, type ComponentStyle, type TextId } from "./interfaceSettings";
+import { NAVBAR_PATTERN_INTENSITY, COMPONENTS, UI_TEXT, contrastText, useInterfaceSettings, type ComponentId, type ComponentStyle, type TextId } from "./interfaceSettings";
 import styles from "./ComponentEditor.module.css";
 const defaults: Required<Omit<ComponentStyle,"background"|"text"|"border">> = { opacity:100,shade:0,texture:"none",intensity:10,font:"manrope",size:14,weight:500,radius:6,depth:1 };
 function currentColour(component:ComponentId,property:"backgroundColor"|"color"|"borderColor",fallback:string) {
@@ -26,7 +26,7 @@ export function ComponentEditor({component}:{component:ComponentId}) {
   const {config,setStyle,reset}=useInterfaceSettings();
   const item=COMPONENTS.find(i=>i.id===component)!,custom=config.components[component]??{};
   const defaultTexture=["navbar","drawer","catalog"].includes(component)?"territory":"none";
-  const values={...defaults,texture:defaultTexture,...custom};
+  const values={...defaults,texture:defaultTexture,intensity:component==="navbar"?NAVBAR_PATTERN_INTENSITY:defaults.intensity,...custom};
   const base={background:currentColour(component,"backgroundColor","#d7e1d2"),text:currentColour(component,"color","#202b24"),border:currentColour(component,"borderColor","#a4b5a1")};
   const change=(patch:Partial<ComponentStyle>)=>setStyle(component,patch);
   const slider=(key:"opacity"|"shade"|"intensity"|"size"|"weight"|"radius"|"depth",label:string,min:number,max:number,step:number,unit:string)=> <label className={styles.field}><span>{label}<output>{values[key]}{unit}</output></span><input type="range" aria-label={`${label} · ${item.name}`} min={min} max={max} step={step} value={values[key]} onChange={e=>change({[key]:Number(e.target.value)})}/></label>;

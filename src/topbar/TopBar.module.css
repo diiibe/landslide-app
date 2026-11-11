@@ -4,7 +4,8 @@
   align-items: center;
   gap: 20px;
   padding: 8px 20px;
-  background: var(--material-chrome);
+  background: var(--navbar-background) var(--navbar-pattern) center / 1200px 240px repeat;
+  color: var(--c-text);
   border-bottom: 1px solid var(--c-border-strong);
   box-shadow: var(--shadow-edge), 0 3px 8px rgb(16 27 21 / .13);
   flex-shrink: 0;
@@ -15,7 +16,7 @@
   box-shadow: var(--shadow-edge), 0 3px 8px rgb(0 0 0 / .28);
 }
 .brand { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; font-weight: 750; font-size: 18px; letter-spacing: -.6px; }
-.brand > svg { width: 24px; height: 24px; color: var(--c-action); }
+.brand > svg { width: 24px; height: 24px; color: var(--c-text); }
 .navigation { display: flex; align-items: center; gap: 10px; }
 .navigation > button { flex-shrink: 0; isolation: isolate; }
 .search { flex: 1; min-width: 100px; max-width: 360px; }
@@ -93,3 +94,8 @@
 }
 
 @media(max-width:768px),(max-height:500px) and (pointer:coarse){.clock{flex-wrap:wrap;row-gap:1px;max-width:100%}}
+
+/* Keep keyboard focus legible on the user's dark material in either UI theme. */
+.navigation > button:focus-visible, .actions > button:focus-visible {
+  outline-color: var(--navbar-focus, var(--c-text));
+}
