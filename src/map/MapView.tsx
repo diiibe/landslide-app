@@ -1,3 +1,4 @@
+import { mountTrekMap } from "@/spaces/trek/map";
 import { mountSearchNavigation } from "./searchNavigation";
 import { mountNatureMap } from "@/spaces/nature/map";
 import { mountExperienceMap } from "@/spaces/map";
@@ -393,12 +394,14 @@ export function MapView() {
     const unmountRegional = mountRegionalMap(m);
     const unmountExperience = mountExperienceMap(m);
     const unmountNature = mountNatureMap(m);
+    const unmountTrek = mountTrekMap(m);
     mapRef.current = m;
     setMap(m);
     return () => {
       unmountPointReadings();
       unmountExperience();
       unmountNature();
+      unmountTrek();
       unmountRegional();
       unmountTwin();
       setMap(null);

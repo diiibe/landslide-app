@@ -21,6 +21,7 @@ export function readingLayer(feature: MapGeoJSONFeature) {
 }
 export function readingText(feature: MapGeoJSONFeature) {
   const p = feature.properties ?? {}, layer = readingLayer(feature);
+  if (feature.source === "trek-nodes") return {title:String(p.name??"Segnavia SmartTrek"),value:String(p.readingValue??""),detail:String(p.readingDetail??"Demo simulata"),color:String(p.color??"#86b79b")};
   if (feature.source === "nature-nodes") return {title:String(p.name??"Dato dello Spazio"),value:p.natureSpace==="park"?"Censimento storico ERPAC":String(p.label??""),detail:String(p.readingDetail??""),color:String(p.color??"#83b990")};
   const variable = typeof p.variable === "string" && p.variable in VARIABLES ? p.variable as Variable : null;
   const title = variable ? VARIABLES[variable].label : layer?.title ?? (feature.layer.id === "twin-aia" ? "Attività autorizzata AIA" : "Dato territoriale");
@@ -43,7 +44,7 @@ export function readingText(feature: MapGeoJSONFeature) {
 }
 export function selectPointReading(feature: MapGeoJSONFeature) {
   const p = feature.properties ?? {}, layer = readingLayer(feature);
-  if (feature.source === "nature-nodes") { selectObject(String(p.id??feature.id)); return; }
+  if (feature.source === "trek-nodes" || feature.source === "nature-nodes") { selectObject(String(p.id??feature.id)); return; }
   if (useExperienceStore.getState().activeId) useExperienceStore.setState({tab:"layers"});
   if (layer) {
     useTwinStore.setState({ selection: null });

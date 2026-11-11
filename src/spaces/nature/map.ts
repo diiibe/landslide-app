@@ -8,6 +8,7 @@ import type {
 import { useAppStore } from "@/app/store";
 import { useExperienceStore, selectObject } from "../store";
 import { isNatureSpace } from "../types";
+const isArchiveSpace = (id:string|null) => isNatureSpace(id) && id !== "trek";
 import { AIR_OBSERVATIONS, AIR_SITES, FIRE_DAYS, airValue } from "./fire";
 import { CAMERAS, cameraOnline, captures, cameraSector } from "./wildlife";
 import { useNatureStore, treeId, treeMatches, treeFamilyColor } from "./store";
@@ -170,7 +171,7 @@ export function mountNatureMap(m: MLMap) {
       s = useNatureStore.getState(),
       a = useAppStore.getState();
     if (installed !== e.activeId) remove();
-    if (!isNatureSpace(e.activeId)) return;
+    if (!isArchiveSpace(e.activeId)) return;
     installed = e.activeId;
     const stateKey = JSON.stringify([
       e.activeId,
@@ -374,7 +375,7 @@ export function mountNatureMap(m: MLMap) {
   async function click(ev: MapMouseEvent) {
     const e = useExperienceStore.getState();
     if (
-      !isNatureSpace(e.activeId) ||
+      !isArchiveSpace(e.activeId) ||
       useAppStore.getState().drawingMode ||
       isPointReadingClick(ev) ||
       !ready
@@ -448,7 +449,7 @@ export function mountNatureMap(m: MLMap) {
   }
   function move(ev: MapMouseEvent) {
     if (
-      !isNatureSpace(useExperienceStore.getState().activeId) ||
+      !isArchiveSpace(useExperienceStore.getState().activeId) ||
       useAppStore.getState().drawingMode ||
       !ready
     )

@@ -1,6 +1,7 @@
+import { TREK_EXPERIENCE } from "../trek/experience";
 import type { Experience, NatureId } from "../types";
 export const natureLabel = (id: string | null) =>
-  id === "fire"
+  id === "trek" ? "SmartTrek · rete dimostrativa" : id === "fire"
     ? "Archivio documentato · agosto 2026"
     : id === "park"
       ? "Censimento reale · gestione simulata"
@@ -8,6 +9,7 @@ export const natureLabel = (id: string | null) =>
         ? "Fototrappole · visione simulata"
         : "";
 export const NATURE_EXPERIENCES: Experience[] = [
+  TREK_EXPERIENCE,
   {
     id: "fire",
     title: "Amariana · dopo il fuoco",
@@ -86,6 +88,7 @@ export const NATURE_EXPERIENCES: Experience[] = [
   },
 ];
 export const natureSummary: Record<NatureId, string> = {
+  trek: "8 postazioni virtuali · firmware v0.2",
   fire: "Cronologia · luoghi · fonti",
   wildlife: "8 camere virtuali · revisione AI",
   park: "Alberi reali · sopralluoghi demo",

@@ -1,6 +1,6 @@
 import type { ReactNode, SVGProps } from "react";
 export type IconName =
-  | "fire" | "camera" | "tree" | "paw"
+  | "trailMarker" | "fire" | "camera" | "tree" | "paw"
   | "spaces" | "profile" | "brand" | "extensions" | "drawPolygon"
   | "fileData"
   | "sensor" | "lineData" | "pointData" | "areaData" | "rasterData" | "eye" | "tools"
@@ -22,6 +22,7 @@ export type IconName =
   | "moon"
   | "weather" | "waves" | "air" | "energy" | "territory" | "factory" | "recycle" | "water" | "leaf" | "services" | "mobility" | "network";
 const paths: Record<IconName, ReactNode> = {
+  trailMarker: <><path d="M9 2v16M4 4h10l3 3-3 3H4ZM3 18h12"/><path d="M6 7h6"/></>,
   fire: <path d="M11 2c1 5-4 5-3 9 1-2 3-2 4-4 4 4 5 10-2 11C1 17 3 9 6 6c-1 4 1 4 2 4-1-4 4-4 3-8Z"/>,
   camera: <><path d="M3 6h3l1-3h6l1 3h3v11H3Z"/><circle cx="10" cy="11" r="3"/><path d="M15 8h.1"/></>,
   tree: <><path d="M10 2 4 9h3l-5 6h16l-5-6h3ZM10 15v4"/></>,
