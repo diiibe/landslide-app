@@ -46,3 +46,9 @@ it("keeps all ten quick choices selected together and only switches off the chos
   expect(useAppStore.getState().layers.v2Bodies).toBe(true);
   expect(useAppStore.getState().layers.v2Diffuse).toBe(true);
 });
+
+it("uses the singular for one active quick layer", () => {
+  act(() => useRegionalStore.setState({enabled:{"pcr-wind":true}}));
+  render(<QuickLayers />);
+  expect(screen.getByRole("status")).toHaveTextContent("1 attivo");
+});

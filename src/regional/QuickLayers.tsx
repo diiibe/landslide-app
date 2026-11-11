@@ -29,7 +29,7 @@ export function QuickLayers() {
     return layer && isLayerEnabled(layer);
   }).length;
   return <section className={styles.section} aria-labelledby="quick-layers-title">
-    <div className={styles.heading}><h2 id="quick-layers-title">{title}</h2><span role="status">{activeCount} attivi</span></div>
+    <div className={styles.heading}><h2 id="quick-layers-title">{title}</h2><span role="status">{activeCount} {activeCount === 1 ? "attivo" : "attivi"}</span></div>
     <p id="quick-layers-help" className={styles.help}>Attiva più livelli insieme.</p>
     <div className={styles.grid} role="group" aria-label="Selezione multipla dei livelli rapidi" aria-describedby="quick-layers-help">{QUICK_LAYERS.map((quick) => {
       const layer = items.find((i) => i.layer.id === quick.id)?.layer;
