@@ -120,7 +120,7 @@ export function mountPointStacks(map:MLMap) {
   document.addEventListener("visibilitychange",visibility);
   const stops=[
     useAppStore.subscribe((s,p)=>{if(s.drawingMode)clear();if(s.layers!==p.layers||s.drawerOpen!==p.drawerOpen||s.drawingMode!==p.drawingMode)schedule();}),
-    useTwinStore.subscribe((s,p)=>{if(s.measures!==p.measures||s.active!==p.active)schedule();}),
+    useTwinStore.subscribe((s,p)=>{if(s.measures!==p.measures||s.active!==p.active||s.sensorsFeed!==p.sensorsFeed)schedule();}),
     useRegionalStore.subscribe((s,p)=>{if(s.enabled!==p.enabled||s.entries!==p.entries||s.filters!==p.filters||s.opacity!==p.opacity)schedule();}),
     useExperienceStore.subscribe((s,p)=>{if(s.activeId!==p.activeId){clear();schedule();}}),
     useInterfaceSettings.subscribe((s,p)=>{if(s.config.texts!==p.config.texts)schedule();}),

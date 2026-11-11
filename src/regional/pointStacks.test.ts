@@ -31,6 +31,9 @@ it("shows every reading on the map, updates values, selects the exact variable a
  expect(document.querySelector('ol[aria-label="Tutti i dati del punto"]')).toBeNull();
  useRegionalStore.setState({opacity:{}});await vi.advanceTimersByTimeAsync(190);
  features=[feature("wind","5 m/s"),feature("temperature","19 °C")];events.get("sourcedata")!();await vi.advanceTimersByTimeAsync(190);expect(document.body.textContent).toContain("5 m/s");
+ const feed=useTwinStore.getState().sensorsFeed;
+ useTwinStore.setState({sensorsFeed:{...feed,error:"Connessione interrotta"}});await vi.advanceTimersByTimeAsync(190);expect(document.body.textContent).toContain("Aggiornamento non riuscito");
+ useTwinStore.setState({sensorsFeed:feed});await vi.advanceTimersByTimeAsync(190);
  const row=[...document.querySelectorAll<HTMLButtonElement>('button[data-reading]')].find(el=>el.textContent?.includes("Temperatura"))!;row.click();expect(useTwinStore.getState().variable).toBe("temperature");
  useAppStore.setState({drawingMode:true});expect(document.querySelector('ol[aria-label="Tutti i dati del punto"]')).toBeNull();
  useAppStore.setState({drawingMode:false});events.get("style.load")!();await vi.advanceTimersByTimeAsync(190);expect(document.querySelector('ol[aria-label="Tutti i dati del punto"]')).not.toBeNull();
