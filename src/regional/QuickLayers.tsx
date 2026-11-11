@@ -24,13 +24,18 @@ export function QuickLayers() {
   useRegionalStore((s) => s.enabled);
   useAppStore((s) => s.layers);
   const items = catalogItems(catalog?.layers ?? []);
+  const activeCount = QUICK_LAYERS.filter(quick => {
+    const layer = items.find(item => item.layer.id === quick.id)?.layer;
+    return layer && isLayerEnabled(layer);
+  }).length;
   return <section className={styles.section} aria-labelledby="quick-layers-title">
-    <div className={styles.heading}><h2 id="quick-layers-title">{title}</h2><span>Mostra o nascondi</span></div>
-    <div className={styles.grid}>{QUICK_LAYERS.map((quick) => {
+    <div className={styles.heading}><h2 id="quick-layers-title">{title}</h2><span role="status">{activeCount} attivi</span></div>
+    <p id="quick-layers-help" className={styles.help}>Attiva più livelli insieme.</p>
+    <div className={styles.grid} role="group" aria-label="Selezione multipla dei livelli rapidi" aria-describedby="quick-layers-help">{QUICK_LAYERS.map((quick) => {
       const layer = items.find((i) => i.layer.id === quick.id)?.layer;
       if (!layer) return null;
       const on = isLayerEnabled(layer);
-      return <button key={quick.id} type="button" disabled={layer.status !== "ready"} aria-pressed={on} aria-label={`${on ? "Nascondi" : "Mostra"} · ${layer.title}`} title={layer.description} style={{ "--quick-tone": layer.color } as CSSProperties} onClick={() => enableLayer(layer, !on)}>
+      return <button key={quick.id} type="button" disabled={layer.status !== "ready"} aria-pressed={on} aria-label={`${on ? "Nascondi" : "Mostra"} · ${layer.title}`} title={layer.description} style={{ "--quick-tone": layer.color } as CSSProperties} onClick={() => enableLayer(layer, !isLayerEnabled(layer))}>
         <Icon name={quick.icon} className={styles.symbol} /><span>{quick.label}</span><Icon name={on ? "eye" : "eyeOff"} className={styles.eye} />
       </button>;
     })}</div>

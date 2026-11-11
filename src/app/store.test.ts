@@ -134,11 +134,8 @@ describe("useAppStore", () => {
   });
 });
 
-/* Model v2: only one susceptibility surface may be visible at a time. The
- * two v2 layers are exclusive with each other (radio-like, both off
- * allowed) and with the J.2/J.3 susceptibility + KDE surfaces. Inventory,
- * flood and context overlays stay independent. */
-describe("model v2 layer exclusivity", () => {
+/* Current maps can be overlaid; legacy surfaces remain incompatible. */
+describe("independent model v2 layers", () => {
   beforeEach(() => { useAppStore.getState().reset(); });
 
   it("keeps all susceptibility surfaces off before entering their space", () => {
@@ -159,17 +156,15 @@ describe("model v2 layer exclusivity", () => {
     expect(layers.iffi).toBe(true);
   });
 
-  it("bodies and diffuse are never on together", () => {
+  it("keeps both current maps on until each is explicitly disabled", () => {
     const s = useAppStore.getState();
     s.toggleLayer("v2Bodies");
     s.toggleLayer("v2Diffuse");
-    let { layers } = useAppStore.getState();
-    expect(layers.v2Diffuse).toBe(true);
-    expect(layers.v2Bodies).toBe(false);
+    expect(useAppStore.getState().layers).toMatchObject({v2Bodies: true, v2Diffuse: true});
     s.toggleLayer("v2Bodies");
-    ({ layers } = useAppStore.getState());
-    expect(layers.v2Bodies).toBe(true);
-    expect(layers.v2Diffuse).toBe(false);
+    expect(useAppStore.getState().layers).toMatchObject({v2Bodies: false, v2Diffuse: true});
+    s.toggleLayer("v2Diffuse");
+    expect(useAppStore.getState().layers).toMatchObject({v2Bodies: false, v2Diffuse: false});
   });
 
   it("both v2 layers can be off at once", () => {

@@ -53,3 +53,13 @@ it("preserves non-contiguous class visibility, including no classes, in saved vi
  const legacy=structuredClone(saved);delete legacy.susceptibilityStyle.bodies.classes;legacy.susceptibilityStyle.bodies.minClass=3;
  restoreSpace(legacy);expect(useAppStore.getState().susceptibilityStyle.bodies.classes).toEqual([3,4,5]);
 });
+
+it("restores simultaneous quick selections including both landslide maps", () => {
+  useAppStore.getState().toggleLayer("v2Bodies"); useAppStore.getState().toggleLayer("v2Diffuse");
+  useRegionalStore.setState({enabled:{"pcr-temperature":true,"pcr-humidity":true,"pcr-wind":false}});
+  saveSpace("Confronto multiplo"); const saved=useSpaces.getState().spaces[0]!;
+  useAppStore.getState().reset(); useRegionalStore.setState({enabled:{}});
+  restoreSpace(saved);
+  expect(useAppStore.getState().layers).toMatchObject({v2Bodies:true,v2Diffuse:true,susceptibility:false,smoothHeatmap:false});
+  expect(useRegionalStore.getState().enabled).toMatchObject({"pcr-temperature":true,"pcr-humidity":true,"pcr-wind":false});
+});

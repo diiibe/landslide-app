@@ -70,7 +70,7 @@ describe("LayersPanel · Modello v2", () => {
     expect(within(block).queryByText(/zone boundaries|zones/i)).toBeNull();
   });
 
-  it("switching layers keeps one v2 surface on and turns the J cells off", async () => {
+  it("keeps both current layers enabled and turns the J cells off", async () => {
     stubModelV2(READY);
     render(<LayersPanel />);
     const bodies = screen.getByRole("checkbox", { name: /corpi di frana/i });
@@ -84,11 +84,12 @@ describe("LayersPanel · Modello v2", () => {
 
     fireEvent.click(diffuse);
     expect(diffuse).toBeChecked();
-    expect(bodies).not.toBeChecked();
+    expect(bodies).toBeChecked();
 
     fireEvent.click(jCells);
     expect(jCells).toBeChecked();
     expect(diffuse).not.toBeChecked();
+    expect(bodies).not.toBeChecked();
   });
 });
 
@@ -106,6 +107,22 @@ describe("Legend · Modello v2", () => {
       await within(section).findByText(/quote effettive: 20%, 20%, 20%, 20%, 20%/),
     ).toBeInTheDocument();
     expect(screen.queryByText("0.3")).toBeNull(); // J ramp ticks are gone
+  });
+
+  it("shows both legends with their independent class selections", async () => {
+    stubModelV2(READY);
+    const s = useAppStore.getState();
+    s.toggleLayer("v2Bodies"); s.toggleLayer("v2Diffuse");
+    useAppStore.setState({susceptibilityStyle:{...s.susceptibilityStyle,
+      bodies:{...s.susceptibilityStyle.bodies,classes:[4,5]},
+      diffuse:{...s.susceptibilityStyle.diffuse,classes:[2,3]}}});
+    render(<Legend />);
+    const bodies=screen.getByRole("region",{name:"Corpi di frana"});
+    const diffuse=screen.getByRole("region",{name:"Zone diffuse"});
+    expect(bodies).toHaveTextContent("Classi 4, 5");
+    expect(diffuse).toHaveTextContent("Classi 2, 3");
+    expect(await within(bodies).findByText(/quote effettive/)).toBeInTheDocument();
+    expect(await within(diffuse).findByText(/quote effettive/)).toBeInTheDocument();
   });
 
   it("shows the real shares and class count when tied quantiles collapsed", async () => {
