@@ -58,6 +58,10 @@ export function selectPointReading(feature: MapGeoJSONFeature) {
     useRegionalStore.setState({ selection: null, detailId: null, tab: "layers" });
   }
   useAppStore.setState({ drawerOpen: true });
+  requestAnimationFrame(() => {
+    const heading=document.querySelector<HTMLElement>('#drawer-panel [aria-label="Dettaglio livello"] h2');
+    if(heading){heading.tabIndex=-1;heading.focus({preventScroll:true});}
+  });
 }
 
 /** Non-modal reading sheet: every visible record at the same coordinates, no
@@ -108,10 +112,6 @@ export function mountPointReadings(map: MLMap) {
       button.append(title, value, detail);
       button.addEventListener("click", () => {
         close(); selectPointReading(feature);
-        requestAnimationFrame(() => {
-          const target = document.querySelector<HTMLElement>('#drawer-panel [aria-label="Dettaglio livello"] h2');
-          if (target) { target.tabIndex = -1; target.focus({ preventScroll: true }); }
-        });
       });
       item.append(button); list.append(item);
     }

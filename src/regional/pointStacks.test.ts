@@ -8,7 +8,7 @@ const records=vi.hoisted(()=>[] as HTMLElement[]);
 const markerOptions=vi.hoisted(()=>[] as {anchor:string;offset:number[]}[]);
 vi.mock("maplibre-gl",()=>({Marker:class {el:HTMLElement;constructor(o:{element:HTMLElement;anchor:string;offset:number[]}){this.el=o.element;records.push(o.element);markerOptions.push({anchor:o.anchor,offset:o.offset});}setLngLat(){return this;}addTo(){document.body.append(this.el);return this;}remove(){this.el.remove();return this;}}}));
 const feature=(variable:string,value:string,depth?:number)=>({type:"Feature",source:"twin-sensors-"+variable,layer:{id:"twin-sensors-"+variable,type:"circle"},geometry:{type:"Point",coordinates:[13,46]},properties:{stationId:4,variable,label:value,value:3,...(depth===undefined?{}:{__depth:depth})}}) as unknown as MapGeoJSONFeature;
-beforeEach(()=>{vi.useFakeTimers();useAppStore.setState({drawingMode:false,drawerOpen:false});records.length=0;markerOptions.length=0;useRegionalStore.setState({opacity:{}});});
+beforeEach(()=>{vi.useFakeTimers();vi.stubGlobal("requestAnimationFrame",(callback:FrameRequestCallback)=>setTimeout(()=>callback(0),16));vi.stubGlobal("cancelAnimationFrame",(id:number)=>clearTimeout(id));useAppStore.setState({drawingMode:false,drawerOpen:false});records.length=0;markerOptions.length=0;useRegionalStore.setState({opacity:{}});});
 afterEach(()=>{vi.useRealTimers();vi.unstubAllGlobals();});
 it("keeps all variables and depths, deduplicates halos and does not mutate source records",()=>{
  const a=feature("wind","3 m/s"),b=feature("temperature","18 °C"),deep=feature("temperature","16 °C",10);
@@ -34,7 +34,8 @@ it("shows every reading on the map, updates values, selects the exact variable a
  const feed=useTwinStore.getState().sensorsFeed;
  useTwinStore.setState({sensorsFeed:{...feed,error:"Connessione interrotta"}});await vi.advanceTimersByTimeAsync(190);expect(document.body.textContent).toContain("Aggiornamento non riuscito");
  useTwinStore.setState({sensorsFeed:feed});await vi.advanceTimersByTimeAsync(190);
- const row=[...document.querySelectorAll<HTMLButtonElement>('button[data-reading]')].find(el=>el.textContent?.includes("Temperatura"))!;row.click();expect(useTwinStore.getState().variable).toBe("temperature");
+ const drawer=document.createElement("aside");drawer.id="drawer-panel";drawer.innerHTML='<section aria-label="Dettaglio livello"><h2>Temperatura aria</h2></section>';document.body.append(drawer);
+ const row=[...document.querySelectorAll<HTMLButtonElement>('button[data-reading]')].find(el=>el.textContent?.includes("Temperatura"))!;row.click();expect(useTwinStore.getState().variable).toBe("temperature");await vi.advanceTimersByTimeAsync(20);expect(document.activeElement).toBe(drawer.querySelector("h2"));drawer.remove();
  useAppStore.setState({drawingMode:true});expect(document.querySelector('ol[aria-label="Tutti i dati del punto"]')).toBeNull();
  useAppStore.setState({drawingMode:false});events.get("style.load")!();await vi.advanceTimersByTimeAsync(190);expect(document.querySelector('ol[aria-label="Tutti i dati del punto"]')).not.toBeNull();
  events.get("styledataloading")!();expect(document.querySelector('ol[aria-label="Tutti i dati del punto"]')).toBeNull();dispose();expect(vi.getTimerCount()).toBe(0);
