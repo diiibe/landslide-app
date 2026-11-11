@@ -100,3 +100,22 @@ it("offers retry on a failed request instead of calling it no results", async ()
   await act(() => vi.advanceTimersByTimeAsync(230));
   expect(screen.getByRole("option").textContent).toContain("Via Roma 1");
 });
+it("navigates on the first touch activation of a suggestion without Enter", async () => {
+  fetcher.mockResolvedValue(response("Via Roma 20"));
+  const listener = vi.fn();
+  window.addEventListener("fvg:flyto", listener);
+  render(<SearchLocality />);
+  await type("Via Roma 20 Udine");
+  const option = screen.getByRole("option");
+  expect(option.tagName).toBe("BUTTON");
+  fireEvent.pointerMove(option, { pointerType: "touch" });
+  fireEvent.pointerDown(option, { pointerType: "touch", button: 0 });
+  fireEvent.pointerUp(option, { pointerType: "touch" });
+  fireEvent.click(option);
+  expect(listener).toHaveBeenCalledTimes(1);
+  expect(useAppStore.getState().search.placeName).toBe("Via Roma 20, Udine");
+  expect(screen.queryByRole("listbox")).toBeNull();
+  await act(() => vi.advanceTimersByTimeAsync(500));
+  expect(fetcher).toHaveBeenCalledTimes(1);
+  window.removeEventListener("fvg:flyto", listener);
+});

@@ -25,10 +25,16 @@
   background: var(--c-selected);
 }
 .back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
   padding: 0 12px;
   border-right: 1px solid var(--c-border) !important;
 }
 .back svg {
+  display: block;
+  height: 18px;
   transform: rotate(180deg);
   width: 17px;
 }
@@ -676,7 +682,7 @@
   }
   .spaceBar .back {
     padding: 0 7px;
-    min-width: 30px;
+    min-width: 44px;
   }
   .spaceBar button {
     min-height: 60px;
