@@ -26,18 +26,17 @@ e i valori osservati non sono modificati.
 
 ## Più dati nello stesso punto
 
-Gli stack sulla mappa raggruppano i record geografici coincidenti dei livelli
-visibili, deduplicando i soli duplicati di rendering (punto/alone/etichetta).
-Variabili, profondità e identità diverse rimangono righe distinte, con valore,
-unità e metadati. A scala locale l’elenco si apre automaticamente; da lontano il
-conteggio si espande sul posto. Ogni riga apre il proprio dettaglio. Gli elenchi
-lunghi scorrono senza troncare il numero di record.
+Le letture numeriche coincidenti dei livelli visibili sono righe della stessa
+etichetta cartografica: valore e unità sotto il valore già visibile. Non ci sono
+riquadri, conteggi, pulsanti di espansione o pannelli automatici. Le profondità,
+quando presenti, distinguono le misure. Dimensione, alone, ancoraggio e gestione
+delle collisioni restano quelli delle etichette originali MapLibre.
 
-Lo stack si aggiorna al refresh delle fonti, alla visibilità/opacità dei livelli
-e alla camera. Rispetta lo spazio libero dal drawer, viene rimosso durante il
-disegno e ricostruito dopo il cambio stile. I cluster geografici e le panoramiche
-restano riferimenti di navigazione, non valori interpolati. L’eventuale storico
-rimane nelle serie della fonte: lo stack non inventa campioni non caricati.
+I dati originali non sono modificati: l'etichetta si aggiorna al refresh delle
+fonti e al cambio dei livelli/opacità. Durante il disegno torna il testo ordinario;
+al cambio stile viene ricostruita. Al di fuori dei punti condivisi, ciascuna fonte
+mantiene le proprie etichette. Lo storico rimane nelle serie della fonte: non
+vengono inventati campioni non caricati.
 
 La scorciatoia radar è sostituita dalla radiazione solare. Il radar rimane
 consultabile nel catalogo e mantiene il proprio aggiornamento automatico.

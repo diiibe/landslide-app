@@ -119,3 +119,15 @@ it("keeps SmartTrek provenance and opens its own inspector from coincident readi
  expect(readingText(node)).toEqual({title:"Segnavia 106",value:"4 BLE · 110 mW",detail:"Demo · campione sintetico",color:"#86b79b"});
  selectPointReading(node);expect(useExperienceStore.getState()).toMatchObject({tab:"overview",selectedId:"st-106"});
 });
+
+it("does not open a multiple-readings panel for observations shown by native map labels", () => {
+  const h = harness([feature("surface", 0, "37.2"), feature("deep", 10, "37.1")]);
+  vi.spyOn(h.map, "getStyle").mockReturnValue({ version: 8, sources: {}, layers: [
+    { id: "regional-salinity-point", type: "circle", source: "regional-salinity" },
+    { id: "regional-salinity-labels", type: "symbol", source: "regional-salinity", layout: { "text-field": ["get", "__mapLabel"] } },
+  ] });
+  h.handlers.get("click")!(h.event);
+  expect(nodes).toHaveLength(0);
+  expect(hasPointReadings(h.map)).toBe(false);
+  expect(isPointReadingClick(h.event)).toBe(false);
+});

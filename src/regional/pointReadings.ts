@@ -172,6 +172,12 @@ export function mountPointReadings(map: MLMap) {
       return;
     }
     if (features.length < 2) return;
+    // Numeric observations already have all their values in the native map
+    // label. Tapping them keeps the ordinary sensor action, without opening
+    // a second, redundant multiple-readings panel.
+    const labels = map.getStyle().layers.filter(l => l.type === "symbol" && l.layout?.["text-field"]);
+    if (features.every(f => (typeof f.properties.value === "number" || typeof f.properties.__value === "number" || f.properties.__displayValue !== undefined) &&
+      labels.some(l => "source" in l && l.source === f.source))) return;
     consumed.add(event.originalEvent ?? event);
     show(features);
   }
