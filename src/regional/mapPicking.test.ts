@@ -37,3 +37,10 @@ it("keeps Nature records distinct when clustered GeoJSON exposes numeric zero ID
  const m=mapWith([a,halo,b]);(m.getStyle as unknown as (()=>unknown))=()=>({layers:[{id:"nature-node",type:"circle"},{id:"nature-hit",type:"circle"}]});
  expect(pickDataFeatures(m,{x:130,y:460},22)).toEqual([a,b]);
 });
+
+it("includes SmartTrek points and deduplicates their label and halo without hiding a regional reading",()=>{
+ const a={...feature("trek-nodes","st-101"),layer:{id:"trek-node"}} as MapGeoJSONFeature;
+ const halo={...a,layer:{id:"trek-hit"}} as MapGeoJSONFeature,b=feature("regional-a","real");
+ const m=mapWith([a,halo,b]);(m.getStyle as unknown as (()=>unknown))=()=>({layers:[{id:"trek-node",type:"circle"},{id:"trek-hit",type:"circle"},{id:"regional-a-point",type:"circle"}]});
+ expect(pickDataFeatures(m,{x:130,y:460},22)).toEqual([a,b]);
+});

@@ -8,9 +8,10 @@ export type SpaceId =
   | "mountain"
   | "fire"
   | "wildlife"
-  | "park";
-export type NatureId = "fire" | "wildlife" | "park";
-export const isNatureSpace = (id: string | null): id is NatureId => id === "fire" || id === "wildlife" || id === "park";
+  | "park"
+  | "trek";
+export type NatureId = "fire" | "wildlife" | "park" | "trek";
+export const isNatureSpace = (id: string | null): id is NatureId => id === "fire" || id === "wildlife" || id === "park" || id === "trek";
 export type DemoId = Exclude<SpaceId, "landslides" | NatureId>;
 export type Scenario = "normal" | "peak" | "rain" | "efficient";
 export type Metric =

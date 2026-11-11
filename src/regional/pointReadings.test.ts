@@ -4,7 +4,7 @@ import {useExperienceStore} from "@/spaces/store";
 import { useAppStore } from "@/app/store";
 import { useRegionalStore } from "./store";
 import { useTwinStore } from "@/digital-twin/store";
-import { hasPointReadings, isPointReadingClick, mountPointReadings } from "./pointReadings";
+import { readingText, selectPointReading, hasPointReadings, isPointReadingClick, mountPointReadings } from "./pointReadings";
 import type { LayerDefinition } from "./types";
 const nodes = vi.hoisted(() => [] as HTMLElement[]);
 vi.mock("maplibre-gl", () => ({ Popup: class {
@@ -111,4 +111,11 @@ it("opens the Space layers tab for an additional real source, and the own inspec
  const h=harness([tree,feature("other",0,"37")]);h.handlers.get("click")!(h.event);nodes.at(-1)!.querySelectorAll("ol button")[0]!.dispatchEvent(new MouseEvent("click"));
  expect(useExperienceStore.getState().selectedId).toBe("tree-a");expect(useExperienceStore.getState().tab).toBe("overview");
  h.handlers.get("click")!(h.event);nodes.at(-1)!.querySelectorAll("ol button")[1]!.dispatchEvent(new MouseEvent("click"));expect(useExperienceStore.getState().tab).toBe("layers");expect(useRegionalStore.getState().selection?.layerId).toBe("salinity");useExperienceStore.setState({activeId:null});
+});
+
+it("keeps SmartTrek provenance and opens its own inspector from coincident readings",()=>{
+ useExperienceStore.setState({activeId:"trek",tab:"layers"});
+ const node={...feature("st-106",0,""),source:"trek-nodes",layer:{id:"trek-node"},properties:{id:"st-106",__featureId:"st-106",name:"Segnavia 106",readingValue:"4 BLE · 110 mW",readingDetail:"Demo · campione sintetico",color:"#86b79b"}} as unknown as MapGeoJSONFeature;
+ expect(readingText(node)).toEqual({title:"Segnavia 106",value:"4 BLE · 110 mW",detail:"Demo · campione sintetico",color:"#86b79b"});
+ selectPointReading(node);expect(useExperienceStore.getState()).toMatchObject({tab:"overview",selectedId:"st-106"});
 });
