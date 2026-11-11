@@ -1,3 +1,4 @@
+import { useUIText } from "@/ui/interfaceSettings";
 import { useExperienceStore } from "@/spaces/store";
 import { Icon } from "@/ui/Icon";
 import { useCallback, useEffect, useRef, type ReactNode } from "react";
@@ -69,7 +70,7 @@ export function Drawer({
       />
       <aside
         ref={panel}
-        id="drawer-panel"
+        id="drawer-panel" data-ui="drawer"
         className={`${styles.drawer} drawer`}
         aria-label={label}
         aria-hidden={!drawerOpen}
@@ -96,6 +97,7 @@ export function Drawer({
 }
 
 export function LayersButton() {
+  const label = useUIText("layers");
   const active = useExperienceStore((s) => s.activeId),
     tab = useExperienceStore((s) => s.tab);
   const open = useAppStore((s) => s.drawerOpen),
@@ -129,7 +131,7 @@ export function LayersButton() {
       }}
     >
       <Icon name="layers" />
-      <span>Livelli</span>
+      <span>{label}</span>
       <Icon name="chevron" />
     </button>
   );

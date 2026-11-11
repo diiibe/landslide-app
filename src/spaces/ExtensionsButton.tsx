@@ -1,3 +1,4 @@
+import { useUIText } from "@/ui/interfaceSettings";
 import { useEffect, useRef } from "react";
 import { useAppStore } from "@/app/store";
 import { Icon } from "@/ui/Icon";
@@ -6,6 +7,7 @@ import { useExperienceStore } from "./store";
 import styles from "@/drawer/Drawer.module.css";
 
 export function ExtensionsButton() {
+  const label = useUIText("extensions");
   const active = useExperienceStore(s => s.activeId);
   const tab = useExperienceStore(s => s.tab);
   const hubOpen = useExperienceStore(s => s.hubOpen);
@@ -35,7 +37,7 @@ export function ExtensionsButton() {
       type="button"
       className={styles.stackTrigger}
       hidden={drawing}
-      aria-label="Estensioni"
+      aria-label={label}
       aria-expanded={active ? open : hubOpen}
       aria-controls={active ? "drawer-panel" : undefined}
       aria-haspopup={active ? undefined : "dialog"}
@@ -52,7 +54,7 @@ export function ExtensionsButton() {
       }}
     >
       <Icon name="extensions" />
-      <span>Estensioni</span>
+      <span>{label}</span>
       <Icon name="chevron" />
     </button>
   );

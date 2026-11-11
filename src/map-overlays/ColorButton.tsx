@@ -144,6 +144,7 @@ export function ColorButton({
             ref={popoverRef}
             className={styles.popover}
             role="dialog"
+            data-ui="local-dialog"
             aria-label={ariaLabel}
             style={pos ? { top: `${pos.top}px`, left: `${pos.left}px` } : { visibility: "hidden" }}
           >

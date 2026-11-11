@@ -1,12 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { useAppStore } from "@/app/store";
 import { PALETTES, useAppearance } from "./appearance";
+import { Select } from "./Select";
+import { ComponentEditor, InterfaceProject } from "./ComponentEditor";
+import { COMPONENTS, type ComponentId, useInterfaceSettings } from "./interfaceSettings";
 import { Icon } from "./Icon";
 import buttons from "@/topbar/IconButtons.module.css";
 import styles from "./AppearanceSettings.module.css";
 
 export function AppearanceSettings() {
   const [open, setOpen] = useState(false);
+  const [component, setComponent] = useState<ComponentId | "general">("general");
+  const config = useInterfaceSettings(s => s.config);
+  const persistent = useInterfaceSettings(s => s.persistent);
   const dialog = useRef<HTMLDialogElement>(null);
   const theme = useAppStore((s) => s.theme);
   const setTheme = useAppStore((s) => s.setTheme);
@@ -39,7 +45,7 @@ export function AppearanceSettings() {
       </button>
       <dialog
         ref={dialog}
-        id="appearance-settings"
+        id="appearance-settings" data-ui="settings"
         className={styles.dialog}
         aria-labelledby="appearance-title"
         onCancel={() => setOpen(false)}
@@ -67,7 +73,15 @@ export function AppearanceSettings() {
             <Icon name="close" />
           </button>
         </header>
-        <div className={styles.content}>
+        <div className={styles.workspace}>
+          <nav className={styles.componentNav} aria-label="Componenti dell’interfaccia">
+            <button type="button" aria-pressed={component === "general"} onClick={() => setComponent("general")}><Icon name="settings" />Generali</button>
+            {COMPONENTS.map(item => <button key={item.id} type="button" aria-pressed={component === item.id} onClick={() => setComponent(item.id)}><Icon name={item.id === "navbar" ? "brand" : item.id === "catalogButton" ? "catalog" : item.id === "spacesButton" ? "spaces" : item.id === "search" ? "search" : item.id === "drawer" ? "layers" : item.id === "catalog" ? "catalog" : item.id === "tools" ? "tools" : "sensor"} /><span>{item.name}</span>{config.components[item.id] && <span className={styles.changed} aria-label="Personalizzato">•</span>}</button>)}
+          </nav>
+          <div className={styles.componentPicker}><Select label="Componente dell’interfaccia" value={component} options={[{value:"general",label:"Generali"},...COMPONENTS.map(item=>({value:item.id,label:item.name}))]} onChange={value=>setComponent(value as ComponentId|"general")} /></div>
+          <div className={styles.content}>
+          {component === "general" ? <>
+          <div><h2 className={styles.sectionTitle}>Identità e preferenze</h2><p className={styles.intro}>Scegli una base, poi rifinisci ogni componente dal menu. Le tue configurazioni non cambiano valori e scale scientifiche sulla mappa.</p></div>
           <fieldset className={styles.section}>
             <legend>Tema</legend>
             <div className={styles.segmented}>
@@ -136,10 +150,13 @@ export function AppearanceSettings() {
             />
             <span className={styles.switch} aria-hidden="true" />
           </label>
+          <InterfaceProject />
+          </> : <ComponentEditor key={component} component={component} />}
+          </div>
         </div>
         <footer className={styles.footer}>
           <Icon name="check" />
-          Preferenze salvate su questo dispositivo.
+          {persistent ? "Preferenze salvate su questo dispositivo." : "Modifiche attive. Il browser non consente il salvataggio: esporta il JSON per conservarle."}
         </footer>
       </dialog>
     </>

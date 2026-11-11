@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useUIText } from "./interfaceSettings";
 import { Icon } from "./Icon";
 import { useSpaces } from "./spacesStore";
 import { SpaceHub } from "@/spaces/SpaceHub";
@@ -9,14 +10,15 @@ import buttons from "@/topbar/IconButtons.module.css";
 function LocalDialog({ open, title, onClose, children, wide = false }: { open: boolean; title: string; onClose: () => void; children: ReactNode; wide?: boolean }) {
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => { const el = ref.current; if (open && el && !el.open) { el.showModal(); (wide ? el.querySelector<HTMLElement>('input[type="search"]') : null)?.focus(); if (!wide) el.querySelector<HTMLButtonElement>('button[aria-label="Chiudi"]')?.focus(); } else if (!open && el?.open) el.close(); }, [open, wide]);
-  return <dialog ref={ref} className={`${styles.dialog} ${wide ? styles.wide : ""}`} aria-label={title} onCancel={onClose} onClick={e => { if (e.target === e.currentTarget) onClose(); }} onKeyDown={e => { if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); onClose(); } }}>
+  return <dialog ref={ref} data-ui="local-dialog" className={`${styles.dialog} ${wide ? styles.wide : ""}`} aria-label={title} onCancel={onClose} onClick={e => { if (e.target === e.currentTarget) onClose(); }} onKeyDown={e => { if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); onClose(); } }}>
     <header><h1>{title}</h1><button aria-label="Chiudi" onClick={onClose}><Icon name="close" /></button></header><div className={styles.content}>{children}</div>
   </dialog>;
 }
 export function SpacesButton() {
+  const label = useUIText("spaces");
   const open = useExperienceStore(s => s.hubOpen);
   return <>
-    <button className={styles.trigger} aria-label="Spazi" title="Esplora gli spazi" aria-haspopup="dialog" aria-expanded={open} onClick={e => { e.currentTarget.focus({ preventScroll: true }); useExperienceStore.setState({hubOpen:true}); }}><Icon name="spaces" /><span>Spazi</span></button>
+    <button id="spaces-trigger" data-ui="spacesButton" className={styles.trigger} aria-label={label} title="Esplora gli spazi" aria-haspopup="dialog" aria-expanded={open} onClick={e => { e.currentTarget.focus({ preventScroll: true }); useExperienceStore.setState({hubOpen:true}); }}><Icon name="spaces" /><span>{label}</span></button>
     <LocalDialog open={open} wide title="I tuoi spazi" onClose={() => useExperienceStore.setState({hubOpen:false})}><SpaceHub /></LocalDialog>
   </>;
 }

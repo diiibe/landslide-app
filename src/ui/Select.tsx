@@ -46,6 +46,7 @@ export function Select({
     search = useRef<HTMLInputElement>(null);
   const typeahead = useRef({ text: "", time: 0 });
   const [parent, setParent] = useState<HTMLElement | null>(null);
+  const [uiScope, setUiScope] = useState<string | undefined>(undefined);
   const [open, setOpen] = useState(false),
     [query, setQuery] = useState(""),
     [active, setActive] = useState<string | null>(value),
@@ -75,6 +76,7 @@ export function Select({
     if (disabled) return;
     trigger.current?.focus({ preventScroll: true });
     setParent(trigger.current?.closest("dialog[open]") ?? document.body);
+    setUiScope(trigger.current?.closest<HTMLElement>("[data-ui]")?.dataset.ui);
     setQuery("");
     setSearchable(options.length > 7);
     setActive(value);
@@ -265,7 +267,7 @@ export function Select({
       {open &&
         parent &&
         createPortal(
-          <div ref={menu} className={styles.menu} onKeyDown={onKey}>
+          <div ref={menu} data-ui={uiScope} className={styles.menu} onKeyDown={onKey}>
             <div className={styles.menuHead}>{label}</div>
             {searchable && (
               <div className={styles.search}>

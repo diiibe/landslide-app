@@ -1,9 +1,11 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
+import { useUIText } from "@/ui/interfaceSettings";
 import { useAppStore } from "@/app/store";
 import { asSuggestion, geocodingURL, type Suggestion } from "./geocoding";
 import styles from "./SearchLocality.module.css";
 const TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string | undefined;
 export function SearchLocality() {
+  const placeholder = useUIText("search");
   const { query, placeName } = useAppStore((s) => s.search),
     setSearch = useAppStore((s) => s.setSearch);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]),
@@ -133,7 +135,7 @@ export function SearchLocality() {
     }
   }
   return (
-    <div className={styles.wrap} ref={wrap}>
+    <div className={styles.wrap} ref={wrap} data-ui="search">
       <svg
         className={styles.ico}
         viewBox="0 0 16 16"
@@ -151,7 +153,7 @@ export function SearchLocality() {
         className={styles.input}
         type="search"
         role="combobox"
-        placeholder="Cerca località, via o civico…"
+        placeholder={placeholder}
         aria-label="Cerca località, vie e civici"
         aria-autocomplete="list"
         aria-busy={loading}

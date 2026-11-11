@@ -6,6 +6,7 @@ export function createHoverCard(
 ) {
   const node = document.createElement("div");
   node.className = "fvg-hover-card";
+  node.dataset.ui = "sensor";
   node.setAttribute("role", "tooltip");
   const safe =
     /^#[\da-f]{3}([\da-f]{3})?$/i.test(color) ||

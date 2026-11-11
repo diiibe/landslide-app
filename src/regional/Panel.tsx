@@ -1,3 +1,4 @@
+import { useUIText } from "@/ui/interfaceSettings";
 import { QuickLayers } from "./QuickLayers";
 import { Icon } from "@/ui/Icon";
 import { Select } from "@/ui/Select";
@@ -37,6 +38,7 @@ function closeOnMobile() {
     useAppStore.setState({ drawerOpen: false });
 }
 export function RegionalPanel() {
+  const explore = useUIText("explore");
   const state = useRegionalStore(),
     twin = useTwinStore(),
     app = useAppStore(),
@@ -151,7 +153,7 @@ export function RegionalPanel() {
       )}
       <QuickLayers />
       <section className={styles.browseSection} aria-label="Esplora i livelli">
-        <h2>Esplora i dati</h2>
+        <h2>{explore}</h2>
         <CatalogExplorer mode="sidebar" />
       </section>
       {!!app.userPolygons.length && (

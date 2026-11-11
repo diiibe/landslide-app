@@ -108,6 +108,7 @@ import { rewriteMapboxUrl } from "./mapboxUrl";
 import styles from "./MapView.module.css";
 import { mountTwinMap } from "@/digital-twin/map";
 import { mountRegionalMap } from "@/regional/map";
+import { mountPointStacks } from "@/regional/pointStacks";
 import { mountPointReadings } from "@/regional/pointReadings";
 
 const TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string | undefined;
@@ -395,9 +396,11 @@ export function MapView() {
     const unmountExperience = mountExperienceMap(m);
     const unmountNature = mountNatureMap(m);
     const unmountTrek = mountTrekMap(m);
+    const unmountPointStacks = mountPointStacks(m);
     mapRef.current = m;
     setMap(m);
     return () => {
+      unmountPointStacks();
       unmountPointReadings();
       unmountExperience();
       unmountNature();

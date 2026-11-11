@@ -132,6 +132,7 @@ export function ExportPanel({ open, onClose }: Props) {
 
   return (
     <dialog
+      data-ui="local-dialog"
       ref={dialog}
       aria-label="Esporta dati"
       onCancel={onClose}
