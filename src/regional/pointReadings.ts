@@ -58,6 +58,10 @@ export function selectPointReading(feature: MapGeoJSONFeature) {
     useRegionalStore.setState({ selection: null, detailId: null, tab: "layers" });
   }
   useAppStore.setState({ drawerOpen: true });
+  requestAnimationFrame(() => {
+    const heading=document.querySelector<HTMLElement>('#drawer-panel [aria-label="Dettaglio livello"] h2');
+    if(heading){heading.tabIndex=-1;heading.focus({preventScroll:true});}
+  });
 }
 
 /** Non-modal reading sheet: every visible record at the same coordinates, no
@@ -70,6 +74,7 @@ export function mountPointReadings(map: MLMap) {
     request++;
     popup?.remove(); popup = null; root = null; anchor = null; signature = ""; clustered = false;
     openMaps.delete(map);
+    map.getContainer().dispatchEvent?.(new Event("fvg:readings-visibility"));
     if (focus) map.getCanvas().focus({ preventScroll: true });
   }
   function render(features: MapGeoJSONFeature[], focus = false) {
@@ -80,6 +85,7 @@ export function mountPointReadings(map: MLMap) {
     const scroll = root?.querySelector("ol")?.scrollTop ?? 0;
     const node = document.createElement("section");
     node.className = styles.sheet!;
+    node.dataset.ui = "sensor";
     const position = map.project(anchor!), { clientHeight: height, clientWidth: width } = map.getContainer();
     const above = position.y >= height / 2 - 1;
     const side = height < 400 && width >= 650 && position.y > height * .3 && position.y < height * .7;
@@ -106,10 +112,6 @@ export function mountPointReadings(map: MLMap) {
       button.append(title, value, detail);
       button.addEventListener("click", () => {
         close(); selectPointReading(feature);
-        requestAnimationFrame(() => {
-          const target = document.querySelector<HTMLElement>('#drawer-panel [aria-label="Dettaglio livello"] h2');
-          if (target) { target.tabIndex = -1; target.focus({ preventScroll: true }); }
-        });
       });
       item.append(button); list.append(item);
     }
@@ -130,6 +132,7 @@ export function mountPointReadings(map: MLMap) {
     if (point?.type !== "Point") return;
     anchor = point.coordinates.slice(0, 2) as [number, number];
     openMaps.add(map); render(features, focus);
+    map.getContainer().dispatchEvent?.(new Event("fvg:readings-visibility"));
   }
   function isSamePoint(features: MapGeoJSONFeature[]) {
     const first = features[0]?.geometry;

@@ -15,16 +15,19 @@ export function dataFeatureKey(f: MapGeoJSONFeature): string {
       ? Object.entries(p).sort(([a], [b]) => a.localeCompare(b)) : null,
   ]);
 }
+export function dataLayers(map: MLMap): string[] {
+  return (map.getStyle()?.layers ?? []).filter(l =>
+    l.type !== "heatmap" && !l.id.startsWith("regional-selection") &&
+    (l.id.startsWith("regional-") || l.id.startsWith("twin-sensors") || ["trek-node","trek-node-ring","trek-node-label","trek-hit","nature-node","nature-node-ring","nature-hit","nature-label","nature-cluster","nature-cluster-label"].includes(l.id) ||
+      ["twin-aia", "twin-buildings", "twin-buildings-3d"].includes(l.id)),
+  ).map(l => l.id);
+}
 export function pickDataFeatures(
   map: MLMap,
   point: { x: number; y: number },
   radius: number,
 ): MapGeoJSONFeature[] {
-  const layers = (map.getStyle()?.layers ?? []).filter(l =>
-    l.type !== "heatmap" && !l.id.startsWith("regional-selection") &&
-    (l.id.startsWith("regional-") || l.id.startsWith("twin-sensors") || ["trek-node","trek-node-ring","trek-node-label","trek-hit","nature-node","nature-node-ring","nature-hit","nature-label","nature-cluster","nature-cluster-label"].includes(l.id) ||
-      ["twin-aia", "twin-buildings", "twin-buildings-3d"].includes(l.id)),
-  ).map(l => l.id);
+  const layers = dataLayers(map);
   if (!layers.length) return [];
   const distance = (f: MapGeoJSONFeature) => {
     if (f.geometry.type !== "Point") return Infinity;

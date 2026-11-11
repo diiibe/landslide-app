@@ -180,3 +180,8 @@ describe("In-app Select", () => {
     expect(screen.getByText("Fonte", { exact: true })).toHaveFocus();
   });
 });
+it("keeps a portaled menu in its triggering component's appearance scope",()=>{
+ render(<div data-ui="drawer"><Example /></div>);
+ fireEvent.click(screen.getByRole("combobox",{name:"Classe"}));
+ expect(screen.getByRole("listbox").closest("[data-ui]")).toHaveAttribute("data-ui","drawer");
+});

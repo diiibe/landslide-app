@@ -6,6 +6,9 @@ import { useAppStore } from "@/app/store";
 import { useTrekStore } from "./store";
 it("rebuilds on style load, keeps touch targets in pixels, and removes all work on exit", () => {
   vi.useFakeTimers();
+  // Keep navigation frames and telemetry on the same controlled clock.
+  vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) => setTimeout(() => callback(performance.now()), 16));
+  vi.stubGlobal("cancelAnimationFrame", (id: number) => clearTimeout(id));
   vi.stubGlobal("matchMedia", () => ({ matches: false }));
   vi.setSystemTime(Date.parse("2026-11-11T10:00:45Z"));
   let writes = 0;

@@ -319,3 +319,27 @@
 
 /* Shared regional navigation material; content remains unpatterned. */
 .header { background: var(--material-chrome); }
+.dialog { width:min(1060px,calc(100vw - 40px));height:min(850px,calc(100dvh - 40px)); }
+.workspace { display:grid;grid-template-columns:224px minmax(0,1fr);min-height:0;flex:1; }
+.componentNav { display:flex;flex-direction:column;gap:4px;padding:16px 12px;background:var(--c-surface-sunken);border-right:1px solid var(--c-border);overflow:auto; }
+.componentNav button { display:flex;align-items:center;gap:10px;min-height:44px;text-align:left;padding:10px;border:1px solid transparent;border-radius:6px;background:transparent;color:var(--c-text);font:600 12px var(--font-stack);cursor:pointer; }
+.componentNav button:hover { background:var(--c-surface-raised); }
+.componentNav button[aria-pressed="true"] { border-color:var(--c-action);background:var(--c-selected); }
+.componentNav svg { flex-shrink:0;width:18px; }
+.componentNav .changed { margin-left:auto;color:var(--c-action); }
+.sectionTitle { margin:0;font-size:22px;letter-spacing:-.4px; }
+.intro { font-size:13px;line-height:1.6;color:var(--c-text-muted);margin:8px 0 0; }
+.content { display:flex;flex-direction:column;gap:24px;scroll-padding-block:20px; }
+@media(max-width:700px) {
+ .dialog { width:calc(100vw - 16px);height:calc(100dvh - 16px);max-height:none; }
+ .workspace { grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr); }
+ .componentNav { display:flex;flex-direction:row;flex-wrap:nowrap;overflow:auto;gap:6px;padding:10px 12px;border-right:0;border-bottom:1px solid var(--c-border); }
+ .componentNav button { flex-shrink:0;white-space:nowrap; }
+ .header { padding:10px 16px; }
+ .content { padding:18px 16px; }
+ .footer { padding:10px 16px; }
+}
+@media(max-height:500px) and (orientation:landscape) and (min-width:701px) { .workspace { grid-template-columns:184px minmax(0,1fr); }.componentNav{padding:8px}.content{padding:16px}.dialog{height:calc(100dvh - 16px)} }
+
+.componentPicker { display:none; }
+@media(max-width:700px){.componentNav{display:none}.componentPicker{display:block;padding:10px 14px;border-bottom:1px solid var(--c-border);background:var(--c-surface-sunken);min-width:0}}

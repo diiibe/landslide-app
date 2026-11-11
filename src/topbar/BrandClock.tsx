@@ -20,5 +20,5 @@ export function BrandClock() {
     document.addEventListener("visibilitychange", visible);
     return () => { clearTimeout(timer); document.removeEventListener("visibilitychange", visible); };
   }, []);
-  return <time className={styles.clock} dateTime={now.toISOString()} title="Data e ora attuali · Europe/Rome" aria-label={`${date.format(now)}, ore ${hour.format(now)}, ora italiana`}><span>{date.format(now)}</span><span>{hour.format(now)}</span></time>;
+  return <time data-ui-part="clock" className={styles.clock} dateTime={now.toISOString()} title="Data e ora attuali · Europe/Rome" aria-label={`${date.format(now)}, ore ${hour.format(now)}, ora italiana`}><span className={styles.clockDateFull}>{date.format(now)}</span><span className={styles.clockDateShort}>{date.format(now).slice(0,5)}</span><span>{hour.format(now)}</span></time>;
 }

@@ -14,7 +14,7 @@ export function SpaceBar() {
   if (!scene) return null;
   return (
     <div
-      className={styles.spaceBar}
+      className={styles.spaceBar} data-map-space-bar
       style={{ "--space-tone": scene.tone } as React.CSSProperties}
     >
       <button
@@ -23,7 +23,7 @@ export function SpaceBar() {
         title="Torna al territorio"
         onClick={() => {
           document
-            .querySelector<HTMLButtonElement>('button[aria-label="Spazi"]')
+            .querySelector<HTMLButtonElement>('#spaces-trigger')
             ?.focus();
           leaveExperience();
         }}

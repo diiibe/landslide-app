@@ -135,7 +135,7 @@ export default function App() {
             <MapView />
           </Suspense>
           {!drawingMode && <SpaceBar />}
-          <div className={styles.rightStack} role="group" aria-label="Comandi mappa">
+          <div className={styles.rightStack} role="group" aria-label="Comandi mappa" data-ui="tools">
             <BasemapPanel />
             <LayersButton />
             <MapTools />

@@ -1,3 +1,4 @@
+import { useUIText } from "@/ui/interfaceSettings";
 import { Icon } from "@/ui/Icon";
 import { SearchField } from "@/ui/SearchField";
 import { Select } from "@/ui/Select";
@@ -35,11 +36,13 @@ function showDetails(item: CatalogItem) {
   useAppStore.setState({ drawerOpen: true });
 }
 export function CatalogButton() {
+  const label = useUIText("catalog");
   const open = useRegionalStore((s) => s.catalogOpen);
   return (
     <button
+      id="catalog-trigger" data-ui="catalogButton"
       className={styles.trigger}
-      aria-label="Catalogo"
+      aria-label={label}
       aria-haspopup="dialog"
       aria-controls="data-catalog"
       aria-expanded={open}
@@ -51,11 +54,12 @@ export function CatalogButton() {
       }}
     >
       <Icon name="catalog" />
-      <span>Catalogo</span>
+      <span>{label}</span>
     </button>
   );
 }
 export function CatalogBrowser() {
+  const title = useUIText("catalogTitle");
   const open = useRegionalStore((s) => s.catalogOpen),
     dialog = useRef<HTMLDialogElement>(null);
   useEffect(() => {
@@ -70,7 +74,7 @@ export function CatalogBrowser() {
   return (
     <dialog
       ref={dialog}
-      id="data-catalog"
+      id="data-catalog" data-ui="catalog"
       className={styles.dialog}
       aria-labelledby="catalog-title"
       onCancel={() => useRegionalStore.setState({ catalogOpen: false })}
@@ -90,7 +94,7 @@ export function CatalogBrowser() {
     >
       <div className={styles.header}>
         <div>
-          <h1 id="catalog-title" tabIndex={-1}>Catalogo dei dati</h1>
+          <h1 id="catalog-title" tabIndex={-1}>{title}</h1>
           <p>Trova i dati da aggiungere alla tua mappa.</p>
         </div>
         <button

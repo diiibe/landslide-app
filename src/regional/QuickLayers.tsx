@@ -1,3 +1,4 @@
+import { useUIText } from "@/ui/interfaceSettings";
 import type { CSSProperties } from "react";
 import { Icon, type IconName } from "@/ui/Icon";
 import { useAppStore } from "@/app/store";
@@ -12,18 +13,19 @@ const QUICK_LAYERS: { id: string; label: string; icon: IconName }[] = [
   { id: "pcr-humidity", label: "Umidità", icon: "water" },
   { id: "pcr-wind", label: "Vento", icon: "air" },
   { id: "pcr-rain", label: "Pioggia · 24 h", icon: "weather" },
-  { id: "pcr-radar", label: "Radar pioggia", icon: "rasterData" },
+  { id: "pcr-radiation", label: "Radiazione solare", icon: "sun" },
   { id: "pcr-hydro", label: "Livelli dei fiumi", icon: "waves" },
   { id: "map-roads", label: "Strade", icon: "mobility" },
   { id: "map-trails", label: "Sentieri", icon: "trailMarker" },
 ];
 export function QuickLayers() {
+  const title = useUIText("quick");
   const catalog = useRegionalStore((s) => s.catalog);
   useRegionalStore((s) => s.enabled);
   useAppStore((s) => s.layers);
   const items = catalogItems(catalog?.layers ?? []);
   return <section className={styles.section} aria-labelledby="quick-layers-title">
-    <div className={styles.heading}><h2 id="quick-layers-title">Scelte rapide</h2><span>Mostra o nascondi</span></div>
+    <div className={styles.heading}><h2 id="quick-layers-title">{title}</h2><span>Mostra o nascondi</span></div>
     <div className={styles.grid}>{QUICK_LAYERS.map((quick) => {
       const layer = items.find((i) => i.layer.id === quick.id)?.layer;
       if (!layer) return null;
