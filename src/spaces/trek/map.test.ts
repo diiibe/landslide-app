@@ -30,7 +30,7 @@ it("rebuilds on style load, keeps touch targets in pixels, and removes all work 
     getContainer: () => ({
       clientWidth: 1440,
       clientHeight: 936,
-      getBoundingClientRect: () => ({ top: 64 }),
+      getBoundingClientRect: () => ({ top: 64, bottom: 1000 }),
     }),
     fitBounds: vi.fn(),
     getSource: (id: string) => sources.get(id),
@@ -75,9 +75,15 @@ it("rebuilds on style load, keeps touch targets in pixels, and removes all work 
   });
   vi.advanceTimersByTime(20);
   expect(map.fitBounds).not.toHaveBeenCalled();
+  const footer = document.createElement("div");
+  footer.setAttribute("data-map-3d", "");
+  footer.getBoundingClientRect = () => ({ top: 900, height: 44 }) as DOMRect;
+  document.body.append(footer);
   window.dispatchEvent(new CustomEvent("fvg:trek-fit"));
   vi.advanceTimersByTime(20);
   expect(map.fitBounds).toHaveBeenCalledTimes(1);
+  expect(map.fitBounds.mock.calls[0]?.[1].padding.bottom).toBe(132);
+  footer.remove();
   expect(layers.size).toBe(7);
   expect(layers.get("trek-hit")).toMatchObject({
     paint: { "circle-radius": 22 },

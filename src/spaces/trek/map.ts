@@ -102,6 +102,16 @@ export function mountTrekMap(m: MLMap) {
       const w = container.clientWidth,
         h = container.clientHeight,
         portrait = h > w;
+      const footer = document
+        .querySelector<HTMLElement>("[data-map-3d]")
+        ?.getBoundingClientRect();
+      const bottom = Math.min(
+        Math.max(48, h - 120),
+        Math.max(
+          64,
+          footer && footer.height > 0 ? box.bottom - footer.top + 32 : 64,
+        ),
+      );
       const points = network.route.geometry.coordinates,
         x = points.map((p) => p[0]!),
         y = points.map((p) => p[1]!);
@@ -120,12 +130,12 @@ export function mountTrekMap(m: MLMap) {
               ? Math.max(
                   64,
                   Math.min(
-                    h - 130,
+                    h - bottom - 72,
                     (control?.bottom ?? box.top + 200) - box.top + 20,
                   ),
                 )
               : 72,
-            bottom: 64,
+            bottom,
           },
           maxZoom: 15,
           pitch: 0,
