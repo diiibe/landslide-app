@@ -182,16 +182,25 @@ export function SearchLocality() {
               aria-label="Indirizzi e località trovati"
             >
               {current.map((s, i) => (
-                <li
+                <li key={s.id} role="presentation">
+                <button
+                  type="button"
                   id={`${listId}-${i}`}
-                  key={s.id}
                   role="option"
                   aria-selected={i === active}
                   data-active={i === active}
                   title={s.fullName}
                   className={styles.opt}
-                  onMouseEnter={() => setActive(i)}
-                  onMouseDown={(e) => e.preventDefault()}
+                  // Safari can consume the first tap when a synthetic hover
+                  // changes the DOM. Only a real mouse changes the active row;
+                  // touch activates the native button directly in one tap.
+                  onPointerMove={(e) => {
+                    if (e.pointerType === "mouse") setActive(i);
+                  }}
+                  onPointerDown={(e) => {
+                    if (e.pointerType === "mouse") e.preventDefault();
+                  }}
+                  tabIndex={-1}
                   onClick={() => pick(s)}
                 >
                   <span className={styles.optName}>{s.name}</span>
@@ -201,6 +210,7 @@ export function SearchLocality() {
                   {s.precision && (
                     <span className={styles.precision}>{s.precision}</span>
                   )}
+                </button>
                 </li>
               ))}
             </ul>

@@ -422,7 +422,7 @@ export function CatalogRow({
         ) : (
           <>
             <Icon
-              name={on && compact && context === "active" ? "eye" : on ? "check" : "plus"}
+              name={on ? "eye" : "eyeOff"}
             />
             {!compact && <span>{on ? "Sulla mappa" : "Aggiungi"}</span>}
           </>

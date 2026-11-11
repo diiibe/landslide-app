@@ -3,7 +3,7 @@ export type IconName =
   | "trailMarker" | "fire" | "camera" | "tree" | "paw"
   | "spaces" | "profile" | "brand" | "extensions" | "drawPolygon"
   | "fileData"
-  | "sensor" | "lineData" | "pointData" | "areaData" | "rasterData" | "eye" | "tools"
+  | "sensor" | "lineData" | "pointData" | "areaData" | "rasterData" | "eye" | "eyeOff" | "tools"
   | "search"
   | "catalog"
   | "layers"
@@ -38,6 +38,7 @@ const paths: Record<IconName, ReactNode> = {
   lineData: <><path d="m3 16 5-7 4 2 5-7"/><circle cx="3" cy="16" r="1.5"/><circle cx="17" cy="4" r="1.5"/></>,
   areaData: <><path d="m3 5 9-2 5 6-3 8-11-2Z"/><path d="m7 12 3-5 4 4"/></>,
   rasterData: <><rect x="3" y="3" width="14" height="14" rx="1"/><path d="m3 10 7-7m-7 12L15 3M5 17 17 5m-7 12 7-7"/></>,
+  eyeOff: <><path d="M3 7c-1 1.5-1.5 3-1.5 3s3 5.5 8.5 5.5c1.5 0 2.8-.4 3.9-1M6.5 5.2c1.1-.5 2.2-.7 3.5-.7 5.5 0 8.5 5.5 8.5 5.5s-.7 1.2-2 2.5M3 2l14 16"/><path d="M8.3 8.2a2.5 2.5 0 0 0 3.5 3.5"/></>,
   eye: <><path d="M1.5 10s3-5.5 8.5-5.5 8.5 5.5 8.5 5.5-3 5.5-8.5 5.5S1.5 10 1.5 10Z"/><circle cx="10" cy="10" r="2.5"/></>,
   tools: <><path d="M3 5h14M3 10h14M3 15h14"/><circle cx="7" cy="5" r="2" fill="var(--c-surface)"/><circle cx="13" cy="10" r="2" fill="var(--c-surface)"/><circle cx="8" cy="15" r="2" fill="var(--c-surface)"/></>,
   weather: <><path d="M5 14a4 4 0 1 1 1-7.9A5 5 0 0 1 16 9a2.5 2.5 0 0 1-1 5H5Z"/><path d="m7 17-1 2m5-2-1 2m5-2-1 2"/></>,

@@ -47,3 +47,17 @@
   .brand { font-size: 15px; gap: 6px; }
   .version { padding-left: 0; font-size: 10px; }
 }
+.wordmark { display: flex; align-items: center; gap: 16px; }
+.clock { display: flex; gap: 8px; font-size: 11px; font-weight: 500; letter-spacing: 0; line-height: 1.25; color: var(--c-text-muted); font-variant-numeric: tabular-nums; }
+.clock span + span { color: var(--c-text); font-weight: 650; }
+.navigation { gap: 6px; padding: 3px; border: 1px solid var(--c-border-strong); border-radius: 9px; background: var(--c-surface-sunken); box-shadow: var(--shadow-inset); }
+.navigation > button { min-height: 38px; border-radius: 6px; box-shadow: none; }
+.navigation > button > svg { width: 20px; height: 20px; }
+.navigation > button:focus-visible { outline-offset: 2px; }
+@media (max-width: 1280px) { .wordmark { align-items: flex-start; flex-direction: column; gap: 3px; } }
+@media (max-width: 768px), (max-height: 500px) and (pointer: coarse) {
+  .clock { font-size: 10px; gap: 6px; }
+  .navigation { gap: 4px; padding: 2px; }
+  .navigation > button { min-width: 44px; min-height: 44px; }
+}
+@media (pointer: coarse) { .navigation > button { min-height: 44px; } }

@@ -1,3 +1,4 @@
+import { QuickLayers } from "./QuickLayers";
 import { Icon } from "@/ui/Icon";
 import { Select } from "@/ui/Select";
 import { SearchField } from "@/ui/SearchField";
@@ -148,6 +149,7 @@ export function RegionalPanel() {
           )}
         </section>
       )}
+      <QuickLayers />
       <section className={styles.browseSection} aria-label="Esplora i livelli">
         <h2>Esplora i dati</h2>
         <CatalogExplorer mode="sidebar" />

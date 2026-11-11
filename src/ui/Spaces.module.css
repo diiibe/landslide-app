@@ -36,3 +36,6 @@
 
 /* Shared regional navigation material; content remains unpatterned. */
 .dialog header { background: var(--material-chrome); }
+/* The two destinations share a compact navigation rail; hover stays inside. */
+.trigger { border-color: transparent; font-weight: 650; transition: background 140ms, color 140ms, border-color 140ms; }
+.trigger:hover, .trigger[aria-expanded="true"] { box-shadow: none; background: var(--c-surface-raised); border-color: var(--c-border-strong); color: var(--c-action); }
