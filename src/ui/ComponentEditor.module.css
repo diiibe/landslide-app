@@ -27,3 +27,7 @@
 .project[open]>*:not(summary) { margin-top:12px; }
 .actions { display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:12px; }
 @media(max-width:500px) { .grid { gap:12px; } .title h2 { font-size:20px; } .title button span { display:none; } .colours { gap:8px; } }
+
+.preview[data-ui="navbar"] {
+  background: var(--navbar-background) var(--navbar-pattern) center / 1200px 240px repeat;
+}

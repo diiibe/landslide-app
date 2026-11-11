@@ -9,6 +9,14 @@
   --surface-texture: url("../assets/materials/territory-panel-light.svg");
   --material-size: 720px 210px;
   --material-position: center 46%;
+  /* Exact six-stamp composition exported from the user's pattern studio. */
+  --navbar-background: #243129;
+  --navbar-text: #e8eee5;
+  --navbar-muted: #bdcbbf;
+  --navbar-border: #607264;
+  --navbar-surface: #2d3f32;
+  --navbar-selected: #3f5746;
+  --navbar-pattern: url("../assets/materials/navbar-user-pattern.svg");
   --material-chrome: var(--c-surface-raised) var(--material-chrome-image) var(--material-position) / var(--material-size) repeat;
   --material-panel: var(--c-surface-2) var(--surface-texture) var(--material-position) / var(--material-size) repeat;
 }

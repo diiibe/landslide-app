@@ -48,3 +48,12 @@ mappature delle frane. Il contatore indica quanti dei dieci livelli rapidi sono
 attivi. I pulsanti precedono l'elenco dei livelli attivi, così aggiungere una
 variabile non sposta le altre scelte. La legenda mostra entrambe le mappature
 con le rispettive classi; le viste salvate conservano tutte le selezioni.
+
+## Pattern personale della navbar
+
+La navbar parte dalla composizione a sei timbri creata nel laboratorio:
+fondo #243129, inchiostro #edf3e9 al 12%, dimensione 222 px. Il materiale conserva
+posizioni e scala del progetto di 1200 × 240 px, con ripetizione centrata come
+nell'anteprima. È lo stesso nei due temi, con testi chiari; gli altri pannelli
+conservano le proprie superfici. Ripristina Navbar torna a questa composizione.
+Le regolazioni di texture, intensità, sfumatura e colori restano disponibili.
