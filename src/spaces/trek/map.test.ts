@@ -6,6 +6,9 @@ import { useAppStore } from "@/app/store";
 import { useTrekStore } from "./store";
 it("rebuilds on style load, keeps touch targets in pixels, and removes all work on exit", () => {
   vi.useFakeTimers();
+  vi.stubGlobal("matchMedia", () => ({ matches: false }));
+  vi.setSystemTime(Date.parse("2026-11-11T10:00:45Z"));
+  let writes = 0;
   useExperienceStore.setState({
     activeId: "trek",
     selectedId: null,
@@ -24,12 +27,19 @@ it("rebuilds on style load, keeps touch targets in pixels, and removes all work 
   const map = {
     isStyleLoaded: () => true,
     getCanvas: () => canvas,
+    getContainer: () => ({
+      clientWidth: 1440,
+      clientHeight: 936,
+      getBoundingClientRect: () => ({ top: 64 }),
+    }),
+    fitBounds: vi.fn(),
     getSource: (id: string) => sources.get(id),
     getLayer: (id: string) => layers.get(id),
     addSource: (id: string, s: { data: GeoJSON.FeatureCollection }) =>
       sources.set(id, {
         data: s.data,
         setData(d) {
+          writes++;
           this.data = d;
         },
       }),
@@ -46,10 +56,28 @@ it("rebuilds on style load, keeps touch targets in pixels, and removes all work 
   const stop = mountTrekMap(map as unknown as MLMap);
   expect(sources.get("trek-nodes")?.data.features).toHaveLength(8);
   expect(vi.getTimerCount()).toBe(1);
+  vi.advanceTimersByTime(1000);
+  expect(writes).toBe(0);
+  window.dispatchEvent(new CustomEvent("fvg:trek-fit"));
+  handlers.get("styledataloading")!.forEach((f) => f());
+  vi.advanceTimersByTime(20);
+  useExperienceStore.setState({ activeId: "park" });
+  useExperienceStore.setState({ activeId: "trek" });
   handlers.get("styledataloading")!.forEach((f) => f());
   layers.clear();
   sources.clear();
   handlers.get("style.load")!.forEach((f) => f());
+  vi.advanceTimersByTime(20);
+  expect(map.fitBounds).not.toHaveBeenCalled();
+  window.dispatchEvent(new CustomEvent("fvg:trek-fit"));
+  useAppStore.setState({
+    cameraRequest: { center: [12.5, 46.4], zoom: 16, bearing: 0, pitch: 0 },
+  });
+  vi.advanceTimersByTime(20);
+  expect(map.fitBounds).not.toHaveBeenCalled();
+  window.dispatchEvent(new CustomEvent("fvg:trek-fit"));
+  vi.advanceTimersByTime(20);
+  expect(map.fitBounds).toHaveBeenCalledTimes(1);
   expect(layers.size).toBe(7);
   expect(layers.get("trek-hit")).toMatchObject({
     paint: { "circle-radius": 22 },
@@ -60,6 +88,7 @@ it("rebuilds on style load, keeps touch targets in pixels, and removes all work 
   stop();
   expect([...handlers.values()].every((s) => s.size === 0)).toBe(true);
   vi.useRealTimers();
+  vi.unstubAllGlobals();
 });
 it("uses stable domain identities for same-position readings and the shared replay instant", () => {
   useExperienceStore.setState({ activeId: "trek", selectedId: "st-106" });

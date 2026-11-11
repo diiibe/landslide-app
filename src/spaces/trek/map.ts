@@ -79,6 +79,7 @@ export function mountTrekMap(m: MLMap) {
           : {}),
       });
   };
+  let nodeVersion = "";
   let fitFrame = 0,
     fitPending = false;
   function scheduleFit() {
@@ -137,6 +138,11 @@ export function mountTrekMap(m: MLMap) {
       );
     });
   }
+  function cancelFit() {
+    fitPending = false;
+    cancelAnimationFrame(fitFrame);
+    fitFrame = 0;
+  }
   const onFit = () => {
     fitPending = true;
     scheduleFit();
@@ -149,9 +155,8 @@ export function mountTrekMap(m: MLMap) {
     hoverId = null;
   }
   function remove() {
-    fitPending = false;
-    cancelAnimationFrame(fitFrame);
-    fitFrame = 0;
+    nodeVersion = "";
+    cancelFit();
     clearHover();
     for (const id of [...ids].reverse()) if (m.getLayer(id)) m.removeLayer(id);
     for (const id of sourceIds) if (m.getSource(id)) m.removeSource(id);
@@ -164,7 +169,12 @@ export function mountTrekMap(m: MLMap) {
     }
     const now = useExperienceStore.getState().replayTime ?? Date.now(),
       s = useTrekStore.getState();
-    source("trek-nodes", trekNodes(now));
+    const data = trekNodes(now),
+      version = JSON.stringify(data);
+    if (!m.getSource("trek-nodes") || version !== nodeVersion) {
+      source("trek-nodes", data);
+      nodeVersion = version;
+    }
     if (!m.getSource("trek-route"))
       source("trek-route", {
         type: "FeatureCollection",
@@ -374,6 +384,7 @@ export function mountTrekMap(m: MLMap) {
   };
   const unsub = useExperienceStore.subscribe((s, p) => {
     if (s.activeId !== p.activeId) {
+      cancelFit();
       sync();
       active();
     } else if (s.selectedId !== p.selectedId || s.replayTime !== p.replayTime)
@@ -381,6 +392,11 @@ export function mountTrekMap(m: MLMap) {
   });
   const unsubTrek = useTrekStore.subscribe(sync),
     unsubApp = useAppStore.subscribe((s, p) => {
+      if (
+        s.cameraRequest !== p.cameraRequest ||
+        (s.drawingMode && !p.drawingMode)
+      )
+        cancelFit();
       if (s.drawingMode !== p.drawingMode) clearHover();
     });
   window.addEventListener("fvg:trek-fit", onFit);
