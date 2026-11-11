@@ -75,6 +75,7 @@ export function RegionalPanel() {
           onChange={(query) => useRegionalStore.setState({ query })}
         />
       </div>
+      <QuickLayers />
       <section className={styles.activeSection} aria-label="Livelli attivi">
         <div className={styles.sectionHead}>
           <h2>
@@ -151,7 +152,6 @@ export function RegionalPanel() {
           )}
         </section>
       )}
-      <QuickLayers />
       <section className={styles.browseSection} aria-label="Esplora i livelli">
         <h2>{explore}</h2>
         <CatalogExplorer mode="sidebar" />

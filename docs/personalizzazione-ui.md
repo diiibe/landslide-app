@@ -40,3 +40,11 @@ vengono inventati campioni non caricati.
 
 La scorciatoia radar è sostituita dalla radiazione solare. Il radar rimane
 consultabile nel catalogo e mantiene il proprio aggiornamento automatico.
+
+## Scelte rapide multiple
+
+Ogni scelta rapida si accende e spegne indipendentemente, comprese le due
+mappature delle frane. Il contatore indica quanti dei dieci livelli rapidi sono
+attivi. I pulsanti precedono l'elenco dei livelli attivi, così aggiungere una
+variabile non sposta le altre scelte. La legenda mostra entrambe le mappature
+con le rispettive classi; le viste salvate conservano tutte le selezioni.

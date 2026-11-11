@@ -21,13 +21,14 @@ on the same map. **Catalogo** opens the central data browser: search by name,
 parameter or source, and filter by theme, provider, data type, update cadence or
 availability. Add multiple independent layers without closing the catalog.
 
-The **Sulla mappa** sidebar keeps search at the top, followed by individual active
-layers and a folder/breadcrumb browser. Select a layer name to inspect its data,
+The **Sulla mappa** sidebar keeps search and multi-select quick choices at the top,
+followed by individual active layers and a folder/breadcrumb browser. Select a layer name to inspect its data,
 source and display controls. Specialist tools are available through Spazi. There is no obsolete model
 selector. The two susceptibility mappings use transparent class overlays with
 adjustable minimum class and opacity at both regional and detailed zooms.
 Classes are quantiles of model scores, not event probabilities. The two mappings
-remain mutually exclusive so overlapping colours cannot imply a combined score.
+can be enabled together, with separate class selections, opacities and legends.
+Their overlapping colours do not calculate a combined score.
 
 The sidebar overlays a stable WebGL canvas; opening it changes only safe camera
 padding. Saved areas preserve geometry and area. The Frane FVG space calculates complete

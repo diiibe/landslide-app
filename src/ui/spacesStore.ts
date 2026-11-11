@@ -52,9 +52,8 @@ export function removeSpace(id: string) { publish(useSpaces.getState().spaces.fi
 export function restoreSpace(space: Space) {
   const s = schema.parse(space), a = useAppStore.getState();
   const layers = Object.fromEntries(Object.keys(a.layers).map(key => [key, s.layers[key] ?? false])) as typeof a.layers;
-  // Honour the same mutually exclusive susceptibility surfaces as the layer picker.
+  // Preserve both current maps; only suppress incompatible legacy surfaces.
   if (layers.v2Bodies || layers.v2Diffuse) {
-    if (layers.v2Bodies) layers.v2Diffuse = false;
     layers.susceptibility = false; layers.smoothHeatmap = false;
   }
   useAppStore.setState({ layers, floodView: s.floodView, floodOpacity: s.floodOpacity, paiOpacity: s.paiOpacity, diffOpacity: s.diffOpacity, poiColors: { ...a.poiColors, ...s.poiColors }, poiCategoryVisible: { ...a.poiCategoryVisible, ...s.poiCategoryVisible }, basemap: s.basemap, view3D: s.view3D, cameraRequest: s.camera, susceptibilityStyle: { bodies: withClasses(s.susceptibilityStyle.bodies, selectedClasses(s.susceptibilityStyle.bodies)), diffuse: withClasses(s.susceptibilityStyle.diffuse, selectedClasses(s.susceptibilityStyle.diffuse)) } });

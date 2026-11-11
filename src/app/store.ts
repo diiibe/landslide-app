@@ -24,15 +24,11 @@ export type OverlayGroup = "landslide" | "flood" | "context";
 
 type LayerKey = keyof AppState["layers"];
 
-/** Only one susceptibility surface may be visible at a time, otherwise
- *  stacked cells read as a combined map. Switching a surface on switches
- *  off the ones listed here. The two v2 layers exclude each other and the
- *  J.2/J.3 surfaces (cells + KDE); a J surface excludes both v2 layers.
- *  J cells and KDE stay compatible with each other, as before. Inventory,
- *  flood and context overlays are not surfaces and never listed. */
+/** Current class maps can be overlaid independently. Only legacy J surfaces
+ * are excluded when a current map is enabled (and vice versa). */
 const SURFACE_EXCLUDES: Partial<Record<LayerKey, readonly LayerKey[]>> = {
-  v2Bodies: ["v2Diffuse", "susceptibility", "smoothHeatmap"],
-  v2Diffuse: ["v2Bodies", "susceptibility", "smoothHeatmap"],
+  v2Bodies: ["susceptibility", "smoothHeatmap"],
+  v2Diffuse: ["susceptibility", "smoothHeatmap"],
   susceptibility: ["v2Bodies", "v2Diffuse"],
   smoothHeatmap: ["v2Bodies", "v2Diffuse"],
 };
@@ -356,7 +352,7 @@ export interface AppState {
     pai: boolean;
     diff: boolean;
     floodHistorical: boolean;
-    /** Model v2 layers. Exclusive with each other and with the J surfaces
+    /** Model v2 maps are independent; only legacy J surfaces are excluded
      *  (`susceptibility`, `smoothHeatmap`) — see `SURFACE_EXCLUDES`. */
     v2Bodies: boolean;
     v2Diffuse: boolean;

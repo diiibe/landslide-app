@@ -31,10 +31,10 @@ export function Legend() {
   const toggle = useAppStore((s) => s.toggleLegend);
   const iffiOn = useAppStore((s) => s.layers.iffi);
   const comuniOn = useAppStore((s) => s.layers.comuni);
-  const v2Layer = useAppStore((s): V2Layer | null =>
-    s.layers.v2Bodies ? "bodies" : s.layers.v2Diffuse ? "diffuse" : null,
-  );
-  if (!v2Layer && !iffiOn) return null;
+  const bodiesOn = useAppStore((s) => s.layers.v2Bodies);
+  const diffuseOn = useAppStore((s) => s.layers.v2Diffuse);
+  const v2On = bodiesOn || diffuseOn;
+  if (!v2On && !iffiOn) return null;
   return (
     <div className={styles.legend} data-map-legend data-open={open}>
       <button
@@ -44,14 +44,15 @@ export function Legend() {
         onClick={toggle}
       >
         <span className={styles.ttl}>
-          {v2Layer ? "Suscettibilità frane" : "Frane censite"}
+          {v2On ? "Suscettibilità frane" : "Frane censite"}
         </span>
         <span className={styles.miniRamp} aria-hidden="true" />
         <Icon name="chevron" className={styles.caret} />
       </button>
       <div className={styles.wrap}>
         <div className={styles.body}>
-          {v2Layer && <V2LegendBody layer={v2Layer} />}
+          {bodiesOn && <V2LegendBody layer="bodies" />}
+          {diffuseOn && <V2LegendBody layer="diffuse" />}
           {iffiOn && (
             <div className={styles.iffiRow}>
               <i />
