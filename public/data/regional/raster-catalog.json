@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-12T15:28:03.628119+00:00",
+  "generatedAt": "2026-11-12T23:58:48.161055+00:00",
   "layers": [
     {
       "id": "raster-trueorto-fvg-1720",
@@ -34,8 +34,8 @@
       "tiles": [
         "data/regional/raster-trueorto-fvg-1720/{z}/{x}/{y}.png"
       ],
-      "retrievedAt": "2026-11-12T15:28:05.331160+00:00",
-      "lastCheckedAt": "2026-11-12T15:28:05.331160+00:00",
+      "retrievedAt": "2026-11-12T23:58:50.403252+00:00",
+      "lastCheckedAt": "2026-11-12T23:58:50.403252+00:00",
       "tileCount": 176
     },
     {
@@ -71,8 +71,8 @@
       "tiles": [
         "data/regional/raster-ortofoto2012/{z}/{x}/{y}.png"
       ],
-      "retrievedAt": "2026-11-12T15:29:21.902148+00:00",
-      "lastCheckedAt": "2026-11-12T15:29:21.902148+00:00",
+      "retrievedAt": "2026-11-13T00:00:30.119694+00:00",
+      "lastCheckedAt": "2026-11-13T00:00:30.119694+00:00",
       "tileCount": 176
     },
     {
@@ -108,8 +108,8 @@
       "tiles": [
         "data/regional/raster-hillshade/{z}/{x}/{y}.png"
       ],
-      "retrievedAt": "2026-11-12T15:30:48.302832+00:00",
-      "lastCheckedAt": "2026-11-12T15:30:48.302832+00:00",
+      "retrievedAt": "2026-11-13T00:02:12.384660+00:00",
+      "lastCheckedAt": "2026-11-13T00:02:12.384660+00:00",
       "tileCount": 176
     }
   ]
