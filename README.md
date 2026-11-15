@@ -95,6 +95,16 @@ The non-Overpass scripts (`build:cell-grid`, `build:comuni`,
 exercised in CI to make sure they don't bitrot — see
 `.github/workflows/ci.yml`.
 
+## Custom domain
+
+The production platform uses `https://mappa.move38lab.com/` once the GitHub
+Pages custom domain and its DNS record are configured. The deployment reads
+`base_path` through `actions/configure-pages`: custom-domain builds use `/`,
+while project-URL builds retain `/landslide-app/`. Assets, PMTiles and the
+analysis worker therefore keep the same origin and correct path.
+
+The explanatory site is served separately at `https://frane.move38lab.com/`.
+
 ## Privacy & token scope
 
 The Mapbox public token is consumed via `VITE_MAPBOX_TOKEN` and is statically
@@ -105,7 +115,8 @@ naked token can be reused by third parties to burn your monthly quota.
 
 To prevent quota theft, lock the token down in the Mapbox dashboard:
 
-- **URL restriction**: allow only `https://<your-user>.github.io/landslide-app/*`
+- **URL restriction**: allow only `https://mappa.move38lab.com/*` (and the previous
+  `https://diiibe.github.io/landslide-app/*` during migration)
   (and `http://localhost:*` while developing).
 - **Scopes**: read-only — `styles:read`, `fonts:read`, `tiles:read`, plus
   `geocoding:read` if you want the locality search box to work. Do **not**

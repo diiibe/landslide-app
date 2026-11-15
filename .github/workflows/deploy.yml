@@ -48,7 +48,14 @@ jobs:
       - if: steps.roads-cache.outputs.cache-hit != 'true'
         run: npm run build:roads
 
-      - run: VITE_BASE=/landslide-app/ VITE_MAPBOX_TOKEN=${{ secrets.MAPBOX_TOKEN }} npm run build
+      # Read the active Pages hostname so assets work both on the project URL
+      # and at the root of the custom domain.
+      - uses: actions/configure-pages@v5
+        id: pages
+      - run: npm run build
+        env:
+          VITE_BASE: ${{ steps.pages.outputs.base_path }}/
+          VITE_MAPBOX_TOKEN: ${{ secrets.MAPBOX_TOKEN }}
       - uses: actions/upload-pages-artifact@v3
         with: { path: dist }
 
