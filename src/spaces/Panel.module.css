@@ -771,3 +771,5 @@
 .export{padding:12px;border:1px solid var(--c-border);border-radius:6px;background:var(--c-surface-sunken)}.export summary{display:flex;align-items:center;gap:8px;font-weight:650;min-height:44px;cursor:pointer}.export summary svg{width:18px;height:18px}.export[open]{display:grid;gap:12px}.export .field{margin-block:8px}.export>button{min-height:44px;width:100%;font:600 14px var(--font-stack)}
 
 @media(max-width:360px){.spaceIdentity small{display:none}.spaceBar button{min-height:44px}.spaceIdentity{padding:8px;gap:6px}.spaceIdentity strong{font-size:12px}}
+
+.areaHead{align-items:center;padding-block:4px 12px;border-bottom:1px solid var(--c-border)}.areaHead>svg{width:56px;height:64px;flex-shrink:0;background:var(--c-surface-sunken);border-radius:6px}.areaHead>div{flex:1;min-width:0}.areaHead h2{font-size:21px;overflow-wrap:anywhere}.areaHead>button{align-self:start;min-height:44px;min-width:44px}

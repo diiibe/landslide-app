@@ -40,7 +40,7 @@ import { useAppStore } from "@/app/store";
 export default function App() {
   const activeSpace = useExperienceStore(s => s.activeId);
   const scene = experience(activeSpace);
-  const showFraneLegend = useAppStore(s => s.layers.v2Bodies || s.layers.v2Diffuse || s.layers.iffi);
+  const showFraneLegend = useAppStore(s => s.layers.v2Bodies || s.layers.v2Diffuse || s.layers.iffi || s.layers.roads || s.layers.trails);
   const drawerOpen = useAppStore((s) => s.drawerOpen);
   const drawingMode = useAppStore((s) => s.drawingMode);
   const mapControlsRoot = useRef<HTMLDivElement>(null);

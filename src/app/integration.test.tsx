@@ -246,6 +246,12 @@ describe("Unified catalog experience", () => {
       screen.getByRole("complementary", { name: "Sulla mappa" }),
     ).toBeInTheDocument();
   });
+  it("shows the neutral network legend even when both susceptibility maps and IFFI are off",()=>{
+    useAppStore.setState(s=>({layers:{...s.layers,v2Bodies:false,v2Diffuse:false,iffi:false,roads:true,trails:false}}));
+    render(<App/>);
+    expect(screen.getByRole("button",{name:"Strade e sentieri"})).toBeInTheDocument();
+    expect(screen.getByText(/Nessuna mappatura frane attiva/)).toBeInTheDocument();
+  });
   it("closes the overlay drawer without changing which data layers are active", () => {
     useAppStore.setState(s=>({layers:{...s.layers,v2Bodies:true}}));
     render(<App />);

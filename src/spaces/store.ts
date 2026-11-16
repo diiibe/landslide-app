@@ -1,3 +1,4 @@
+import { areaInSpace } from "./areaScope";
 import { create } from "zustand";
 import { invalidateAnalysisVersion } from "./analysis/client";
 import { HAS_MAPBOX_TOKEN } from "@/map/style";
@@ -13,6 +14,7 @@ export interface AreaSelection {
   name: string;
   geometry: GeoJSON.Polygon;
   saved: boolean;
+  spaceId?: SpaceId | null;
   color?: string;
   createdAt?: number;
 }
@@ -56,6 +58,19 @@ export const useExperienceStore = create<State>(() => ({
   contextError: null,
   contextReady: false,
 }));
+const areaSessions = new Map<SpaceId, AreaSelection>();
+function rememberArea() {
+  const { activeId, area } = useExperienceStore.getState();
+  if (!activeId) return;
+  if (area) areaSessions.set(activeId, area);
+  else areaSessions.delete(activeId);
+}
+function recalledArea(id: SpaceId) {
+  const area = areaSessions.get(id);
+  if (!area || !area.saved) return area ?? null;
+  const stored = useAppStore.getState().userPolygons.find(p => p.id === area.id);
+  return stored && stored.visible !== false && areaInSpace(stored, id) ? { ...area, name: stored.name, color: stored.color, geometry: stored.geometry } : null;
+}
 let territory: Space | null = null;
 let territoryDrawer = false;
 function url(id: SpaceId | null) {
@@ -68,6 +83,7 @@ export function openExperience(id: SpaceId) {
   const scene = experience(id);
   if (!scene) return;
   if (id === "landslides") invalidateAnalysisVersion();
+  rememberArea();
   if (!useExperienceStore.getState().activeId) {
     territory = captureView("Territorio");
     territoryDrawer = useAppStore.getState().drawerOpen;
@@ -77,7 +93,7 @@ export function openExperience(id: SpaceId) {
     hubOpen: false,
     tab: "overview",
     selectedId: null,
-    area: null,
+    area: recalledArea(id),
     replayTime: null,
     scenario: { id: "normal", since: 0 },
     filter: id === "traffic" ? "flow" : "all",
@@ -94,7 +110,8 @@ export function openExperience(id: SpaceId) {
   ) as typeof a.layers;
   if (id === "landslides")
     Object.assign(layers, {
-      v2Bodies: true,
+      v2Bodies: useExperienceStore.getState().analysisLayer === "bodies",
+      v2Diffuse: useExperienceStore.getState().analysisLayer === "diffuse",
       iffi: true,
       roads: true,
       trails: false,
@@ -139,6 +156,7 @@ export function openExperience(id: SpaceId) {
   url(id);
 }
 export function leaveExperience() {
+  rememberArea();
   const previous = territory;
   territory = null;
   useExperienceStore.setState({
@@ -191,7 +209,11 @@ export function selectObject(id: string | null) {
 export function selectArea(area: AreaSelection) {
   if (area.saved) {
     const stored = useAppStore.getState().userPolygons.find(p=>p.id===area.id);
-    if (stored) area = { ...area, color: stored.color, createdAt: stored.createdAt };
+    if (stored) {
+      const owner = stored.spaceId ?? null;
+      if (owner && useExperienceStore.getState().activeId !== owner) openExperience(owner);
+      area = { ...area, spaceId: owner, color: stored.color, createdAt: stored.createdAt };
+    }
     useAppStore.getState().updateUserPolygon(area.id, { visible: true });
   }
   useExperienceStore.setState({

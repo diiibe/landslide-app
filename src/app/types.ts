@@ -90,6 +90,8 @@ export interface UserPolygonStats {
 }
 
 export interface UserPolygon {
+  /** null/absent = territory; a Space-owned area is visible only there. */
+  spaceId?: import("@/spaces/types").SpaceId | null;
   /** Hidden areas stay saved and can be recalled from the Areas control. */
   visible?: boolean;
   id: string;

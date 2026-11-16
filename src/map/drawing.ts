@@ -1,3 +1,4 @@
+import { useExperienceStore } from "@/spaces/store";
 /**
  * Polygon-drawing tool: thin wrapper around terra-draw + its MapLibre
  * adapter. We use a single TerraDrawPolygonMode so vertices are placed
@@ -222,6 +223,7 @@ export function commitDrawing(name: string, color?: string): boolean {
     name.trim() || `Area ${useAppStore.getState().userPolygons.length + 1}`;
   const saved = useAppStore.getState().addUserPolygon({
     name: trimmed,
+    spaceId: useExperienceStore.getState().activeId,
     geometry: geom,
     bounds,
     stats,

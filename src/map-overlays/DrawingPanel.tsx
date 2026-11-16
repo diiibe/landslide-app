@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import { useAppStore, USER_COLOR_PALETTE } from "@/app/store";
+import { AreaOutline } from "@/spaces/AreaOutline";
+import { areaInSpace, formatArea } from "@/spaces/areaScope";
+import { experience } from "@/spaces/experiences";
 import { useExperienceStore } from "@/spaces/store";
 import { Icon } from "@/ui/Icon";
 import { ColorButton } from "./ColorButton";
@@ -28,8 +31,10 @@ import styles from "./DrawingPanel.module.css";
  */
 export function DrawingPanel() {
   const drawingMode = useAppStore((s) => s.drawingMode);
-  const landslides = useExperienceStore(s => s.activeId === "landslides");
-  const polygonCount = useAppStore((s) => s.userPolygons.length);
+  const activeSpace = useExperienceStore(s => s.activeId);
+  const landslides = activeSpace === "landslides";
+  const destination = experience(activeSpace)?.title ?? "Territorio";
+  const polygonCount = useAppStore((s) => s.userPolygons.filter(p=>areaInSpace(p,activeSpace)).length);
   const [preview, setPreview] = useState<DrawingPreview>({
     phase: "drawing",
     vertexCount: 0,
@@ -66,7 +71,7 @@ export function DrawingPanel() {
         <span className={styles.dot} aria-hidden="true" />
         <span className={styles.ttl}>
           {ready
-            ? "Salva area"
+            ? "La tua nuova area"
             : preview.phase === "loading"
               ? "Preparazione mappa…"
               : preview.phase === "error"
@@ -76,16 +81,18 @@ export function DrawingPanel() {
         <button className={styles.headClose} aria-label="Annulla disegno" onClick={cancelDrawing}><Icon name="close"/></button>
       </div>
       <div className={styles.body}>
-        <div className={styles.kvRow}>
+        {ready && preview.geometry && <div className={styles.areaIdentity}><AreaOutline geometry={preview.geometry} color={color}/><div><small>{destination}</small><strong>{formatArea(preview.areaKm2)}</strong><span>Perimetro pronto · {preview.vertexCount} vertici</span></div></div>}
+
+        {!ready && <div className={styles.kvRow}>
           <span className={styles.kvLabel}>Vertici</span>
           <span className={styles.kvValue}>{preview.vertexCount}</span>
-        </div>
-        <div className={styles.kvRow}>
+        </div>}
+        {!ready && <div className={styles.kvRow}>
           <span className={styles.kvLabel}>Area</span>
           <span className={styles.kvValue}>
             {preview.areaKm2 > 0 ? preview.areaKm2 < .01 ? `${(preview.areaKm2 * 1e6).toLocaleString("it-IT",{maximumSignificantDigits:3})} m²` : `${preview.areaKm2.toLocaleString("it-IT",{maximumFractionDigits:2})} km²` : "—"}
           </span>
-        </div>
+        </div>}
         {preview.phase === "error" && (
           <p role="alert" className={styles.hint}>
             {preview.error}
@@ -130,6 +137,7 @@ export function DrawingPanel() {
             </div>
           </>
         )}
+        {ready && <p className={styles.destination}>Verrà salvata in <strong>{destination}</strong>, su questo dispositivo. {landslides ? "La ritrovi in Aree e puoi riaprire l’analisi." : "Resta associata a questo contesto."}</p>}
         <div className={styles.actions}>
           <button
             type="button"

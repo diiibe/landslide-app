@@ -730,6 +730,7 @@ export const useAppStore = create<AppState>((set) => ({
       bounds: input.bounds,
       stats: input.stats,
       visible: input.visible ?? true,
+      spaceId: input.spaceId ?? null,
     };
     set((s) => {
       const next = [polygon, ...s.userPolygons];

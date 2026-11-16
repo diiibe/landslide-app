@@ -9,7 +9,7 @@ const make = (name="Zona di prova") => areaReport({id:"area-1",name,geometry,sav
 it("exports a usable WGS84 perimeter with complete data and can reimport it as an area",()=>{
  const output=areaExportContent("geojson",make());const json=JSON.parse(output.text),p=json.features[0].properties;
  expect(json.features[0].geometry).toEqual(geometry);expect(p.analysis.layers.bodies.belowFocusM2).toBe(3000);expect(p.model_version).toBe(result.version);expect(p["Corpi di frana | Grado 5 · superficie [m2]"]).toBe(400);
- const imported=parseBundleFile(output.text);expect(imported.polygons).toHaveLength(1);expect(imported.polygons[0]?.geometry).toEqual(geometry);expect(imported.polygons[0]?.stats.meanP).toBeNull();
+ const imported=parseBundleFile(output.text);expect(imported.polygons).toHaveLength(1);expect(imported.polygons[0]?.geometry).toEqual(geometry);expect(imported.polygons[0]?.spaceId).toBe("landslides");expect(imported.polygons[0]?.stats.meanP).toBeNull();
 });
 it("keeps below-focus mapped data and no-data distinct, with units and positive small values",()=>{
  const rows=areaRows(make());expect(rows).toContainEqual(["Zona di prova","Corpi di frana","Mappata sotto la fascia alta",3000,"m2"]);expect(rows).toContainEqual(["Zona di prova","Corpi di frana","Senza mappatura",1000,"m2"]);

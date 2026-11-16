@@ -78,6 +78,7 @@ export function exportFlatGeoJson(
       type: "Feature",
       properties: {
         "fvg:area": p.name,
+        "fvg:space": p.spaceId ?? null,
         "fvg:color": p.color,
         "fvg:areaKm2": p.stats.areaKm2,
         "fvg:cellsVisible": p.stats.cellsVisible,

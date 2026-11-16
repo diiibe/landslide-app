@@ -62,7 +62,7 @@ export function SpacePanel() {
         <button role="tab" aria-selected={tab === "tools"} onClick={() => useExperienceStore.setState({ tab: "tools" })}><Icon name="extensions" />Estensioni</button>
         {active === "landslides" && <button role="tab" aria-selected={tab === "areas"} onClick={() => useExperienceStore.setState({tab:"areas"})}>Aree</button>}
       </div>
-      {(!isNatureSpace(active) || tab === "layers") && <SpaceDataStatus />}
+      {tab !== "areas" && (!isNatureSpace(active) || tab === "layers") && <SpaceDataStatus />}
       {active === "landslides" && tab === "areas" ? <AreasPanel/> : isNatureSpace(active) && tab !== "layers" ? <NaturePanel tools={tab === "tools"}/> : tab === "tools" ? <Workbench /> : tab === "overview" ? (
         active === "landslides" ? (
           <FranePanel />
