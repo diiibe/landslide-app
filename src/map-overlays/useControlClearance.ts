@@ -11,7 +11,7 @@ export function useControlClearance(ref: RefObject<HTMLDivElement>, drawerOpen: 
   useLayoutEffect(() => {
     const root = ref.current;
     if (!root) return;
-    let frame = 0, observed: Element | null = null;
+    let frame = 0, observed: Element | null = null, observedBar: Element | null = null;
     const schedule = () => { cancelAnimationFrame(frame); frame = requestAnimationFrame(measure); };
     const resize = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(schedule);
     function measure() {
@@ -34,8 +34,17 @@ export function useControlClearance(ref: RefObject<HTMLDivElement>, drawerOpen: 
       if (root.style.getPropertyValue('--map-control-bottom') !== value) root.style.setProperty('--map-control-bottom', value);
       // The legend stays above attribution text when it occupies the left edge.
       const legend = root.querySelector<HTMLElement>('[data-map-legend]');
+      const spaceBar = root.querySelector<HTMLElement>('[data-map-space-bar]');
+      if (spaceBar !== observedBar) {
+        if (observedBar) resize?.unobserve(observedBar);
+        observedBar = spaceBar;
+        if (observedBar) resize?.observe(observedBar);
+      }
+      const barRect = spaceBar?.getBoundingClientRect(), legendRect = legend?.getBoundingClientRect();
+      const top = barRect && legendRect && barRect.right > legendRect.left && barRect.left < legendRect.right ? Math.max(16, barRect.bottom - map.top + 8) : 16;
+      root.style.setProperty('--map-legend-top', `${Math.ceil(top)}px`);
       const legendEdge = attribution && legend ? bottomClearance(map, legend.getBoundingClientRect(), [attribution.getBoundingClientRect()]) : 16;
-      root.style.setProperty('--map-legend-bottom', `${Math.min(Math.max(68, legendEdge + 52), Math.max(16, map.height - 60))}px`);
+      root.style.setProperty('--map-legend-bottom', `${Math.min(Math.max(68, legendEdge + 52), Math.max(16, map.height - top - 44))}px`);
     }
     resize?.observe(root);
     const mutations = new MutationObserver(schedule);

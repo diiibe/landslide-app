@@ -240,12 +240,12 @@ export function buildV2PopupNode(p: V2PopupProps): HTMLElement {
     "display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;" +
     "vertical-align:-1px;border:1px solid var(--c-border)";
   swatch.style.background = v2ClassColor(p.cls, p.ncls);
-  cls.append(swatch, `Classe ${p.cls} di ${p.ncls}`);
+  cls.append(swatch, `Grado ${p.cls} di ${p.ncls} · fascia alta`);
   root.appendChild(cls);
 
   const what = document.createElement("div");
   what.className = "fvg-popup__muted";
-  what.textContent = "Somiglianza all'inventario: non è una previsione.";
+  what.textContent = "Dettaglio della precedente classe 5. Somiglianza all'inventario: non è una previsione.";
   root.appendChild(what);
 
   const fit = document.createElement("div");

@@ -62,14 +62,21 @@ async function gridData() {
         response(`${base}data/model_v2.json`),
       ]);
       const manifest = (await mr.json()) as Manifest;
+      const modelBytes = await model.arrayBuffer();
+      const metadata = JSON.parse(new TextDecoder().decode(modelBytes)) as { layers: Record<"bodies" | "diffuse", { edges: number[]; focus?: { threshold: number; scheme: string } }> };
       if (
         manifest.version !== 1 ||
-        (await hash(await model.arrayBuffer())) !== manifest.modelHash
+        (await hash(modelBytes)) !== manifest.modelHash
       )
         throw new Error(
           "L’indice analitico non corrisponde alla mappatura corrente.",
         );
-      return { grid: decodeGrid(await binary(manifest.modelGrid)), manifest };
+      const grid = decodeGrid(await binary(manifest.modelGrid));
+      if (metadata.layers.bodies.focus && metadata.layers.diffuse.focus) {
+        grid.focusEdges = [metadata.layers.bodies.edges, metadata.layers.diffuse.edges];
+        grid.focusThresholds = [metadata.layers.bodies.focus.threshold, metadata.layers.diffuse.focus.threshold];
+      }
+      return { grid, manifest };
     })().catch((e) => {
       gridPromise = null;
       throw e;
@@ -94,7 +101,11 @@ worker.onmessage = async (
   try {
     const { grid, manifest } = await gridData();
     const result: AnalysisResult = analyse(polygon, grid);
-    result.version = manifest.modelGrid.sha;
+    result.version = `${manifest.modelGrid.sha}:${manifest.modelHash}`;
+    if (grid.focusEdges) result.classification = {
+      scheme: "upper-quintile-v1", edges: { bodies: grid.focusEdges[0], diffuse: grid.focusEdges[1] },
+      note: "Cinque gradi per quantili della precedente classe 5 (20% superiore). Il territorio sotto soglia è mappato ma fuori dalla fascia alta; non è dato mancante. Punteggi di somiglianza, non probabilità di frana.",
+    };
     result.method =
       "Griglia originale 120 m · intersezione delle celle in UTM 33N · pesi sulla superficie";
     if (context) {

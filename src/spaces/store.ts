@@ -13,15 +13,18 @@ export interface AreaSelection {
   name: string;
   geometry: GeoJSON.Polygon;
   saved: boolean;
+  color?: string;
+  createdAt?: number;
 }
 interface State {
   activeId: SpaceId | null;
   hubOpen: boolean;
-  tab: "overview" | "layers" | "tools";
+  tab: "overview" | "layers" | "tools" | "areas";
   selectedId: string | null;
   inspectionRequest: number;
   area: AreaSelection | null;
   analysisTab: "distribution" | "context" | "compare";
+  analysisLayer: "bodies" | "diffuse";
   replayTime: number | null;
   scenario: ScenarioState;
   filter: Metric | "all";
@@ -41,6 +44,7 @@ export const useExperienceStore = create<State>(() => ({
   inspectionRequest: 0,
   area: null,
   analysisTab: "distribution",
+  analysisLayer: "bodies",
   replayTime: null,
   scenario: { id: "normal", since: 0 },
   filter: "all",
@@ -185,6 +189,11 @@ export function selectObject(id: string | null) {
   useAppStore.setState({ drawerOpen: true });
 }
 export function selectArea(area: AreaSelection) {
+  if (area.saved) {
+    const stored = useAppStore.getState().userPolygons.find(p=>p.id===area.id);
+    if (stored) area = { ...area, color: stored.color, createdAt: stored.createdAt };
+    useAppStore.getState().updateUserPolygon(area.id, { visible: true });
+  }
   useExperienceStore.setState({
     area,
     inspectionRequest: useExperienceStore.getState().inspectionRequest + 1,
@@ -207,10 +216,23 @@ export function setScenario(id: Scenario) {
 export function demoTime() {
   return useExperienceStore.getState().replayTime ?? Date.now();
 }
+export function closeArea() {
+  const area = useExperienceStore.getState().area;
+  if (area?.saved) useAppStore.getState().updateUserPolygon(area.id, { visible: false });
+  useExperienceStore.setState({ area: null, probe: false });
+}
+export function locateArea(id: string) {
+  const p = useAppStore.getState().userPolygons.find(p => p.id === id);
+  if (!p) return;
+  savedArea(id);
+  // Navigation is deferred by the existing map listener after mobile padding.
+  window.dispatchEvent(new CustomEvent("fvg:regional-fit", { detail: p.bounds }));
+}
 export function savedArea(id: string) {
   const p = useAppStore.getState().userPolygons.find((p) => p.id === id);
-  if (p)
+  if (p) {
     selectArea({ id: p.id, name: p.name, geometry: p.geometry, saved: true });
+  }
 }
 export const AREA_PRESETS = [
   {

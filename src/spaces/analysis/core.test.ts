@@ -138,3 +138,14 @@ describe("complete area analysis", () => {
     expect(r.bodiesKm.reduce((s, v) => s + v, 0)).toBeCloseTo(0.18, 8);
   });
 });
+
+it("subdivides only the highest band while retaining full mapped coverage and weighted scores", () => {
+  const g: Grid = { ...grid, focusEdges: [[.5,.55,.6,.7,.8,1],[.5,.55,.6,.7,.8,1]], focusThresholds:[.5,.5] };
+  const r=analyse(polygon(fixtures.half,fixtures.hole),g);
+  expect(r.layers.bodies.coveredM2).toBeCloseTo(18000,0);
+  expect(r.layers.bodies.belowFocusM2).toBeCloseTo(10800,0);
+  expect(r.layers.bodies.classes.reduce((a,b)=>a+b,0)).toBeCloseTo(7200,0);
+  expect(r.layers.bodies.classes[4]).toBeCloseTo(7200,0);
+  expect(r.layers.bodies.mean).toBeCloseTo(.44,5);
+  expect(r.layers.bodies.coveredM2-r.layers.bodies.belowFocusM2!-r.layers.bodies.classes.reduce((a,b)=>a+b,0)).toBeCloseTo(0,6);
+});

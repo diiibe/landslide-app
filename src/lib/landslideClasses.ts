@@ -3,6 +3,7 @@ export interface LandslideStyle {
   minClass: number;
   classes?: number[] | undefined;
   opacity: number;
+  scheme?: "upper-quintile-v1" | undefined;
 }
 export const LANDSLIDE_CLASSES = [1, 2, 3, 4, 5] as const;
 export const selectedClasses = (style: LandslideStyle, count = 5): number[] =>
@@ -12,7 +13,7 @@ export const classSelectionText = (classes: number[]) =>
   classes.length ? `Classi ${classes.join(", ")}` : "Nessuna classe visibile";
 export function withClasses(style: LandslideStyle, classes: number[]): LandslideStyle {
   const chosen = selectedClasses({ ...style, classes });
-  return { ...style, classes: chosen, minClass: chosen[0] ?? 1 };
+  return { ...style, classes: chosen, minClass: chosen[0] ?? 1, scheme: "upper-quintile-v1" };
 }
 export const classSum = (values: number[], classes: number[], offset = 1) =>
   classes.reduce((sum, c) => sum + (values[c - offset] ?? 0), 0);

@@ -1,7 +1,7 @@
 import { LANDSLIDE_CLASSES, classSelectionText } from "@/lib/landslideClasses";
 import { v2ClassColor } from "@/map/layers/modelV2";
 import styles from "./LandslideClassPicker.module.css";
-export function LandslideClassPicker({ value, onChange, count = 5, label = "Classi visibili" }: {
+export function LandslideClassPicker({ value, onChange, count = 5, label = "Gradi visibili · fascia alta" }: {
   value: number[]; onChange: (value: number[]) => void; count?: number; label?: string;
 }) {
   return <fieldset className={styles.picker}>
@@ -12,6 +12,6 @@ export function LandslideClassPicker({ value, onChange, count = 5, label = "Clas
         <span><i style={{ background: v2ClassColor(c, count) }} aria-hidden="true"/><b>{c}</b><svg viewBox="0 0 12 12" aria-hidden="true"><path d="m2 6 2.5 2.5L10 3"/></svg></span>
       </label>)}
     </div>
-    <p>{classSelectionText(value)} · le altre sono trasparenti.</p>
+    <p>{classSelectionText(value)} · fuori fascia alta e gradi esclusi sono trasparenti.</p>
   </fieldset>;
 }

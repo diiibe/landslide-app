@@ -767,3 +767,7 @@
 
 /* Shared regional navigation material; content remains unpatterned. */
 .spaceBar { background: var(--material-chrome); }
+
+.export{padding:12px;border:1px solid var(--c-border);border-radius:6px;background:var(--c-surface-sunken)}.export summary{display:flex;align-items:center;gap:8px;font-weight:650;min-height:44px;cursor:pointer}.export summary svg{width:18px;height:18px}.export[open]{display:grid;gap:12px}.export .field{margin-block:8px}.export>button{min-height:44px;width:100%;font:600 14px var(--font-stack)}
+
+@media(max-width:360px){.spaceIdentity small{display:none}.spaceBar button{min-height:44px}.spaceIdentity{padding:8px;gap:6px}.spaceIdentity strong{font-size:12px}}

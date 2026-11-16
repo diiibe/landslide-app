@@ -188,7 +188,7 @@ export function mountExperienceMap(m: MLMap): () => void {
       installed = scene.id;
       context();
       const area = s.area;
-      source("space-area", area ? collection([feature(area.geometry)]) : EMPTY);
+      source("space-area", area && !area.saved ? collection([feature(area.geometry)]) : EMPTY);
       layer({
         id: "space-area-fill",
         type: "fill",
@@ -215,7 +215,7 @@ export function mountExperienceMap(m: MLMap): () => void {
               type: "vector",
               url: `pmtiles://${import.meta.env.BASE_URL}tiles/${entry.tiles}?v=${entry.tileSha}`,
             });
-          const field = a.layers.v2Diffuse ? "d" : "b";
+          const field = s.analysisLayer === "diffuse" ? "d" : "b";
           const paint = [
             "interpolate",
             ["linear"],

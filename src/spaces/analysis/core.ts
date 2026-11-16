@@ -15,9 +15,13 @@ export interface Grid {
   cell: number;
   classes: [Uint8Array, Uint8Array];
   scores: [Float32Array, Float32Array];
+  /** Display breaks for the highest historical quintile; domain masks stay complete. */
+  focusEdges?: [number[], number[]];
+  focusThresholds?: [number, number];
 }
 export interface LayerAnalysis {
   coveredM2: number;
+  belowFocusM2?: number;
   cells: number;
   classes: number[];
   mean: number | null;
@@ -31,6 +35,7 @@ export interface NetworkAnalysis {
   bodiesKm: number[];
   diffuseKm: number[];
   segments: number;
+  belowFocusKm?: { bodies: number; diffuse: number };
 }
 export interface AnalysisResult {
   areaM2: number;
@@ -39,6 +44,7 @@ export interface AnalysisResult {
   poi?: { name: string; category: string; coordinates: number[] }[];
   version?: string;
   method?: string;
+  classification?: { scheme: string; edges: { bodies: number[]; diffuse: number[] }; note: string };
 }
 export function decodeGrid(buffer: ArrayBuffer): Grid {
   const d = new DataView(buffer),
@@ -72,12 +78,20 @@ export function projectPolygon(polygon: GeoJSON.Polygon, g: Grid): XY[][] {
     }),
   );
 }
+export function displayClass(g: Grid, idx: number, layer: 0 | 1): number {
+  if (!g.classes[layer][idx]) return 0;
+  const edges = g.focusEdges?.[layer], score = g.scores[layer][idx]!;
+  if (!edges) return g.classes[layer][idx]!;
+  if (!Number.isFinite(score) || score < g.focusThresholds![layer]) return 0;
+  return 1 + edges.slice(1, -1).filter(edge => score >= edge).length;
+}
+function pointIndex(g: Grid, p: XY): number {
+  const c = Math.floor(p[0] / g.cell), r = Math.floor(-p[1] / g.cell);
+  return c < 0 || r < 0 || c >= g.width || r >= g.height ? -1 : r * g.width + c;
+}
 export function sampleClass(g: Grid, p: XY, layer: 0 | 1): number {
-  const c = Math.floor(p[0] / g.cell),
-    r = Math.floor(-p[1] / g.cell);
-  return c < 0 || r < 0 || c >= g.width || r >= g.height
-    ? 0
-    : g.classes[layer][r * g.width + c]!;
+  const idx = pointIndex(g, p);
+  return idx < 0 ? 0 : displayClass(g, idx, layer);
 }
 export function analyse(polygon: GeoJSON.Polygon, g: Grid): AnalysisResult {
   const rings = projectPolygon(polygon, g),
@@ -104,6 +118,7 @@ export function analyse(polygon: GeoJSON.Polygon, g: Grid): AnalysisResult {
     coveredM2: 0,
     cells: 0,
     classes: [0, 0, 0, 0, 0],
+    ...(g.focusEdges ? { belowFocusM2: 0 } : {}),
     mean: null,
     median: null,
     p90: null,
@@ -125,7 +140,9 @@ export function analyse(polygon: GeoJSON.Polygon, g: Grid): AnalysisResult {
         const v = layers[l]!;
         v.coveredM2 += a;
         v.cells++;
-        v.classes[cls - 1]! += a;
+        const shown = displayClass(g, idx, l);
+        if (shown) v.classes[shown - 1]! += a;
+        else if (g.focusEdges) v.belowFocusM2! += a;
         sums[l]! += a * score;
         rows[l]!.push([score, a]);
       }
@@ -166,6 +183,7 @@ export function analyseNetwork(
       bodiesKm: [0, 0, 0, 0, 0, 0],
       diffuseKm: [0, 0, 0, 0, 0, 0],
       segments: 0,
+      ...(g.focusEdges ? { belowFocusKm: { bodies: 0, diffuse: 0 } } : {}),
     };
   for (let k = 0; k < n; k++) {
     const a: XY = [coords[k * 4]! / 100 + ox, coords[k * 4 + 1]! / 100 + oy],
@@ -183,6 +201,13 @@ export function analyseNetwork(
       const len = (Math.hypot(b[0] - a[0], b[1] - a[1]) * (r - l)) / 1000,
         t = (l + r) / 2,
         p: XY = [a[0] + t * (b[0] - a[0]), a[1] + t * (b[1] - a[1])];
+      if (result.belowFocusKm) {
+        const idx = pointIndex(g, p);
+        if (idx >= 0) {
+          if (g.classes[0][idx] && !displayClass(g, idx, 0)) result.belowFocusKm.bodies += len;
+          if (g.classes[1][idx] && !displayClass(g, idx, 1)) result.belowFocusKm.diffuse += len;
+        }
+      }
       result.totalKm += len;
       result.bodiesKm[sampleClass(g, p, 0)]! += len;
       result.diffuseKm[sampleClass(g, p, 1)]! += len;

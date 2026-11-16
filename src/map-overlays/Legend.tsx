@@ -111,11 +111,11 @@ function V2LegendBody({ layer }: { layer: V2Layer }) {
         ))}
       </ol>
       <div className={styles.rampLabels}>
-        <span>meno simile</span>
-        <span>più simile</span>
+        <span>fascia alta · grado 1</span>
+        <span>grado 5</span>
       </div>
       <p className={styles.v2Copy}>
-        {classSelectionText(chosen)}.
+        {classSelectionText(chosen)}. Cinque gradi nella fascia alta; il resto è trasparente.
       </p>
       <details className={styles.reading}>
         <summary>Come leggere la mappa</summary>
@@ -123,7 +123,7 @@ function V2LegendBody({ layer }: { layer: V2Layer }) {
         <p className={styles.v2Note}>{V2_FULL_FIT_NOTE}</p>
         {stats && (
           <p className={styles.v2Note}>
-            Classi per quantili; quote effettive:{" "}
+            Gradi per quantili della precedente classe 5; quote nella fascia alta:{" "}
             {stats.shares.map(pct).join(", ")}.
           </p>
         )}

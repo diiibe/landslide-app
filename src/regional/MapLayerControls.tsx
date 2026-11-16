@@ -50,7 +50,7 @@ export function MapLayerControls({ item }: { item: CatalogItem }) {
             />
           </label>
           <p className={styles.caption}>
-            Classi per quantili del modello. Il punteggio misura la somiglianza
+            Cinque gradi per quantili della fascia alta (precedente classe 5). Il punteggio misura la somiglianza
             con l’inventario; non è una previsione né una probabilità di frana.
           </p>
           {model.status === "missing" && (

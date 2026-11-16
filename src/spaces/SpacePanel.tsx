@@ -1,3 +1,4 @@
+import { AreasPanel } from "./AreasControl";
 import { NaturePanel } from "./nature/Panel";
 import { isNatureSpace } from "./types";
 import { useEffect, useRef } from "react";
@@ -26,9 +27,9 @@ export function SpacePanel() {
       (previous.current.selected !== selected ||
         previous.current.areaId !== areaId || previous.current.inspectionRequest !== inspectionRequest);
     previous.current = { active, selected, areaId, inspectionRequest };
-    if (!changed || tab === "layers") return;
+    if (!changed || tab === "layers" || tab === "areas") return;
     const frame = requestAnimationFrame(() => {
-      const heading = (selected ? content.current?.querySelector<HTMLElement>("[data-space-inspection]") : null) ?? content.current?.querySelector<HTMLElement>("h2,h3");
+      const heading = ((selected || areaId) ? content.current?.querySelector<HTMLElement>("[data-space-inspection]") : null) ?? content.current?.querySelector<HTMLElement>("h2,h3");
       if (!heading) return;
       heading.tabIndex = -1;
       heading.focus({ preventScroll: true });
@@ -59,9 +60,10 @@ export function SpacePanel() {
           Livelli
         </button>
         <button role="tab" aria-selected={tab === "tools"} onClick={() => useExperienceStore.setState({ tab: "tools" })}><Icon name="extensions" />Estensioni</button>
+        {active === "landslides" && <button role="tab" aria-selected={tab === "areas"} onClick={() => useExperienceStore.setState({tab:"areas"})}>Aree</button>}
       </div>
       {(!isNatureSpace(active) || tab === "layers") && <SpaceDataStatus />}
-      {isNatureSpace(active) && tab !== "layers" ? <NaturePanel tools={tab === "tools"}/> : tab === "tools" ? <Workbench /> : tab === "overview" ? (
+      {active === "landslides" && tab === "areas" ? <AreasPanel/> : isNatureSpace(active) && tab !== "layers" ? <NaturePanel tools={tab === "tools"}/> : tab === "tools" ? <Workbench /> : tab === "overview" ? (
         active === "landslides" ? (
           <FranePanel />
         ) : (

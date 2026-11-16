@@ -30,6 +30,7 @@ import { DrawingPanel } from "@/map-overlays/DrawingPanel";
 import { Legend } from "@/map-overlays/Legend";
 import { SpacesButton } from "@/ui/Spaces";
 import { MapTools } from "@/map-overlays/MapTools";
+import { AreasControl } from "@/spaces/AreasControl";
 import { ExtensionsButton } from "@/spaces/ExtensionsButton";
 import { useControlClearance } from "@/map-overlays/useControlClearance";
 import { ThreeDButton } from "@/topbar/ThreeDButton";
@@ -140,6 +141,7 @@ export default function App() {
             <LayersButton />
             <MapTools />
             <ExtensionsButton />
+            <AreasControl />
           </div>
 
           <div className={styles.threeD} data-map-3d><ThreeDButton /></div>

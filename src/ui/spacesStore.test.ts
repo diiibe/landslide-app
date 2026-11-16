@@ -63,3 +63,10 @@ it("restores simultaneous quick selections including both landslide maps", () =>
   expect(useAppStore.getState().layers).toMatchObject({v2Bodies:true,v2Diffuse:true,susceptibility:false,smoothHeatmap:false});
   expect(useRegionalStore.getState().enabled).toMatchObject({"pcr-temperature":true,"pcr-humidity":true,"pcr-wind":false});
 });
+
+it("migrates saved views from the historical classification without applying their old cut to the new grades",()=>{
+ saveSpace("Classificazione storica");const view=structuredClone(useSpaces.getState().spaces[0]!);
+ delete view.susceptibilityStyle.bodies.scheme;delete view.susceptibilityStyle.diffuse.scheme;
+ view.susceptibilityStyle.bodies.classes=[5];view.susceptibilityStyle.bodies.minClass=5;view.susceptibilityStyle.bodies.opacity=.25;
+ restoreSpace(view);expect(useAppStore.getState().susceptibilityStyle.bodies).toMatchObject({classes:[1,2,3,4,5],scheme:"upper-quintile-v1",opacity:.25});
+});

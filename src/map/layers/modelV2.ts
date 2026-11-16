@@ -68,7 +68,7 @@ const CLASS_FILL = [
 ] as unknown as ExpressionSpecification;
 
 export type SusceptibilityStyle = LandslideStyle;
-const defaultStyle: SusceptibilityStyle = { minClass: 4, classes: [4, 5], opacity: .45 };
+const defaultStyle: SusceptibilityStyle = { minClass: 1, classes: [1, 2, 3, 4, 5], opacity: .45 };
 export const v2RasterLayerIds = (which: V2Layer) => LANDSLIDE_CLASSES.map(c =>
   c === 1 ? V2_RASTER_LAYER_ID[which] : `${V2_RASTER_LAYER_ID[which]}-${c}`);
 
@@ -82,7 +82,7 @@ export function addModelV2Layer(m: MLMap, which: V2Layer, beforeId?: string,
     const rasterSrc = c === 1 ? V2_RASTER_SOURCE_ID[which] : `${V2_RASTER_SOURCE_ID[which]}-${c}`;
     if (!m.getSource(rasterSrc)) m.addSource(rasterSrc, {
       type: "raster", tileSize: 256,
-      url: `pmtiles://${import.meta.env.BASE_URL}tiles/v2_${which}_raster_class${c}.pmtiles?palette=red-v1`,
+      url: `pmtiles://${import.meta.env.BASE_URL}tiles/v2_${which}_raster_class${c}.pmtiles?palette=upper-quintile-v1`,
     });
     if (!m.getLayer(rasterId)) m.addLayer({ id: rasterId, type: "raster", source: rasterSrc,
       maxzoom: V2_VECTOR_MIN_ZOOM,
@@ -90,7 +90,7 @@ export function addModelV2Layer(m: MLMap, which: V2Layer, beforeId?: string,
     }, beforeId);
   }
   const src = V2_SOURCE_ID[which], id = V2_LAYER_ID[which];
-  if (!m.getSource(src)) m.addSource(src, { type: "vector", url: `pmtiles://${import.meta.env.BASE_URL}tiles/v2_${which}.pmtiles` });
+  if (!m.getSource(src)) m.addSource(src, { type: "vector", url: `pmtiles://${import.meta.env.BASE_URL}tiles/v2_${which}.pmtiles?classification=upper-quintile-v1` });
   if (!m.getLayer(id)) m.addLayer({ id, type: "fill", source: src, "source-layer": "cells",
     minzoom: V2_VECTOR_MIN_ZOOM,
     paint: { "fill-color": CLASS_FILL, "fill-opacity": settings.opacity, "fill-outline-color": "rgba(0,0,0,0)" },
