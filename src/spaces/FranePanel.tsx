@@ -1,3 +1,5 @@
+import { NetworkKey } from "./NetworkKey";
+import { AreaOutline } from "./AreaOutline";
 import { LandslideClassPicker } from "@/ui/LandslideClassPicker";
 import { selectedClasses, withClasses, classSum, classSelectionText } from "@/lib/landslideClasses";
 import { useEffect, useState } from "react";
@@ -151,10 +153,7 @@ function ContextLayers() {
           </button>
         ))}
       </div>
-      <p className={styles.caption}>
-        Strade e sentieri seguono la classe della mappatura selezionata,
-        campionata in segmenti di massimo 60 m. Il grigio indica tratti fuori dalla fascia alta oppure senza copertura; l’analisi distingue i due casi.
-      </p>
+      <NetworkKey/>
       {!ready && !error && (
         <p role="status" className={styles.caption}>
           Preparazione delle reti di contesto…
@@ -222,6 +221,7 @@ function AreaInspector({ area }: { area: AreaSelection }) {
       ys = bounds.map((p) => p[1]!);
     const p = useAppStore.getState().addUserPolygon({
       name: name.trim() || area.name,
+      spaceId: "landslides",
       geometry: area.geometry,
       bounds: [
         [Math.min(...xs), Math.min(...ys)],
@@ -245,9 +245,10 @@ function AreaInspector({ area }: { area: AreaSelection }) {
   };
   return (
     <section className={styles.section} aria-label="Analisi della zona">
-      <div className={styles.subhead}>
+      <div className={`${styles.subhead} ${styles.areaHead}`}>
+        <AreaOutline geometry={area.geometry} color={area.color}/>
         <div>
-          <small>Zona selezionata</small>
+          <small>{area.saved ? "Salvata in Frane FVG" : "Zona da salvare · Frane FVG"}</small>
           <h2 data-space-inspection>{area.name}</h2>
         </div>
         <button

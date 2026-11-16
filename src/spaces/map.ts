@@ -5,10 +5,8 @@ import maplibregl, {
   type Map as MLMap,
   type GeoJSONSource,
   type MapMouseEvent,
-  type ExpressionSpecification,
 } from "maplibre-gl";
 import { useAppStore } from "@/app/store";
-import { RAMP_STOPS } from "@/map/style";
 import { experience, polygonAt } from "./experiences";
 import {
   demoTime,
@@ -29,8 +27,6 @@ const SOURCES = [
   "space-routes",
   "space-vehicles",
   "space-area",
-  "space-context-roads",
-  "space-context-trails",
 ];
 const LAYERS = [
   "space-boundary-fill",
@@ -47,12 +43,7 @@ const LAYERS = [
   "space-vehicle",
   "space-area-fill",
   "space-area-line",
-  "space-context-roads-line",
-  "space-context-trails-line",
 ];
-interface Manifest {
-  networks: Record<"roads" | "trails", { tiles: string; tileSha: string }>;
-}
 const feature = (
   geometry: GeoJSON.Geometry,
   properties: Record<string, unknown> = {},
@@ -108,8 +99,6 @@ export function mountExperienceMap(m: MLMap): () => void {
     frame = 0,
     lastSensors = 0;
   let timer: ReturnType<typeof setTimeout> | null = null;
-  let manifest: Manifest | null = null,
-    manifestPending = false;
   let popup: maplibregl.Popup | null = null,
     hovered = "";
   const source = (id: string, data: GeoJSON.FeatureCollection) => {
@@ -126,33 +115,6 @@ export function mountExperienceMap(m: MLMap): () => void {
     installed = null;
     popup?.remove();
     popup = null;
-  }
-  function context() {
-    const s = useExperienceStore.getState();
-    if (manifestPending || manifest || s.contextError) return;
-    manifestPending = true;
-    void fetch(`${import.meta.env.BASE_URL}data/spaces/manifest.json`, {
-      cache: "no-cache",
-    })
-      .then((r) => {
-        if (!r.ok)
-          throw new Error(`Reti di contesto non disponibili (${r.status}).`);
-        return r.json() as Promise<Manifest>;
-      })
-      .then((data) => {
-        manifestPending = false;
-        if (disposed) return;
-        manifest = data;
-        sync();
-      })
-      .catch((e) => {
-        manifestPending = false;
-        if (!disposed)
-          useExperienceStore.setState({
-            contextError:
-              e instanceof Error ? e.message : "Reti non disponibili.",
-          });
-      });
   }
   function clearHover() {
     popup?.remove();
@@ -186,7 +148,6 @@ export function mountExperienceMap(m: MLMap): () => void {
     if (!scene || isNatureSpace(scene.id)) return;
     if (scene.id === "landslides") {
       installed = scene.id;
-      context();
       const area = s.area;
       source("space-area", area && !area.saved ? collection([feature(area.geometry)]) : EMPTY);
       layer({
@@ -205,57 +166,6 @@ export function mountExperienceMap(m: MLMap): () => void {
           "line-dasharray": [3, 1],
         },
       });
-      if (manifest) {
-        for (const name of ["roads", "trails"] as const) {
-          const id = `space-context-${name}`,
-            line = id + "-line",
-            entry = manifest.networks[name];
-          if (!m.getSource(id))
-            m.addSource(id, {
-              type: "vector",
-              url: `pmtiles://${import.meta.env.BASE_URL}tiles/${entry.tiles}?v=${entry.tileSha}`,
-            });
-          const field = s.analysisLayer === "diffuse" ? "d" : "b";
-          const paint = [
-            "interpolate",
-            ["linear"],
-            ["get", field],
-            0,
-            a.theme === "dark" ? "#a5b4ba" : "#74827e",
-            ...RAMP_STOPS.map(([v, c]) => [v * 4 + 1, c]).flat(),
-          ] as ExpressionSpecification;
-          layer({
-            id: line,
-            type: "line",
-            source: id,
-            "source-layer": "network",
-            paint: {
-              "line-color": paint,
-              "line-width": [
-                "interpolate",
-                ["linear"],
-                ["zoom"],
-                7,
-                name === "roads" ? 1 : 0.5,
-                14,
-                name === "roads" ? 3 : 1.7,
-              ],
-              "line-opacity": 0.88,
-            },
-            layout: { "line-cap": "round", "line-join": "round" },
-          });
-          m.setPaintProperty(line, "line-color", paint);
-          m.setLayoutProperty(
-            line,
-            "visibility",
-            a.layers[name] ? "visible" : "none",
-          );
-          if (name === "trails")
-            m.setPaintProperty(line, "line-dasharray", [3, 2]);
-        }
-        if (!s.contextReady)
-          useExperienceStore.setState({ contextReady: true });
-      }
       m.getCanvas().style.cursor = s.probe ? "crosshair" : "";
       return;
     }

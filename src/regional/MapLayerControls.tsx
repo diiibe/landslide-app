@@ -1,3 +1,4 @@
+import { NetworkKey } from "@/spaces/NetworkKey";
 import { LandslideClassPicker } from "@/ui/LandslideClassPicker";
 import { selectedClasses, withClasses } from "@/lib/landslideClasses";
 import { Select } from "@/ui/Select";
@@ -21,6 +22,7 @@ export function MapLayerControls({ item }: { item: CatalogItem }) {
   return (
     <div className={styles.toolbar}>
       <p>{item.layer.description}</p>
+      {(key === "roads" || key === "trails") && <NetworkKey/>}
       {settings && which && (
         <>
           <LandslideClassPicker value={selectedClasses(settings, n)} count={n}

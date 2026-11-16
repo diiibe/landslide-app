@@ -4,6 +4,8 @@ import { useRegionalStore } from "@/regional/store";
 import { useTwinStore } from "@/digital-twin/store";
 import {
   leaveExperience,
+  savedArea,
+  closeArea,
   openExperience,
   selectObject,
   useExperienceStore,
@@ -17,6 +19,7 @@ vi.mock("@/map/style", async (importOriginal) => ({
 beforeEach(() => {
   leaveExperience();
   useAppStore.getState().reset();
+  useExperienceStore.setState({analysisLayer:"bodies"});
   useRegionalStore.setState({
     enabled: { "pcr-wind": false, custom: true },
     opacity: { custom: 0.4 },
@@ -131,4 +134,22 @@ it.each(["industry", "vineyard", "retail", "traffic", "mountain"] as const)(
 it("keeps the landslide Space on the relief basemap", () => {
   openExperience("landslides");
   expect(useAppStore.getState().basemap).toBe("outdoors");
+});
+
+it("keeps a saved area inside its owning Space and restores the selection on re-entry",()=>{
+ openExperience("landslides");
+ const polygon=useAppStore.getState().addUserPolygon({spaceId:"landslides",name:"Zona nel suo spazio",geometry:{type:"Polygon",coordinates:[[[13,46],[13.01,46],[13.01,46.01],[13,46]]]},bounds:[[13,46],[13.01,46.01]],stats:{areaKm2:.1,cellsVisible:null,cellsAboveThreshold:null,meanP:null,medianP:null,iffiCount:null,threshold:null,model:null}});
+ savedArea(polygon.id);expect(useExperienceStore.getState().area?.spaceId).toBe("landslides");
+ openExperience("retail");expect(useExperienceStore.getState().area).toBeNull();
+ openExperience("landslides");expect(useExperienceStore.getState().area?.id).toBe(polygon.id);
+ leaveExperience();expect(useExperienceStore.getState().area).toBeNull();
+ openExperience("landslides");expect(useExperienceStore.getState().area?.id).toBe(polygon.id);
+ closeArea();openExperience("retail");openExperience("landslides");expect(useExperienceStore.getState().area).toBeNull();
+});
+
+it("reopens a diffuse analysis with the same mapping enabled instead of silently returning to bodies",()=>{
+ openExperience("landslides");useExperienceStore.setState({analysisLayer:"diffuse"});
+ leaveExperience();openExperience("landslides");
+ expect(useExperienceStore.getState().analysisLayer).toBe("diffuse");
+ expect(useAppStore.getState().layers).toMatchObject({v2Diffuse:true,v2Bodies:false});
 });

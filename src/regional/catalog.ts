@@ -73,13 +73,13 @@ export const MAP_LAYERS: {
     key: "roads",
     title: "Strade",
     theme: "mobilita",
-    description: "Rete stradale OpenStreetMap.",
+    description: "Rete stradale OpenStreetMap. Colori dei cinque gradi della mappatura frane attiva; grigio come contesto quando nessuna mappatura è accesa.",
   },
   {
     key: "trails",
     title: "Sentieri",
     theme: "mobilita",
-    description: "Rete dei sentieri OpenStreetMap.",
+    description: "Rete dei sentieri OpenStreetMap. Stessi gradi delle strade e della mappatura frane indicata in legenda.",
   },
   {
     key: "poiCritical",
@@ -154,7 +154,7 @@ export function catalogItems(layers: LayerDefinition[]): CatalogItem[] {
         cadence: m.key.startsWith("v2")
           ? "Edizione del modello"
           : m.key === "roads" || m.key === "trails"
-            ? "Sincronizzazione giornaliera"
+            ? "Edizione delle reti · vedi manifest"
             : "Edizione della cartografia",
         color: m.theme === "frane" ? "#b44a29" : "#537762",
       },

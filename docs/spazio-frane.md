@@ -63,3 +63,24 @@ scelto nel confronto.
 Le vecchie viste salvate con la classificazione precedente vengono migrate
 mostrando tutti i cinque nuovi gradi, mantenendo l’opacità. Le nuove viste
 memorizzano lo schema upper-quintile-v1 e le selezioni non contigue.
+
+### Aree e coerenza delle reti · novembre 2026
+
+Ogni nuovo perimetro conserva `spaceId` (null nel Territorio). Fonte mappa,
+elenco Aree e confronto filtrano per appartenenza; visibilità e proprietà
+restano nel backup e nell’importazione GeoJSON. Le aree precedenti, prive di
+appartenenza, non vengono assegnate per supposizione: in Aree si possono
+portare dal Territorio a Frane. La selezione corrente viene ricordata per
+Spazio durante la sessione e ricompare al rientro; chiudere l’analisi la
+rimuove dalla selezione. La mappatura riattivata al rientro segue quella
+analizzata, anche per la franosità diffusa.
+
+Strade e sentieri OSM usano un unico renderer PMTiles in tutta la piattaforma,
+senza la precedente rampa J applicata alla rete del Territorio. Le classi
+sono quelle già campionate nei segmenti della pipeline: colori discreti
+identici a `v2ClassColor`, riferiti alla mappatura attiva. Se entrambe sono
+accese si sceglie esplicitamente la mappatura delle reti; la legenda e
+l’analisi condividono tale scelta. Le classi disattivate restano grigie come
+contesto. Senza mappature accese tutta la rete è neutra. Il grigio non è un
+indicatore di sicurezza: fuori fascia e assenza di dati si distinguono
+nell’analisi numerica. La geometria e gli indici analitici non sono cambiati.

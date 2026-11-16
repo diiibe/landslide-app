@@ -1,3 +1,5 @@
+import { areaInSpace } from "@/spaces/areaScope";
+import { useExperienceStore } from "@/spaces/store";
 import { useUIText } from "@/ui/interfaceSettings";
 import { QuickLayers } from "./QuickLayers";
 import { Icon } from "@/ui/Icon";
@@ -38,6 +40,8 @@ function closeOnMobile() {
     useAppStore.setState({ drawerOpen: false });
 }
 export function RegionalPanel() {
+  const areaSpace=useExperienceStore(s=>s.activeId);
+  const polygons=useAppStore(s=>s.userPolygons).filter(p=>areaInSpace(p,areaSpace));
   const explore = useUIText("explore");
   const state = useRegionalStore(),
     twin = useTwinStore(),
@@ -156,10 +160,10 @@ export function RegionalPanel() {
         <h2>{explore}</h2>
         <CatalogExplorer mode="sidebar" />
       </section>
-      {!!app.userPolygons.length && (
+      {!!polygons.length && (
         <details>
-          <summary>Aree salvate · {app.userPolygons.length}</summary>
-          {app.userPolygons.map((p) => (
+          <summary>Aree salvate · {polygons.length}</summary>
+          {polygons.map((p) => (
             <div className={styles.actions} key={p.id}>
               <button
                 onClick={() =>

@@ -1,5 +1,7 @@
 import { isPointReadingClick } from "@/regional/pointReadings";
 import {isProbeClick} from "@/spaces/interactions";
+import { useExperienceStore } from "@/spaces/store";
+import { areaInSpace, formatArea } from "@/spaces/areaScope";
 import { useAppStore } from "@/app/store";
 /**
  * Render saved user-drawn polygons on the map. Each entry becomes a
@@ -29,7 +31,7 @@ function toFeatureCollection(
 ): GeoJSON.FeatureCollection {
   return {
     type: "FeatureCollection",
-    features: polygons.filter(p => p.visible !== false).map((p) => ({
+    features: polygons.filter(p => p.visible !== false && areaInSpace(p, useExperienceStore.getState().activeId)).map((p) => ({
       type: "Feature",
       properties: {
         id: p.id,
@@ -144,7 +146,7 @@ export function buildPolygonStatsNode(p: UserPolygon): HTMLElement {
     dd.textContent = value;
     dl.append(dt, dd);
   };
-  row("Area", `${p.stats.areaKm2.toFixed(2)} km²`);
+  row("Area", formatArea(p.stats.areaKm2));
   if (p.stats.cellsVisible !== null)
     row("Celle storiche visibili", `${p.stats.cellsVisible}`);
   if (p.stats.cellsAboveThreshold !== null)

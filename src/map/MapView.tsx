@@ -6,7 +6,7 @@ import { useExperienceStore } from "@/spaces/store";
 import { useEffect, useRef } from "react";
 import maplibregl from "maplibre-gl";
 import { useAppStore } from "@/app/store";
-import type { ModelId, V2Layer } from "@/app/types";
+import type { V2Layer } from "@/app/types";
 import { BASEMAP_STYLE, FVG_BOUNDS, FVG_CENTER, HAS_MAPBOX_TOKEN } from "./style";
 import { installPmtilesProtocol } from "./pmtiles-protocol";
 import {
@@ -33,24 +33,7 @@ import {
   setSmoothHeatmapVisible,
   updateSmoothHeatmapThreshold,
 } from "./layers/smoothHeatmap";
-import {
-  addRoads,
-  applyRoadSensitivity,
-  rebakeRoads,
-  ROADS_GLOW,
-  ROADS_HALO,
-  ROADS_LAYER,
-  setRoadsVisible,
-} from "./layers/roads";
-import {
-  addTrails,
-  applyTrailSensitivity,
-  rebakeTrails,
-  setTrailsVisible,
-  TRAILS_GLOW,
-  TRAILS_HALO,
-  TRAILS_LAYER,
-} from "./layers/trails";
+import { mountContextNetworks } from "@/spaces/contextNetworks";
 import {
   addComuni,
   applyComuniFilter,
@@ -114,40 +97,16 @@ import { mountPointReadings } from "@/regional/pointReadings";
 const TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string | undefined;
 
 
-/**
- * Static layers — added once per `style.load` and not torn down by model
- * switches. Roads/trails/comuni/POI sit here because their data is loaded
- * lazily once per category and refreshed in place (rebakeRoads,
- * applyComuniModel, etc.) when the active model changes.
- *
- * DTM is theme-dependent; the others depend on theme only via halo
- * opacity (roads/trails). On theme change, applyThemeToLayers recolours
- * DTM in place and re-creates roads/trails so their halo opacity follows
- * the new mode.
- */
+/** Static context; roads and trails share the class-based network renderer. */
 function setupStaticLayers(m: maplibregl.Map): void {
   const s = useAppStore.getState();
   const dark = s.theme === "dark";
   addDtmHillshade(m, s.layers.dtm, dark);
   addComuni(m, s.layers.comuni, dark);
-  addTrails(m, s.layers.trails && useExperienceStore.getState().activeId !== "landslides", dark);
-  addRoads(m, s.layers.roads && useExperienceStore.getState().activeId !== "landslides", dark);
   addCriticalPoi(m, s.layers.poiCritical, s.layers.poiHuts);
 }
 
-/**
- * Recolour theme-dependent layers in place. DTM has dark/light variants
- * that we update via setPaintProperty so MapLibre doesn't re-fetch tiles
- * (P1.2). Roads and trails encode halo opacity in their layer paint at
- * add time; we re-add them on theme change rather than poking individual
- * properties, since the cached GeoJSON keeps the rebuild cheap.
- *
- * Gated by `appliedTheme`: every `style.load` calls us right after
- * `setupStaticLayers` already added these. On the *initial* call after a
- * setup, the theme hasn't actually transitioned — there's no work to do,
- * and re-adding kicks off a redundant bake (P1.1). Track the last theme
- * we applied so we only re-add on genuine transitions.
- */
+/** Recolour terrain and re-create theme-dependent POI/comuni only once. */
 let appliedTheme: "dark" | "light" | null = null;
 
 function applyThemeToLayers(m: maplibregl.Map): void {
@@ -160,7 +119,7 @@ function applyThemeToLayers(m: maplibregl.Map): void {
   } else {
     addDtmHillshade(m, s.layers.dtm, dark);
   }
-  // Re-add roads/trails/POI/comuni only when the theme has genuinely
+  // Re-add POI/comuni only when the theme has genuinely
   // changed. On the first call after `setupStaticLayers`, `appliedTheme`
   // is null and we adopt the current value without re-adding —
   // setupStaticLayers owns the initial add. P1.11 fix: previously both
@@ -168,8 +127,6 @@ function applyThemeToLayers(m: maplibregl.Map): void {
   // outline color also varies by theme so it joins this gated re-add.
   if (appliedTheme !== null && appliedTheme !== s.theme) {
     addComuni(m, s.layers.comuni, dark);
-    addTrails(m, s.layers.trails && useExperienceStore.getState().activeId !== "landslides", dark);
-    addRoads(m, s.layers.roads && useExperienceStore.getState().activeId !== "landslides", dark);
     addCriticalPoi(m, s.layers.poiCritical, s.layers.poiHuts);
   }
   appliedTheme = s.theme;
@@ -194,14 +151,7 @@ function applyThemeToLayers(m: maplibregl.Map): void {
  * (trails before roads) and return the first one still present.
  */
 function networkAnchor(m: maplibregl.Map): string | undefined {
-  const candidates = [
-    TRAILS_GLOW,
-    TRAILS_HALO,
-    TRAILS_LAYER,
-    ROADS_GLOW,
-    ROADS_HALO,
-    ROADS_LAYER,
-  ];
+  const candidates = ["space-context-trails-line", "space-context-roads-line"];
   return candidates.find((id) => m.getLayer(id));
 }
 
@@ -275,25 +225,12 @@ function setupModelLayers(m: maplibregl.Map): void {
   }
 }
 
-// Trailing-edge debounce delay for the rebake effects. Slider drags emit
-// param updates at ~60Hz; a 120ms quiet window collapses a burst into a
-// single bake (P0.4 / P1.12).
-const REBAKE_DEBOUNCE_MS = 120;
-
 export function MapView() {
   const ref = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const styleReady = useRef(false);
   const styleFailed = useRef(false);
   const popupsUnsubRef = useRef<(() => void) | null>(null);
-  // P1.10 — `model` changes trigger both the model effect (which rebakes)
-  // and the param effects (because the selectors return new values for
-  // the new model). Track the last-seen model in a ref so the param
-  // effects can skip the rebake when the change was caused by a model
-  // switch — the model effect already handled it.
-  const prevModelForRoads = useRef<ModelId | null>(null);
-  const prevModelForTrails = useRef<ModelId | null>(null);
-
   const basemap = useAppStore((s) => s.basemap);
   const appliedBasemap = useRef(basemap);
   const model = useAppStore((s) => s.model);
@@ -307,17 +244,9 @@ export function MapView() {
   const susceptibilityStyle = useAppStore((s) => s.susceptibilityStyle);
   const v2BodiesOn = useAppStore((s) => s.layers.v2Bodies);
   const v2DiffuseOn = useAppStore((s) => s.layers.v2Diffuse);
-  const roadsOn = useAppStore((s) => s.layers.roads);
-  const trailsOn = useAppStore((s) => s.layers.trails);
   const comuniOn = useAppStore((s) => s.layers.comuni);
   const poiCriticalOn = useAppStore((s) => s.layers.poiCritical);
   const poiHutsOn = useAppStore((s) => s.layers.poiHuts);
-  const sensRoads = useAppStore((s) => s.riskParams.roads[s.model].sensitivity);
-  const sensTrails = useAppStore((s) => s.riskParams.trails[s.model].sensitivity);
-  const gammaRoads = useAppStore((s) => s.riskParams.roads[s.model].gamma);
-  const gammaTrails = useAppStore((s) => s.riskParams.trails[s.model].gamma);
-  const radiusRoads = useAppStore((s) => s.riskParams.roads[s.model].radius);
-  const radiusTrails = useAppStore((s) => s.riskParams.trails[s.model].radius);
   const dtmOn = useAppStore((s) => s.layers.dtm);
   const floodOn = useAppStore((s) => s.layers.flood);
   const floodView = useAppStore((s) => s.floodView);
@@ -394,6 +323,7 @@ export function MapView() {
     const unmountTwin = mountTwinMap(m);
     const unmountRegional = mountRegionalMap(m);
     const unmountExperience = mountExperienceMap(m);
+    const unmountNetworks = mountContextNetworks(m);
     const unmountNature = mountNatureMap(m);
     const unmountTrek = mountTrekMap(m);
     const unmountPointStacks = mountPointStacks(m);
@@ -403,6 +333,7 @@ export function MapView() {
       unmountPointStacks();
       unmountPointReadings();
       unmountExperience();
+      unmountNetworks();
       unmountNature();
       unmountTrek();
       unmountRegional();
@@ -452,17 +383,9 @@ export function MapView() {
     const m = mapRef.current;
     if (!m || !m.isStyleLoaded()) return;
     setupModelLayers(m);
-    if (useAppStore.getState().layers.roads && useExperienceStore.getState().activeId !== "landslides") rebakeRoads(m);
-    if (useAppStore.getState().layers.trails && useExperienceStore.getState().activeId !== "landslides") rebakeTrails(m);
     if (useAppStore.getState().layers.comuni) applyComuniModel(m);
     const ls = useAppStore.getState().layers;
     if (ls.poiCritical || ls.poiHuts) applyPoiModel();
-    // Keep the param-effect refs in sync so a model switch followed by a
-    // param change doesn't double-bake. The param effects compare their
-    // own ref to the live model; setting both here means a later effect
-    // ordering still sees prev === current and skips. (P1.10)
-    prevModelForRoads.current = model;
-    prevModelForTrails.current = model;
   }, [model]);
 
   useEffect(() => {
@@ -507,14 +430,6 @@ export function MapView() {
   }, [v2DiffuseOn, susceptibilityStyle.diffuse]);
 
   useEffect(() => {
-    if (mapRef.current) setRoadsVisible(mapRef.current, roadsOn && activeExperience !== "landslides");
-  }, [roadsOn, activeExperience]);
-
-  useEffect(() => {
-    if (mapRef.current) setTrailsVisible(mapRef.current, trailsOn && activeExperience !== "landslides");
-  }, [trailsOn, activeExperience]);
-
-  useEffect(() => {
     if (mapRef.current) setComuniVisible(mapRef.current, comuniOn);
   }, [comuniOn]);
   useEffect(() => {
@@ -527,45 +442,6 @@ export function MapView() {
   useEffect(() => {
     if (mapRef.current) setHutsVisible(mapRef.current, poiHutsOn);
   }, [poiHutsOn]);
-
-  // Sensitivity (paint-only) vs gamma/radius (re-bake). Each network is
-  // wired independently so changing trails params doesn't touch roads.
-  useEffect(() => {
-    if (mapRef.current && roadsOn && activeExperience !== "landslides") applyRoadSensitivity(mapRef.current);
-  }, [sensRoads, roadsOn, activeExperience]);
-  useEffect(() => {
-    if (mapRef.current && trailsOn && activeExperience !== "landslides") applyTrailSensitivity(mapRef.current);
-  }, [sensTrails, trailsOn, activeExperience]);
-  // P0.4 / P1.12 — slider drags fire ~60 events/sec; without a debounce
-  // each event kicks off a full ~290M-op rebake. Schedule a trailing-edge
-  // rebake; clearing on every new event coalesces a burst into one bake.
-  //
-  // P1.10 — a `model` change re-runs these effects (selectors return new
-  // values for the new model) AND the model effect, which already
-  // rebakes. Skip the rebake when the change was caused by a model
-  // switch: the model effect owns the rebake in that case.
-  useEffect(() => {
-    const m = mapRef.current;
-    if (!m || !roadsOn || activeExperience === "landslides") return;
-    const currentModel = useAppStore.getState().model;
-    if (prevModelForRoads.current !== currentModel) {
-      prevModelForRoads.current = currentModel;
-      return; // model effect handles the rebake
-    }
-    const id = setTimeout(() => rebakeRoads(m), REBAKE_DEBOUNCE_MS);
-    return () => clearTimeout(id);
-  }, [gammaRoads, radiusRoads, roadsOn, activeExperience]);
-  useEffect(() => {
-    const m = mapRef.current;
-    if (!m || !trailsOn || activeExperience === "landslides") return;
-    const currentModel = useAppStore.getState().model;
-    if (prevModelForTrails.current !== currentModel) {
-      prevModelForTrails.current = currentModel;
-      return; // model effect handles the rebake
-    }
-    const id = setTimeout(() => rebakeTrails(m), REBAKE_DEBOUNCE_MS);
-    return () => clearTimeout(id);
-  }, [gammaTrails, radiusTrails, trailsOn, activeExperience]);
 
   useEffect(() => {
     if (mapRef.current) setDtmHillshadeVisible(mapRef.current, dtmOn);
@@ -839,7 +715,7 @@ export function MapView() {
     // Keep polygons above user GPX layers so a freshly-drawn outline is
     // visible even when uploads are stacked on top of the model layers.
     bringUserPolygonsToFront(m);
-  }, [userPolygons]);
+  }, [userPolygons, activeExperience]);
 
   // LayersPanel's Saved areas row dispatches this event after fitBounds
   // so the user lands on the polygon and sees its stats in one motion.

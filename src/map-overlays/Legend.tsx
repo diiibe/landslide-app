@@ -1,3 +1,4 @@
+import { NetworkKey } from "@/spaces/NetworkKey";
 import { selectedClasses, classSelectionText } from "@/lib/landslideClasses";
 import { Icon } from "@/ui/Icon";
 import { useAppStore } from "@/app/store";
@@ -34,7 +35,8 @@ export function Legend() {
   const bodiesOn = useAppStore((s) => s.layers.v2Bodies);
   const diffuseOn = useAppStore((s) => s.layers.v2Diffuse);
   const v2On = bodiesOn || diffuseOn;
-  if (!v2On && !iffiOn) return null;
+  const networksOn=useAppStore(s=>s.layers.roads||s.layers.trails);
+  if (!v2On && !iffiOn && !networksOn) return null;
   return (
     <div className={styles.legend} data-map-legend data-open={open}>
       <button
@@ -44,7 +46,7 @@ export function Legend() {
         onClick={toggle}
       >
         <span className={styles.ttl}>
-          {v2On ? "Suscettibilità frane" : "Frane censite"}
+          {v2On ? "Suscettibilità frane" : iffiOn ? "Frane censite" : "Strade e sentieri"}
         </span>
         <span className={styles.miniRamp} aria-hidden="true" />
         <Icon name="chevron" className={styles.caret} />
@@ -53,6 +55,7 @@ export function Legend() {
         <div className={styles.body}>
           {bodiesOn && <V2LegendBody layer="bodies" />}
           {diffuseOn && <V2LegendBody layer="diffuse" />}
+          {networksOn && <NetworkKey/>}
           {iffiOn && (
             <div className={styles.iffiRow}>
               <i />

@@ -16,6 +16,8 @@
 
 import type { UserLayer, UserPolygon } from "@/app/types";
 
+import { parseAreaSpace } from "@/spaces/areaScope";
+
 const MAGIC = "fvg-landslide-app";
 const VERSION = 1;
 
@@ -67,6 +69,7 @@ export function buildBundle(
       properties: {
         "fvg:bundle": "polygon",
         visible: p.visible !== false,
+        spaceId: p.spaceId ?? null,
         id: p.id,
         name: p.name,
         color: p.color,
@@ -159,6 +162,7 @@ export function parseBundleFile(text: string): ImportedBundle {
         geometry: f.geometry,
         bounds,
         stats,
+        spaceId: parseAreaSpace(p.spaceId),
       });
     }
   }

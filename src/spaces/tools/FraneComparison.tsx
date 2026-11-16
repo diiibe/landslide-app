@@ -1,3 +1,4 @@
+import { areaInSpace } from "../areaScope";
 import { selectedClasses } from "@/lib/landslideClasses";
 import { useMemo, useState } from "react";
 import { useAppStore } from "@/app/store";
@@ -13,7 +14,7 @@ const number=(n:number)=>n.toLocaleString("it-IT",n!==0&&Math.abs(n)<.01?{maximu
 export function FraneComparison() {
  const saved=useAppStore(s=>s.userPolygons),current=useExperienceStore(s=>s.area);
  const options=useMemo(()=>{
-  const list=[...AREA_PRESETS.map(p=>({id:p.id,name:p.name,geometry:p.geometry,saved:false})),...saved.map(p=>({id:p.id,name:p.name,geometry:p.geometry,saved:true,color:p.color,createdAt:p.createdAt}))];
+  const list=[...AREA_PRESETS.map(p=>({id:p.id,name:p.name,geometry:p.geometry,saved:false})),...saved.filter(p=>areaInSpace(p,"landslides")).map(p=>({id:p.id,name:p.name,geometry:p.geometry,saved:true,spaceId:p.spaceId,color:p.color,createdAt:p.createdAt}))];
   if(current&&!list.some(p=>p.id===current.id))list.push(current);
   return list;
  },[saved,current]);

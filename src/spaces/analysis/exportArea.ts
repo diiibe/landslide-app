@@ -6,7 +6,7 @@ export type AreaExportFormat = "geojson" | "csv" | "html" | "json";
 const titles: Record<V2Layer, string> = { bodies: "Corpi di frana", diffuse: "Franosità diffusa" };
 const NOTE = "Suscettibilità relativa: somiglianza con l’inventario, non probabilità o previsione di frana. I cinque gradi suddividono la precedente classe 5. Fuori fascia alta non significa assenza di suscettibilità.";
 export function areaReport(area: AreaSelection, result: AnalysisResult, chosen: Record<V2Layer, number[]>, now = new Date()) {
-  return { format: "friulview-area-analysis-v1", area: { id: area.id, name: area.name, geometry: area.geometry, color: area.color ?? "#4d79ae", createdAt: area.createdAt ?? now.getTime() }, generatedAt: now.toISOString(), source: "HazardFVG · modello v2 · griglia originale", grid: { cellSizeM: 120, analysisCRS: "EPSG:32633", geometryCRS: "EPSG:4326" }, note: NOTE, mapSelection: chosen, result };
+  return { format: "friulview-area-analysis-v1", area: { id: area.id, name: area.name, geometry: area.geometry, color: area.color ?? "#4d79ae", spaceId: area.spaceId ?? "landslides", createdAt: area.createdAt ?? now.getTime() }, generatedAt: now.toISOString(), source: "HazardFVG · modello v2 · griglia originale", grid: { cellSizeM: 120, analysisCRS: "EPSG:32633", geometryCRS: "EPSG:4326" }, note: NOTE, mapSelection: chosen, result };
 }
 type Report = ReturnType<typeof areaReport>;
 type Row = [string, string, string, number | string, string];
@@ -40,7 +40,7 @@ export function areaExportContent(format: AreaExportFormat, report: Report): { t
   if (format === "json") return { text: JSON.stringify(report, null, 2), mime: "application/json", extension: "json" };
   if (format === "geojson") {
     const ring = report.area.geometry.coordinates[0]!, xs = ring.map(p => p[0]!), ys = ring.map(p => p[1]!);
-    const properties: Record<string, unknown> = { "fvg:bundle": "polygon", id: report.area.id, name: report.area.name, color: report.area.color, visible: true,
+    const properties: Record<string, unknown> = { "fvg:bundle": "polygon", id: report.area.id, name: report.area.name, color: report.area.color, visible: true, spaceId: report.area.spaceId,
       createdAt: report.area.createdAt, bounds: [[Math.min(...xs), Math.min(...ys)], [Math.max(...xs), Math.max(...ys)]],
       stats: { areaKm2: report.result.areaM2 / 1e6, cellsVisible: null, cellsAboveThreshold: null, meanP: null, medianP: null, iffiCount: null, threshold: null, model: null, unavailableReason: "Geometria con relazione allegata; ricalcola per leggere la versione corrente." },
       generated_at: report.generatedAt, model_version: report.result.version ?? null, method: report.result.method ?? null, classification: report.result.classification ?? null, analysis: report.result, note: report.note };
