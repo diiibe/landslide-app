@@ -250,7 +250,7 @@ describe("Unified catalog experience", () => {
     useAppStore.setState(s=>({layers:{...s.layers,v2Bodies:false,v2Diffuse:false,iffi:false,roads:true,trails:false}}));
     render(<App/>);
     expect(screen.getByRole("button",{name:"Strade e sentieri"})).toBeInTheDocument();
-    expect(screen.getByText(/Nessuna mappatura frane attiva/)).toBeInTheDocument();
+    expect(screen.getByText(/Rete di contesto neutra/)).toBeInTheDocument();
   });
   it("closes the overlay drawer without changing which data layers are active", () => {
     useAppStore.setState(s=>({layers:{...s.layers,v2Bodies:true}}));

@@ -4,12 +4,17 @@ import { useAppStore } from "@/app/store";
 import { useExperienceStore } from "./store";
 import { mountContextNetworks, networkColor, networkMapping } from "./contextNetworks";
 import { v2ClassColor } from "@/map/layers/modelV2";
+import type { SpaceId } from "./types";
 afterEach(()=>{vi.unstubAllGlobals();useAppStore.getState().reset();useExperienceStore.setState({activeId:null,contextError:null,contextReady:false,analysisLayer:"bodies"});});
+it.each<SpaceId|null>([null,"industry","vineyard","retail","traffic","mountain","fire","wildlife","park","trek"])("keeps networks neutral in %s even with both landslide maps enabled",activeId=>{
+ const a=useAppStore.getState();
+ for(const preferred of ["bodies","diffuse"] as const)expect(networkMapping({...a,layers:{...a.layers,v2Bodies:true,v2Diffuse:true}},preferred,activeId)).toBeNull();
+});
 it("uses exact heatmap grade colours, the active map and only the selected grades",()=>{
  const a=useAppStore.getState();
- expect(networkMapping({...a,layers:{...a.layers,v2Bodies:false,v2Diffuse:false}},"bodies")).toBeNull();
- expect(networkMapping({...a,layers:{...a.layers,v2Bodies:true,v2Diffuse:false}},"diffuse")).toBe("bodies");
- expect(networkMapping({...a,layers:{...a.layers,v2Bodies:true,v2Diffuse:true}},"diffuse")).toBe("diffuse");
+ expect(networkMapping({...a,layers:{...a.layers,v2Bodies:false,v2Diffuse:false}},"bodies","landslides")).toBeNull();
+ expect(networkMapping({...a,layers:{...a.layers,v2Bodies:true,v2Diffuse:false}},"diffuse","landslides")).toBe("bodies");
+ expect(networkMapping({...a,layers:{...a.layers,v2Bodies:true,v2Diffuse:true}},"diffuse","landslides")).toBe("diffuse");
  for(const which of ["bodies","diffuse"] as const){
   const expression=createExpression(networkColor(which,[1,3,5],false));expect(expression.result).toBe("success");
   if(expression.result!=="success")return;
@@ -22,10 +27,22 @@ it("keeps one network renderer across territory/Space transitions, restores afte
  vi.stubGlobal("fetch",vi.fn().mockResolvedValue({ok:true,json:async()=>({networks:{roads:{tiles:"r.pmtiles",tileSha:"r"},trails:{tiles:"t.pmtiles",tileSha:"t"}}})}));
  useAppStore.setState(s=>({layers:{...s.layers,roads:true,trails:true,v2Bodies:true,v2Diffuse:false}}));
  const dispose=mountContextNetworks(m as never);await vi.waitFor(()=>expect(layers.size).toBe(2));
- const initial=paints.get("space-context-roads-line");
- useExperienceStore.setState({activeId:"landslides"});expect(paints.get("space-context-roads-line")).toEqual(initial);
+ const neutral=networkColor(null,[],useAppStore.getState().theme==="dark");
+ expect(paints.get("space-context-roads-line")).toBe(neutral);
+ useExperienceStore.setState({activeId:"landslides"});expect(paints.get("space-context-roads-line")).not.toEqual(neutral);
  useAppStore.setState(s=>({susceptibilityStyle:{...s.susceptibilityStyle,bodies:{...s.susceptibilityStyle.bodies,classes:[5]}}}));expect(paints.get("space-context-roads-line")).toEqual(networkColor("bodies",[5],useAppStore.getState().theme==="dark"));
+ const themed=paints.get("space-context-roads-line");
+ for(const activeId of [null,"wildlife","traffic"] as const){
+  useExperienceStore.setState({activeId});
+  for(const name of ["roads","trails"])expect(paints.get(`space-context-${name}-line`)).toBe(neutral);
+ }
+ // Reload outside Frane while both maps remain enabled: no thematic colour leaks.
+ useAppStore.setState(s=>({layers:{...s.layers,v2Diffuse:true},susceptibilityStyle:{...s.susceptibilityStyle,diffuse:{...s.susceptibilityStyle.diffuse,classes:[2,4]}}}));
  handlers.get("styledataloading")!();sources.clear();layers.clear();handlers.get("style.load")!();expect(layers.size).toBe(2);
+ expect(paints.get("space-context-roads-line")).toBe(neutral);
+ useExperienceStore.setState({activeId:"landslides"});expect(paints.get("space-context-roads-line")).toEqual(themed);
+ useExperienceStore.setState({analysisLayer:"diffuse"});expect(paints.get("space-context-trails-line")).toEqual(networkColor("diffuse",[2,4],useAppStore.getState().theme==="dark"));
+ useExperienceStore.setState({activeId:null});expect(paints.get("space-context-trails-line")).toBe(neutral);
  useAppStore.setState(s=>({layers:{...s.layers,roads:false}}));expect(visibility.get("space-context-roads-line")).toBe("none");
  dispose();expect(sources.size).toBe(0);expect(layers.size).toBe(0);
 });

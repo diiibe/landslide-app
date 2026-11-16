@@ -4,7 +4,11 @@ import type { V2Layer } from "@/app/types";
 import { v2ClassColor } from "@/map/layers/modelV2";
 import { selectedClasses } from "@/lib/landslideClasses";
 import { useExperienceStore } from "./store";
-export function networkMapping(a: Pick<AppState, "layers">, preferred: V2Layer): V2Layer | null {
+import type { SpaceId } from "./types";
+/** The Space supplies the thematic interpretation; visible map layers alone
+ * never colour shared context. Other Spaces currently keep a neutral network. */
+export function networkMapping(a: Pick<AppState, "layers">, preferred: V2Layer, activeSpace: SpaceId | null): V2Layer | null {
+  if (activeSpace !== "landslides") return null;
   if (a.layers.v2Bodies && a.layers.v2Diffuse) return preferred;
   return a.layers.v2Bodies ? "bodies" : a.layers.v2Diffuse ? "diffuse" : null;
 }
@@ -33,7 +37,7 @@ export function mountContextNetworks(m: MLMap) {
       }).catch(error => { pending = false; if (!disposed) useExperienceStore.setState({ contextError: error instanceof Error ? error.message : "Reti non disponibili." }); });
     }
     if (!manifest) return;
-    const which = networkMapping(a, s.analysisLayer);
+    const which = networkMapping(a, s.analysisLayer, s.activeId);
     for (const name of ["trails", "roads"] as const) {
       const id = `space-context-${name}`, line = `${id}-line`, entry = manifest.networks[name];
       if (!m.getSource(id)) m.addSource(id, { type: "vector", url: `pmtiles://${import.meta.env.BASE_URL}tiles/${entry.tiles}?v=${entry.tileSha}` });

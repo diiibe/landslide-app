@@ -48,7 +48,7 @@ export function Legend() {
         <span className={styles.ttl}>
           {v2On ? "Suscettibilità frane" : iffiOn ? "Frane censite" : "Strade e sentieri"}
         </span>
-        <span className={styles.miniRamp} aria-hidden="true" />
+        <span className={styles.miniRamp} style={!v2On && !iffiOn ? { background: "var(--c-text-soft)" } : undefined} aria-hidden="true" />
         <Icon name="chevron" className={styles.caret} />
       </button>
       <div className={styles.wrap}>
