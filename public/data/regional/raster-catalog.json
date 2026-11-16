@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-11-16T06:40:42.204485+00:00",
+  "generatedAt": "2026-11-16T22:20:20.921783+00:00",
   "layers": [
     {
       "id": "raster-trueorto-fvg-1720",
       "title": "True ortofoto regionali · 2017–2020",
       "folder": "contesto",
       "kind": "raster",
-      "status": "blocked",
+      "status": "ready",
       "provider": "Regione FVG / IRDAT · ortofoto e rilievi",
       "sourceId": "WMS regionali",
       "sourceUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA5/",
@@ -34,14 +34,16 @@
       "tiles": [
         "data/regional/raster-trueorto-fvg-1720/{z}/{x}/{y}.png"
       ],
-      "problem": "('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))"
+      "retrievedAt": "2026-11-16T22:20:27.673071+00:00",
+      "lastCheckedAt": "2026-11-16T22:20:27.673071+00:00",
+      "tileCount": 176
     },
     {
       "id": "raster-ortofoto2012",
       "title": "Ortofoto PCR · 2012",
       "folder": "contesto",
       "kind": "raster",
-      "status": "blocked",
+      "status": "ready",
       "provider": "Regione FVG / IRDAT · ortofoto e rilievi",
       "sourceId": "WMS regionali",
       "sourceUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA5/",
@@ -69,14 +71,16 @@
       "tiles": [
         "data/regional/raster-ortofoto2012/{z}/{x}/{y}.png"
       ],
-      "problem": "('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))"
+      "retrievedAt": "2026-11-16T22:23:57.322920+00:00",
+      "lastCheckedAt": "2026-11-16T22:23:57.322920+00:00",
+      "tileCount": 176
     },
     {
       "id": "raster-hillshade",
       "title": "Rilievo del terreno LiDAR · hillshade",
       "folder": "contesto",
       "kind": "raster",
-      "status": "blocked",
+      "status": "ready",
       "provider": "Regione FVG / IRDAT · ortofoto e rilievi",
       "sourceId": "WMS regionali",
       "sourceUrl": "https://www.regione.fvg.it/rafvg/cms/RAFVG/ambiente-territorio/conoscere-ambiente-territorio/FOGLIA5/",
@@ -104,7 +108,9 @@
       "tiles": [
         "data/regional/raster-hillshade/{z}/{x}/{y}.png"
       ],
-      "problem": "('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))"
+      "retrievedAt": "2026-11-16T22:28:01.148467+00:00",
+      "lastCheckedAt": "2026-11-16T22:28:01.148467+00:00",
+      "tileCount": 176
     }
   ]
 }
