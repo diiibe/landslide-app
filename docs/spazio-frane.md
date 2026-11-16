@@ -76,7 +76,10 @@ rimuove dalla selezione. La mappatura riattivata al rientro segue quella
 analizzata, anche per la franosità diffusa.
 
 Strade e sentieri OSM usano un unico renderer PMTiles in tutta la piattaforma,
-senza la precedente rampa J applicata alla rete del Territorio. Le classi
+senza la precedente rampa J applicata alla rete del Territorio. La rete è
+neutra nel Territorio e negli altri Spazi, anche quando una mappatura frane
+è accesa. Solo lo Spazio Frane applica la colorazione della suscettibilità:
+è lo Spazio a definire l'interpretazione tematica della rete condivisa. Le classi
 sono quelle già campionate nei segmenti della pipeline: colori discreti
 identici a `v2ClassColor`, riferiti alla mappatura attiva. Se entrambe sono
 accese si sceglie esplicitamente la mappatura delle reti; la legenda e
