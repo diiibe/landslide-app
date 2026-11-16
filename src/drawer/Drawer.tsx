@@ -25,7 +25,7 @@ export function Drawer({
   const panel = useRef<HTMLElement>(null);
   const spaceTab = useExperienceStore(s => s.tab);
   const close = useCallback(() => {
-    document.getElementById(spaceTab === "tools" ? "extensions-trigger" : "layers-trigger")?.focus({ preventScroll: true });
+    document.getElementById(spaceTab === "areas" ? "areas-trigger" : spaceTab === "tools" ? "extensions-trigger" : "layers-trigger")?.focus({ preventScroll: true });
     toggle();
   }, [spaceTab, toggle]);
   useEffect(() => {
@@ -34,7 +34,7 @@ export function Drawer({
       !drawing &&
       panel.current?.contains(document.activeElement)
     )
-      document.getElementById(spaceTab === "tools" ? "extensions-trigger" : "layers-trigger")?.focus();
+      document.getElementById(spaceTab === "areas" ? "areas-trigger" : spaceTab === "tools" ? "extensions-trigger" : "layers-trigger")?.focus();
   }, [drawerOpen, drawing, spaceTab]);
 
   // Close drawer on Escape (mobile UX; harmless on desktop where backdrop is hidden).
@@ -78,12 +78,12 @@ export function Drawer({
       >
         <div className={styles.mobileHeader}>
           <div className={styles.heading}>
-            <Icon name={spaceTab === "tools" ? "extensions" : "layers"} />
+            <Icon name={spaceTab === "areas" ? "drawPolygon" : spaceTab === "tools" ? "extensions" : "layers"} />
             <strong>{label}</strong>
           </div>
           <button
             type="button"
-            aria-label={spaceTab === "tools" ? "Chiudi estensioni" : "Chiudi pannello livelli"}
+            aria-label={spaceTab === "areas" ? "Chiudi aree" : spaceTab === "tools" ? "Chiudi estensioni" : "Chiudi pannello livelli"}
             title="Mostra mappa"
             onClick={close}
           >

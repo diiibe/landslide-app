@@ -104,7 +104,7 @@ describe("Legend · Modello v2", () => {
     expect(section).toHaveTextContent(/Modello addestrato su tutto il dominio/);
     expect(within(section).getAllByRole("listitem")).toHaveLength(5);
     expect(
-      await within(section).findByText(/quote effettive: 20%, 20%, 20%, 20%, 20%/),
+      await within(section).findByText(/quote nella fascia alta: 20%, 20%, 20%, 20%, 20%/),
     ).toBeInTheDocument();
     expect(screen.queryByText("0.3")).toBeNull(); // J ramp ticks are gone
   });
@@ -121,8 +121,8 @@ describe("Legend · Modello v2", () => {
     const diffuse=screen.getByRole("region",{name:"Zone diffuse"});
     expect(bodies).toHaveTextContent("Classi 4, 5");
     expect(diffuse).toHaveTextContent("Classi 2, 3");
-    expect(await within(bodies).findByText(/quote effettive/)).toBeInTheDocument();
-    expect(await within(diffuse).findByText(/quote effettive/)).toBeInTheDocument();
+    expect(await within(bodies).findByText(/quote nella fascia alta/)).toBeInTheDocument();
+    expect(await within(diffuse).findByText(/quote nella fascia alta/)).toBeInTheDocument();
   });
 
   it("shows the real shares and class count when tied quantiles collapsed", async () => {
@@ -130,7 +130,7 @@ describe("Legend · Modello v2", () => {
     useAppStore.getState().toggleLayer("v2Diffuse");
     render(<Legend />);
     const section = screen.getByRole("region", { name: /zone diffuse/i });
-    expect(await within(section).findByText(/quote effettive: 55%, 25%, 20%/)).toBeInTheDocument();
+    expect(await within(section).findByText(/quote nella fascia alta: 55%, 25%, 20%/)).toBeInTheDocument();
     expect(within(section).getAllByRole("listitem")).toHaveLength(3);
     expect(section).not.toHaveTextContent("20% ciascuna");
   });

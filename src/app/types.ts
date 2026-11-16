@@ -90,6 +90,8 @@ export interface UserPolygonStats {
 }
 
 export interface UserPolygon {
+  /** Hidden areas stay saved and can be recalled from the Areas control. */
+  visible?: boolean;
   id: string;
   name: string;
   color: string;

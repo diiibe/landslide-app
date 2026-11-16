@@ -17,6 +17,7 @@ vi.mock("terra-draw", () => ({
     }
   },
   TerraDrawPolygonMode: class {},
+  TerraDrawModeUndoRedo: class {},
 }));
 vi.mock("terra-draw-maplibre-gl-adapter", () => ({
   TerraDrawMapLibreGLAdapter: class {},

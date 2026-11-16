@@ -38,6 +38,7 @@ export interface DrawingPreview {
    *  closed the polygon and is waiting for a Save/Discard decision. */
   phase: "loading" | "drawing" | "ready" | "error";
   error?: string;
+  canUndo?: boolean;
   vertexCount: number;
   /** Area in km² of the current polygon ring. 0 until ≥ 3 vertices. */
   areaKm2: number;
@@ -51,6 +52,7 @@ let latest: DrawingPreview = { phase: "drawing", vertexCount: 0, areaKm2: 0 };
 let generation = 0;
 
 let active: TerraDraw | null = null;
+let polygonMode: import("terra-draw").TerraDrawPolygonMode | null = null;
 let mapRef: MLMap | null = null;
 /** terra-draw feature id of the polygon currently being committed. Set
  *  in the `finish` handler so commitDrawing knows which polygon to
@@ -87,7 +89,7 @@ function readPreview(phase: "drawing" | "ready"): DrawingPreview {
       i === 0 || p[0] !== placed[i - 1]![0] || p[1] !== placed[i - 1]![1],
   ).length;
   const areaKm2 = ring.length >= 3 ? turfArea(target as never) / 1_000_000 : 0;
-  const preview: DrawingPreview = { phase, vertexCount, areaKm2 };
+  const preview: DrawingPreview = { phase, vertexCount, areaKm2, canUndo: phase === "drawing" && active.canUndo() };
   if (phase === "ready") preview.geometry = target.geometry;
   return preview;
 }
@@ -118,7 +120,7 @@ export async function startDrawing(
   mapRef = m;
   readyFeatureId = null;
 
-  const [{ TerraDraw, TerraDrawPolygonMode }, { TerraDrawMapLibreGLAdapter }] =
+  const [{ TerraDraw, TerraDrawPolygonMode, TerraDrawModeUndoRedo }, { TerraDrawMapLibreGLAdapter }] =
     await Promise.all([
       import("terra-draw"),
       import("terra-draw-maplibre-gl-adapter"),
@@ -133,9 +135,11 @@ export async function startDrawing(
   )
     return;
 
+  polygonMode = new TerraDrawPolygonMode({ keyEvents: { finish: "Enter", cancel: "Escape" } });
   const draw = new TerraDraw({
     adapter: new TerraDrawMapLibreGLAdapter({ map: m as unknown as never }),
-    modes: [new TerraDrawPolygonMode()],
+    modes: [polygonMode],
+    undoRedo: { modeLevel: new TerraDrawModeUndoRedo() },
   });
   draw.start();
   draw.setMode("polygon");
@@ -146,6 +150,8 @@ export async function startDrawing(
     if (!active) return;
     if (readyFeatureId === null) publish(readPreview("drawing"));
   });
+
+  draw.on("history", () => { if (active === draw && readyFeatureId === null) publish(readPreview("drawing")); });
 
   draw.on("finish", (id) => {
     readyFeatureId = id;
@@ -164,8 +170,26 @@ export function stopDrawing(): void {
     active = null;
   }
   mapRef = null;
+  polygonMode = null;
   readyFeatureId = null;
   publish({ phase: "drawing", vertexCount: 0, areaKm2: 0 });
+}
+
+/** Uses TerraDraw's own vertex history; no synthetic geometry is committed. */
+export function undoDrawingVertex(): boolean {
+  if (!active || readyFeatureId !== null || !active.canUndo()) return false;
+  const changed = active.undo();
+  publish(readPreview("drawing"));
+  return changed;
+}
+export function finishDrawing(): boolean {
+  if (!active || !polygonMode || readyFeatureId !== null || latest.vertexCount < 3) return false;
+  polygonMode.onKeyUp({ key: "Enter", heldKeys: [], preventDefault: () => {} });
+  return readyFeatureId !== null;
+}
+export function restartDrawing(): void {
+  const m = mapRef;
+  if (m) void startDrawing(m, () => !!m.isStyleLoaded());
 }
 
 export function subscribeDrawingPreview(fn: Listener): () => void {

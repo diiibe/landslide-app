@@ -1,10 +1,13 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import { useAppStore } from "@/app/store";
+import { downloadAreaComparison } from "../analysis/exportArea";
 import { Workbench } from "./Workbench";
 import { useExperienceStore } from "../store";
 import { FraneComparison } from "./FraneComparison";
 import { analyseArea } from "../analysis/client";
 import type { AnalysisResult } from "../analysis/core";
+vi.mock("../analysis/exportArea",async importOriginal=>({...await importOriginal<typeof import("../analysis/exportArea")>(),downloadAreaComparison:vi.fn()}));
 vi.mock("../analysis/client",()=>({analyseArea:vi.fn()}));
 beforeEach(()=>{vi.stubGlobal("ResizeObserver",class{observe(){}disconnect(){}});});
 afterEach(()=>{useExperienceStore.setState({activeId:null,tab:"overview",replayTime:null,scenario:{id:"normal",since:0},selectedId:null});vi.restoreAllMocks();vi.unstubAllGlobals();});
@@ -51,4 +54,17 @@ it("keeps a small mapped area and a small unmapped remainder visible instead of 
  render(<FraneComparison/>);fireEvent.click(screen.getByRole("button",{name:"Calcola confronto"}));
  await waitFor(()=>expect(screen.getAllByText("0,004 km²")).toHaveLength(2));
  expect(screen.getAllByText(/Senza mappatura: 0,004 km²/)).toHaveLength(2);
+});
+
+it("exports the actual map selections separately from the comparison filter",async()=>{
+ const layer={coveredM2:100,cells:1,classes:[10,20,30,20,20],mean:.5,median:.5,p90:.8,min:.1,max:.9};
+ vi.mocked(analyseArea).mockResolvedValue({areaM2:100,layers:{bodies:layer,diffuse:layer},version:"current"});
+ useAppStore.setState(s=>({susceptibilityStyle:{bodies:{...s.susceptibilityStyle.bodies,classes:[1,3,5]},diffuse:{...s.susceptibilityStyle.diffuse,classes:[2]}}}));
+ render(<FraneComparison/>);
+ fireEvent.click(screen.getByRole("combobox",{name:"Mappatura del confronto"}));fireEvent.click(screen.getByRole("option",{name:"Franosità diffusa"}));
+ fireEvent.click(screen.getByRole("combobox",{name:"Grado minimo nella fascia alta"}));fireEvent.click(screen.getByRole("option",{name:"Dal grado 4 · fascia alta"}));
+ fireEvent.click(screen.getByRole("button",{name:"Calcola confronto"}));
+ await waitFor(()=>expect(screen.getByRole("button",{name:"Esporta confronto CSV"})).toBeInTheDocument());fireEvent.click(screen.getByRole("button",{name:"Esporta confronto CSV"}));
+ const call=vi.mocked(downloadAreaComparison).mock.calls.at(-1)!;
+ expect(call[1]).toHaveLength(2);expect(call[1][0]?.mapSelection).toEqual({bodies:[1,3,5],diffuse:[2]});expect(call[2]).toEqual({layer:"diffuse",minClass:4});
 });

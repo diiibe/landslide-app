@@ -525,8 +525,8 @@ const initial: Omit<
   | "reset"
 > = {
   susceptibilityStyle: {
-    bodies: { minClass: 4, classes: [4, 5], opacity: 0.45 },
-    diffuse: { minClass: 4, classes: [4, 5], opacity: 0.45 },
+    bodies: { minClass: 1, classes: [1, 2, 3, 4, 5], opacity: 0.45, scheme: "upper-quintile-v1" },
+    diffuse: { minClass: 1, classes: [1, 2, 3, 4, 5], opacity: 0.45, scheme: "upper-quintile-v1" },
   },
   model: "j3",
   basemap: "outdoors",
@@ -729,6 +729,7 @@ export const useAppStore = create<AppState>((set) => ({
       geometry: input.geometry,
       bounds: input.bounds,
       stats: input.stats,
+      visible: input.visible ?? true,
     };
     set((s) => {
       const next = [polygon, ...s.userPolygons];

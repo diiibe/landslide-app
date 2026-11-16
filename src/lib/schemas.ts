@@ -187,6 +187,7 @@ const V2LayerStatsSchema = z
         message: "edges must be strictly increasing",
       }),
     shares: z.array(z.number().min(0).max(1)),
+    focus: z.object({ scheme: z.literal("upper-quintile-v1"), quantile: z.number(), threshold: z.number(), domain_cells: z.number().int(), focus_cells: z.number().int(), base_edges: z.array(z.number()) }).optional(),
     /** Cell count per score source: `full_fit` for the map model, or
      *  `oof` / `holdout` / `in_sample` from the earlier export. */
     sources: z.record(z.string(), z.number().int().nonnegative()),

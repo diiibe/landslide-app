@@ -10,12 +10,13 @@ import type { AnalysisResult } from "./analysis/core";
 import {
   AREA_PRESETS,
   drawArea,
-  savedArea,
   selectArea,
+  closeArea,
   useExperienceStore,
   type AreaSelection,
 } from "./store";
 import styles from "./Panel.module.css";
+import { AreaExport } from "./analysis/AreaExport";
 const number = (n: number, d = 2) =>
   n !== 0 && Math.abs(n) < 10 ** -d
     ? n.toLocaleString("it-IT", {
@@ -26,31 +27,6 @@ const number = (n: number, d = 2) =>
 const km = (m: number) => number(m / 1e6, m < 1e6 ? 3 : 2);
 const percent = (a: number, b: number) =>
   b ? `${number((a / b) * 100, 1)}%` : "—";
-function exportArea(area: AreaSelection, result: AnalysisResult) {
-  const blob = new Blob(
-    [
-      JSON.stringify(
-        {
-          name: area.name,
-          geometry: area.geometry,
-          generatedAt: new Date().toISOString(),
-          source: "HazardFVG model v2 · original grid",
-          note: "Punteggi di somiglianza, non probabilità di frana. Reti OSM semplificate 3 m e campionate per segmenti ≤60 m.",
-          ...result,
-        },
-        null,
-        2,
-      ),
-    ],
-    { type: "application/json" },
-  );
-  const url = URL.createObjectURL(blob),
-    a = document.createElement("a");
-  a.href = url;
-  a.download = `friulview-analisi-${area.id.replace(/[^a-z0-9-]/gi, "")}.json`;
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
 function preset(p: (typeof AREA_PRESETS)[number]) {
   selectArea({ id: p.id, name: p.name, geometry: p.geometry, saved: false });
   useAppStore.setState({
@@ -59,14 +35,14 @@ function preset(p: (typeof AREA_PRESETS)[number]) {
 }
 export function FranePanel() {
   const area = useExperienceStore((s) => s.area),
-    probe = useExperienceStore((s) => s.probe),
-    polygons = useAppStore((s) => s.userPolygons);
-  const which = useAppStore(s => s.layers.v2Diffuse ? "diffuse" : "bodies");
+    probe = useExperienceStore((s) => s.probe);
+  const which = useExperienceStore(s => s.analysisLayer);
   const settings = useAppStore(s => s.susceptibilityStyle[which]);
-  return (
-    <div className={styles.panel}>
-      <section className={styles.intro}>
-        <span className={styles.badge}>Mappature reali · griglia 120 m</span>
+  const controls = (
+    <section className={styles.intro}>
+        <span className={styles.badge}>Fascia alta · griglia 120 m</span>
+        <ModelChoice which={which}/>
+        <p className={styles.caption}>Cinque gradi nella precedente classe 5, circa il 20% più alto dei punteggi regionali. Il territorio fuori fascia resta trasparente.</p>
         <LandslideClassPicker value={selectedClasses(settings)} onChange={classes =>
           useAppStore.setState(s => ({ susceptibilityStyle: { ...s.susceptibilityStyle, [which]: withClasses(s.susceptibilityStyle[which], classes) } }))}/>
         {!area && (
@@ -102,9 +78,13 @@ export function FranePanel() {
           </p>
         )}
       </section>
-      {area ? (
-        <AreaInspector key={area.id} area={area} />
-      ) : (
+  );
+  return (
+    <div className={styles.panel}>
+      {area ? <>
+        <AreaInspector key={area.id} area={area}/>
+        <details><summary>Mappatura e gradi visibili</summary>{controls}</details>
+      </> : <>{controls}
         <section className={styles.empty}>
           <Icon name="mountain" />
           <strong>Da quale zona partiamo?</strong>
@@ -125,46 +105,12 @@ export function FranePanel() {
             ))}
           </div>
         </section>
-      )}
+      </>}
       <ContextLayers />
-      {polygons.length > 0 && (
-        <section className={styles.section}>
-          <div className={styles.subhead}>
-            <h3>Le tue zone</h3>
-            <small>{polygons.length}</small>
-          </div>
-          <div className={styles.list}>
-            {polygons.map((p) => (
-              <button
-                key={p.id}
-                onClick={() => {
-                  savedArea(p.id);
-                  window.dispatchEvent(
-                    new CustomEvent("fvg:regional-fit", { detail: p.bounds }),
-                  );
-                }}
-              >
-                <span
-                  className={styles.zoneDot}
-                  style={{ background: p.color }}
-                />
-                <span>
-                  <strong>{p.name}</strong>
-                  <small>
-                    {km(p.stats.areaKm2 * 1e6)} km² · ricalcola sulla mappatura
-                    corrente
-                  </small>
-                </span>
-                <Icon name="chevron" />
-              </button>
-            ))}
-          </div>
-        </section>
-      )}
       <details>
         <summary>Come leggere i risultati</summary>
         <p>
-          Le classi sono quantili del punteggio di somiglianza con l’inventario.
+          I cinque gradi sono quantili soltanto della fascia alta del punteggio di somiglianza con l’inventario (precedente classe 5).
           Non sono probabilità di frana né un’indicazione di pericolo imminente.
           Le aree prive di mappatura sono riportate separatamente.
         </p>
@@ -207,8 +153,7 @@ function ContextLayers() {
       </div>
       <p className={styles.caption}>
         Strade e sentieri seguono la classe della mappatura selezionata,
-        campionata in segmenti di massimo 60 m. Il grigio indica assenza di
-        copertura.
+        campionata in segmenti di massimo 60 m. Il grigio indica tratti fuori dalla fascia alta oppure senza copertura; l’analisi distingue i due casi.
       </p>
       {!ready && !error && (
         <p role="status" className={styles.caption}>
@@ -229,7 +174,7 @@ function ContextLayers() {
   );
 }
 function AreaInspector({ area }: { area: AreaSelection }) {
-  const which = useAppStore((s) => (s.layers.v2Diffuse ? "diffuse" : "bodies")),
+  const which = useExperienceStore((s) => s.analysisLayer),
     settings = useAppStore((s) => s.susceptibilityStyle[which]),
     tab = useExperienceStore((s) => s.analysisTab),
     [attempt, setAttempt] = useState(0),
@@ -262,7 +207,8 @@ function AreaInspector({ area }: { area: AreaSelection }) {
   const data = record.result,
     loading = record.key !== key,
     current = data?.layers[which],
-    chosen = selectedClasses(settings);
+    chosen = selectedClasses(settings),
+    focusM2 = current?.classes.reduce((a,b)=>a+b,0) ?? 0;
   const setClasses = (classes: number[]) =>
     useAppStore.setState((s) => ({
       susceptibilityStyle: {
@@ -302,38 +248,18 @@ function AreaInspector({ area }: { area: AreaSelection }) {
       <div className={styles.subhead}>
         <div>
           <small>Zona selezionata</small>
-          <h2>{area.name}</h2>
+          <h2 data-space-inspection>{area.name}</h2>
         </div>
         <button
           className={styles.subtle}
-          aria-label="Chiudi analisi zona"
-          onClick={() => useExperienceStore.setState({ area: null })}
+          title="Chiudi analisi e nascondi il contorno"
+          aria-label="Chiudi analisi e nascondi il contorno"
+          onClick={closeArea}
         >
           <Icon name="close" />
         </button>
       </div>
-      <div
-        className={styles.pills}
-        role="group"
-        aria-label="Mappatura analizzata"
-      >
-        {(
-          [
-            ["bodies", "Corpi di frana", "v2Bodies"],
-            ["diffuse", "Franosità diffusa", "v2Diffuse"],
-          ] as const
-        ).map(([id, label, key]) => (
-          <button
-            key={id}
-            aria-pressed={which === id}
-            onClick={() => {
-              if (which !== id) useAppStore.getState().toggleLayer(key);
-            }}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
+      <ModelChoice which={which}/>
       {loading && !data && (
         <div className={styles.loading} role="status">
           Caricamento dell’indice completo e calcolo delle intersezioni… La
@@ -370,6 +296,8 @@ function AreaInspector({ area }: { area: AreaSelection }) {
               <span>Celle con intersezione</span>
             </div>
           </div>
+          {current.coveredM2 > 0 && focusM2 === 0 && <p className={styles.caption}>La zona è mappata ma non contiene celle nella fascia alta. Questo non indica assenza di suscettibilità.</p>}
+          {!!current.belowFocusM2 && <p className={styles.caption}>{km(current.belowFocusM2)} km² mappati sotto la fascia alta: restano nel denominatore delle percentuali, ma sono trasparenti sulla mappa.</p>}
           {current.coveredM2 < data.areaM2 * 0.999 && (
             <p className={styles.caption}>
               {km(Math.max(0, data.areaM2 - current.coveredM2))} km² senza
@@ -401,16 +329,16 @@ function AreaInspector({ area }: { area: AreaSelection }) {
           {tab === "distribution" && (
             <>
               <div>
-                <h3>Superficie per classe</h3>
+                <h3>Distribuzione della fascia alta</h3>
                 <p className={styles.caption}>
-                  Tocca una classe per mostrarla o nasconderla sulla mappa.
+                  Quote della fascia alta della zona. Tocca un grado per mostrarlo o nasconderlo sulla mappa.
                 </p>
               </div>
               <div className={styles.classRows}>
                 {current.classes.map((a, i) => (
                   <button
                     key={i}
-                    aria-label={`Classe ${i + 1} sulla mappa`}
+                    aria-label={`Grado ${i + 1}: ${percent(a, focusM2)} della fascia alta, ${km(a)} km². Mostra o nascondi sulla mappa.`}
                     aria-pressed={chosen.includes(i + 1)}
                     onClick={() => setClasses(chosen.includes(i + 1) ? chosen.filter(c => c !== i + 1) : [...chosen, i + 1])}
                   >
@@ -418,15 +346,15 @@ function AreaInspector({ area }: { area: AreaSelection }) {
                     <span className={styles.classTrack}>
                       <i
                         style={{
-                          width: current.coveredM2
-                            ? `${(a / current.coveredM2) * 100}%`
+                          width: focusM2
+                            ? `${(a / focusM2) * 100}%`
                             : "0%",
                           background: v2ClassColor(i + 1, 5),
                         }}
                       />
                     </span>
                     <span className={styles.classNumbers}>
-                      {percent(a, current.coveredM2)} · {km(a)} km²
+                      {percent(a, focusM2)} · {km(a)} km²
                     </span>
                   </button>
                 ))}
@@ -434,7 +362,7 @@ function AreaInspector({ area }: { area: AreaSelection }) {
               <table className={styles.table}>
                 <tbody>
                   {[
-                    ["Punteggio medio", current.mean],
+                    ["Punteggio medio · intera zona mappata", current.mean],
                     ["Mediana pesata", current.median],
                     ["90° percentile", current.p90],
                     ["Minimo", current.min],
@@ -534,7 +462,7 @@ function AreaInspector({ area }: { area: AreaSelection }) {
                           parts.map((v, i) => (
                             <span
                               key={i}
-                              title={`${i === 0 ? "Senza mappatura" : `Classe ${i}`}: ${number(v)} km`}
+                              title={`${i === 0 ? "Fuori fascia alta o senza mappatura" : `Classe ${i}`}: ${number(v)} km`}
                               style={{
                                 flex: v || 0.00001,
                                 background:
@@ -545,8 +473,7 @@ function AreaInspector({ area }: { area: AreaSelection }) {
                       </div>
                       <small>
                         {number(classSum(parts, chosen, 0))} km
-                        nelle classi selezionate · {number(parts[0] ?? 0)} km senza
-                        copertura.
+                        nelle classi selezionate · {number(net.belowFocusKm?.[which] ?? 0)} km sotto fascia alta · {number(Math.max(0, (parts[0] ?? 0) - (net.belowFocusKm?.[which] ?? 0)))} km senza copertura.
                       </small>
                     </div>
                   );
@@ -605,10 +532,7 @@ function AreaInspector({ area }: { area: AreaSelection }) {
               </div>
             ))}
           <div className={styles.actions}>
-            <button onClick={() => exportArea(area, data)}>
-              <Icon name="fileData" />
-              Esporta analisi
-            </button>
+            <button onClick={drawArea}><Icon name="drawPolygon"/>Nuova zona</button>
             <button
               onClick={() =>
                 window.dispatchEvent(
@@ -639,6 +563,7 @@ function AreaInspector({ area }: { area: AreaSelection }) {
               Inquadra zona
             </button>
           </div>
+          <AreaExport area={area} result={data} disabled={loading || !!record.error}/>
           {!area.saved && (
             <div className={styles.field}>
               <label htmlFor="zone-name">Conserva questa zona</label>
@@ -663,4 +588,8 @@ function AreaInspector({ area }: { area: AreaSelection }) {
       )}
     </section>
   );
+}
+
+function ModelChoice({which}:{which:"bodies"|"diffuse"}) {
+  return <div className={styles.pills} role="group" aria-label="Mappatura analizzata">{([['bodies','Corpi di frana','v2Bodies'],['diffuse','Franosità diffusa','v2Diffuse']] as const).map(([id,title,layer])=><button key={id} aria-pressed={which===id} onClick={()=>{useExperienceStore.setState({analysisLayer:id});if(!useAppStore.getState().layers[layer])useAppStore.getState().toggleLayer(layer);}}>{title}</button>)}</div>;
 }

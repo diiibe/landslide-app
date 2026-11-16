@@ -158,7 +158,7 @@ def cells_to_geodataframe(
     boxes = shapely.box(xmin, ymax - GRID.cell, xmin + GRID.cell, ymax)
     gdf = gpd.GeoDataFrame(
         {
-            "score": df["score"].astype("float32").round(4).to_numpy(),
+            "score": df["score"].astype("float32").to_numpy(),
             "source": df["source"].astype(str).to_numpy(),
             "cls": assign_classes(df["score"].to_numpy(), edges),
             "ncls": np.full(len(df), len(edges) - 1, dtype="int8"),
@@ -218,12 +218,25 @@ def tile_layer(
 
 
 def build_layer(
-    name: str, map_dir: Path, tiles_dir: Path, run: Runner = subprocess.run
+    name: str, map_dir: Path, tiles_dir: Path, run: Runner = subprocess.run, *, focus: bool = False
 ) -> dict[str, object]:
     df = load_layer(map_dir / f"{name}.parquet")
+    # Use the same Float32 scores as the complete analytical grid. The new
+    # display only subdivides the previous highest quintile, never retrains.
+    df["score"] = df["score"].astype("float32")
     scores = df["score"].to_numpy()
+    base_edges = class_edges(scores)
+    domain_cells = len(df)
+    focus_meta = None
+    if focus:
+        threshold = base_edges[-2]
+        df = df.loc[scores >= threshold].copy()
+        scores = df["score"].to_numpy()
+        focus_meta = {"scheme": "upper-quintile-v1", "quantile": 0.8,
+                      "threshold": float(threshold), "domain_cells": domain_cells,
+                      "focus_cells": len(df), "base_edges": [round(e, 6) for e in base_edges]}
     try:
-        edges = class_edges(scores)
+        edges = class_edges(scores, min_classes=N_CLASSES if focus else MIN_CLASSES)
     except ValueError as err:
         raise ValueError(f"{name}: {err}") from err
     tile_layer(
@@ -252,7 +265,8 @@ def build_layer(
     return {
         "n_cells": int(len(df)),
         "classes": len(edges) - 1,
-        "edges": [round(e, 6) for e in edges],
+        "edges": edges,
+        **({"focus": focus_meta} if focus_meta else {}),
         "shares": class_shares(scores, edges),
         "sources": {s: int(counts[s]) for s in SOURCES if s in counts},
     }
@@ -307,6 +321,7 @@ def build(
     data_dir: Path,
     run: Runner = subprocess.run,
     metrics_path: Path = METRICS_PATH,
+    focus: bool = False,
 ) -> Path:
     for name in LAYERS:
         if not (map_dir / f"{name}.parquet").exists():
@@ -315,7 +330,7 @@ def build(
     tiles_dir.mkdir(parents=True, exist_ok=True)
     data_dir.mkdir(parents=True, exist_ok=True)
 
-    layers = {name: build_layer(name, map_dir, tiles_dir, run) for name in LAYERS}
+    layers = {name: build_layer(name, map_dir, tiles_dir, run, focus=focus) for name in LAYERS}
     model = {
         "model": "v2",
         "grid": asdict(GRID),
@@ -334,6 +349,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument("--map-dir", required=True, help="Folder with bodies.parquet, diffuse.parquet")
     p.add_argument("--tiles-dir", required=True, help="Path to public/tiles")
     p.add_argument("--data-dir", required=True, help="Path to public/data")
+    p.add_argument("--full-distribution", action="store_true", help="Historical whole-domain classes; default focuses on the highest quintile")
     p.add_argument("--metrics", default=str(METRICS_PATH), help="Owner metrics JSON")
     return p.parse_args(argv)
 
@@ -345,6 +361,7 @@ def main(argv: list[str] | None = None) -> None:
         Path(ns.tiles_dir).expanduser(),
         Path(ns.data_dir).expanduser(),
         metrics_path=Path(ns.metrics).expanduser(),
+        focus=not ns.full_distribution,
     )
     print(f"Wrote {out}")
 

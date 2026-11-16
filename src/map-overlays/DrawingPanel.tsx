@@ -1,8 +1,13 @@
 import { useEffect, useState } from "react";
 import { useAppStore, USER_COLOR_PALETTE } from "@/app/store";
+import { useExperienceStore } from "@/spaces/store";
+import { Icon } from "@/ui/Icon";
 import { ColorButton } from "./ColorButton";
 import {
   cancelDrawing,
+  undoDrawingVertex,
+  restartDrawing,
+  finishDrawing,
   commitDrawing,
   subscribeDrawingPreview,
   type DrawingPreview,
@@ -23,6 +28,7 @@ import styles from "./DrawingPanel.module.css";
  */
 export function DrawingPanel() {
   const drawingMode = useAppStore((s) => s.drawingMode);
+  const landslides = useExperienceStore(s => s.activeId === "landslides");
   const polygonCount = useAppStore((s) => s.userPolygons.length);
   const [preview, setPreview] = useState<DrawingPreview>({
     phase: "drawing",
@@ -55,7 +61,7 @@ export function DrawingPanel() {
 
   const ready = preview.phase === "ready";
   return (
-    <div className={styles.panel} role="dialog" aria-label="Disegno area">
+    <div className={styles.panel} data-phase={preview.phase} role="dialog" aria-label="Disegno area">
       <div className={styles.head}>
         <span className={styles.dot} aria-hidden="true" />
         <span className={styles.ttl}>
@@ -67,6 +73,7 @@ export function DrawingPanel() {
                 ? "Disegno non disponibile"
                 : "Disegno…"}
         </span>
+        <button className={styles.headClose} aria-label="Annulla disegno" onClick={cancelDrawing}><Icon name="close"/></button>
       </div>
       <div className={styles.body}>
         <div className={styles.kvRow}>
@@ -76,7 +83,7 @@ export function DrawingPanel() {
         <div className={styles.kvRow}>
           <span className={styles.kvLabel}>Area</span>
           <span className={styles.kvValue}>
-            {preview.areaKm2 > 0 ? `${preview.areaKm2.toFixed(2)} km²` : "—"}
+            {preview.areaKm2 > 0 ? preview.areaKm2 < .01 ? `${(preview.areaKm2 * 1e6).toLocaleString("it-IT",{maximumSignificantDigits:3})} m²` : `${preview.areaKm2.toLocaleString("it-IT",{maximumFractionDigits:2})} km²` : "—"}
           </span>
         </div>
         {preview.phase === "error" && (
@@ -91,10 +98,14 @@ export function DrawingPanel() {
         )}
         {preview.phase === "drawing" && (
           <p className={styles.hint}>
-            Tocca per aggiungere vertici. Tocca due volte l’ultimo vertice per
-            chiudere e salvare l’area geografica.
+            <span className={styles.desktopHint}>Tocca la mappa per aggiungere vertici. Usa Indietro per correggere il punto appena posato, poi Chiudi contorno per completare.</span><span className={styles.mobileHint}>Tocca la mappa per posare i vertici.</span>
           </p>
         )}
+        {(preview.phase === "drawing" || ready) && <div className={styles.editActions} role="group" aria-label="Correggi il contorno">
+          <button type="button" aria-label="Indietro" title="Rimuovi l’ultimo vertice" onClick={undoDrawingVertex} disabled={ready || !preview.canUndo}><Icon name="arrow" style={{transform:"rotate(180deg)"}}/>Indietro</button>
+          <button type="button" onClick={restartDrawing} disabled={!preview.vertexCount}>Riparti da zero</button>
+          {!ready && <button type="button" onClick={finishDrawing} disabled={preview.vertexCount < 3}>Chiudi contorno</button>}
+        </div>}
         {ready && (
           <>
             <label className={styles.formRow}>
@@ -104,7 +115,7 @@ export function DrawingPanel() {
                 className={styles.input}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                aria-label="Area name"
+                aria-label="Nome area"
                 autoFocus
               />
             </label>
@@ -113,7 +124,7 @@ export function DrawingPanel() {
               <ColorButton
                 value={color}
                 onChange={setColor}
-                ariaLabel="Polygon colour"
+                ariaLabel="Colore area"
                 size={26}
               />
             </div>
@@ -134,7 +145,7 @@ export function DrawingPanel() {
               onClick={() => commitDrawing(name, color)}
               disabled={!preview.geometry}
             >
-              Salva area
+              {landslides ? "Salva e analizza" : "Salva area"}
             </button>
           )}
         </div>

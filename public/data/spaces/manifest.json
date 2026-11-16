@@ -14,7 +14,7 @@
     "rawSha": "74a5c4035cb9b6a5",
     "bytes": 1847450
   },
-  "modelHash": "e89d443e0219ac3c",
+  "modelHash": "437daa0d47fb882f",
   "modelSource": "HazardFVG \u00b7 model v2 \u00b7 original parquet cells",
   "networks": {
     "roads": {
@@ -26,7 +26,7 @@
       "sourceFeatures": 213068,
       "skippedDegenerate": 13,
       "tiles": "space-roads.pmtiles",
-      "tileSha": "fc78cb66d00ec5d9",
+      "tileSha": "a2edad4fec03a5d6",
       "source": "OpenStreetMap contributors \u00b7 ODbL",
       "sourceUrl": "https://www.openstreetmap.org/copyright",
       "method": "Geometry simplified 3m; segments \u226460m; midpoint sampling on 120m model cells"
@@ -40,7 +40,7 @@
       "sourceFeatures": 170856,
       "skippedDegenerate": 99,
       "tiles": "space-trails.pmtiles",
-      "tileSha": "825f2bd544c27a59",
+      "tileSha": "843bf26cfbc9ea2b",
       "source": "OpenStreetMap contributors \u00b7 ODbL",
       "sourceUrl": "https://www.openstreetmap.org/copyright",
       "method": "Geometry simplified 3m; segments \u226460m; midpoint sampling on 120m model cells"

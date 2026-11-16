@@ -40,3 +40,19 @@ the owner's metrics copied from `pipelines/model_v2_metrics.json` (edit
 that file, not the output). GeoJSON intermediates go to a temporary
 directory. The two layers are built and classed separately and never
 merged.
+
+### Upper-band display (November 2026)
+
+The model-v2 CLI now subdivides only the historical highest quintile into five
+new grades. `--full-distribution` retains the historical whole-domain build.
+The five new grades are calculated independently per layer on the same Float32
+scores as the analytical grid. Fewer than five distinct grades is an error in
+focus mode. `layers.*.focus` records the scheme, original cutoff, full domain
+count and historical edges. The graded-cell count and shares refer to the focus
+band, not the whole domain.
+
+`space_analysis.py` preserves the original domain classes/scores in the complete
+analytical binary using `focus.base_edges`; rendered network classes use the
+new focus edges. The worker derives the display grades from those original
+scores and reports `belowFocusM2` separately from missing coverage. Model metrics
+and fitted scores are not recomputed by this display change.

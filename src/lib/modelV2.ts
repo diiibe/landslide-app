@@ -17,7 +17,7 @@ export type ModelV2State =
 let cached: Promise<ModelV2File | null> | null = null;
 
 export function loadModelV2(): Promise<ModelV2File | null> {
-  cached ??= fetch(`${import.meta.env.BASE_URL}data/model_v2.json`)
+  cached ??= fetch(`${import.meta.env.BASE_URL}data/model_v2.json`, { cache: "no-cache" })
     .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
     .then((d: unknown) => parseOrThrow(ModelV2FileSchema, d, "model_v2.json"))
     .catch((err: unknown) => {

@@ -25,7 +25,7 @@ The **Sulla mappa** sidebar keeps search and multi-select quick choices at the t
 followed by individual active layers and a folder/breadcrumb browser. Select a layer name to inspect its data,
 source and display controls. Specialist tools are available through Spazi. There is no obsolete model
 selector. The two susceptibility mappings use transparent class overlays with
-adjustable minimum class and opacity at both regional and detailed zooms.
+five selectable grades within the historical highest quintile, and adjustable opacity at both regional and detailed zooms. Cells outside this upper band are transparent; the underlying scores and full analytical coverage are unchanged.
 Classes are quantiles of model scores, not event probabilities. The two mappings
 can be enabled together, with separate class selections, opacities and legends.
 Their overlapping colours do not calculate a combined score.
@@ -48,7 +48,7 @@ industry in Buttrio, a Collio vineyard, retail in Martignacco, Tavagnacco traffi
 and mountain tourism at Sella Nevea. Each space has its own map, sensors, zones
 and inspection sheets; returning to the territory restores the previous view.
 
-Frane FVG supports drawn/saved areas, point probes, coverage and class statistics,
+Frane FVG supports a dedicated Areas collection, vertex undo/restart/finish, drawn/saved areas, point probes, coverage and upper-band grade statistics,
 comparison of the two mappings, roads/trails and contextual structures, and JSON
 analysis export. Demonstrations use deterministic 24/7 simulations, interactive
 series, 24-hour replay and hypothetical scenarios. Company names are geographic
@@ -133,3 +133,5 @@ typed search terms are forwarded to Mapbox for geocoding.
 - Design spec: [docs/superpowers/specs/2026-04-22-landslide-app-design.md](docs/superpowers/specs/2026-04-22-landslide-app-design.md)
 - Implementation plan: [docs/superpowers/plans/2026-04-22-landslide-app.md](docs/superpowers/plans/2026-04-22-landslide-app.md)
 - Upstream model card: `../ml-landslide-mapping-audit/docs/MODEL_CARD_susceptibility_v1.md`
+
+The landslide area inspector exports reimportable GeoJSON with geometry and full results, unit-labelled CSV, an offline printable HTML report and complete JSON. Reports distinguish mapped surface below the upper band from missing coverage. See [the landslide workflow](docs/spazio-frane.md).

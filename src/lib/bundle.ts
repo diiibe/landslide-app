@@ -66,6 +66,7 @@ export function buildBundle(
       type: "Feature",
       properties: {
         "fvg:bundle": "polygon",
+        visible: p.visible !== false,
         id: p.id,
         name: p.name,
         color: p.color,
@@ -153,6 +154,7 @@ export function parseBundleFile(text: string): ImportedBundle {
       if (!stats || !bounds) continue;
       polygons.push({
         name: String(p.name ?? "Imported area"),
+        visible: p.visible !== false,
         color: String(p.color ?? "#FFD400"),
         geometry: f.geometry,
         bounds,

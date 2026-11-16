@@ -390,3 +390,22 @@ def test_coalesced_low_zoom_tiles_keep_each_cells_class(tmp_path: Path):
                 outside += geom.difference(box(xb[k] - tol, -1e9, xb[k + 1] + tol, 1e9)).area
     assert 0 < per_zoom[6] < len(gdf) / 2, "z6 should coalesce cells"
     assert outside / area < 1e-4
+
+
+def test_focus_classes_subdivide_only_the_old_highest_quintile(map_dir: Path, tmp_path: Path):
+    """The visual refinement changes neither the fitted scores nor the domain."""
+    from pipelines.model_v2 import build_layer, load_layer
+    import numpy as np
+    run = FakeRunner()
+    stats = build_layer("bodies", map_dir, tmp_path, run=run, focus=True)
+    original = load_layer(map_dir / "bodies.parquet").score.to_numpy().astype("float32")
+    threshold = stats["focus"]["threshold"]
+    selected = original[original >= threshold]
+    assert len(selected) == stats["n_cells"] == stats["focus"]["focus_cells"]
+    assert stats["focus"]["domain_cells"] == len(original)
+    assert threshold == np.quantile(original, .8)
+    assert stats["classes"] == 5
+    assert stats["edges"][0] == min(selected)
+    assert stats["edges"][-1] == max(selected)
+    assert len(stats["edges"]) == 6
+    assert sum(stats["shares"]) == pytest.approx(1, abs=.001)

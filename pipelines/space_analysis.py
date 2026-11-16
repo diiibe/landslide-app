@@ -23,7 +23,7 @@ def build(map_dir: Path):
  for name in ['bodies','diffuse']:
   df=load_layer(map_dir/f'{name}.parquet');idx=df.i.to_numpy()*GRID.width+df.j.to_numpy()
   assert len(df)==model['layers'][name]['cells'] if 'cells'in model['layers'][name] else len(df)>0
-  c=np.zeros(n,dtype='u1');c[idx]=assign_classes(df.score.to_numpy(),model['layers'][name]['edges'])
+  c=np.zeros(n,dtype='u1');c[idx]=assign_classes(df.score.to_numpy(),model['layers'][name].get('focus',{}).get('base_edges',model['layers'][name]['edges']))
   s=np.full(n,np.nan,dtype='<f4');s[idx]=df.score.to_numpy();classes.append(c);scores.append(s)
  header=struct.pack('<8sIIddd',b'FVGRID1\0',GRID.width,GRID.height,GRID.x0,GRID.y0,GRID.cell)
  payload=header+b''.join(x.tobytes()for x in classes+scores)
@@ -44,7 +44,13 @@ def build(map_dir: Path):
   seg=np.concatenate(parts);length=np.hypot(seg[:,2]-seg[:,0],seg[:,3]-seg[:,1]);seg=seg[length>.05]
   mid=(seg[:,:2]+seg[:,2:])/2;i=np.floor((GRID.y0-mid[:,1])/GRID.cell).astype(int);j=np.floor((mid[:,0]-GRID.x0)/GRID.cell).astype(int)
   inside=(i>=0)&(i<GRID.height)&(j>=0)&(j<GRID.width);idx=np.clip(i*GRID.width+j,0,n-1)
-  bc=np.where(inside,classes[0][idx],0);dc=np.where(inside,classes[1][idx],0)
+  def display_class(layer):
+   meta=model['layers'][['bodies','diffuse'][layer]]
+   values=scores[layer][idx]
+   cls=assign_classes(values,meta['edges'])
+   if 'focus' in meta: cls=np.where(values>=meta['focus']['threshold'],cls,0)
+   return np.where(inside & np.isfinite(values),cls,0)
+  bc=display_class(0);dc=display_class(1)
   local=np.rint((seg-np.array([GRID.x0,GRID.y0,GRID.x0,GRID.y0]))*100).astype('<i4')
   payload=struct.pack('<8sIddI',b'FVNET1\0\0',len(seg),GRID.x0,GRID.y0,16)+local.tobytes()
   p=out/f'{name}.bin.gz';p.write_bytes(gzip.compress(payload,mtime=0))

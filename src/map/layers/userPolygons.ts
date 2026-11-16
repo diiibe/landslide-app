@@ -29,7 +29,7 @@ function toFeatureCollection(
 ): GeoJSON.FeatureCollection {
   return {
     type: "FeatureCollection",
-    features: polygons.map((p) => ({
+    features: polygons.filter(p => p.visible !== false).map((p) => ({
       type: "Feature",
       properties: {
         id: p.id,

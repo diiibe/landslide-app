@@ -75,14 +75,14 @@ describe("buildV2PopupNode", () => {
     const node = buildV2PopupNode({ layer: "bodies", cls: 4, ncls: 5 });
     const text = node.textContent ?? "";
     expect(text).toContain("corpi di frana");
-    expect(text).toContain("Classe 4 di 5");
+    expect(text).toContain("Grado 4 di 5");
     expect(text).toMatch(/Somiglianza all'inventario: non è una previsione/);
   });
 
   it("says the full-fit model is optimistic where the inventory already has landslides", () => {
     const node = buildV2PopupNode({ layer: "diffuse", cls: 2, ncls: 4 });
     expect(node.textContent).toContain("zone diffuse");
-    expect(node.textContent).toContain("Classe 2 di 4"); // collapsed classes
+    expect(node.textContent).toContain("Grado 2 di 4"); // collapsed classes
     expect(node.textContent).toContain(V2_FULL_FIT_NOTE);
   });
 
