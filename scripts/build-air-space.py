@@ -158,7 +158,10 @@ def registry(data):
   ident=code or str(p.get('id',f.get('id')))
   features.append({'type':'Feature','id':ident,'geometry':f['geometry'],'properties':{'id':ident,'name':str(p.get('ragione_sociale','Attività')),'municipality':str(p.get('comune','')),'activity':str(p.get('attivita_aia','')),'state':str(p.get('stato','')),'code':code,'sourceUrl':str(p.get('link_sito_reg','')).strip()}})
  if len(features)<20:raise ValueError('Registro AIA del Pordenonese incompleto')
- data['aia']={'type':'FeatureCollection','features':features};return {'latestMeasurement':None}
+ data['aia']={'type':'FeatureCollection','features':features}
+ for source in data['sources']:
+  if source.get('id')=='aia':source.update(period='Registro regionale · acquisizione '+NOW(),dataUrl=WFS+'?'+urlencode({'service':'WFS','version':'2.0.0','request':'GetFeature','typeNames':'INDUSTR:autorizzazione_integrata_ambientale_aia','outputFormat':'application/json','count':20000,'srsName':'EPSG:4326'}))
+ return {'latestMeasurement':None}
 
 def planning(context,key,name):
  rows=wfs(name);features=[]
@@ -171,7 +174,7 @@ def planning(context,key,name):
  if not features:raise ValueError('Nessun perimetro della provincia093')
  context[key]={'type':'FeatureCollection','features':features}
  for source in context['sources']:
-  if name.split(':')[-1].lower() in source.get('url','').lower():source.pop('fileSha256',None);source.update(id={'industrialZones':'industrial','commercialZones':'commercial'}[key],period='Validità specifica in ciascun record; aggiornamento '+NOW(),note='Geometrie originali WFS Regione FVG, estratto COD_PROV093. Destinazioni urbanistiche, non uso effettivo o catasto.')
+  if name.split(':')[-1].lower() in source.get('url','').lower():source.pop('fileSha256',None);source.update(url=WFS+'?'+urlencode({'service':'WFS','version':'2.0.0','request':'GetFeature','typeNames':name,'outputFormat':'application/json','count':20000,'srsName':'EPSG:4326'}),id={'industrialZones':'industrial','commercialZones':'commercial'}[key],period='Validità specifica in ciascun record; aggiornamento '+NOW(),note='Geometrie originali WFS Regione FVG, estratto COD_PROV093. Destinazioni urbanistiche, non uso effettivo o catasto.')
  return {'latestMeasurement':None}
 
 def refresh(target=TARGET):

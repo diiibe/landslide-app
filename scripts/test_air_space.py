@@ -46,6 +46,11 @@ class AirSources(unittest.TestCase):
   with patch.object(air,'wfs',return_value=rows):
    air.planning(context,'industrialZones','CER:ZONE_INDUSTRIALI_ARTIG_D');air.planning(context,'commercialZones','CER:ZONE_COMMERCIALI_H')
   self.assertEqual([s['id']for s in context['sources']],['industrial','commercial'])
+ def test_registry_provenance_reports_the_new_acquisition_without_touching_measurements(self):
+  data={'sources':[{'id':'aia','period':'Snapshot catalogo 16 novembre 2026'}],'sme':[{'NOx':1}]}
+  rows=[{'geometry':{'type':'Point','coordinates':[12.6,46]},'properties':{'codice_regionale_aia':'PN/'+str(i),'ragione_sociale':'Attività'}}for i in range(20)]
+  with patch.object(air,'wfs',return_value=rows),patch.object(air,'NOW',return_value='2026-11-23T16:49:38Z'):air.registry(data)
+  self.assertEqual(data['sources'][0]['period'],'Registro regionale · acquisizione 2026-11-23T16:49:38Z');self.assertIn('count=20000',data['sources'][0]['dataUrl']);self.assertEqual(data['sme'],[{'NOx':1}])
  def test_numeric_parser_does_not_coerce_censored_or_nonfinite_to_zero(self):
   for value in ['(5s)','nan','inf','',None]:self.assertIsNone(air.number(value))
   self.assertEqual(air.number('0'),0);self.assertEqual(air.number('0,0006'),.0006)
