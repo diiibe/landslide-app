@@ -1,4 +1,6 @@
-import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
+import { useExperienceStore } from "@/spaces/store";
+import { setAirLayer, selectAir, useAirStore } from "@/spaces/air/store";
+import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { useUIText } from "@/ui/interfaceSettings";
 import { useAppStore } from "@/app/store";
 import { asSuggestion, geocodingURL, type Suggestion } from "./geocoding";
@@ -19,7 +21,8 @@ export function SearchLocality() {
     input = useRef<HTMLInputElement>(null),
     listId = useId(),
     dismissVersion = useRef(0);
-  const trimmed = query.trim();
+  const trimmed = query.trim(),airActive=useExperienceStore(s=>s.activeId==="air"),airData=useAirStore(s=>s.data);
+  const localSuggestions=useMemo<Suggestion[]>(()=>{if(!airActive||!airData||trimmed.length<2||placeName===query)return [];const norm=(v:string)=>v.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLocaleLowerCase("it"),q=norm(trimmed);return [...airData.municipalities.features.filter(f=>norm(f.properties.name).includes(q)).map(f=>({id:"air:municipality:"+f.properties.istat,name:f.properties.name,context:"Aria e industria · Pordenonese",fullName:f.properties.name,lng:f.properties.center[0],lat:f.properties.center[1],zoom:11,kind:"Comune dello Spazio",precision:""})),...airData.stations.filter(st=>norm(st.name).includes(q)).map(st=>({id:"air:station:"+st.id,name:st.name,context:"Misure ARPA · Aria e industria",fullName:st.name,lng:st.coordinates[0],lat:st.coordinates[1],zoom:12,kind:"Centralina",precision:"Posizione pubblicata dalla fonte"}))].slice(0,8);},[airActive,airData,trimmed,placeName,query]);
   useEffect(() => {
     const ctrl = new AbortController(),
       version = dismissVersion.current;
@@ -80,7 +83,7 @@ export function SearchLocality() {
     document.addEventListener("pointerdown", outside);
     return () => document.removeEventListener("pointerdown", outside);
   }, [open]);
-  const current = fetchedFor === trimmed ? suggestions : [];
+  const current = [...localSuggestions,...(fetchedFor === trimmed ? suggestions : [])];
   const unavailable = !TOKEN && trimmed.length >= 2;
   const showStatus =
     trimmed.length >= 2 &&
@@ -107,6 +110,10 @@ export function SearchLocality() {
         },
       }),
     );
+    // Navigate first: the shared mobile camera action closes the drawer.
+    // Then reveal the selected Space reading, so it remains reachable.
+    if(s.id.startsWith("air:station:")){setAirLayer("observations",true);selectAir("observations",{stationId:s.id.slice(12)});}
+    if(s.id.startsWith("air:municipality:")){setAirLayer("inventory",true);selectAir("inventory",{municipalityId:s.id.slice(17)});}
     if (window.matchMedia?.("(pointer: coarse)").matches) input.current?.blur();
   }
   function key(e: KeyboardEvent<HTMLInputElement>) {

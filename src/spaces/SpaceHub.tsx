@@ -20,7 +20,7 @@ export function SpaceHub() {
   const scenes = EXPERIENCES.filter(
     (s) =>
       (filter === "all" ||
-        (filter === "real" ? ["landslides","fire","park"].includes(s.id) : !["landslides","fire","park"].includes(s.id))) &&
+        (filter === "real" ? ["air","landslides","fire","park"].includes(s.id) : !["air","landslides","fire","park"].includes(s.id))) &&
       `${s.title} ${s.subtitle} ${s.reference.name} ${s.description}`
         .toLocaleLowerCase("it")
         .includes(query.toLocaleLowerCase("it")),
@@ -98,7 +98,7 @@ export function SpaceHub() {
                 <div className={styles.preview}>
                   <MiniMap scene={s} />
                   <span className={styles.kind}>
-                    {s.id === "landslides" ? "Dati reali" : isNatureSpace(s.id) ? natureLabel(s.id) : "Demo simulata"}
+                    {s.id === "air" ? "Dati reali · aggiornamento automatico" : s.id === "landslides" ? "Dati reali" : isNatureSpace(s.id) ? natureLabel(s.id) : "Demo simulata"}
                   </span>
                 </div>
                 <div className={styles.cardCopy}>
@@ -110,7 +110,7 @@ export function SpaceHub() {
                   <p>{s.description}</p>
                   <span className={styles.cardBottom}>
                     <span>
-                      {s.id === "landslides"
+                      {s.id === "air" ? "7 livelli · 6 estensioni" : s.id === "landslides"
                         ? "2 mappature · griglia 120 m"
                         : isNatureSpace(s.id) ? natureSummary[s.id] : `${s.sensors.length} sensori · ${s.zones.length} zone`}
                     </span>

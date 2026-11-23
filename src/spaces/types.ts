@@ -1,5 +1,6 @@
 import type { IconName } from "@/ui/Icon";
 export type SpaceId =
+  | "air"
   | "landslides"
   | "industry"
   | "vineyard"
@@ -12,7 +13,8 @@ export type SpaceId =
   | "trek";
 export type NatureId = "fire" | "wildlife" | "park" | "trek";
 export const isNatureSpace = (id: string | null): id is NatureId => id === "fire" || id === "wildlife" || id === "park" || id === "trek";
-export type DemoId = Exclude<SpaceId, "landslides" | NatureId>;
+export const isDedicatedSpace = (id: string | null) => id === "air" || isNatureSpace(id);
+export type DemoId = Exclude<SpaceId, "landslides" | "air" | NatureId>;
 export type Scenario = "normal" | "peak" | "rain" | "efficient";
 export type Metric =
   | "power"

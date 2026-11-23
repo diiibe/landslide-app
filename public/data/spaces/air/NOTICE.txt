@@ -1,0 +1,8 @@
+Aria e industria · Pordenonese
+INEMAR 2023 · ARPA FVG, Creative Commons BY. Dati annuali stimati; adozione della revisione ufficiale corrente documentata nel bundle.
+Osservazioni ARPA / Open Data FVG: IODL 2.0; statistiche giornaliere, non telemetria istantanea. Le bandiere di dati insufficienti non certificano la validazione annuale.
+AIA e destinazioni urbanistiche: Regione FVG / IRDAT, attribuzione e URL per fonte nel bundle; le coordinate AIA sono amministrative.
+ESA WorldCover 2021, CC BY 4.0, https://doi.org/10.5281/zenodo.7254221; pixel locali WebMercator ricampionati nearest circa 13m da prodotto 10m, palette adattata, classi conservate.
+SME Fanna Cementi: dati pubblicati dal gestore, richiamati da ARPA. Nessuna licenza aperta esplicitata dal portale: fonte originale sempre collegata, valori e qualificatori conservati; nessuna equivalenza con misure nell’aria ambiente.
+Geometrie comunali della piattaforma, contesto OpenStreetMap (ODbL).
+Nessuna simulazione del vento, ricostruzione di plume o attribuzione causale.

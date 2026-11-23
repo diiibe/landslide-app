@@ -1,3 +1,4 @@
+import { closeAirControls, useAirStore } from "./air/store";
 import { useUIText } from "@/ui/interfaceSettings";
 import { useEffect, useRef } from "react";
 import { useAppStore } from "@/app/store";
@@ -48,6 +49,7 @@ export function ExtensionsButton() {
           useExperienceStore.setState({ hubOpen: true });
           return;
         }
+        if(active==="air"){useAirStore.setState({inspector:null});if(window.matchMedia?.("(max-width:1000px)").matches)closeAirControls(false);}
         focusRequested.current = !open;
         useExperienceStore.setState({ tab: "tools" });
         useAppStore.setState({ drawerOpen: !open });

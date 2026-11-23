@@ -1,3 +1,4 @@
+import { AirMapUI } from "@/spaces/air/Panel";
 import { lazy, Suspense, useEffect, useRef, useState, type ComponentType } from "react";
 import styles from "./App.module.css";
 import { SpacePanel } from "@/spaces/SpacePanel";
@@ -146,6 +147,7 @@ export default function App() {
 
           <div className={styles.threeD} data-map-3d><ThreeDButton /></div>
           {!drawingMode && showFraneLegend && <Legend />}
+          <AirMapUI/>
           <DrawingPanel />
         </div>
         <Drawer mobileSheet interactiveMap={!!activeSpace} label={scene?.title ?? "Sulla mappa"}>

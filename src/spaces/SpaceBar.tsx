@@ -1,3 +1,4 @@
+import { closeAirControls, useAirStore } from "./air/store";
 import { isNatureSpace } from "./types";
 import { natureLabel } from "./nature/experiences";
 import { Icon } from "@/ui/Icon";
@@ -33,7 +34,8 @@ export function SpaceBar() {
       <button
         className={styles.spaceIdentity}
         onClick={() => {
-          useExperienceStore.setState({ tab: "overview" });
+          if(id==="air"){closeAirControls(false);useAirStore.setState({inspector:null});}
+          useExperienceStore.setState({ tab: id==="air"?"layers":"overview" });
           useAppStore.setState({ drawerOpen: true });
         }}
         aria-label={`Apri scheda · ${scene.title}`}
@@ -42,7 +44,7 @@ export function SpaceBar() {
         <span>
           <strong>{scene.title}</strong>
           <small>
-            {id === "landslides"
+            {id === "air" ? "Dati reali · aggiornamento automatico" : id === "landslides"
               ? "Mappe reali · analisi delle zone"
               : isNatureSpace(id) ? natureLabel(id) : `${replay === null ? "Demo · ora simulata" : "Demo · replay"} ${new Date(time).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Rome" })}`}
           </small>

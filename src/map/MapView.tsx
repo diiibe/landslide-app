@@ -1,3 +1,4 @@
+import { mountAirMap } from "@/spaces/air/map";
 import { mountTrekMap } from "@/spaces/trek/map";
 import { mountSearchNavigation } from "./searchNavigation";
 import { mountNatureMap } from "@/spaces/nature/map";
@@ -326,6 +327,7 @@ export function MapView() {
     const unmountNetworks = mountContextNetworks(m);
     const unmountNature = mountNatureMap(m);
     const unmountTrek = mountTrekMap(m);
+    const unmountAir = mountAirMap(m);
     const unmountPointStacks = mountPointStacks(m);
     mapRef.current = m;
     setMap(m);
@@ -336,6 +338,7 @@ export function MapView() {
       unmountNetworks();
       unmountNature();
       unmountTrek();
+      unmountAir();
       unmountRegional();
       unmountTwin();
       setMap(null);

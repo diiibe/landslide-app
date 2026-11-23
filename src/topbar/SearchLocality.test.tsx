@@ -119,3 +119,19 @@ it("navigates on the first touch activation of a suggestion without Enter", asyn
   expect(fetcher).toHaveBeenCalledTimes(1);
   window.removeEventListener("fvg:flyto", listener);
 });
+
+it("selects a real local station on the first click and opens its Air reading",async()=>{
+ const {useAirStore,adoptAirData}=await import("@/spaces/air/store");
+ const {airFixture}=await import("@/spaces/air/testFixtures");
+ const {useExperienceStore}=await import("@/spaces/store");
+ vi.stubGlobal("matchMedia",()=>({matches:false}));
+ useAirStore.setState(useAirStore.getInitialState());adoptAirData(airFixture());
+ const mobileFly=()=>useAppStore.setState({drawerOpen:false});window.addEventListener("fvg:flyto",mobileFly);
+ useExperienceStore.setState({activeId:"air"});fetcher.mockResolvedValue(new Response(JSON.stringify({features:[]})));
+ try{
+ render(<SearchLocality/>);await type("Sito A");
+ fireEvent.click(screen.getByRole("option",{name:/Sito A/}));
+ expect(useAirStore.getState()).toMatchObject({stationId:"A",layers:{observations:true},inspector:{view:"observations"}});
+ expect(useAppStore.getState().drawerOpen).toBe(true);
+ }finally{window.removeEventListener("fvg:flyto",mobileFly);useExperienceStore.setState({activeId:null});}
+});

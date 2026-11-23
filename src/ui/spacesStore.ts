@@ -1,3 +1,4 @@
+import { captureAirPreferences, restoreAirPreferences } from "@/spaces/air/store";
 import { selectedClasses, withClasses } from "@/lib/landslideClasses";
 import { create } from "zustand";
 import { z } from "zod";
@@ -9,8 +10,12 @@ import { useRegionalStore } from "@/regional/store";
 const KEY = "friulview:spaces:v1";
 const flags = z.record(z.string().max(180), z.boolean());
 const style = z.object({ scheme: z.literal("upper-quintile-v1").optional(), classes: z.array(z.number().int().min(1).max(5)).max(5).optional(), minClass: z.number().int().min(1).max(5), opacity: z.number().min(0).max(1) });
+const airLayers=z.enum(["inventory","observations","stack","aia","world","industrial","commercial","corine"]);
+const airDate=z.string().regex(/^(?:|\d{4}-\d{2}-\d{2})$/);
+const airPreferences=z.object({layers:z.record(airLayers,z.boolean()),opacity:z.record(airLayers,z.number().finite().min(0).max(1)),questions:z.array(z.enum(["inventory","observations","landcover"])).max(3),baseline:z.partialRecord(airLayers,z.boolean()),poll:z.enum(["NOx","PM10","PM2_5"]),sector:z.enum(["industry","nonindustrial","road","all"]),measure:z.enum(["pm10","pm25","no2"]),municipalityId:z.string().max(128),stationId:z.string().max(128),compareId:z.string().max(128),date:airDate,followLatest:z.boolean(),stackDate:airDate,stackFollowLatest:z.boolean(),timeTarget:z.enum(["observations","stack"]),aiaMode:z.enum(["points","heatmap","both"]),aiaCategory:z.enum(["all","industry","farm","waste","other"]),aiaQuery:z.string().max(500),aiaMunicipality:z.string().max(256).nullable()});
 const schema = z.object({
-  experienceId: z.enum(["landslides","industry","vineyard","retail","traffic","mountain","fire","wildlife","park","trek"]).optional(),
+  air: airPreferences.optional(),
+  experienceId: z.enum(["landslides","industry","vineyard","retail","traffic","mountain","fire","wildlife","park","trek","air"]).optional(),
   id: z.string().max(100), name: z.string().trim().min(1).max(70), savedAt: z.number().finite(),
   layers: flags, enabled: flags,
   opacity: z.record(z.string(), z.number().min(0).max(1)),
@@ -41,7 +46,7 @@ export function captureView(name: string, experienceId?: Space["experienceId"]):
   const center = m?.getCenter();
   const enabled = { ...r.enabled };
   for (const layer of BUILTIN_LAYERS) enabled[layer.id] = isLayerEnabled(layer);
-  const space = schema.parse({ experienceId, id: crypto.randomUUID(), name, savedAt: Date.now(), layers: a.layers, floodView: a.floodView, floodOpacity: a.floodOpacity, paiOpacity: a.paiOpacity, diffOpacity: a.diffOpacity, poiColors: a.poiColors, poiCategoryVisible: a.poiCategoryVisible, enabled, opacity: r.opacity, display: r.display, susceptibilityStyle: a.susceptibilityStyle, basemap: a.basemap, view3D: a.view3D,
+  const space = schema.parse({ ...(experienceId==="air"?{air:captureAirPreferences()}:{}), experienceId, id: crypto.randomUUID(), name, savedAt: Date.now(), layers: a.layers, floodView: a.floodView, floodOpacity: a.floodOpacity, paiOpacity: a.paiOpacity, diffOpacity: a.diffOpacity, poiColors: a.poiColors, poiCategoryVisible: a.poiCategoryVisible, enabled, opacity: r.opacity, display: r.display, susceptibilityStyle: a.susceptibilityStyle, basemap: a.basemap, view3D: a.view3D,
     camera: m && center ? { center: [center.lng, center.lat], zoom: m.getZoom(), bearing: m.getBearing(), pitch: m.getPitch() } : null });
   return space;
 }
@@ -51,6 +56,7 @@ export function saveSpace(name: string, experienceId?: Space["experienceId"]) {
 export function removeSpace(id: string) { publish(useSpaces.getState().spaces.filter(s => s.id !== id)); }
 export function restoreSpace(space: Space) {
   const s = schema.parse(space), a = useAppStore.getState();
+  if(s.experienceId==="air"&&s.air)restoreAirPreferences(s.air);
   const layers = Object.fromEntries(Object.keys(a.layers).map(key => [key, s.layers[key] ?? false])) as typeof a.layers;
   // Preserve both current maps; only suppress incompatible legacy surfaces.
   if (layers.v2Bodies || layers.v2Diffuse) {

@@ -1,3 +1,4 @@
+import { selectAir } from "@/spaces/air/store";
 import { metricTone } from "./mapStyle";
 import { Popup, type Map as MLMap, type MapGeoJSONFeature, type MapMouseEvent, type GeoJSONSource } from "maplibre-gl";
 import { useAppearance } from "@/ui/appearance";
@@ -21,6 +22,7 @@ export function readingLayer(feature: MapGeoJSONFeature) {
 }
 export function readingText(feature: MapGeoJSONFeature) {
   const p = feature.properties ?? {}, layer = readingLayer(feature);
+  if (feature.source === "air-stations" || feature.source === "air-stack" || feature.source === "air-aia") return {title:String(p.name??"Dato dello Spazio"),value:String(p.__displayValue??p.label??p.activity??""),detail:String(p.readingDetail??p.municipality??""),color:String(p.color??"#b59a70")};
   if (feature.source === "trek-nodes") return {title:String(p.name??"Segnavia SmartTrek"),value:String(p.readingValue??""),detail:String(p.readingDetail??"Demo simulata"),color:String(p.color??"#86b79b")};
   if (feature.source === "nature-nodes") return {title:String(p.name??"Dato dello Spazio"),value:p.natureSpace==="park"?"Censimento storico ERPAC":String(p.label??""),detail:String(p.readingDetail??""),color:String(p.color??"#83b990")};
   const variable = typeof p.variable === "string" && p.variable in VARIABLES ? p.variable as Variable : null;
@@ -44,6 +46,7 @@ export function readingText(feature: MapGeoJSONFeature) {
 }
 export function selectPointReading(feature: MapGeoJSONFeature) {
   const p = feature.properties ?? {}, layer = readingLayer(feature);
+  if(feature.source==="air-stations"||feature.source==="air-stack"||feature.source==="air-aia"){selectAir(feature.source==="air-stations"?"observations":feature.source==="air-stack"?"stack":"aia",feature.source==="air-stations"?{stationId:String(p.id)}:feature.source==="air-aia"?{aiaId:String(p.id)}:{});return;}
   if (feature.source === "trek-nodes" || feature.source === "nature-nodes") { selectObject(String(p.id??feature.id)); return; }
   if (useExperienceStore.getState().activeId) useExperienceStore.setState({tab:"layers"});
   if (layer) {

@@ -70,3 +70,19 @@ it("migrates saved views from the historical classification without applying the
  view.susceptibilityStyle.bodies.classes=[5];view.susceptibilityStyle.bodies.minClass=5;view.susceptibilityStyle.bodies.opacity=.25;
  restoreSpace(view);expect(useAppStore.getState().susceptibilityStyle.bodies).toMatchObject({classes:[1,2,3,4,5],scheme:"upper-quintile-v1",opacity:.25});
 });
+
+
+it("restores Air settings without saving stale observations or source payloads", async () => {
+  const {useAirStore,adoptAirData}=await import("@/spaces/air/store");
+  const {airFixture}=await import("@/spaces/air/testFixtures");
+  useAirStore.setState({...useAirStore.getInitialState(),measure:"no2",aiaCategory:"waste",date:"2026-11-01",followLatest:false});
+  adoptAirData(airFixture());
+  saveSpace("Studio aria","air");
+  const saved=useSpaces.getState().spaces[0]!;
+  expect(saved.air?.measure).toBe("no2");
+  expect(JSON.stringify(saved.air)).not.toContain("sourceStatus");
+  const fresh=airFixture();fresh.retrievedAt="2026-11-23T12:00:00Z";adoptAirData(fresh);
+  useAirStore.setState({measure:"pm10",aiaCategory:"all"});restoreSpace(saved);
+  expect(useAirStore.getState()).toMatchObject({measure:"no2",aiaCategory:"waste",date:"2026-11-01",followLatest:false});
+  expect(useAirStore.getState().data).toBe(fresh);
+});
