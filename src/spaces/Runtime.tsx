@@ -1,5 +1,6 @@
+import { AirRuntime } from "./air/Runtime";
 import { NatureRuntime } from "./nature/Runtime";
-import { isNatureSpace } from "./types";
+import { isDedicatedSpace } from "./types";
 import { useEffect } from "react";
 import { experience } from "./experiences";
 import { openExperience, savedArea, useExperienceStore } from "./store";
@@ -7,7 +8,7 @@ export function SpaceRuntime() {
   const active = useExperienceStore((s) => s.activeId),
     playing = useExperienceStore((s) => s.playback);
   useEffect(() => {
-    if (!active || active === "landslides" || isNatureSpace(active) || !playing) return;
+    if (!active || active === "landslides" || isDedicatedSpace(active) || !playing) return;
     const tick = setInterval(() => {
       if (document.visibilityState === "hidden") return;
       const s = useExperienceStore.getState();
@@ -31,5 +32,5 @@ export function SpaceRuntime() {
     window.addEventListener("friulview:area", area);
     return () => window.removeEventListener("friulview:area", area);
   }, []);
-  return <NatureRuntime/>;
+  return <><NatureRuntime/><AirRuntime/></>;
 }

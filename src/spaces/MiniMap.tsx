@@ -1,5 +1,6 @@
 import { isNatureSpace, type Experience } from "./types";
 export function MiniMap({ scene }: { scene: Experience }) {
+  if (scene.id === "air") return <img src={`${import.meta.env.BASE_URL}images/space-air.svg`} alt="Emissioni comunali e centraline del Pordenonese"/>;
   if (scene.id === "landslides")
     return (
       <img

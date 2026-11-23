@@ -18,7 +18,7 @@ export function dataFeatureKey(f: MapGeoJSONFeature): string {
 export function dataLayers(map: MLMap): string[] {
   return (map.getStyle()?.layers ?? []).filter(l =>
     l.type !== "heatmap" && !l.id.startsWith("regional-selection") &&
-    (l.id.startsWith("regional-") || l.id.startsWith("twin-sensors") || ["trek-node","trek-node-ring","trek-node-label","trek-hit","nature-node","nature-node-ring","nature-hit","nature-label","nature-cluster","nature-cluster-label"].includes(l.id) ||
+    (l.id.startsWith("regional-") || l.id.startsWith("twin-sensors") || ["air-station-point","air-station-label","air-stack-point","air-stack-label","air-aia-point","trek-node","trek-node-ring","trek-node-label","trek-hit","nature-node","nature-node-ring","nature-hit","nature-label","nature-cluster","nature-cluster-label"].includes(l.id) ||
       ["twin-aia", "twin-buildings", "twin-buildings-3d"].includes(l.id)),
   ).map(l => l.id);
 }

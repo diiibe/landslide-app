@@ -1,3 +1,4 @@
+import { AIR_EXPERIENCE } from "./air/experience";
 import { NATURE_EXPERIENCES } from "./nature/experiences";
 import industryBoundary from "./data/industry-boundary.json";
 import trafficGeometry from "./data/traffic-routes.json";
@@ -1667,6 +1668,7 @@ const landslides: Experience = {
 };
 export const EXPERIENCES: Experience[] = [
   landslides,
+  AIR_EXPERIENCE,
   industry,
   vineyard,
   retail,

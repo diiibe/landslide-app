@@ -1,3 +1,4 @@
+import { AirPanel } from "./air/Panel";
 import { AreasPanel } from "./AreasControl";
 import { NaturePanel } from "./nature/Panel";
 import { isNatureSpace } from "./types";
@@ -38,6 +39,7 @@ export function SpacePanel() {
     return () => cancelAnimationFrame(frame);
   }, [active, selected, areaId, tab, inspectionRequest]);
   if (!active) return <RegionalPanel />;
+  if (active === "air") return <AirPanel/>;
   return (
     <div ref={content}>
       <div

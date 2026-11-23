@@ -3,7 +3,7 @@ on:
   push: { branches: [main] }
   workflow_dispatch:
   workflow_run:
-    workflows: ["Aggiorna dati regionali"]
+    workflows: ["Aggiorna dati regionali", "Aggiorna dati Aria e industria"]
     types: [completed]
 
 permissions:

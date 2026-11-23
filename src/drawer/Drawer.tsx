@@ -1,3 +1,4 @@
+import { closeAirControls, useAirStore } from "@/spaces/air/store";
 import { useUIText } from "@/ui/interfaceSettings";
 import { useExperienceStore } from "@/spaces/store";
 import { Icon } from "@/ui/Icon";
@@ -120,6 +121,7 @@ export function LayersButton() {
       aria-expanded={open && (!active || tab === "layers")}
       onClick={() => {
         const space = useExperienceStore.getState();
+        if(space.activeId==="air"){useAirStore.setState({inspector:null});if(window.matchMedia?.("(max-width:1000px)").matches)closeAirControls(false);}
         if (space.activeId && open && space.tab !== "layers") {
           useExperienceStore.setState({ tab: "layers" });
           return;

@@ -15,7 +15,7 @@ import {
   useExperienceStore,
 } from "./store";
 import { reading, virtualTrips } from "./simulation";
-import { isNatureSpace, type Experience } from "./types";
+import { isDedicatedSpace, type Experience } from "./types";
 const EMPTY: GeoJSON.FeatureCollection = {
   type: "FeatureCollection",
   features: [],
@@ -135,7 +135,7 @@ export function mountExperienceMap(m: MLMap): () => void {
       scene = experience(s.activeId);
     if (
       !scene ||
-      scene.id === "landslides" || isNatureSpace(scene.id) ||
+      scene.id === "landslides" || isDedicatedSpace(scene.id) ||
       s.replayTime !== null ||
       document.visibilityState === "hidden"
     ) {
@@ -145,7 +145,7 @@ export function mountExperienceMap(m: MLMap): () => void {
       frame = 0;
     }
     if (installed !== s.activeId) remove();
-    if (!scene || isNatureSpace(scene.id)) return;
+    if (!scene || isDedicatedSpace(scene.id)) return;
     if (scene.id === "landslides") {
       installed = scene.id;
       const area = s.area;
@@ -386,7 +386,7 @@ export function mountExperienceMap(m: MLMap): () => void {
       !timer &&
       !frame &&
       s.activeId &&
-      s.activeId !== "landslides" && !isNatureSpace(s.activeId) &&
+      s.activeId !== "landslides" && !isDedicatedSpace(s.activeId) &&
       s.replayTime === null &&
       document.visibilityState !== "hidden"
     )
@@ -400,7 +400,7 @@ export function mountExperienceMap(m: MLMap): () => void {
     if (
       !ready ||
       !scene ||
-      scene.id === "landslides" || isNatureSpace(scene.id) ||
+      scene.id === "landslides" || isDedicatedSpace(scene.id) ||
       s.replayTime !== null ||
       document.visibilityState === "hidden"
     )
@@ -441,7 +441,7 @@ export function mountExperienceMap(m: MLMap): () => void {
   function click(e: MapMouseEvent) {
     const s = useExperienceStore.getState();
     if (useAppStore.getState().drawingMode || !s.activeId || isPointReadingClick(e)) return;
-    if (isNatureSpace(s.activeId)) return;
+    if (isDedicatedSpace(s.activeId)) return;
     if (s.activeId === "landslides") {
       if (s.probe) {
         consumeProbeClick(e);
@@ -484,7 +484,7 @@ export function mountExperienceMap(m: MLMap): () => void {
       return;
     }
     const scene = experience(s.activeId);
-    if (!scene || scene.id === "landslides" || isNatureSpace(scene.id)) return;
+    if (!scene || scene.id === "landslides" || isDedicatedSpace(scene.id)) return;
     const ids = ["space-sensor-hit", "space-route", "space-zone-fill"].filter(
       (id) => m.getLayer(id),
     );

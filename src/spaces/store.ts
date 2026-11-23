@@ -91,7 +91,7 @@ export function openExperience(id: SpaceId) {
   useExperienceStore.setState({
     activeId: id,
     hubOpen: false,
-    tab: "overview",
+    tab: id === "air" ? "layers" : "overview",
     selectedId: null,
     area: recalledArea(id),
     replayTime: null,

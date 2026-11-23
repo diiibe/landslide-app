@@ -1,5 +1,6 @@
 import type { ReactNode, SVGProps } from "react";
 export type IconName =
+  | "airCompare" | "airStations" | "airStack" | "airRegistry"
   | "trailMarker" | "fire" | "camera" | "tree" | "paw"
   | "spaces" | "profile" | "brand" | "extensions" | "drawPolygon"
   | "fileData"
@@ -22,6 +23,10 @@ export type IconName =
   | "moon"
   | "weather" | "waves" | "air" | "energy" | "territory" | "factory" | "recycle" | "water" | "leaf" | "services" | "mobility" | "network";
 const paths: Record<IconName, ReactNode> = {
+ airCompare:<path d="M3 3v14h14M6 5h9M6 9h6M6 13h11"/>,
+ airStations:<><circle cx="5" cy="7" r="2"/><circle cx="15" cy="13" r="2"/><path d="M5 11v6m10-14v6M9 7h3l-4 6h3"/></>,
+ airStack:<path d="M4 17h12M6 17l1-10h5l1 10M7 10h5M9 5c-2-1 2-2 0-3"/>,
+ airRegistry:<><circle cx="6" cy="6" r="2"/><circle cx="14" cy="7" r="2"/><circle cx="10" cy="14" r="2"/><path d="M9 5h2M5 10l2 3m8-2-2 3"/></>,
   trailMarker: <><path d="M9 2v16M4 4h10l3 3-3 3H4ZM3 18h12"/><path d="M6 7h6"/></>,
   fire: <path d="M11 2c1 5-4 5-3 9 1-2 3-2 4-4 4 4 5 10-2 11C1 17 3 9 6 6c-1 4 1 4 2 4-1-4 4-4 3-8Z"/>,
   camera: <><path d="M3 6h3l1-3h6l1 3h3v11H3Z"/><circle cx="10" cy="11" r="3"/><path d="M15 8h.1"/></>,
