@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+  "generatedAt": "2026-11-23T07:48:38.009677+00:00",
   "layers": [
     {
       "id": "ogs-mambo3-temp",
@@ -25,15 +25,15 @@
         }
       ],
       "liveKind": "erddap",
-      "retrievedAt": "2026-11-22T19:52:08.771210+00:00",
+      "retrievedAt": "2026-11-23T07:48:41.804018+00:00",
       "metric": {
         "field": "__value",
         "unit": "degC"
       },
-      "dataDate": "2026-11-22T19:30:00Z",
+      "dataDate": "2026-11-23T07:00:00Z",
       "count": 1,
       "sourceCount": 1,
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.5113333,
@@ -81,15 +81,15 @@
         }
       ],
       "liveKind": "erddap",
-      "retrievedAt": "2026-11-22T19:52:08.771210+00:00",
+      "retrievedAt": "2026-11-23T07:48:41.804018+00:00",
       "metric": {
         "field": "__value",
         "unit": "PSU"
       },
-      "dataDate": "2026-11-22T19:30:00Z",
+      "dataDate": "2026-11-23T07:00:00Z",
       "count": 1,
       "sourceCount": 1,
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.5113333,
@@ -137,15 +137,15 @@
         }
       ],
       "liveKind": "erddap",
-      "retrievedAt": "2026-11-22T19:52:08.771210+00:00",
+      "retrievedAt": "2026-11-23T07:48:41.804018+00:00",
       "metric": {
         "field": "__value",
         "unit": "ml/l"
       },
-      "dataDate": "2026-11-22T19:30:00Z",
+      "dataDate": "2026-11-23T07:00:00Z",
       "count": 1,
       "sourceCount": 1,
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.5113333,
@@ -193,15 +193,15 @@
         }
       ],
       "liveKind": "erddap",
-      "retrievedAt": "2026-11-22T19:52:08.771210+00:00",
+      "retrievedAt": "2026-11-23T07:48:41.804018+00:00",
       "metric": {
         "field": "__value",
         "unit": "ppb"
       },
-      "dataDate": "2026-11-22T19:30:00Z",
+      "dataDate": "2026-11-23T07:00:00Z",
       "count": 1,
       "sourceCount": 1,
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.5113333,
@@ -249,15 +249,15 @@
         }
       ],
       "liveKind": "erddap",
-      "retrievedAt": "2026-11-22T19:52:08.771210+00:00",
+      "retrievedAt": "2026-11-23T07:48:41.804018+00:00",
       "metric": {
         "field": "__value",
         "unit": "NTU"
       },
-      "dataDate": "2026-11-22T19:30:00Z",
+      "dataDate": "2026-11-23T07:00:00Z",
       "count": 1,
       "sourceCount": 1,
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.5113333,
@@ -299,7 +299,7 @@
       "live": [],
       "liveKind": "erddap",
       "problem": "404 Client Error:  for url: https://nodc.ogs.it/erddap/tabledap/MAMBO3_PR.json?time,latitude,longitude,depth,EWCT,EWCT_QC,NSCT,NSCT_QC,VCSP,VCSP_QC&time%3E=now-48hour",
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00"
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00"
     },
     {
       "id": "ogs-mambo3-nsct",
@@ -319,7 +319,7 @@
       "live": [],
       "liveKind": "erddap",
       "problem": "404 Client Error:  for url: https://nodc.ogs.it/erddap/tabledap/MAMBO3_PR.json?time,latitude,longitude,depth,EWCT,EWCT_QC,NSCT,NSCT_QC,VCSP,VCSP_QC&time%3E=now-48hour",
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00"
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00"
     },
     {
       "id": "ogs-mambo3-vcsp",
@@ -339,7 +339,7 @@
       "live": [],
       "liveKind": "erddap",
       "problem": "404 Client Error:  for url: https://nodc.ogs.it/erddap/tabledap/MAMBO3_PR.json?time,latitude,longitude,depth,EWCT,EWCT_QC,NSCT,NSCT_QC,VCSP,VCSP_QC&time%3E=now-48hour",
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00"
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00"
     },
     {
       "id": "ogs-wave-vhm0",
@@ -374,17 +374,17 @@
         }
       ],
       "liveKind": "erddap",
-      "retrievedAt": "2026-11-22T19:52:58.245857+00:00",
+      "retrievedAt": "2026-11-23T07:49:30.470706+00:00",
       "metric": {
         "field": "__value",
         "unit": "m",
-        "min": 0.2,
-        "max": 0.41
+        "min": 0.41,
+        "max": 0.7
       },
-      "dataDate": "2026-11-22T17:30:00Z",
+      "dataDate": "2026-11-23T05:30:00Z",
       "count": 3,
       "sourceCount": 3,
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.209,
@@ -439,17 +439,17 @@
         }
       ],
       "liveKind": "erddap",
-      "retrievedAt": "2026-11-22T19:52:58.245857+00:00",
+      "retrievedAt": "2026-11-23T07:49:30.470706+00:00",
       "metric": {
         "field": "__value",
         "unit": "s",
-        "min": 4.2,
-        "max": 4.5
+        "min": 3.7,
+        "max": 5.6
       },
-      "dataDate": "2026-11-22T17:30:00Z",
+      "dataDate": "2026-11-23T05:30:00Z",
       "count": 3,
       "sourceCount": 3,
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.209,
@@ -504,17 +504,17 @@
         }
       ],
       "liveKind": "erddap",
-      "retrievedAt": "2026-11-22T19:52:58.245857+00:00",
+      "retrievedAt": "2026-11-23T07:49:30.470706+00:00",
       "metric": {
         "field": "__value",
         "unit": "degree",
-        "min": 158.91,
-        "max": 195.47
+        "min": 92.81,
+        "max": 170.16
       },
-      "dataDate": "2026-11-22T17:30:00Z",
+      "dataDate": "2026-11-23T05:30:00Z",
       "count": 3,
       "sourceCount": 3,
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.209,
@@ -569,17 +569,17 @@
         }
       ],
       "liveKind": "erddap",
-      "retrievedAt": "2026-11-22T19:52:58.245857+00:00",
+      "retrievedAt": "2026-11-23T07:49:30.470706+00:00",
       "metric": {
         "field": "__value",
         "unit": "m",
-        "min": 0.42,
-        "max": 0.89
+        "min": 0.61,
+        "max": 1.07
       },
-      "dataDate": "2026-11-22T17:30:00Z",
+      "dataDate": "2026-11-23T05:30:00Z",
       "count": 3,
       "sourceCount": 3,
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.209,
@@ -634,17 +634,17 @@
         }
       ],
       "liveKind": "erddap",
-      "retrievedAt": "2026-11-22T19:52:58.245857+00:00",
+      "retrievedAt": "2026-11-23T07:49:30.470706+00:00",
       "metric": {
         "field": "__value",
         "unit": "s",
-        "min": 2.1,
-        "max": 8
+        "min": 3.2,
+        "max": 4.4
       },
-      "dataDate": "2026-11-22T17:30:00Z",
+      "dataDate": "2026-11-23T05:30:00Z",
       "count": 3,
       "sourceCount": 3,
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.209,
@@ -699,17 +699,17 @@
         }
       ],
       "liveKind": "erddap",
-      "retrievedAt": "2026-11-22T19:52:58.245857+00:00",
+      "retrievedAt": "2026-11-23T07:49:30.470706+00:00",
       "metric": {
         "field": "__value",
         "unit": "m",
-        "min": 0.27,
-        "max": 0.54
+        "min": 0.42,
+        "max": 0.77
       },
-      "dataDate": "2026-11-22T17:30:00Z",
+      "dataDate": "2026-11-23T05:30:00Z",
       "count": 3,
       "sourceCount": 3,
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.209,
@@ -764,17 +764,17 @@
         }
       ],
       "liveKind": "erddap",
-      "retrievedAt": "2026-11-22T19:52:58.245857+00:00",
+      "retrievedAt": "2026-11-23T07:49:30.470706+00:00",
       "metric": {
         "field": "__value",
         "unit": "s",
-        "min": 2.9,
-        "max": 5.1
+        "min": 3.7,
+        "max": 4
       },
-      "dataDate": "2026-11-22T17:30:00Z",
+      "dataDate": "2026-11-23T05:30:00Z",
       "count": 3,
       "sourceCount": 3,
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.209,
@@ -829,17 +829,17 @@
         }
       ],
       "liveKind": "erddap",
-      "retrievedAt": "2026-11-22T19:52:58.245857+00:00",
+      "retrievedAt": "2026-11-23T07:49:30.470706+00:00",
       "metric": {
         "field": "__value",
         "unit": "m",
-        "min": 0.21,
-        "max": 0.43
+        "min": 0.34,
+        "max": 0.61
       },
-      "dataDate": "2026-11-22T17:30:00Z",
+      "dataDate": "2026-11-23T05:30:00Z",
       "count": 3,
       "sourceCount": 3,
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.209,
@@ -894,17 +894,17 @@
         }
       ],
       "liveKind": "erddap",
-      "retrievedAt": "2026-11-22T19:52:58.245857+00:00",
+      "retrievedAt": "2026-11-23T07:49:30.470706+00:00",
       "metric": {
         "field": "__value",
         "unit": "s",
-        "min": 3.1,
-        "max": 4.7
+        "min": 3.8,
+        "max": 4
       },
-      "dataDate": "2026-11-22T17:30:00Z",
+      "dataDate": "2026-11-23T05:30:00Z",
       "count": 3,
       "sourceCount": 3,
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.209,
@@ -959,17 +959,17 @@
         }
       ],
       "liveKind": "erddap",
-      "retrievedAt": "2026-11-22T19:52:58.245857+00:00",
+      "retrievedAt": "2026-11-23T07:49:30.470706+00:00",
       "metric": {
         "field": "__value",
         "unit": "degree",
-        "min": 13.8,
-        "max": 14.3
+        "min": 15.4,
+        "max": 55.4
       },
-      "dataDate": "2026-11-22T17:30:00Z",
+      "dataDate": "2026-11-23T05:30:00Z",
       "count": 3,
       "sourceCount": 3,
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.209,
@@ -1024,17 +1024,17 @@
         }
       ],
       "liveKind": "erddap",
-      "retrievedAt": "2026-11-22T19:52:58.245857+00:00",
+      "retrievedAt": "2026-11-23T07:49:30.470706+00:00",
       "metric": {
         "field": "__value",
         "unit": "s",
-        "min": 2.4,
+        "min": 2.9,
         "max": 3.2
       },
-      "dataDate": "2026-11-22T17:30:00Z",
+      "dataDate": "2026-11-23T05:30:00Z",
       "count": 3,
       "sourceCount": 3,
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.209,
@@ -1080,15 +1080,15 @@
         }
       ],
       "liveKind": "erddap",
-      "retrievedAt": "2026-11-22T19:52:08.771210+00:00",
+      "retrievedAt": "2026-11-23T07:48:41.804018+00:00",
       "metric": {
         "field": "__value",
         "unit": "deg"
       },
-      "dataDate": "2026-11-22T19:30:00Z",
+      "dataDate": "2026-11-23T06:00:00Z",
       "count": 1,
       "sourceCount": 1,
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.5113333,
@@ -1136,15 +1136,15 @@
         }
       ],
       "liveKind": "erddap",
-      "retrievedAt": "2026-11-22T19:52:08.771210+00:00",
+      "retrievedAt": "2026-11-23T07:48:41.804018+00:00",
       "metric": {
         "field": "__value",
         "unit": "m/s"
       },
-      "dataDate": "2026-11-22T19:30:00Z",
+      "dataDate": "2026-11-23T06:00:00Z",
       "count": 1,
       "sourceCount": 1,
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.5113333,
@@ -1192,15 +1192,15 @@
         }
       ],
       "liveKind": "erddap",
-      "retrievedAt": "2026-11-22T19:52:08.771210+00:00",
+      "retrievedAt": "2026-11-23T07:48:41.804018+00:00",
       "metric": {
         "field": "__value",
         "unit": "degC"
       },
-      "dataDate": "2026-11-22T19:30:00Z",
+      "dataDate": "2026-11-23T06:00:00Z",
       "count": 1,
       "sourceCount": 1,
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.5113333,
@@ -1248,15 +1248,15 @@
         }
       ],
       "liveKind": "erddap",
-      "retrievedAt": "2026-11-22T19:52:08.771210+00:00",
+      "retrievedAt": "2026-11-23T07:48:41.804018+00:00",
       "metric": {
         "field": "__value",
         "unit": "mBar"
       },
-      "dataDate": "2026-11-22T19:30:00Z",
+      "dataDate": "2026-11-23T06:00:00Z",
       "count": 1,
       "sourceCount": 1,
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.5113333,
@@ -1304,15 +1304,15 @@
         }
       ],
       "liveKind": "erddap",
-      "retrievedAt": "2026-11-22T19:52:08.771210+00:00",
+      "retrievedAt": "2026-11-23T07:48:41.804018+00:00",
       "metric": {
         "field": "__value",
         "unit": "%"
       },
-      "dataDate": "2026-11-22T19:30:00Z",
+      "dataDate": "2026-11-23T06:00:00Z",
       "count": 1,
       "sourceCount": 1,
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.5113333,
@@ -1360,15 +1360,15 @@
         }
       ],
       "liveKind": "erddap",
-      "retrievedAt": "2026-11-22T19:52:08.771210+00:00",
+      "retrievedAt": "2026-11-23T07:48:41.804018+00:00",
       "metric": {
         "field": "__value",
         "unit": "m/s"
       },
-      "dataDate": "2026-11-22T19:30:00Z",
+      "dataDate": "2026-11-23T06:00:00Z",
       "count": 1,
       "sourceCount": 1,
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.5113333,
@@ -1416,15 +1416,15 @@
         }
       ],
       "liveKind": "erddap",
-      "retrievedAt": "2026-11-22T19:52:08.771210+00:00",
+      "retrievedAt": "2026-11-23T07:48:41.804018+00:00",
       "metric": {
         "field": "__value",
         "unit": "deg"
       },
-      "dataDate": "2026-11-22T19:30:00Z",
+      "dataDate": "2026-11-23T06:00:00Z",
       "count": 1,
       "sourceCount": 1,
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.5113333,
@@ -1472,15 +1472,15 @@
         }
       ],
       "liveKind": "erddap",
-      "retrievedAt": "2026-11-22T19:52:08.771210+00:00",
+      "retrievedAt": "2026-11-23T07:48:41.804018+00:00",
       "metric": {
         "field": "__value",
         "unit": "deg"
       },
-      "dataDate": "2026-11-22T19:30:00Z",
+      "dataDate": "2026-11-23T06:00:00Z",
       "count": 1,
       "sourceCount": 1,
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.5113333,
@@ -1528,15 +1528,15 @@
         }
       ],
       "liveKind": "erddap",
-      "retrievedAt": "2026-11-22T19:52:08.771210+00:00",
+      "retrievedAt": "2026-11-23T07:48:41.804018+00:00",
       "metric": {
         "field": "__value",
         "unit": "m/s"
       },
-      "dataDate": "2026-11-22T19:30:00Z",
+      "dataDate": "2026-11-23T06:00:00Z",
       "count": 1,
       "sourceCount": 1,
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.5113333,
@@ -1584,15 +1584,15 @@
         }
       ],
       "liveKind": "erddap",
-      "retrievedAt": "2026-11-22T19:52:08.771210+00:00",
+      "retrievedAt": "2026-11-23T07:48:41.804018+00:00",
       "metric": {
         "field": "__value",
         "unit": "mS/cm"
       },
-      "dataDate": "2026-11-22T19:30:00Z",
+      "dataDate": "2026-11-23T07:00:00Z",
       "count": 1,
       "sourceCount": 1,
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.5113333,
@@ -1640,15 +1640,15 @@
         }
       ],
       "liveKind": "erddap",
-      "retrievedAt": "2026-11-22T19:52:08.771210+00:00",
+      "retrievedAt": "2026-11-23T07:48:41.804018+00:00",
       "metric": {
         "field": "__value",
         "unit": "dbar"
       },
-      "dataDate": "2026-11-22T19:30:00Z",
+      "dataDate": "2026-11-23T07:00:00Z",
       "count": 1,
       "sourceCount": 1,
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.5113333,
@@ -1696,15 +1696,15 @@
         }
       ],
       "liveKind": "erddap",
-      "retrievedAt": "2026-11-22T19:52:08.771210+00:00",
+      "retrievedAt": "2026-11-23T07:48:41.804018+00:00",
       "metric": {
         "field": "__value",
         "unit": "m/s"
       },
-      "dataDate": "2026-11-22T19:30:00Z",
+      "dataDate": "2026-11-23T07:00:00Z",
       "count": 1,
       "sourceCount": 1,
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.5113333,
@@ -1750,12 +1750,12 @@
         "field": "__value",
         "unit": "mm",
         "min": 0.0,
-        "max": 0.4
+        "max": 0.2
       },
       "count": 233,
       "sourceCount": 233,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.370662,
@@ -1798,12 +1798,12 @@
         "field": "__value",
         "unit": "min",
         "min": 0.0,
-        "max": 15.0
+        "max": 5.0
       },
       "count": 42,
       "sourceCount": 42,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.46588,
@@ -1847,7 +1847,7 @@
         "unit": "mm"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -1876,13 +1876,13 @@
       "metric": {
         "field": "__value",
         "unit": "°N",
-        "min": 0.0,
+        "min": 3.0,
         "max": 358.0
       },
-      "count": 99,
-      "sourceCount": 99,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "count": 104,
+      "sourceCount": 104,
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.370662,
@@ -1925,12 +1925,12 @@
         "field": "__value",
         "unit": "°N",
         "min": 2.0,
-        "max": 357.0
+        "max": 348.0
       },
-      "count": 99,
-      "sourceCount": 99,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "count": 104,
+      "sourceCount": 104,
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.370662,
@@ -1974,7 +1974,7 @@
         "unit": "°N"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -2005,7 +2005,7 @@
         "unit": "m/s"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -2036,7 +2036,7 @@
         "unit": "m/s"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -2067,7 +2067,7 @@
         "unit": "°N"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -2096,13 +2096,13 @@
       "metric": {
         "field": "__value",
         "unit": "°N",
-        "min": 3.33333333333333,
-        "max": 348.4
+        "min": 33.8333333333333,
+        "max": 334.866666666667
       },
       "count": 13,
       "sourceCount": 13,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.544995,
@@ -2144,13 +2144,13 @@
       "metric": {
         "field": "__value",
         "unit": "m/s",
-        "min": 0.0866666666666667,
-        "max": 4.36666666666667
+        "min": 0.146666666666667,
+        "max": 2.68666666666667
       },
       "count": 13,
       "sourceCount": 13,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.544995,
@@ -2192,13 +2192,13 @@
       "metric": {
         "field": "__value",
         "unit": "m/s",
-        "min": 0.18,
-        "max": 6.46666666666667
+        "min": 0.193333333333333,
+        "max": 3.84666666666667
       },
       "count": 13,
       "sourceCount": 13,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.544995,
@@ -2240,13 +2240,13 @@
       "metric": {
         "field": "__value",
         "unit": "°N",
-        "min": 9.85714285714286,
-        "max": 324.266666666667
+        "min": 39.2,
+        "max": 336.733333333333
       },
       "count": 13,
       "sourceCount": 13,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.544995,
@@ -2288,13 +2288,13 @@
       "metric": {
         "field": "__value",
         "unit": "hPa",
-        "min": 802.4,
-        "max": 1001.96666666667
+        "min": 810.2,
+        "max": 1015.09333333333
       },
-      "count": 63,
-      "sourceCount": 63,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "count": 64,
+      "sourceCount": 64,
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.370662,
@@ -2336,13 +2336,13 @@
       "metric": {
         "field": "__value",
         "unit": "°C",
-        "min": 6.62,
-        "max": 9.28666666666667
+        "min": 2.97333333333333,
+        "max": 9.32666666666667
       },
       "count": 16,
       "sourceCount": 16,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.544995,
@@ -2384,13 +2384,13 @@
       "metric": {
         "field": "__value",
         "unit": "°C",
-        "min": 6.54,
-        "max": 9.6
+        "min": 2.24666666666667,
+        "max": 8.45333333333333
       },
       "count": 16,
       "sourceCount": 16,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.544995,
@@ -2432,13 +2432,13 @@
       "metric": {
         "field": "__value",
         "unit": "°C",
-        "min": 4.1,
-        "max": 11.0
+        "min": 4.0,
+        "max": 10.3
       },
       "count": 28,
       "sourceCount": 28,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.524263,
@@ -2482,7 +2482,7 @@
         "unit": "m"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -2511,13 +2511,13 @@
       "metric": {
         "field": "__value",
         "unit": "m",
-        "min": -0.38,
-        "max": 0.81
+        "min": -0.39,
+        "max": 0.8
       },
       "count": 4,
       "sourceCount": 4,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.975227,
@@ -2562,8 +2562,8 @@
       },
       "count": 1,
       "sourceCount": 1,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.975227,
@@ -2608,8 +2608,8 @@
       },
       "count": 1,
       "sourceCount": 1,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.024471,
@@ -2653,7 +2653,7 @@
         "unit": "mc/s"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -2683,12 +2683,12 @@
         "field": "__value",
         "unit": "mm",
         "min": 0.0,
-        "max": 0.400000000000091
+        "max": 0.200000000000045
       },
       "count": 233,
       "sourceCount": 233,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.370662,
@@ -2735,8 +2735,8 @@
       },
       "count": 4,
       "sourceCount": 4,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.021855,
@@ -2780,7 +2780,7 @@
         "unit": "m"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -2809,13 +2809,13 @@
       "metric": {
         "field": "__value",
         "unit": "m/s",
-        "min": 0.0,
-        "max": 12.6
+        "min": 0.1,
+        "max": 9.0
       },
-      "count": 99,
-      "sourceCount": 99,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "count": 104,
+      "sourceCount": 104,
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.370662,
@@ -2859,7 +2859,7 @@
         "unit": "°N"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -2890,7 +2890,7 @@
         "unit": "m/s"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -2919,13 +2919,13 @@
       "metric": {
         "field": "__value",
         "unit": "°N",
-        "min": 3.2,
-        "max": 348.466666666667
+        "min": 33.8333333333333,
+        "max": 335.0
       },
       "count": 13,
       "sourceCount": 13,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.544995,
@@ -2967,13 +2967,13 @@
       "metric": {
         "field": "__value",
         "unit": "m/s",
-        "min": 0.15,
-        "max": 4.35333333333333
+        "min": 0.313333333333333,
+        "max": 2.67333333333333
       },
       "count": 13,
       "sourceCount": 13,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.544995,
@@ -3017,7 +3017,7 @@
         "unit": "Volt"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -3048,7 +3048,7 @@
         "unit": "°C"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -3080,8 +3080,8 @@
       },
       "count": 1,
       "sourceCount": 1,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.024471,
@@ -3126,8 +3126,8 @@
       },
       "count": 1,
       "sourceCount": 1,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.024471,
@@ -3172,8 +3172,8 @@
       },
       "count": 1,
       "sourceCount": 1,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.024471,
@@ -3218,8 +3218,8 @@
       },
       "count": 1,
       "sourceCount": 1,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.024471,
@@ -3262,12 +3262,12 @@
         "field": "__value",
         "unit": "mA",
         "min": 0.0,
-        "max": 244.0
+        "max": 1160.0
       },
-      "count": 248,
-      "sourceCount": 248,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "count": 244,
+      "sourceCount": 244,
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.370662,
@@ -3309,13 +3309,13 @@
       "metric": {
         "field": "__value",
         "unit": "mA",
-        "min": 16.0,
-        "max": 485.0
+        "min": 17.0,
+        "max": 540.0
       },
-      "count": 247,
-      "sourceCount": 247,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "count": 243,
+      "sourceCount": 243,
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.370662,
@@ -3357,13 +3357,13 @@
       "metric": {
         "field": "__value",
         "unit": "°C",
-        "min": 5.6,
-        "max": 9.2
+        "min": 3.9,
+        "max": 8.1
       },
       "count": 8,
       "sourceCount": 8,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.611949,
@@ -3406,12 +3406,12 @@
         "field": "__value",
         "unit": "mm",
         "min": 0.0,
-        "max": 12.8
+        "max": 0.2
       },
       "count": 233,
       "sourceCount": 233,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.370662,
@@ -3454,12 +3454,12 @@
         "field": "__value",
         "unit": "mm",
         "min": 0.0,
-        "max": 20.9333333333333
+        "max": 0.6
       },
       "count": 233,
       "sourceCount": 233,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.370662,
@@ -3502,12 +3502,12 @@
         "field": "__value",
         "unit": "mm",
         "min": 0.0,
-        "max": 32.0
+        "max": 3.86666666666667
       },
       "count": 233,
       "sourceCount": 233,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.370662,
@@ -3554,8 +3554,8 @@
       },
       "count": 233,
       "sourceCount": 233,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.370662,
@@ -3599,7 +3599,7 @@
         "unit": "°C"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -3630,7 +3630,7 @@
         "unit": "°C"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -3659,13 +3659,13 @@
       "metric": {
         "field": "__value",
         "unit": "°C",
-        "min": -6.8,
-        "max": 1.5
+        "min": -10.4,
+        "max": -0.3
       },
       "count": 8,
       "sourceCount": 8,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.505972,
@@ -3710,8 +3710,8 @@
       },
       "count": 1,
       "sourceCount": 1,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.47033,
@@ -3756,8 +3756,8 @@
       },
       "count": 1,
       "sourceCount": 1,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.57348,
@@ -3799,13 +3799,13 @@
       "metric": {
         "field": "__value",
         "unit": "m/s",
-        "min": 0.25,
-        "max": 1.73
+        "min": 0.17,
+        "max": 1.82
       },
       "count": 13,
       "sourceCount": 13,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.514495,
@@ -3847,13 +3847,13 @@
       "metric": {
         "field": "__value",
         "unit": "°C",
-        "min": -3.2,
-        "max": -0.1
+        "min": -5.4,
+        "max": -1.3
       },
       "count": 8,
       "sourceCount": 8,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.505972,
@@ -3895,13 +3895,13 @@
       "metric": {
         "field": "__value",
         "unit": "°C",
-        "min": -3.1,
-        "max": -0.3
+        "min": -5.4,
+        "max": -2.2
       },
       "count": 8,
       "sourceCount": 8,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.505972,
@@ -3943,13 +3943,13 @@
       "metric": {
         "field": "__value",
         "unit": "°C",
-        "min": -3.1,
-        "max": -0.1
+        "min": -5.3,
+        "max": -2.6
       },
       "count": 8,
       "sourceCount": 8,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.505972,
@@ -3991,13 +3991,13 @@
       "metric": {
         "field": "__value",
         "unit": "°C",
-        "min": -3.1,
-        "max": -0.1
+        "min": -5.2,
+        "max": -1.7
       },
       "count": 8,
       "sourceCount": 8,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.505972,
@@ -4041,7 +4041,7 @@
         "unit": "°C"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -4072,7 +4072,7 @@
         "unit": "°C"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -4103,7 +4103,7 @@
         "unit": "°C"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -4134,7 +4134,7 @@
         "unit": "°C"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -4165,7 +4165,7 @@
         "unit": "°C"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -4196,7 +4196,7 @@
         "unit": "°C"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -4227,7 +4227,7 @@
         "unit": "°C"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -4258,7 +4258,7 @@
         "unit": "s"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -4289,7 +4289,7 @@
         "unit": "°N"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -4319,10 +4319,10 @@
         "field": "__value",
         "unit": "sts"
       },
-      "count": 37,
-      "sourceCount": 37,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "count": 39,
+      "sourceCount": 39,
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.524263,
@@ -4364,13 +4364,13 @@
       "metric": {
         "field": "__value",
         "unit": "",
-        "min": 49.1,
-        "max": 68.8
+        "min": 51.5,
+        "max": 70.7
       },
       "count": 11,
       "sourceCount": 11,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.514495,
@@ -4417,8 +4417,8 @@
       },
       "count": 11,
       "sourceCount": 11,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.514495,
@@ -4460,13 +4460,13 @@
       "metric": {
         "field": "__value",
         "unit": "°N",
-        "min": 3.33333333333333,
-        "max": 357.0
+        "min": 2.0,
+        "max": 358.0
       },
-      "count": 102,
-      "sourceCount": 102,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "count": 104,
+      "sourceCount": 104,
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.370662,
@@ -4509,12 +4509,12 @@
         "field": "__value",
         "unit": "cm",
         "min": -2.0,
-        "max": 48.0
+        "max": 41.0
       },
-      "count": 64,
-      "sourceCount": 64,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "count": 67,
+      "sourceCount": 67,
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.370662,
@@ -4555,12 +4555,14 @@
       "color": "#76acb1",
       "metric": {
         "field": "__value",
-        "unit": "W/m2"
+        "unit": "W/m2",
+        "min": 0.0,
+        "max": 16.2
       },
       "count": 2,
       "sourceCount": 2,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.572656,
@@ -4604,7 +4606,7 @@
         "unit": "Ah"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -4635,7 +4637,7 @@
         "unit": "hits/s"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -4665,15 +4667,15 @@
         "field": "__value",
         "unit": "mm",
         "min": 0.0,
-        "max": 3.8
+        "max": 0.2
       },
-      "count": 230,
-      "sourceCount": 230,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "count": 232,
+      "sourceCount": 232,
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
-          12.394367,
+          12.370662,
           45.600676
         ],
         [
@@ -4714,7 +4716,7 @@
         "unit": "hits/s"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -4745,7 +4747,7 @@
         "unit": "hits/s"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -4776,7 +4778,7 @@
         "unit": "hits/s"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -4807,7 +4809,7 @@
         "unit": "#"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -4838,7 +4840,7 @@
         "unit": "#"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -4869,7 +4871,7 @@
         "unit": "%"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -4900,7 +4902,7 @@
         "unit": "%"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -4931,7 +4933,7 @@
         "unit": "%"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -4962,7 +4964,7 @@
         "unit": "%"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -4993,7 +4995,7 @@
         "unit": "%"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -5024,7 +5026,7 @@
         "unit": "%"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -5055,7 +5057,7 @@
         "unit": "%"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -5086,7 +5088,7 @@
         "unit": "%"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -5117,7 +5119,7 @@
         "unit": "%"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -5148,7 +5150,7 @@
         "unit": "%"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -5179,7 +5181,7 @@
         "unit": "%"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -5210,7 +5212,7 @@
         "unit": "%"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -5241,7 +5243,7 @@
         "unit": "%"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -5272,7 +5274,7 @@
         "unit": "%"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -5303,7 +5305,7 @@
         "unit": "%"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -5335,8 +5337,8 @@
       },
       "count": 1,
       "sourceCount": 1,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.496333,
@@ -5381,8 +5383,8 @@
       },
       "count": 1,
       "sourceCount": 1,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.496333,
@@ -5426,7 +5428,7 @@
         "unit": "mm"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -5457,7 +5459,7 @@
         "unit": "mm"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -5488,7 +5490,7 @@
         "unit": ""
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -5519,7 +5521,7 @@
         "unit": ""
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -5550,7 +5552,7 @@
         "unit": "dB"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -5581,7 +5583,7 @@
         "unit": "mm"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -5612,7 +5614,7 @@
         "unit": "V"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -5643,7 +5645,7 @@
         "unit": "dB"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -5674,7 +5676,7 @@
         "unit": "dB"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -5705,7 +5707,7 @@
         "unit": "%"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -5736,7 +5738,7 @@
         "unit": "%"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -5767,7 +5769,7 @@
         "unit": "%"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -5798,7 +5800,7 @@
         "unit": ""
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -5829,7 +5831,7 @@
         "unit": "°C"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -5860,7 +5862,7 @@
         "unit": "°C"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -5891,7 +5893,7 @@
         "unit": "°C"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -5922,7 +5924,7 @@
         "unit": "cm"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -5954,8 +5956,8 @@
       },
       "count": 1,
       "sourceCount": 1,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.274721,
@@ -5999,7 +6001,7 @@
         "unit": "°C"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -6030,7 +6032,7 @@
         "unit": "°C"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -6061,7 +6063,7 @@
         "unit": "°C"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -6092,7 +6094,7 @@
         "unit": "°C"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -6123,7 +6125,7 @@
         "unit": "°C"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -6154,7 +6156,7 @@
         "unit": "°C"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -6185,7 +6187,7 @@
         "unit": "°C"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -6217,8 +6219,8 @@
       },
       "count": 1,
       "sourceCount": 1,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.975227,
@@ -6262,7 +6264,7 @@
         "unit": "m"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -6291,13 +6293,13 @@
       "metric": {
         "field": "__value",
         "unit": "°N",
-        "min": 31.9333333333333,
-        "max": 51.5333333333333
+        "min": 69.2,
+        "max": 167.466666666667
       },
       "count": 3,
       "sourceCount": 3,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.48185,
@@ -6339,13 +6341,13 @@
       "metric": {
         "field": "__value",
         "unit": "m/s",
-        "min": 1.92,
-        "max": 9.19333333333333
+        "min": 1.65333333333333,
+        "max": 3.14666666666667
       },
       "count": 3,
       "sourceCount": 3,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.48185,
@@ -6389,7 +6391,7 @@
         "unit": "%ON"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -6418,13 +6420,13 @@
       "metric": {
         "field": "__value",
         "unit": "°C",
-        "min": 7.5,
-        "max": 10.8
+        "min": 6.9,
+        "max": 10.2
       },
       "count": 8,
       "sourceCount": 8,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.611949,
@@ -6466,13 +6468,13 @@
       "metric": {
         "field": "__value",
         "unit": "°C",
-        "min": 8.3,
-        "max": 11.5
+        "min": 8.0,
+        "max": 11.1666666666667
       },
       "count": 8,
       "sourceCount": 8,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.611949,
@@ -6514,13 +6516,13 @@
       "metric": {
         "field": "__value",
         "unit": "°C",
-        "min": 8.4,
-        "max": 11.8
+        "min": 8.3,
+        "max": 11.6
       },
       "count": 8,
       "sourceCount": 8,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.611949,
@@ -6562,13 +6564,13 @@
       "metric": {
         "field": "__value",
         "unit": "°C",
-        "min": 8.5,
-        "max": 12.1
+        "min": 8.4,
+        "max": 12.0
       },
       "count": 8,
       "sourceCount": 8,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.611949,
@@ -6611,12 +6613,12 @@
         "field": "__value",
         "unit": "%VOL",
         "min": 0.0,
-        "max": 40.0
+        "max": 38.0
       },
       "count": 8,
       "sourceCount": 8,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.611949,
@@ -6658,13 +6660,13 @@
       "metric": {
         "field": "__value",
         "unit": "%VOL",
-        "min": 11.0,
-        "max": 45.0
+        "min": 8.0,
+        "max": 41.3333333333333
       },
       "count": 8,
       "sourceCount": 8,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.611949,
@@ -6706,13 +6708,13 @@
       "metric": {
         "field": "__value",
         "unit": "%VOL",
-        "min": 18.0,
+        "min": 15.0,
         "max": 46.0
       },
       "count": 8,
       "sourceCount": 8,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.611949,
@@ -6757,10 +6759,10 @@
         "min": 0.0,
         "max": 2304.0
       },
-      "count": 148,
-      "sourceCount": 148,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "count": 150,
+      "sourceCount": 150,
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.370662,
@@ -6805,8 +6807,8 @@
       },
       "count": 1,
       "sourceCount": 1,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           13.336865901947,
@@ -6848,13 +6850,13 @@
       "metric": {
         "field": "__value",
         "unit": "mm",
-        "min": 7.2,
+        "min": 7.4,
         "max": 564.4
       },
       "count": 8,
       "sourceCount": 8,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
-      "generatedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
+      "generatedAt": "2026-11-23T07:48:38.009677+00:00",
       "bounds": [
         [
           12.714826,
@@ -6898,7 +6900,7 @@
         "unit": "°C"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -6929,7 +6931,7 @@
         "unit": "°C"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
@@ -6960,7 +6962,7 @@
         "unit": "W/m2"
       },
       "count": 0,
-      "retrievedAt": "2026-11-22T19:52:05.013118+00:00",
+      "retrievedAt": "2026-11-23T07:48:38.009677+00:00",
       "geometryTypes": [
         "Point"
       ],
