@@ -221,7 +221,12 @@ export function AirPanel() {
   const s = useAirStore(),
     tab = useExperienceStore((x) => x.tab),
     [report, setReport] = useState(false);
-  const titleRef = useRef<HTMLHeadingElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null),
+    panelRef = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const drawer = panelRef.current?.closest<HTMLElement>("#drawer-panel");
+    if (drawer) drawer.scrollTop = 0;
+  }, [s.inspector?.view, s.inspector?.tool, tab]);
   useEffect(() => {
     const frame = requestAnimationFrame(() =>
       titleRef.current?.focus({ preventScroll: true }),
@@ -232,7 +237,7 @@ export function AirPanel() {
     drawerOpen = useAppStore((x) => x.drawerOpen);
   const toolMenu = tab === "tools" && !s.inspector;
   return (
-    <div className={css.panel} data-air-panel>
+    <div className={css.panel} ref={panelRef} data-air-panel>
       <Status />
       {compact && drawerOpen && !s.controls && <AirTimeline />}
       {!s.data ? (
@@ -1634,11 +1639,7 @@ export function AirMapUI() {
         <div className={css.mapLegend} data-map-legend>
           <details>
             <summary>
-              {Object.values(s.layers).filter(Boolean).length}{" "}
-              {Object.values(s.layers).filter(Boolean).length === 1
-                ? "livello visibile"
-                : "livelli visibili"}{" "}
-              · legenda e unità
+              Legenda · {Object.values(s.layers).filter(Boolean).length}
             </summary>
             {s.layers.inventory && <Scale kind="inventory" />}
             {s.layers.observations && <Scale kind="observations" />}

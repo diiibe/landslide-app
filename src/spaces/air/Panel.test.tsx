@@ -72,3 +72,24 @@ it("keeps questions and map controls coherent when a group is released", () => {
     document.querySelector("#air-map-controls")?.hasAttribute("hidden"),
   ).toBe(true);
 });
+it("returns the level list to its beginning after a deep inspector", () => {
+  render(
+    <aside id="drawer-panel">
+      <AirPanel />
+    </aside>,
+  );
+  act(() =>
+    useAirStore.setState({
+      inspector: { view: "inventory", layer: "inventory", tool: false },
+    }),
+  );
+  const drawer = document.getElementById("drawer-panel")!;
+  drawer.scrollTop = 500;
+  fireEvent.click(
+    screen.getByRole("button", { name: "Tutti i livelli" }),
+  );
+  expect(drawer.scrollTop).toBe(0);
+  expect(
+    screen.getByRole("button", { name: /^Che aria misurano/ }),
+  ).toBeTruthy();
+});
