@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-26T08:27:45.915927+00:00",
+  "generatedAt": "2026-11-26T21:45:02.283498+00:00",
   "layers": [
     {
       "id": "pcr-earthquakes",
@@ -20,10 +20,41 @@
       "color": "#d7a96b",
       "metric": {
         "field": "__value",
-        "unit": "M"
+        "unit": "M",
+        "min": 2.3,
+        "max": 2.4
       },
-      "count": 0,
-      "retrievedAt": "2026-11-26T08:27:45.915927+00:00"
+      "count": 2,
+      "sourceCount": 2,
+      "retrievedAt": "2026-11-26T21:45:02.283498+00:00",
+      "generatedAt": "2026-11-26T21:45:02.283498+00:00",
+      "bounds": [
+        [
+          12.3737,
+          46.1427
+        ],
+        [
+          13.056,
+          46.2713
+        ]
+      ],
+      "geometryTypes": [
+        "Point"
+      ],
+      "fields": [
+        "source",
+        "source_id",
+        "loc_type",
+        "description",
+        "dt",
+        "lat",
+        "lon",
+        "magnitudo",
+        "depth",
+        "profondita_km"
+      ],
+      "warnings": [],
+      "file": "pcr-earthquakes.geojson"
     },
     {
       "id": "pcr-webcams",
@@ -44,8 +75,8 @@
       "color": "#9fb5b1",
       "count": 64,
       "sourceCount": 64,
-      "retrievedAt": "2026-11-26T08:27:45.915927+00:00",
-      "generatedAt": "2026-11-26T08:27:45.915927+00:00",
+      "retrievedAt": "2026-11-26T21:45:02.283498+00:00",
+      "generatedAt": "2026-11-26T21:45:02.283498+00:00",
       "bounds": [
         [
           12.39437,
